@@ -11,6 +11,7 @@ import me.matsumo.grabee.core.ui.screen.Destination
 import me.matsumo.grabee.core.ui.theme.LocalNavBackStack
 import me.matsumo.grabee.feature.billing.paywallEntry
 import me.matsumo.grabee.feature.home.homeEntry
+import me.matsumo.grabee.feature.learningpath.learningPathEntry
 import me.matsumo.grabee.feature.setting.oss.settingLicenseEntry
 import me.matsumo.grabee.feature.setting.settingEntry
 
@@ -31,6 +32,7 @@ internal fun AppNavHost(
                 paywallEntry()
                 settingEntry()
                 settingLicenseEntry()
+                learningPathEntry()
             },
             transitionSpec = { NavigationTransitions.forwardTransition },
             popTransitionSpec = { NavigationTransitions.backwardTransition },

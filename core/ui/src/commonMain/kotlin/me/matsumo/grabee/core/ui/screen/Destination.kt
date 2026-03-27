@@ -20,6 +20,9 @@ sealed interface Destination : NavKey {
     data class Paywall(val source: String) : Destination
 
     @Serializable
+    data object LearningPath : Destination
+
+    @Serializable
     sealed interface Setting : Destination {
         @Serializable
         data object Root : Setting
@@ -35,6 +38,7 @@ sealed interface Destination : NavKey {
                     subclass(Home::class, Home.serializer())
                     subclass(Download::class, Download.serializer())
                     subclass(Paywall::class, Paywall.serializer())
+                    subclass(LearningPath::class, LearningPath.serializer())
                     subclass(Setting.Root::class, Setting.Root.serializer())
                     subclass(Setting.License::class, Setting.License.serializer())
                 }
