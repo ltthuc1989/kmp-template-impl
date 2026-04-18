@@ -181,3 +181,75 @@ Text(color = MaterialTheme.colorScheme.onBackground)
 // BAD
 containerColor = Color(0xFFFFFFFF)
 ```
+
+## Edge-to-edge & window insets
+
+`MainActivity.onCreate` gọi `enableEdgeToEdge()` — toàn app vẽ dưới status bar + navigation bar. Hệ quả: **mọi top/bottom bar custom phải tự consume inset**, nếu không nội dung bị status bar hoặc nav bar che.
+
+### Khi nào an toàn (tự động handle)
+
+- **`Scaffold` + Material3 `TopAppBar` / `CenterAlignedTopAppBar`**: top app bar đã có `windowInsets = TopAppBarDefaults.windowInsets` mặc định → tự pad status bar.
+- **`Scaffold` body** (`innerPadding`): nếu không có `bottomBar`, nav-bar inset được đưa vào `innerPadding` → `.padding(innerPadding)` trên body là đủ.
+- Reference: [SettingTopAppBar.kt](../../../feature/setting/src/commonMain/kotlin/me/matsumo/grabee/feature/setting/components/SettingTopAppBar.kt) dùng `CenterAlignedTopAppBar` — không cần animate thêm.
+
+### Khi nào phải tự thêm inset padding
+
+Tự viết top/bottom bar không dùng Material3 `TopAppBar` (vd custom `Row`, `Box` cho onboarding, splash, landing) — PHẢI áp dụng inset padding:
+
+```kotlin
+@Composable
+fun CustomTopBar(modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .statusBarsPadding()          // ← bắt buộc khi custom
+            .padding(horizontal = 8.dp, vertical = 8.dp),
+    ) { ... }
+}
+
+@Composable
+fun CustomBottomBar(modifier: Modifier = Modifier) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .navigationBarsPadding()      // ← bắt buộc khi custom
+            .padding(16.dp),
+    ) { ... }
+}
+```
+
+Imports:
+```kotlin
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.imePadding        // cho form có bàn phím
+```
+
+### Bottom-aligned action button (không có bottomBar slot)
+
+Nếu đặt Button ở cuối Column trong Scaffold body, mà `innerPadding` đã chứa nav-bar inset (Scaffold không có `bottomBar`), **không cần** `navigationBarsPadding()` thêm — chỉ cần `.padding(innerPadding)` trên Column:
+
+```kotlin
+Scaffold(topBar = { CustomTopBar() }) { innerPadding ->
+    Column(Modifier.fillMaxSize().padding(innerPadding)) {
+        Spacer(Modifier.weight(1f))
+        Button(...)       // nav-bar inset đã được tôn trọng qua innerPadding
+    }
+}
+```
+
+### Full-screen content không Scaffold
+
+Nếu không dùng Scaffold (vd dialog full-screen, splash custom) → áp dụng trực tiếp:
+
+```kotlin
+Box(Modifier.fillMaxSize().windowInsetsPadding(WindowInsets.systemBars)) { ... }
+```
+
+### Checklist trước khi commit UI mới
+
+- [ ] Nếu có custom top bar (không phải M3 `TopAppBar`) → `.statusBarsPadding()` áp trên root modifier.
+- [ ] Nếu có custom bottom bar → `.navigationBarsPadding()`.
+- [ ] Nếu có form có `TextField` → `.imePadding()` ở content hoặc parent.
+- [ ] Scaffold body luôn `.padding(innerPadding)` — đừng bỏ qua.
+- [ ] Test trên device/emulator có gesture nav bar (Pixel) + 3-button nav (Samsung) để chắc không bị cut.

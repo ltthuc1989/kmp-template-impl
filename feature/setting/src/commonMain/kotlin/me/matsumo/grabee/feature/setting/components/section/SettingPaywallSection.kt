@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import me.matsumo.grabee.core.model.AppSetting
 import me.matsumo.grabee.core.resource.Res
 import me.matsumo.grabee.core.resource.setting_paywall_description
 import me.matsumo.grabee.core.resource.setting_paywall_title

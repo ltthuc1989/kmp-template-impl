@@ -1,10 +1,7 @@
 package me.matsumo.grabee.core.datasource
 
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -17,6 +14,7 @@ import kotlinx.serialization.json.Json
 import me.matsumo.grabee.core.datasource.helper.PreferenceHelper
 import me.matsumo.grabee.core.datasource.helper.deserialize
 import me.matsumo.grabee.core.model.AppSetting
+import me.matsumo.grabee.core.model.AppThemePalette
 import me.matsumo.grabee.core.model.Theme
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -63,19 +61,11 @@ class AppSettingDataSource(
         }
     }
 
-    suspend fun setUseDynamicColor(useDynamicColor: Boolean) = withContext(ioDispatcher) {
-        if (setting.first().useDynamicColor == useDynamicColor) return@withContext
+    suspend fun setAppThemePalette(palette: AppThemePalette) = withContext(ioDispatcher) {
+        if (setting.first().appThemePalette == palette) return@withContext
 
         preference.edit {
-            it[booleanPreferencesKey(AppSetting::useDynamicColor.name)] = useDynamicColor
-        }
-    }
-
-    suspend fun setSeedColor(color: Color) = withContext(ioDispatcher) {
-        if (setting.first().seedColor == color) return@withContext
-
-        preference.edit {
-            it[intPreferencesKey(AppSetting::seedColor.name)] = color.toArgb()
+            it[stringPreferencesKey(AppSetting::appThemePalette.name)] = palette.name
         }
     }
 
@@ -92,6 +82,14 @@ class AppSettingDataSource(
 
         preference.edit {
             it[booleanPreferencesKey(AppSetting::developerMode.name)] = developerMode
+        }
+    }
+
+    suspend fun setHasSeenOnboarding(hasSeenOnboarding: Boolean) = withContext(ioDispatcher) {
+        if (setting.first().hasSeenOnboarding == hasSeenOnboarding) return@withContext
+
+        preference.edit {
+            it[booleanPreferencesKey(AppSetting::hasSeenOnboarding.name)] = hasSeenOnboarding
         }
     }
 }

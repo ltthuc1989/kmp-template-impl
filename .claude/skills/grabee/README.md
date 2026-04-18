@@ -314,6 +314,7 @@ Napier.e("error", throwable)
 
 ## Skill Reference Files
 
+### Core (template stack)
 | File | Covers |
 |---|---|
 | `SKILL.md` | Core principles, module graph, quick patterns, dos & don'ts |
@@ -327,6 +328,23 @@ Napier.e("error", throwable)
 | `references/i18n.md` | Strings in core:resource, EN + JA locales, format args |
 | `references/ios-interop.md` | MainViewController, InitHelper, expect/actual, Android vs iOS entry |
 | `references/adding-feature.md` | Full 11-step checklist with exact file paths |
+
+### Project-specific (ABC Phonics Kids)
+| File | Covers |
+|---|---|
+| `references/phonics-domain.md` | Domain vocab (level/unit/step/star), Room entity skeletons, Pattern A vs B per screen, asset path convention |
+| `references/coppa.md` | Anonymous-first model, voice memory-only, no PII, Firestore whitelist, parental gate, pre-commit checklist |
+| `references/voice-recognition.md` | `expect/actual AudioRecorder` (Android MediaRecorder + iOS AVAudioRecorder), Gemini 2.5 Flash multimodal Ktor client, error states |
+| `references/ui-from-screenshot.md` | Đọc UI mockup image qua Read tool, map vào Material3 ColorScheme/typography tokens, kids touch ≥ 64dp, self-checklist |
+
+### Project docs (in repo)
+- [docs/abc-phonics-kids/README.md](../../../docs/abc-phonics-kids/README.md) — index
+- [docs/abc-phonics-kids/01-PRD.md](../../../docs/abc-phonics-kids/01-PRD.md)
+- [docs/abc-phonics-kids/02-TECH_SPEC.md](../../../docs/abc-phonics-kids/02-TECH_SPEC.md)
+- [docs/abc-phonics-kids/03-IMPLEMENTATION_PLAN.md](../../../docs/abc-phonics-kids/03-IMPLEMENTATION_PLAN.md)
+
+### Project commands
+- `/scaffold-unit <level_id> <unit_number>` — scaffold 1 phonics unit (8 step screens + Room seed). Optional: attach UI mockup image. See [`.claude/commands/scaffold-unit.md`](../../commands/scaffold-unit.md).
 
 ---
 

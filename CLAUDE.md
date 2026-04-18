@@ -2,15 +2,35 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Project: ABC Phonics Kids
+
+App học phonics tiếng Anh cho trẻ 3-8 tuổi, build trên template KMP + Compose Multiplatform.
+
+**Product docs**: [docs/abc-phonics-kids/README.md](docs/abc-phonics-kids/README.md) — đọc trước khi code.
+
+**App display name**: "ABC Phonics Kids" (qua `app_name` string). **Code namespace giữ nguyên** `me.matsumo.grabee` để tránh rebrand 100+ file.
+
 ## Grabee Skill
 
-A project-specific skill is available with full architecture knowledge, patterns, and feature guides:
+A project-specific skill with full architecture knowledge, patterns, COPPA rules, voice pipeline, and UI-from-screenshot guidance:
 
 ```
 /grabee <your request>
 ```
 
-See `.claude/skills/grabee/README.md` for examples and full documentation.
+**Auto-load rules** (skill tự load reference phù hợp):
+- Audio/voice/microphone/parental → `references/coppa.md` + `references/voice-recognition.md`
+- Level/unit/word/step/phonics → `references/phonics-domain.md`
+- **User attach UI mockup image** → `references/ui-from-screenshot.md` (đọc image qua Read tool trước khi viết code)
+
+See [.claude/skills/grabee/README.md](.claude/skills/grabee/README.md) for full reference table.
+
+## Project Commands
+
+```
+/scaffold-unit <level_id> <unit_number>
+```
+Scaffold 1 phonics unit (8 step screens + Room seed). Optional: attach UI mockup. See [.claude/commands/scaffold-unit.md](.claude/commands/scaffold-unit.md).
 
 ---
 

@@ -10,6 +10,7 @@ import coil3.compose.setSingletonImageLoaderFactory
 import coil3.request.crossfade
 import io.github.vinceglb.filekit.coil.addPlatformFileSupport
 import me.matsumo.grabee.core.model.AppSetting
+import me.matsumo.grabee.core.ui.screen.Destination
 import me.matsumo.grabee.core.ui.theme.GrabeeTheme
 
 @OptIn(DependsOnGoogleMobileAds::class, DependsOnGoogleUserMessagingPlatform::class)
@@ -21,8 +22,14 @@ internal fun GrabeeApp(
     SetupCoil()
     BasicAds.Initialize()
 
+    val startDestination: Destination =
+        if (setting.hasSeenOnboarding) Destination.Home else Destination.Onboarding
+
     GrabeeTheme(setting) {
-        AppNavHost(modifier)
+        AppNavHost(
+            startDestination = startDestination,
+            modifier = modifier,
+        )
     }
 }
 

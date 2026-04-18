@@ -1,16 +1,20 @@
 package me.matsumo.grabee.core.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialExpressiveTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
+import androidx.compose.ui.graphics.Color
+import com.materialkolor.rememberDynamicColorScheme
 import me.matsumo.grabee.core.model.AppConfig
 import me.matsumo.grabee.core.model.AppSetting
+import me.matsumo.grabee.core.model.AppThemePalette
 import me.matsumo.grabee.core.model.Theme
-import me.matsumo.grabee.core.ui.utils.rememberColorScheme
 import org.koin.compose.koinInject
 
 @Suppress("ModifierMissing")
@@ -21,10 +25,10 @@ fun GrabeeTheme(
     appConfig: AppConfig = koinInject(),
     content: @Composable () -> Unit,
 ) {
-    val colorScheme = rememberColorScheme(
-        useDynamicColor = appSetting.useDynamicColor,
-        seedColor = appSetting.seedColor,
-        isDark = shouldUseDarkTheme(appSetting.theme),
+    val isDark = shouldUseDarkTheme(appSetting.theme)
+    val colorScheme = rememberPaletteColorScheme(
+        palette = appSetting.appThemePalette,
+        isDark = isDark,
     )
 
     CompositionLocalProvider(
@@ -49,4 +53,25 @@ fun shouldUseDarkTheme(theme: Theme): Boolean {
         Theme.Light -> false
         Theme.Dark -> true
     }
+}
+
+@Composable
+private fun rememberPaletteColorScheme(
+    palette: AppThemePalette,
+    isDark: Boolean,
+): ColorScheme {
+    if (!isDark) {
+        return remember(palette) {
+            when (palette) {
+                AppThemePalette.PlayfulMentor -> PlayfulMentorLight
+                AppThemePalette.FluidArchitect -> FluidArchitectLight
+            }
+        }
+    }
+
+    val seed = when (palette) {
+        AppThemePalette.PlayfulMentor -> Color(0xFFAB2C5D)
+        AppThemePalette.FluidArchitect -> Color(0xFF0058BC)
+    }
+    return rememberDynamicColorScheme(seedColor = seed, isDark = true)
 }

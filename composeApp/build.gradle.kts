@@ -105,6 +105,7 @@ kotlin {
             implementation(project(":feature:setting"))
             implementation(project(":feature:billing"))
             implementation(project(":feature:learningpath"))
+            implementation(project(":feature:onboarding"))
         }
 
         androidMain.dependencies {

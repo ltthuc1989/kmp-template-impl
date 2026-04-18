@@ -1,18 +1,15 @@
 package me.matsumo.grabee.core.model
 
-import androidx.compose.ui.graphics.Color
 import kotlinx.serialization.Serializable
-import me.matsumo.grabee.core.common.serializer.ColorSerializer
 
 @Serializable
 data class AppSetting(
     val id: String,
     val theme: Theme,
-    val useDynamicColor: Boolean,
-    @Serializable(with = ColorSerializer::class)
-    val seedColor: Color,
+    val appThemePalette: AppThemePalette,
     val plusMode: Boolean,
     val developerMode: Boolean,
+    val hasSeenOnboarding: Boolean,
 ) {
     val hasPrivilege get() = plusMode || developerMode
 
@@ -20,10 +17,10 @@ data class AppSetting(
         val DEFAULT = AppSetting(
             id = "",
             theme = Theme.System,
-            useDynamicColor = currentPlatform == Platform.Android,
-            seedColor = Color(0xFF7FD0FF),
+            appThemePalette = AppThemePalette.PlayfulMentor,
             plusMode = false,
             developerMode = false,
+            hasSeenOnboarding = false,
         )
     }
 }

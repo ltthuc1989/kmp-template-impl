@@ -1,9 +1,9 @@
 package me.matsumo.grabee.core.repository
 
-import androidx.compose.ui.graphics.Color
 import kotlinx.coroutines.flow.StateFlow
 import me.matsumo.grabee.core.datasource.AppSettingDataSource
 import me.matsumo.grabee.core.model.AppSetting
+import me.matsumo.grabee.core.model.AppThemePalette
 import me.matsumo.grabee.core.model.Theme
 
 class AppSettingRepository(
@@ -17,11 +17,11 @@ class AppSettingRepository(
 
     suspend fun setTheme(theme: Theme) = dataSource.setTheme(theme)
 
-    suspend fun setUseDynamicColor(useDynamicColor: Boolean) = dataSource.setUseDynamicColor(useDynamicColor)
-
-    suspend fun setSeedColor(color: Color) = dataSource.setSeedColor(color)
+    suspend fun setAppThemePalette(palette: AppThemePalette) = dataSource.setAppThemePalette(palette)
 
     suspend fun setPlusMode(plusMode: Boolean) = dataSource.setPlusMode(plusMode)
 
     suspend fun setDeveloperMode(developerMode: Boolean) = dataSource.setDeveloperMode(developerMode)
+
+    suspend fun setHasSeenOnboarding(hasSeenOnboarding: Boolean) = dataSource.setHasSeenOnboarding(hasSeenOnboarding)
 }

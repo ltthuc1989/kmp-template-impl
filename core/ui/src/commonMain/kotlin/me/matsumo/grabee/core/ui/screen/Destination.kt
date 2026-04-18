@@ -14,6 +14,9 @@ sealed interface Destination : NavKey {
     data object Home : Destination
 
     @Serializable
+    data object Onboarding : Destination
+
+    @Serializable
     data class Download(val url: String) : Destination
 
     @Serializable
@@ -36,6 +39,7 @@ sealed interface Destination : NavKey {
             serializersModule = SerializersModule {
                 polymorphic(NavKey::class) {
                     subclass(Home::class, Home.serializer())
+                    subclass(Onboarding::class, Onboarding.serializer())
                     subclass(Download::class, Download.serializer())
                     subclass(Paywall::class, Paywall.serializer())
                     subclass(LearningPath::class, LearningPath.serializer())

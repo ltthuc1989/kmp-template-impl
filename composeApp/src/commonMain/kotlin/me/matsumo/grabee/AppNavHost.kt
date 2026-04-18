@@ -12,14 +12,16 @@ import me.matsumo.grabee.core.ui.theme.LocalNavBackStack
 import me.matsumo.grabee.feature.billing.paywallEntry
 import me.matsumo.grabee.feature.home.homeEntry
 import me.matsumo.grabee.feature.learningpath.learningPathEntry
+import me.matsumo.grabee.feature.onboarding.onboardingEntry
 import me.matsumo.grabee.feature.setting.oss.settingLicenseEntry
 import me.matsumo.grabee.feature.setting.settingEntry
 
 @Composable
 internal fun AppNavHost(
+    startDestination: Destination,
     modifier: Modifier = Modifier,
 ) {
-    val navBackStack = rememberNavBackStack(Destination.config, Destination.Home)
+    val navBackStack = rememberNavBackStack(Destination.config, startDestination)
 
     CompositionLocalProvider(
         LocalNavBackStack provides navBackStack,
@@ -33,6 +35,7 @@ internal fun AppNavHost(
                 settingEntry()
                 settingLicenseEntry()
                 learningPathEntry()
+                onboardingEntry()
             },
             transitionSpec = { NavigationTransitions.forwardTransition },
             popTransitionSpec = { NavigationTransitions.backwardTransition },
@@ -40,4 +43,3 @@ internal fun AppNavHost(
         )
     }
 }
-

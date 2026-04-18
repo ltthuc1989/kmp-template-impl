@@ -191,10 +191,33 @@ Access in composables: `val viewModel: XyzViewModel = koinViewModel()`
 
 ## References
 
+### Core (template stack)
 - [Architecture & module rules](references/architecture.md)
 - [ViewModel patterns (full examples)](references/viewmodel-patterns.md)
 - [Navigation3 (adding screens, arguments, back stack)](references/navigation.md)
 - [Compose conventions (GrabeeTheme, stateless, Material3)](references/compose.md)
 - [Build system (plugins, Room KSP, BuildKonfig)](references/build-system.md)
-- [Billing & Ads (RevenueCat, AdMob, AppLovin)](references/billing-ads.md)
-- [Adding a new feature (step-by-step checklist)](references/adding-feature.md)
+- [Error handling (suspendRunCatching, ScreenState.Error)](references/error-handling.md)
+- [Testing (fakes over mocks, ViewModel tests)](references/testing.md)
+- [i18n (EN + JA strings)](references/i18n.md)
+- [iOS interop (MainViewController, expect/actual)](references/ios-interop.md)
+- [Adding a new feature (11-step checklist)](references/adding-feature.md)
+
+### Project-specific (ABC Phonics Kids)
+- [Phonics domain (Level/Unit/Step/Word vocab + Room schema)](references/phonics-domain.md)
+- [COPPA compliance (anonymous-first, no PII, voice memory-only)](references/coppa.md) — **load khi đụng audio/profile/firestore/analytics**
+- [Voice recognition pipeline (AudioRecorder + Gemini STT)](references/voice-recognition.md) — load khi đụng mic/voice/STT
+- [UI from screenshot (Compose + theme tokens + kids touch ≥ 64dp)](references/ui-from-screenshot.md) — **load khi user attach UI mockup image**
+
+### Auto-load rules
+- User prompt nhắc audio/voice/recording/microphone/parental → load `coppa.md` + `voice-recognition.md`.
+- User prompt nhắc level/unit/word/step/phonics → load `phonics-domain.md`.
+- User prompt có image attachment → load `ui-from-screenshot.md`, đọc image qua Read tool trước khi viết code.
+- User prompt nhắc **top bar / bottom bar / scaffold / splash / onboarding / status bar / navigation bar / edge-to-edge / inset** → load `compose.md` section "Edge-to-edge & window insets" (app bật `enableEdgeToEdge()` → custom bar phải `.statusBarsPadding()` / `.navigationBarsPadding()`).
+- User báo lỗi UI dạng "**bị status bar che / bị cắt ở đáy / nav bar đè**" → load `compose.md` cùng section.
+
+### Project docs
+- [docs/abc-phonics-kids/README.md](../../../docs/abc-phonics-kids/README.md) — index
+- [docs/abc-phonics-kids/01-PRD.md](../../../docs/abc-phonics-kids/01-PRD.md) — product + content map
+- [docs/abc-phonics-kids/02-TECH_SPEC.md](../../../docs/abc-phonics-kids/02-TECH_SPEC.md) — module mapping + Room schema
+- [docs/abc-phonics-kids/03-IMPLEMENTATION_PLAN.md](../../../docs/abc-phonics-kids/03-IMPLEMENTATION_PLAN.md) — 8-week timeline

@@ -112,10 +112,10 @@
     <string name="setting_theme_app_auto">System</string>
     <string name="setting_theme_app_light">Light</string>
     <string name="setting_theme_app_dark">Dark</string>
-    <string name="setting_dynamic_color">Dynamic Color</string>
-    <string name="setting_dynamic_color_description">Select the app primary color.</string>
-    <string name="setting_dynamic_color_system">Your System</string>
-    <string name="setting_dynamic_color_user">User Picked</string>
+    <string name="setting_palette">App Palette</string>
+    <string name="setting_palette_description">Choose the app color palette.</string>
+    <string name="setting_palette_playful">Playful</string>
+    <string name="setting_palette_fluid">Professional</string>
     <string name="setting_general">General</string>
     <string name="setting_information">Information</string>
     <string name="setting_information_app_id">App ID</string>
@@ -168,4 +168,16 @@
     <string name="paywall_privacy">Privacy Policy</string>
     <string name="paywall_error_purchase_failed">Purchase failed.</string>
     <string name="paywall_error_no_subscription_to_restore">No restorable purchases found.</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_title">Learn English</string>
+    <string name="onboarding_get_started">Get Started</string>
+    <string name="onboarding_page1_title">Welcome!</string>
+    <string name="onboarding_page1_subtitle">Learn phonics with Phonie</string>
+    <string name="onboarding_page2_title">Learn Sounds</string>
+    <string name="onboarding_page2_subtitle">Master letters and their sounds</string>
+    <string name="onboarding_page3_title">Practice Speaking</string>
+    <string name="onboarding_page3_subtitle">Hear, repeat, and master words</string>
+    <string name="onboarding_page4_title">Earn Rewards</string>
+    <string name="onboarding_page4_subtitle">Collect stars and badges</string>
 </resources>

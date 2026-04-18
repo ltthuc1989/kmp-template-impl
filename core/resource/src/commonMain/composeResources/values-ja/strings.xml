@@ -112,10 +112,10 @@
     <string name="setting_theme_app_auto">System</string>
     <string name="setting_theme_app_light">Light</string>
     <string name="setting_theme_app_dark">Dark</string>
-    <string name="setting_dynamic_color">ダイナミックカラー</string>
-    <string name="setting_dynamic_color_description">アプリのプライマリカラーを選択してください。</string>
-    <string name="setting_dynamic_color_system">Your System</string>
-    <string name="setting_dynamic_color_user">User Picked</string>
+    <string name="setting_palette">アプリパレット</string>
+    <string name="setting_palette_description">アプリのカラーパレットを選択してください。</string>
+    <string name="setting_palette_playful">プレイフル</string>
+    <string name="setting_palette_fluid">プロフェッショナル</string>
     <string name="setting_general">一般</string>
     <string name="setting_information">情報</string>
     <string name="setting_information_app_id">アプリID</string>
@@ -168,4 +168,16 @@
     <string name="paywall_privacy">プライバシーポリシー</string>
     <string name="paywall_error_purchase_failed">購入処理に失敗しました。</string>
     <string name="paywall_error_no_subscription_to_restore">復元可能な購入情報が見つかりませんでした。</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_title">英語を学ぼう</string>
+    <string name="onboarding_get_started">はじめる</string>
+    <string name="onboarding_page1_title">ようこそ！</string>
+    <string name="onboarding_page1_subtitle">フォニーと一緒にフォニックスを学ぼう</string>
+    <string name="onboarding_page2_title">音を学ぼう</string>
+    <string name="onboarding_page2_subtitle">アルファベットと音をマスター</string>
+    <string name="onboarding_page3_title">発音の練習</string>
+    <string name="onboarding_page3_subtitle">聞いて、繰り返して、覚えよう</string>
+    <string name="onboarding_page4_title">ごほうびをゲット</string>
+    <string name="onboarding_page4_subtitle">スターとバッジを集めよう</string>
 </resources>

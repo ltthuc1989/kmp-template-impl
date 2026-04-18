@@ -54,8 +54,7 @@ internal fun SettingScreen(
                     modifier = Modifier.fillMaxWidth(),
                     setting = setting,
                     onThemeChanged = viewModel::setTheme,
-                    onUseDynamicColorChanged = viewModel::setUseDynamicColor,
-                    onSeedColorChanged = viewModel::setSeedColor,
+                    onPaletteChanged = viewModel::setAppThemePalette,
                 )
             }
 
