@@ -207,6 +207,15 @@
     <string name="identify_all_done_subtitle">%1$d 個すべて見つけられたね！</string>
     <string name="identify_all_done_soft_subtitle">もう少し！練習を続けよう！</string>
 
+    <!-- Learning Path: Blending step -->
+    <string name="blending_title">ブレンド</string>
+    <string name="blending_word_progress">単語 %1$d / %2$d</string>
+
+    <!-- Learning Path: Matching step -->
+    <string name="matching_title">マッチング</string>
+    <string name="matching_hint">線を引いて合わせよう！</string>
+    <string name="matching_check_button">確認</string>
+
     <!-- Score feedback (reusable across step screens) -->
     <string name="score_success_title">素晴らしい！</string>
     <string name="score_success_subtitle">完璧に発音できました！</string>

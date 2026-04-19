@@ -23,8 +23,10 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import me.matsumo.grabee.core.ui.screen.Destination
 import me.matsumo.grabee.core.ui.theme.LocalNavBackStack
+import me.matsumo.grabee.feature.learningpath.step.blending.BlendingScreen
 import me.matsumo.grabee.feature.learningpath.step.chant.ChantScreen
 import me.matsumo.grabee.feature.learningpath.step.identify.IdentifyScreen
+import me.matsumo.grabee.feature.learningpath.step.matching.MatchingScreen
 import me.matsumo.grabee.feature.learningpath.step.soundintro.SoundIntroScreen
 import me.matsumo.grabee.feature.learningpath.step.vocabulary.VocabularyScreen
 import org.koin.compose.viewmodel.koinViewModel
@@ -87,6 +89,22 @@ internal fun StepScreen(
             modifier = modifier,
         )
         3 -> IdentifyScreen(
+            unitId = unitId,
+            wordIndex = wordIndex,
+            onClose = onClose,
+            onPrevious = onPrevious,
+            onNext = onNext,
+            modifier = modifier,
+        )
+        4 -> BlendingScreen(
+            unitId = unitId,
+            wordIndex = wordIndex,
+            onClose = onClose,
+            onPrevious = onPrevious,
+            onNext = onNext,
+            modifier = modifier,
+        )
+        5 -> MatchingScreen(
             unitId = unitId,
             wordIndex = wordIndex,
             onClose = onClose,

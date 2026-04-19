@@ -207,6 +207,15 @@
     <string name="identify_all_done_subtitle">You found all %1$d words!</string>
     <string name="identify_all_done_soft_subtitle">Almost — keep practicing!</string>
 
+    <!-- Learning Path: Blending step -->
+    <string name="blending_title">Blending</string>
+    <string name="blending_word_progress">Word %1$d of %2$d</string>
+
+    <!-- Learning Path: Matching step -->
+    <string name="matching_title">Matching</string>
+    <string name="matching_hint">Drag the line to match!</string>
+    <string name="matching_check_button">Check</string>
+
     <!-- Score feedback (reusable across step screens) -->
     <string name="score_success_title">Great Job!</string>
     <string name="score_success_subtitle">You pronounced it perfectly!</string>

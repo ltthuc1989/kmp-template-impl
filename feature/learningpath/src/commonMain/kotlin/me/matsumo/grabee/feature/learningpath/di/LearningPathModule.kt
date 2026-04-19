@@ -2,8 +2,10 @@ package me.matsumo.grabee.feature.learningpath.di
 
 import me.matsumo.grabee.feature.learningpath.UnitSelectionViewModel
 import me.matsumo.grabee.feature.learningpath.step.StepNavigatorViewModel
+import me.matsumo.grabee.feature.learningpath.step.blending.BlendingViewModel
 import me.matsumo.grabee.feature.learningpath.step.chant.ChantViewModel
 import me.matsumo.grabee.feature.learningpath.step.identify.IdentifyViewModel
+import me.matsumo.grabee.feature.learningpath.step.matching.MatchingViewModel
 import me.matsumo.grabee.feature.learningpath.step.soundintro.SoundIntroViewModel
 import me.matsumo.grabee.feature.learningpath.step.vocabulary.VocabularyViewModel
 import org.koin.core.module.dsl.viewModel
@@ -16,4 +18,6 @@ val learningPathModule = module {
     viewModel { params -> ChantViewModel(unitId = params.get(), get()) }
     viewModel { params -> VocabularyViewModel(unitId = params.get(), get()) }
     viewModel { params -> IdentifyViewModel(unitId = params.get(), get()) }
+    viewModel { params -> BlendingViewModel(unitId = params.get(), get()) }
+    viewModel { params -> MatchingViewModel(unitId = params.get(), get()) }
 }
