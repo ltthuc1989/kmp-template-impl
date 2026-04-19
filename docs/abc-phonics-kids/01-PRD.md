@@ -84,12 +84,14 @@ Mỗi unit là 1 sequence 8 step:
 5. **Blending** — sound combination (c-a-t → cat).
 6. **Matching** — visual-audio matching.
 7. **Tracing** — letter formation (finger tracing on canvas).
-8. **Story** — context reading (phonics reader).
+8. **Story** — narrated read-along (listen + follow along with word highlights, no voice scoring).
 
 Mỗi step kiếm được 0-3 stars dựa trên performance.
 Mỗi unit cần ≥ 6 stars để mở unit kế tiếp (configurable).
 
 ### 4.4 Voice Recognition (COPPA-safe)
+**Scope**: Voice recording/scoring chỉ áp dụng cho step 4 Identify + step 5 Blending (word-level recognition). Step 8 Story là passive narration, không record giọng trẻ.
+
 - Tap microphone → record (memory-only, AAC mono 16kHz).
 - Stop → POST audio + target word vào Gemini 2.5 Flash multimodal.
 - Receive: `{ score: 0-100, accuracy: low|medium|high, feedback_short: "Great try!" }`.

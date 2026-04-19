@@ -62,21 +62,29 @@
     <string name="media_type_animated_gif">GIF</string>
 
     <!-- Home -->
-    <string name="home_navigation_photos">Photos</string>
-    <string name="home_navigation_downloads">Downloads</string>
-    <string name="home_title">Grabee</string>
-    <string name="home_fab_title">Download</string>
-    <string name="home_download_dialog_title">Download</string>
-    <string name="home_download_dialog_description">Enter the URL of the content you want to download.</string>
-    <string name="home_download_dialog_text_field_label">URL</string>
-    <string name="home_download_dialog_paste">Paste</string>
-    <string name="home_download_dialog_positive">Download</string>
-    <string name="home_download_dialog_negative">Cancel</string>
-    <string name="home_download_dialog_error_no_url">No URL found</string>
-    <string name="home_download_dialog_error_multiple_urls">Multiple URLs detected. Please enter only one URL.</string>
-    <string name="home_download_dialog_error_unsupported_platform">This platform is not currently supported.</string>
-    <string name="home_subscription_expired_title">Pro Plan Expired</string>
-    <string name="home_subscription_expired_message">Your Grabee Pro subscription has been canceled or refunded, so Pro features have been disabled.\nTo continue using them, please upgrade again.</string>
+    <string name="home_title">English Quest</string>
+    <string name="home_level_1_title">The Alphabet</string>
+    <string name="home_level_2_title">Short Vowels</string>
+    <string name="home_level_3_title">Long Vowels</string>
+    <string name="home_level_4_title">Blends &amp; Digraphs</string>
+    <string name="home_level_5_title">Advanced Patterns</string>
+    <string name="home_unit_label">Unit %1$d: %2$s</string>
+    <string name="home_badge_active">ACTIVE</string>
+    <string name="home_badge_ready">Ready to start</string>
+    <string name="home_badge_locked">Locked</string>
+    <string name="home_badge_locked_unlock_after">Unlock after %1$s</string>
+    <string name="home_progress_label">Progress</string>
+    <string name="home_start_button">Start</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_review">Review</string>
+    <string name="nav_settings">Settings</string>
+
+    <!-- Review -->
+    <string name="review_title">Review</string>
+    <string name="review_coming_soon">Coming soon</string>
+    <string name="review_coming_soon_description">We\'re preparing review activities to reinforce what you\'ve learned. Stay tuned!</string>
 
     <!-- Download -->
     <string name="download_title">Downloads</string>

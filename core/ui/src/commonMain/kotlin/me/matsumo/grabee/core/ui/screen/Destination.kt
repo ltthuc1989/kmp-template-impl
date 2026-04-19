@@ -23,7 +23,27 @@ sealed interface Destination : NavKey {
     data class Paywall(val source: String) : Destination
 
     @Serializable
-    data object LearningPath : Destination
+    sealed interface Learning : Destination {
+        @Serializable
+        data class UnitSelection(val levelId: String) : Learning
+
+        @Serializable
+        data class Step(
+            val levelId: String,
+            val unitId: String,
+            val stepIndex: Int,
+        ) : Learning
+
+        @Serializable
+        data class UnitComplete(
+            val levelId: String,
+            val unitId: String,
+            val starsEarned: Int,
+        ) : Learning
+    }
+
+    @Serializable
+    data object Review : Destination
 
     @Serializable
     sealed interface Setting : Destination {
@@ -42,7 +62,10 @@ sealed interface Destination : NavKey {
                     subclass(Onboarding::class, Onboarding.serializer())
                     subclass(Download::class, Download.serializer())
                     subclass(Paywall::class, Paywall.serializer())
-                    subclass(LearningPath::class, LearningPath.serializer())
+                    subclass(Learning.UnitSelection::class, Learning.UnitSelection.serializer())
+                    subclass(Learning.Step::class, Learning.Step.serializer())
+                    subclass(Learning.UnitComplete::class, Learning.UnitComplete.serializer())
+                    subclass(Review::class, Review.serializer())
                     subclass(Setting.Root::class, Setting.Root.serializer())
                     subclass(Setting.License::class, Setting.License.serializer())
                 }

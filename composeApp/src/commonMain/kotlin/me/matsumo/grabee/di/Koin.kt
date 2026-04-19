@@ -8,6 +8,7 @@ import me.matsumo.grabee.feature.billing.di.billingFeatureModule
 import me.matsumo.grabee.feature.home.di.homeModule
 import me.matsumo.grabee.feature.learningpath.di.learningPathModule
 import me.matsumo.grabee.feature.onboarding.di.onboardingModule
+import me.matsumo.grabee.feature.review.di.reviewModule
 import me.matsumo.grabee.feature.setting.di.settingModule
 import org.koin.core.KoinApplication
 
@@ -24,4 +25,5 @@ fun KoinApplication.applyModules() {
     modules(billingFeatureModule)
     modules(learningPathModule)
     modules(onboardingModule)
+    modules(reviewModule)
 }

@@ -182,15 +182,44 @@ Text(color = MaterialTheme.colorScheme.onBackground)
 containerColor = Color(0xFFFFFFFF)
 ```
 
-## Edge-to-edge & window insets
+## Edge-to-edge & window insets — 🚫 MUST
 
 `MainActivity.onCreate` gọi `enableEdgeToEdge()` — toàn app vẽ dưới status bar + navigation bar. Hệ quả: **mọi top/bottom bar custom phải tự consume inset**, nếu không nội dung bị status bar hoặc nav bar che.
+
+### Pattern copy-paste (để không phải suy nghĩ)
+
+```kotlin
+// ❌ SAI — status bar đè content
+Row(Modifier.fillMaxWidth().padding(16.dp)) {
+    Icon(...); Text(...)
+}
+
+// ✅ ĐÚNG — option 1 (recommended): M3 TopAppBar auto insets
+@OptIn(ExperimentalMaterial3Api::class)
+CenterAlignedTopAppBar(
+    title = { Text(...) },
+    navigationIcon = { IconButton(onClick = ...) { Icon(...) } },
+)
+
+// ✅ ĐÚNG — option 2: custom bar, MUST có statusBarsPadding()
+Row(
+    modifier = Modifier
+        .fillMaxWidth()
+        .statusBarsPadding()       // ← bắt buộc
+        .padding(16.dp),
+) { ... }
+```
+
+Tham chiếu file đã áp dụng đúng:
+- [HomeTopBar (HomeScreen.kt:108-140)](../../../feature/home/src/commonMain/kotlin/me/matsumo/grabee/feature/home/HomeScreen.kt#L108-L140) — M3 `CenterAlignedTopAppBar`.
+- [SettingTopAppBar](../../../feature/setting/src/commonMain/kotlin/me/matsumo/grabee/feature/setting/components/SettingTopAppBar.kt) — M3 `CenterAlignedTopAppBar`.
+- [UnitTopBar (UnitSelectionScreen.kt)](../../../feature/learningpath/src/commonMain/kotlin/me/matsumo/grabee/feature/learningpath/UnitSelectionScreen.kt) — M3 `CenterAlignedTopAppBar` (sau khi sửa từ custom Row gây lỗi status bar overlay).
+- [OnboardingTopBar](../../../feature/onboarding/src/commonMain/kotlin/me/matsumo/grabee/feature/onboarding/components/OnboardingPage.kt) — custom `Box` + `.statusBarsPadding()`.
 
 ### Khi nào an toàn (tự động handle)
 
 - **`Scaffold` + Material3 `TopAppBar` / `CenterAlignedTopAppBar`**: top app bar đã có `windowInsets = TopAppBarDefaults.windowInsets` mặc định → tự pad status bar.
 - **`Scaffold` body** (`innerPadding`): nếu không có `bottomBar`, nav-bar inset được đưa vào `innerPadding` → `.padding(innerPadding)` trên body là đủ.
-- Reference: [SettingTopAppBar.kt](../../../feature/setting/src/commonMain/kotlin/me/matsumo/grabee/feature/setting/components/SettingTopAppBar.kt) dùng `CenterAlignedTopAppBar` — không cần animate thêm.
 
 ### Khi nào phải tự thêm inset padding
 

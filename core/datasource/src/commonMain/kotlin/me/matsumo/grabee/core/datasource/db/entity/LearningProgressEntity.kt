@@ -1,0 +1,16 @@
+package me.matsumo.grabee.core.datasource.db.entity
+
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity(tableName = "learning_progress")
+data class LearningProgressEntity(
+    @PrimaryKey val id: Int = SINGLETON_ID,
+    val activeLevelId: String,
+    val activeUnitId: String,
+    val unitProgressPercent: Int,
+) {
+    companion object {
+        const val SINGLETON_ID = 0
+    }
+}

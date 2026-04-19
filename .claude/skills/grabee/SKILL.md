@@ -188,6 +188,24 @@ Access in composables: `val viewModel: XyzViewModel = koinViewModel()`
 ❌ Never add Room/KSP to a feature module — only `core:datasource`
 ❌ Never depend on another `feature:*` from a feature module
 ❌ Never hardcode user-facing strings — use `core:resource`
+❌ Never build a custom top/bottom bar without window insets — MUST dùng Material 3 `TopAppBar`/`CenterAlignedTopAppBar` (auto insets) HOẶC apply `.statusBarsPadding()`/`.navigationBarsPadding()` trên root modifier. App bật `enableEdgeToEdge()` → custom bar sẽ bị status/nav bar đè nếu quên. Xem [compose.md §Edge-to-edge](references/compose.md).
+
+## Edge Case Coverage (MUST-THINK trước khi nói "done")
+
+Trước khi commit feature mới, liệt kê + handle 6 nhóm sau:
+
+1. **Empty/null input** — collection rỗng, field null, user chưa set (nickname, avatar, progress = 0 unit).
+2. **Boundary number** — 0, 1, max, overflow (score, star count, progress %, divide-by-zero).
+3. **Network** — offline, timeout, 5xx, malformed JSON response (Gemini STT, Firestore sync).
+4. **Concurrency** — rotate screen, user spam tap, coroutine cancel giữa chừng (recorder leak mic).
+5. **Permission/state** — mic denied, storage full, Room migration failed, DataStore chưa init.
+6. **Locale/time** — timezone, date format, Vietnamese diacritics, long strings overflow UI.
+
+Rule áp dụng:
+- Case KHÔNG thể manual-test (parse JSON lạ, race condition, boundary math) → viết unit test (xem [testing.md](references/testing.md)).
+- Case manual-test được (UI layout, navigation) → smoke test đủ.
+- Case hiếm + crash OK (OOM, disk full) → document ngắn trong code comment với lý do.
+- Không bỏ qua case — nếu không handle, phải ghi `// Edge case X: N/A vì Y` trong code.
 
 ## References
 

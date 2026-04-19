@@ -116,6 +116,11 @@ internal fun XyzScreen(
 }
 ```
 
+**⚠️ Top/bottom bar safety (MUST):**
+- Top bar: dùng Material 3 `CenterAlignedTopAppBar` hoặc `TopAppBar`. Nếu BẮT BUỘC custom (`Box`/`Row`), MUST apply `.statusBarsPadding()` trên root modifier.
+- Bottom bar: tương tự, apply `.navigationBarsPadding()`.
+- Lý do: app bật `enableEdgeToEdge()` trong `MainActivity` → không có inset tự động. Xem ví dụ an toàn trong [compose.md §Edge-to-edge](compose.md).
+
 ---
 
 ## Step 7 — Write the Navigation Entry
@@ -216,3 +221,5 @@ commonMain.dependencies {
 - [ ] `xyzModule` added to `Koin.kt`
 - [ ] `xyzEntry()` added to `AppNavHost.kt`
 - [ ] `project(":feature:xyz")` added to `composeApp/build.gradle.kts`
+- [ ] Top/bottom bar: M3 `TopAppBar`/`CenterAlignedTopAppBar` HOẶC custom + `.statusBarsPadding()` / `.navigationBarsPadding()` (xem [compose.md §Edge-to-edge](compose.md))
+- [ ] Edge case: liệt kê 6 nhóm (empty/null, boundary, network, concurrency, permission, locale/time) — handle hoặc ghi rõ `// Edge case X: N/A vì Y`. Xem [SKILL.md §Edge Case Coverage](../SKILL.md).

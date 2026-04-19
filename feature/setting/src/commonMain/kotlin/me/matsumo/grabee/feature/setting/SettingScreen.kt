@@ -27,12 +27,15 @@ internal fun SettingScreen(
     val uriHandler = LocalUriHandler.current
     val setting by viewModel.setting.collectAsStateWithLifecycle()
 
+    val isRootTab = navBackStack.size <= 1
+
     Scaffold(
         modifier = modifier,
         topBar = {
             SettingTopAppBar(
                 onBackClicked = { navBackStack.removeAt(navBackStack.size - 1) },
                 modifier = Modifier,
+                showBackButton = !isRootTab,
             )
         },
     ) {

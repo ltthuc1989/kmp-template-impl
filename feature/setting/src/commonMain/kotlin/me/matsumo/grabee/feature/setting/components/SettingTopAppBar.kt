@@ -19,6 +19,7 @@ import org.jetbrains.compose.resources.stringResource
 internal fun SettingTopAppBar(
     onBackClicked: () -> Unit,
     modifier: Modifier = Modifier,
+    showBackButton: Boolean = true,
 ) {
     CenterAlignedTopAppBar(
         modifier = modifier,
@@ -26,11 +27,13 @@ internal fun SettingTopAppBar(
             Text(stringResource(Res.string.setting_title))
         },
         navigationIcon = {
-            IconButton(onBackClicked) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Default.ArrowBack,
-                    contentDescription = null,
-                )
+            if (showBackButton) {
+                IconButton(onBackClicked) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Default.ArrowBack,
+                        contentDescription = null,
+                    )
+                }
             }
         },
     )
