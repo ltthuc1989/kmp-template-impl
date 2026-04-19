@@ -177,6 +177,20 @@
     <string name="paywall_error_purchase_failed">購入処理に失敗しました。</string>
     <string name="paywall_error_no_subscription_to_restore">復元可能な購入情報が見つかりませんでした。</string>
 
+    <!-- Learning Path: Sound Intro step -->
+    <string name="sound_intro_title">音の紹介</string>
+    <string name="sound_intro_word_example">%1$s のように</string>
+    <string name="sound_intro_listen">音を聞く</string>
+    <string name="sound_intro_can_you_say">「%1$s」と言ってみよう！</string>
+    <string name="sound_intro_instruction">口を大きく開けて音を出してみよう！</string>
+    <string name="sound_intro_next_lesson">次のレッスン</string>
+
+    <!-- Learning Path: Chant step -->
+    <string name="chant_title">チャント</string>
+    <string name="chant_instruction">音に合わせて繰り返そう！</string>
+    <string name="chant_previous">戻る</string>
+    <string name="chant_next">次へ</string>
+
     <!-- Onboarding -->
     <string name="onboarding_title">英語を学ぼう</string>
     <string name="onboarding_get_started">はじめる</string>

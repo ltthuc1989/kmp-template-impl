@@ -8,7 +8,9 @@
       "Edit(/.claude/skills/grabee/**)",
       "Bash(xargs ls *)",
       "Bash(./gradlew :feature:learningpath:compileDebugKotlinAndroid)",
-      "Bash(./gradlew :feature:learningpath:detekt --auto-correct --continue)"
+      "Bash(./gradlew :feature:learningpath:detekt --auto-correct --continue)",
+      "Bash(./gradlew :feature:learningpath:compileDebugKotlinAndroid --rerun-tasks)",
+      "Bash(./gradlew :core:resource:compileDebugKotlinAndroid --rerun-tasks)"
     ],
     "additionalDirectories": [
       "/tmp"

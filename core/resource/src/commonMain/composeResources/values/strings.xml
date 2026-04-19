@@ -177,6 +177,20 @@
     <string name="paywall_error_purchase_failed">Purchase failed.</string>
     <string name="paywall_error_no_subscription_to_restore">No restorable purchases found.</string>
 
+    <!-- Learning Path: Sound Intro step -->
+    <string name="sound_intro_title">Sound Intro</string>
+    <string name="sound_intro_word_example">as in %1$s</string>
+    <string name="sound_intro_listen">Listen to Sound</string>
+    <string name="sound_intro_can_you_say">Can you say \"%1$s\"?</string>
+    <string name="sound_intro_instruction">Open your mouth wide and make the sound!</string>
+    <string name="sound_intro_next_lesson">Next Lesson</string>
+
+    <!-- Learning Path: Chant step -->
+    <string name="chant_title">Chant</string>
+    <string name="chant_instruction">Repeat after the sound!</string>
+    <string name="chant_previous">Previous</string>
+    <string name="chant_next">Next</string>
+
     <!-- Onboarding -->
     <string name="onboarding_title">Learn English</string>
     <string name="onboarding_get_started">Get Started</string>

@@ -112,6 +112,7 @@ internal fun UnitSelectionScreen(
                             Destination.Learning.Step(
                                 levelId = levelId,
                                 unitId = card.unit.id,
+                                wordIndex = 0,
                                 stepIndex = 0,
                             ),
                         )

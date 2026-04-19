@@ -1,4 +1,4 @@
-package me.matsumo.grabee.feature.learningpath.step.soundintro
+package me.matsumo.grabee.feature.learningpath.step.chant
 
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
@@ -18,18 +18,18 @@ import me.matsumo.grabee.core.resource.error_network
 import me.matsumo.grabee.core.resource.error_no_data
 import me.matsumo.grabee.core.ui.screen.ScreenState
 
-internal class SoundIntroViewModel(
+internal class ChantViewModel(
     private val unitId: String,
     unitRepository: UnitRepository,
 ) : ViewModel() {
 
-    val screenState: StateFlow<ScreenState<SoundIntroUiState>> =
+    val screenState: StateFlow<ScreenState<ChantUiState>> =
         unitRepository.observeWords(unitId)
             .map { words ->
                 if (words.isEmpty()) {
                     ScreenState.Error(message = Res.string.error_no_data)
                 } else {
-                    ScreenState.Idle(SoundIntroUiState(words = words.toImmutableList()))
+                    ScreenState.Idle(ChantUiState(words = words.toImmutableList()))
                 }
             }
             .catch { throwable ->
@@ -43,12 +43,12 @@ internal class SoundIntroViewModel(
             )
 
     private companion object {
-        const val TAG = "SoundIntroViewModel"
+        const val TAG = "ChantViewModel"
         const val SUBSCRIPTION_TIMEOUT_MS = 5_000L
     }
 }
 
 @Immutable
-internal data class SoundIntroUiState(
+internal data class ChantUiState(
     val words: ImmutableList<Word>,
 )

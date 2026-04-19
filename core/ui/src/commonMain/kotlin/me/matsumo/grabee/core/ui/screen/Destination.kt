@@ -31,6 +31,7 @@ sealed interface Destination : NavKey {
         data class Step(
             val levelId: String,
             val unitId: String,
+            val wordIndex: Int,
             val stepIndex: Int,
         ) : Learning
 
