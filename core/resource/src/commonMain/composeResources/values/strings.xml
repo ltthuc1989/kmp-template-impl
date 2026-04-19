@@ -191,6 +191,21 @@
     <string name="chant_previous">Previous</string>
     <string name="chant_next">Next</string>
 
+    <!-- Learning Path: Vocabulary step -->
+    <string name="vocabulary_title">Vocabulary</string>
+    <string name="vocabulary_listen_cd">Listen</string>
+    <string name="vocabulary_mic_cd">Record your voice</string>
+    <string name="vocabulary_previous_cd">Previous word</string>
+    <string name="vocabulary_next_cd">Next word</string>
+
+    <!-- Score feedback (reusable across step screens) -->
+    <string name="score_success_title">Great Job!</string>
+    <string name="score_success_subtitle">You pronounced it perfectly!</string>
+    <string name="score_success_primary">Keep Going!</string>
+    <string name="score_fail_title">Oops!</string>
+    <string name="score_fail_subtitle">Don\'t worry, you can do it!</string>
+    <string name="score_fail_primary">Retry</string>
+
     <!-- Onboarding -->
     <string name="onboarding_title">Learn English</string>
     <string name="onboarding_get_started">Get Started</string>

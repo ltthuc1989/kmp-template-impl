@@ -1,5 +1,6 @@
 package me.matsumo.grabee.core.datasource.db.entity
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
@@ -27,4 +28,6 @@ data class WordEntity(
     val wordAudioAsset: String?,
     val sentenceAudioAsset: String?,
     val orderIndex: Int,
+    @ColumnInfo(defaultValue = "'[]'")
+    val vocabularyJson: String = "[]",
 )

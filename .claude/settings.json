@@ -10,7 +10,8 @@
       "Bash(./gradlew :feature:learningpath:compileDebugKotlinAndroid)",
       "Bash(./gradlew :feature:learningpath:detekt --auto-correct --continue)",
       "Bash(./gradlew :feature:learningpath:compileDebugKotlinAndroid --rerun-tasks)",
-      "Bash(./gradlew :core:resource:compileDebugKotlinAndroid --rerun-tasks)"
+      "Bash(./gradlew :core:resource:compileDebugKotlinAndroid --rerun-tasks)",
+      "Bash(xargs cat *)"
     ],
     "additionalDirectories": [
       "/tmp"

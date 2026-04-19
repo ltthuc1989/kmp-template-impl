@@ -191,6 +191,21 @@
     <string name="chant_previous">戻る</string>
     <string name="chant_next">次へ</string>
 
+    <!-- Learning Path: Vocabulary step -->
+    <string name="vocabulary_title">単語</string>
+    <string name="vocabulary_listen_cd">聞く</string>
+    <string name="vocabulary_mic_cd">声を録音</string>
+    <string name="vocabulary_previous_cd">前の単語</string>
+    <string name="vocabulary_next_cd">次の単語</string>
+
+    <!-- Score feedback (reusable across step screens) -->
+    <string name="score_success_title">素晴らしい！</string>
+    <string name="score_success_subtitle">完璧に発音できました！</string>
+    <string name="score_success_primary">続ける！</string>
+    <string name="score_fail_title">おっと！</string>
+    <string name="score_fail_subtitle">大丈夫、できるよ！</string>
+    <string name="score_fail_primary">もう一度</string>
+
     <!-- Onboarding -->
     <string name="onboarding_title">英語を学ぼう</string>
     <string name="onboarding_get_started">はじめる</string>

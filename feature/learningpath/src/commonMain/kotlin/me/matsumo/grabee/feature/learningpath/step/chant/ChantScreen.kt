@@ -8,22 +8,17 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material3.Icon
@@ -60,6 +55,7 @@ import me.matsumo.grabee.core.ui.screen.AsyncLoadContents
 import me.matsumo.grabee.feature.learningpath.step.common.LetterStepperBar
 import me.matsumo.grabee.feature.learningpath.step.common.PuffySurface
 import me.matsumo.grabee.feature.learningpath.step.common.StepHeader
+import me.matsumo.grabee.feature.learningpath.step.common.StepNavRow
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -142,7 +138,12 @@ private fun ChantContent(
                 },
             )
             Spacer(Modifier.height(16.dp))
-            NavRow(onPrevious = onPrevious, onNext = onNext)
+            StepNavRow(
+                previousLabel = stringResource(Res.string.chant_previous),
+                nextLabel = stringResource(Res.string.chant_next),
+                onPrevious = onPrevious,
+                onNext = onNext,
+            )
             Spacer(Modifier.height(8.dp))
         }
     }
@@ -291,115 +292,6 @@ private fun PlayStopButton(
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onPrimary,
                 modifier = Modifier.size(36.dp),
-            )
-        }
-    }
-}
-
-@Composable
-private fun NavRow(onPrevious: () -> Unit, onNext: () -> Unit) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
-    ) {
-        PreviousButton(
-            onClick = onPrevious,
-            modifier = Modifier.weight(1f),
-        )
-        NextButton(
-            onClick = onNext,
-            modifier = Modifier.weight(1f),
-        )
-    }
-}
-
-@Composable
-private fun PreviousButton(
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val interaction = remember { MutableInteractionSource() }
-    PuffySurface(
-        modifier = modifier
-            .height(56.dp)
-            .clickable(
-                interactionSource = interaction,
-                indication = ripple(color = MaterialTheme.colorScheme.primary),
-                onClick = onClick,
-            ),
-        shape = CircleShape,
-        containerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
-        shadowElevation = 10.dp,
-        shadowTint = MaterialTheme.colorScheme.primary,
-        shadowAlpha = 0.25f,
-        topHighlightHeight = 8.dp,
-        topHighlightAlpha = 0.8f,
-        bottomShadeHeight = 8.dp,
-        bottomShadeAlpha = 0.08f,
-    ) {
-        Row(
-            modifier = Modifier.fillMaxSize(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center,
-        ) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(20.dp),
-            )
-            Spacer(Modifier.width(8.dp))
-            Text(
-                text = stringResource(Res.string.chant_previous),
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary,
-            )
-        }
-    }
-}
-
-@Composable
-private fun NextButton(
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val interaction = remember { MutableInteractionSource() }
-    PuffySurface(
-        modifier = modifier
-            .height(56.dp)
-            .clickable(
-                interactionSource = interaction,
-                indication = ripple(color = MaterialTheme.colorScheme.onPrimary),
-                onClick = onClick,
-            ),
-        shape = CircleShape,
-        containerColor = MaterialTheme.colorScheme.primary,
-        shadowElevation = 14.dp,
-        shadowTint = MaterialTheme.colorScheme.primary,
-        shadowAlpha = 0.55f,
-        topHighlightHeight = 10.dp,
-        topHighlightAlpha = 0.3f,
-        bottomShadeHeight = 10.dp,
-        bottomShadeAlpha = 0.30f,
-    ) {
-        Row(
-            modifier = Modifier.fillMaxSize(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center,
-        ) {
-            Text(
-                text = stringResource(Res.string.chant_next),
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onPrimary,
-            )
-            Spacer(Modifier.width(8.dp))
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onPrimary,
-                modifier = Modifier.size(20.dp),
             )
         }
     }

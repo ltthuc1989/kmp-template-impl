@@ -10,4 +10,5 @@ data class Word(
     val wordAudioAsset: String?,
     val sentenceAudioAsset: String?,
     val orderIndex: Int,
+    val vocabulary: List<VocabularyItem> = emptyList(),
 )

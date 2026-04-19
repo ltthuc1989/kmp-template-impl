@@ -1,11 +1,13 @@
 package me.matsumo.grabee.core.datasource.db
 
 import io.github.aakira.napier.Napier
+import kotlinx.serialization.json.Json
 import me.matsumo.grabee.core.datasource.db.entity.LearningProgressEntity
 import me.matsumo.grabee.core.datasource.db.entity.LevelEntity
 import me.matsumo.grabee.core.datasource.db.entity.UnitEntity
 import me.matsumo.grabee.core.datasource.db.entity.UserProgressEntity
 import me.matsumo.grabee.core.datasource.db.entity.WordEntity
+import me.matsumo.grabee.core.model.VocabularyItem
 
 class DatabaseSeeder(private val database: GrabeeDatabase) {
 
@@ -26,6 +28,8 @@ class DatabaseSeeder(private val database: GrabeeDatabase) {
 
     private companion object {
         const val TAG = "DatabaseSeeder"
+
+        private val seedJson = Json { ignoreUnknownKeys = true }
 
         val SEED_LEVELS = listOf(
             LevelEntity("level-1", 1, "The Alphabet", 8, isPremium = false, orderIndex = 0),
@@ -48,9 +52,42 @@ class DatabaseSeeder(private val database: GrabeeDatabase) {
 
         val SEED_WORDS = listOf(
             // Unit 1: Aa Bb Cc
-            word("level-1-unit-1", "apple", "/æ/", "\uD83C\uDF4E", 0),
-            word("level-1-unit-1", "bear", "/b/", "\uD83D\uDC3B", 1),
-            word("level-1-unit-1", "cat", "/k/", "\uD83D\uDC31", 2),
+            word(
+                unitId = "level-1-unit-1",
+                text = "apple",
+                phoneme = "/æ/",
+                emoji = "\uD83C\uDF4E",
+                orderIndex = 0,
+                vocabulary = listOf(
+                    VocabularyItem(text = "Apple", emoji = "\uD83C\uDF4E", orderIndex = 0),
+                    VocabularyItem(text = "Ant", emoji = "\uD83D\uDC1C", orderIndex = 1),
+                    VocabularyItem(text = "Airplane", emoji = "✈\uFE0F", orderIndex = 2),
+                ),
+            ),
+            word(
+                unitId = "level-1-unit-1",
+                text = "bear",
+                phoneme = "/b/",
+                emoji = "\uD83D\uDC3B",
+                orderIndex = 1,
+                vocabulary = listOf(
+                    VocabularyItem(text = "Bear", emoji = "\uD83D\uDC3B", orderIndex = 0),
+                    VocabularyItem(text = "Ball", emoji = "⚽", orderIndex = 1),
+                    VocabularyItem(text = "Banana", emoji = "\uD83C\uDF4C", orderIndex = 2),
+                ),
+            ),
+            word(
+                unitId = "level-1-unit-1",
+                text = "cat",
+                phoneme = "/k/",
+                emoji = "\uD83D\uDC31",
+                orderIndex = 2,
+                vocabulary = listOf(
+                    VocabularyItem(text = "Cat", emoji = "\uD83D\uDC31", orderIndex = 0),
+                    VocabularyItem(text = "Car", emoji = "\uD83D\uDE97", orderIndex = 1),
+                    VocabularyItem(text = "Cake", emoji = "\uD83C\uDF82", orderIndex = 2),
+                ),
+            ),
             // Unit 2: Dd Ee Ff
             word("level-1-unit-2", "dog", "/d/", "\uD83D\uDC36", 0),
             word("level-1-unit-2", "egg", "/ɛ/", "\uD83E\uDD5A", 1),
@@ -103,6 +140,7 @@ class DatabaseSeeder(private val database: GrabeeDatabase) {
             phoneme: String,
             emoji: String,
             orderIndex: Int,
+            vocabulary: List<VocabularyItem> = emptyList(),
         ) = WordEntity(
             id = "$unitId-$text",
             unitId = unitId,
@@ -113,6 +151,7 @@ class DatabaseSeeder(private val database: GrabeeDatabase) {
             wordAudioAsset = null,
             sentenceAudioAsset = null,
             orderIndex = orderIndex,
+            vocabularyJson = if (vocabulary.isEmpty()) "[]" else seedJson.encodeToString(vocabulary),
         )
     }
 }

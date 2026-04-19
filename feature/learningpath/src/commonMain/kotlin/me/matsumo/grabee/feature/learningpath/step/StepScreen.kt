@@ -25,6 +25,7 @@ import me.matsumo.grabee.core.ui.screen.Destination
 import me.matsumo.grabee.core.ui.theme.LocalNavBackStack
 import me.matsumo.grabee.feature.learningpath.step.chant.ChantScreen
 import me.matsumo.grabee.feature.learningpath.step.soundintro.SoundIntroScreen
+import me.matsumo.grabee.feature.learningpath.step.vocabulary.VocabularyScreen
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -69,6 +70,14 @@ internal fun StepScreen(
             modifier = modifier,
         )
         1 -> ChantScreen(
+            unitId = unitId,
+            wordIndex = wordIndex,
+            onClose = onClose,
+            onPrevious = onPrevious,
+            onNext = onNext,
+            modifier = modifier,
+        )
+        2 -> VocabularyScreen(
             unitId = unitId,
             wordIndex = wordIndex,
             onClose = onClose,
