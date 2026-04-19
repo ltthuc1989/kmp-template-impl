@@ -10,6 +10,7 @@ data class AppSetting(
     val plusMode: Boolean,
     val developerMode: Boolean,
     val hasSeenOnboarding: Boolean,
+    val practiceRoundMultiplier: Float = 1f,
 ) {
     val hasPrivilege get() = plusMode || developerMode
 
@@ -21,6 +22,7 @@ data class AppSetting(
             plusMode = false,
             developerMode = false,
             hasSeenOnboarding = false,
+            practiceRoundMultiplier = 1f,
         )
     }
 }

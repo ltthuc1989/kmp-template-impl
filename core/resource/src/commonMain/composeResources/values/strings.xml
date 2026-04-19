@@ -198,6 +198,15 @@
     <string name="vocabulary_previous_cd">Previous word</string>
     <string name="vocabulary_next_cd">Next word</string>
 
+    <!-- Learning Path: Identify step -->
+    <string name="identify_title">Identify</string>
+    <string name="identify_instruction">Find the matching picture!</string>
+    <string name="identify_listen_cd">Listen to word</string>
+    <string name="identify_round_progress">Round %1$d of %2$d</string>
+    <string name="identify_all_done_title">Great Job!</string>
+    <string name="identify_all_done_subtitle">You found all %1$d words!</string>
+    <string name="identify_all_done_soft_subtitle">Almost — keep practicing!</string>
+
     <!-- Score feedback (reusable across step screens) -->
     <string name="score_success_title">Great Job!</string>
     <string name="score_success_subtitle">You pronounced it perfectly!</string>

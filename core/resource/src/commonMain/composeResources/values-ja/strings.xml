@@ -198,6 +198,15 @@
     <string name="vocabulary_previous_cd">前の単語</string>
     <string name="vocabulary_next_cd">次の単語</string>
 
+    <!-- Learning Path: Identify step -->
+    <string name="identify_title">見つけよう</string>
+    <string name="identify_instruction">合う絵を見つけよう！</string>
+    <string name="identify_listen_cd">単語を聞く</string>
+    <string name="identify_round_progress">ラウンド %1$d / %2$d</string>
+    <string name="identify_all_done_title">素晴らしい！</string>
+    <string name="identify_all_done_subtitle">%1$d 個すべて見つけられたね！</string>
+    <string name="identify_all_done_soft_subtitle">もう少し！練習を続けよう！</string>
+
     <!-- Score feedback (reusable across step screens) -->
     <string name="score_success_title">素晴らしい！</string>
     <string name="score_success_subtitle">完璧に発音できました！</string>
