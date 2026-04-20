@@ -41,6 +41,9 @@ sealed interface Destination : NavKey {
             val unitId: String,
             val starsEarned: Int,
         ) : Learning
+
+        @Serializable
+        data object TracingGuideDebug : Learning
     }
 
     @Serializable
@@ -66,6 +69,7 @@ sealed interface Destination : NavKey {
                     subclass(Learning.UnitSelection::class, Learning.UnitSelection.serializer())
                     subclass(Learning.Step::class, Learning.Step.serializer())
                     subclass(Learning.UnitComplete::class, Learning.UnitComplete.serializer())
+                    subclass(Learning.TracingGuideDebug::class, Learning.TracingGuideDebug.serializer())
                     subclass(Review::class, Review.serializer())
                     subclass(Setting.Root::class, Setting.Root.serializer())
                     subclass(Setting.License::class, Setting.License.serializer())

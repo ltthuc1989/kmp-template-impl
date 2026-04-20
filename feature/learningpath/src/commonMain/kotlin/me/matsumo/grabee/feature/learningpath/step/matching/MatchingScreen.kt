@@ -132,7 +132,6 @@ private fun MatchingContent(
     // Validated correct pairings (locked, can't redo).
     val validatedMatches = remember(currentWord.id) { mutableStateMapOf<String, String>() }
     var wrongFlashTexts by remember(currentWord.id) { mutableStateOf(emptySet<String>()) }
-    var dragLine by remember(currentWord.id) { mutableStateOf<DragLine?>(null) }
     var finalOverlay by remember(currentWord.id) { mutableStateOf<ScoreFeedback?>(null) }
 
     val allDoneTitle = stringResource(Res.string.identify_all_done_title)
@@ -212,10 +211,8 @@ private fun MatchingContent(
                     pendingMatches = pendingMatches,
                     validatedMatches = validatedMatches,
                     wrongFlashTexts = wrongFlashTexts,
-                    dragLine = dragLine,
                     leftDotPositions = leftDotPositions,
                     rightDotPositions = rightDotPositions,
-                    onDragLineChange = { line -> dragLine = line },
                     onPendingMatch = { leftText, rightText ->
                         pendingMatches[leftText] = rightText
                     },
@@ -284,7 +281,7 @@ private fun HintPill() {
     }
 }
 
-@Suppress("LongParameterList")
+@Suppress("LongParameterList", "MutableParams", "UnstableCollections")
 @Composable
 private fun MatchingArea(
     wordKey: String,
@@ -293,10 +290,8 @@ private fun MatchingArea(
     pendingMatches: Map<String, String>,
     validatedMatches: Map<String, String>,
     wrongFlashTexts: Set<String>,
-    dragLine: DragLine?,
     leftDotPositions: MutableMap<String, Offset>,
     rightDotPositions: MutableMap<String, Offset>,
-    onDragLineChange: (DragLine?) -> Unit,
     onPendingMatch: (String, String) -> Unit,
     isLocked: (String) -> Boolean,
     modifier: Modifier = Modifier,
@@ -306,6 +301,8 @@ private fun MatchingArea(
     val errorColor = MaterialTheme.colorScheme.error
     val dashEffect = remember { PathEffect.dashPathEffect(floatArrayOf(14f, 10f), 0f) }
     var boxWindowOrigin by remember { mutableStateOf(Offset.Zero) }
+    // Local drag state — must stay inside composable so pointerInput closures read fresh value.
+    var dragLine by remember(wordKey) { mutableStateOf<DragLine?>(null) }
 
     Box(
         modifier = modifier
@@ -320,17 +317,15 @@ private fun MatchingArea(
                             (it.value - offset).distance() <= DOT_HIT_RADIUS_PX
                         } ?: return@detectDragGestures
                         if (isLocked(hit.key)) return@detectDragGestures
-                        onDragLineChange(
-                            DragLine(
-                                fromLeftText = hit.key,
-                                start = hit.value,
-                                end = offset,
-                            ),
+                        dragLine = DragLine(
+                            fromLeftText = hit.key,
+                            start = hit.value,
+                            end = offset,
                         )
                     },
                     onDrag = { change, _ ->
                         val current = dragLine ?: return@detectDragGestures
-                        onDragLineChange(current.copy(end = change.position))
+                        dragLine = current.copy(end = change.position)
                     },
                     onDragEnd = {
                         val line = dragLine ?: return@detectDragGestures
@@ -340,9 +335,9 @@ private fun MatchingArea(
                         if (hitRight != null) {
                             onPendingMatch(line.fromLeftText, hitRight.key)
                         }
-                        onDragLineChange(null)
+                        dragLine = null
                     },
-                    onDragCancel = { onDragLineChange(null) },
+                    onDragCancel = { dragLine = null },
                 )
             },
     ) {
@@ -404,7 +399,7 @@ private fun MatchingArea(
     }
 }
 
-@Suppress("LongParameterList")
+@Suppress("LongParameterList", "MutableParams", "UnstableCollections")
 @Composable
 private fun MatchingRows(
     leftItems: ImmutableList<VocabularyItem>,

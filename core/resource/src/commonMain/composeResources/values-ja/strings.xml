@@ -216,6 +216,15 @@
     <string name="matching_hint">線を引いて合わせよう！</string>
     <string name="matching_check_button">確認</string>
 
+    <!-- Tracing (step 6) -->
+    <string name="tracing_title">なぞる</string>
+    <string name="tracing_instruction">もじを なぞろう！</string>
+    <string name="tracing_draw_here">ここに かこう</string>
+    <string name="tracing_case_upper">ABC</string>
+    <string name="tracing_case_lower">abc</string>
+    <string name="tracing_success_subtitle">%1$d%% できたよ！すごい！</string>
+    <string name="tracing_fail_subtitle">もういちど せんを なぞってみよう！</string>
+
     <!-- Score feedback (reusable across step screens) -->
     <string name="score_success_title">素晴らしい！</string>
     <string name="score_success_subtitle">完璧に発音できました！</string>

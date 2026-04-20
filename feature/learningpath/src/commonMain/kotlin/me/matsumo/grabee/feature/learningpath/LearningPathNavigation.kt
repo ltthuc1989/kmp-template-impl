@@ -5,7 +5,9 @@ import androidx.compose.ui.Modifier
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 import me.matsumo.grabee.core.ui.screen.Destination
+import me.matsumo.grabee.core.ui.theme.LocalNavBackStack
 import me.matsumo.grabee.feature.learningpath.step.StepScreen
+import me.matsumo.grabee.feature.learningpath.step.tracing.LetterGuideDebugScreen
 
 fun EntryProviderScope<NavKey>.learningEntry() {
     entry<Destination.Learning.UnitSelection> { dest ->
@@ -28,6 +30,13 @@ fun EntryProviderScope<NavKey>.learningEntry() {
             levelId = dest.levelId,
             unitId = dest.unitId,
             starsEarned = dest.starsEarned,
+            modifier = Modifier.fillMaxSize(),
+        )
+    }
+    entry<Destination.Learning.TracingGuideDebug> {
+        val navBackStack = LocalNavBackStack.current
+        LetterGuideDebugScreen(
+            onBack = { navBackStack.removeAt(navBackStack.lastIndex) },
             modifier = Modifier.fillMaxSize(),
         )
     }

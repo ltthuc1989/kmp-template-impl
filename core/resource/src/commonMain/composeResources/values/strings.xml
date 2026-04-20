@@ -216,6 +216,15 @@
     <string name="matching_hint">Drag the line to match!</string>
     <string name="matching_check_button">Check</string>
 
+    <!-- Tracing (step 6) -->
+    <string name="tracing_title">Tracing</string>
+    <string name="tracing_instruction">Trace the letter!</string>
+    <string name="tracing_draw_here">Draw here</string>
+    <string name="tracing_case_upper">ABC</string>
+    <string name="tracing_case_lower">abc</string>
+    <string name="tracing_success_subtitle">You got %1$d%% — great job!</string>
+    <string name="tracing_fail_subtitle">Not quite — try to follow the lines!</string>
+
     <!-- Score feedback (reusable across step screens) -->
     <string name="score_success_title">Great Job!</string>
     <string name="score_success_subtitle">You pronounced it perfectly!</string>

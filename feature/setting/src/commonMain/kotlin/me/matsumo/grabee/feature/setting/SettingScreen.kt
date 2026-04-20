@@ -82,6 +82,9 @@ internal fun SettingScreen(
                         navBackStack.add(Destination.Setting.License)
                     },
                     onDeveloperModeChanged = viewModel::setDeveloperMode,
+                    onLetterGuideDebugClicked = {
+                        navBackStack.add(Destination.Learning.TracingGuideDebug)
+                    },
                 )
             }
         }

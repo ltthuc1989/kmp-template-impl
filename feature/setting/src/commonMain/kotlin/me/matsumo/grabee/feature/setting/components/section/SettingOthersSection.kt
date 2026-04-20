@@ -30,6 +30,7 @@ internal fun SettingOthersSection(
     onPrivacyPolicyClicked: () -> Unit,
     onOpenSourceLicenseClicked: () -> Unit,
     onDeveloperModeChanged: (Boolean) -> Unit,
+    onLetterGuideDebugClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var isShowDeveloperModeDialog by remember { mutableStateOf(false) }
@@ -72,6 +73,15 @@ internal fun SettingOthersSection(
                 }
             },
         )
+
+        if (setting.developerMode) {
+            SettingTextItem(
+                modifier = Modifier.fillMaxWidth(),
+                title = "Letter guide QA",
+                description = "Visual review of all 52 Zaner-Bloser tracing guides",
+                onClick = onLetterGuideDebugClicked,
+            )
+        }
     }
 
     if (isShowDeveloperModeDialog) {
