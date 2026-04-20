@@ -216,6 +216,14 @@
     <string name="matching_hint">線を引いて合わせよう！</string>
     <string name="matching_check_button">確認</string>
 
+    <!-- Story (step 7) -->
+    <string name="story_title">おはなし</string>
+    <string name="story_letter_title">%1$s%2$s のおはなし</string>
+    <string name="story_page_sentence">%1$s は %2$s の %1$s！</string>
+    <string name="story_audio_cd">読み上げる</string>
+    <string name="story_previous_page_cd">前のページ</string>
+    <string name="story_next_page_cd">次のページ</string>
+
     <!-- Tracing (step 6) -->
     <string name="tracing_title">なぞる</string>
     <string name="tracing_instruction">もじを なぞろう！</string>

@@ -216,6 +216,14 @@
     <string name="matching_hint">Drag the line to match!</string>
     <string name="matching_check_button">Check</string>
 
+    <!-- Story (step 7) -->
+    <string name="story_title">Story</string>
+    <string name="story_letter_title">The %1$s%2$s Story</string>
+    <string name="story_page_sentence">%1$s is for %2$s!</string>
+    <string name="story_audio_cd">Play narration</string>
+    <string name="story_previous_page_cd">Previous page</string>
+    <string name="story_next_page_cd">Next page</string>
+
     <!-- Tracing (step 6) -->
     <string name="tracing_title">Tracing</string>
     <string name="tracing_instruction">Trace the letter!</string>

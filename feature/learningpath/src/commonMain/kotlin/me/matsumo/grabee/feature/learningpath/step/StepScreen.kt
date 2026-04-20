@@ -28,6 +28,7 @@ import me.matsumo.grabee.feature.learningpath.step.chant.ChantScreen
 import me.matsumo.grabee.feature.learningpath.step.identify.IdentifyScreen
 import me.matsumo.grabee.feature.learningpath.step.matching.MatchingScreen
 import me.matsumo.grabee.feature.learningpath.step.soundintro.SoundIntroScreen
+import me.matsumo.grabee.feature.learningpath.step.story.StoryScreen
 import me.matsumo.grabee.feature.learningpath.step.tracing.TracingScreen
 import me.matsumo.grabee.feature.learningpath.step.vocabulary.VocabularyScreen
 import org.koin.compose.viewmodel.koinViewModel
@@ -114,6 +115,14 @@ internal fun StepScreen(
             modifier = modifier,
         )
         6 -> TracingScreen(
+            unitId = unitId,
+            wordIndex = wordIndex,
+            onClose = onClose,
+            onPrevious = onPrevious,
+            onNext = onNext,
+            modifier = modifier,
+        )
+        7 -> StoryScreen(
             unitId = unitId,
             wordIndex = wordIndex,
             onClose = onClose,
