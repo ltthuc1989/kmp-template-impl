@@ -53,8 +53,7 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import me.matsumo.grabee.core.model.VocabularyItem
-import me.matsumo.grabee.core.model.Word
+import me.matsumo.grabee.core.model.PhonicsLesson
 import me.matsumo.grabee.core.resource.Res
 import me.matsumo.grabee.core.resource.blending_title
 import me.matsumo.grabee.core.resource.blending_word_progress
@@ -74,15 +73,18 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
+private const val STEP_INDEX = 4
+
 @Composable
 internal fun BlendingScreen(
     unitId: String,
-    wordIndex: Int,
+    lessonIndex: Int,
     onClose: () -> Unit,
     onPrevious: () -> Unit,
     onNext: () -> Unit,
+    onStepJump: (Int) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: BlendingViewModel = koinViewModel { parametersOf(unitId) },
+    viewModel: BlendingViewModel = koinViewModel(key = unitId) { parametersOf(unitId) },
 ) {
     val screenState by viewModel.screenState.collectAsStateWithLifecycle()
 
@@ -90,15 +92,15 @@ internal fun BlendingScreen(
         modifier = modifier.fillMaxSize(),
         screenState = screenState,
     ) { uiState ->
-        val safeIndex = wordIndex.coerceIn(0, uiState.words.lastIndex)
+        val safeIndex = lessonIndex.coerceIn(0, uiState.lessons.lastIndex)
         BlendingContent(
-            currentWord = uiState.words[safeIndex],
-            words = uiState.words,
+            currentLesson = uiState.lessons[safeIndex],
+            lessons = uiState.lessons,
             currentIndex = safeIndex,
-            totalWords = uiState.words.size,
             onClose = onClose,
             onPrevious = onPrevious,
             onNext = onNext,
+            onStepJump = onStepJump,
         )
     }
 }
@@ -107,24 +109,24 @@ private enum class BlendState { Initial, Blending, Complete }
 
 @Composable
 private fun BlendingContent(
-    currentWord: Word,
-    words: ImmutableList<Word>,
+    currentLesson: PhonicsLesson,
+    lessons: ImmutableList<PhonicsLesson>,
     currentIndex: Int,
-    totalWords: Int,
     onClose: () -> Unit,
     onPrevious: () -> Unit,
     onNext: () -> Unit,
+    onStepJump: (Int) -> Unit,
 ) {
-    val vocab = remember(currentWord.id) {
-        currentWord.vocabulary.ifEmpty { listOf(currentWord.toVocabItem()) }
+    val vocab = remember(currentLesson.id) {
+        currentLesson.words
     }
     val totalRounds = vocab.size
 
-    var roundIndex by remember(currentWord.id) { mutableStateOf(0) }
-    var blendState by remember(currentWord.id, roundIndex) { mutableStateOf(BlendState.Initial) }
-    var activeLetterIndex by remember(currentWord.id, roundIndex) { mutableStateOf(-1) }
-    var mascotBouncing by remember(currentWord.id, roundIndex) { mutableStateOf(false) }
-    var finalOverlay by remember(currentWord.id) { mutableStateOf<ScoreFeedback?>(null) }
+    var roundIndex by remember(currentLesson.id) { mutableStateOf(0) }
+    var blendState by remember(currentLesson.id, roundIndex) { mutableStateOf(BlendState.Initial) }
+    var activeLetterIndex by remember(currentLesson.id, roundIndex) { mutableStateOf(-1) }
+    var mascotBouncing by remember(currentLesson.id, roundIndex) { mutableStateOf(false) }
+    var finalOverlay by remember(currentLesson.id) { mutableStateOf<ScoreFeedback?>(null) }
 
     val currentVocab = vocab[roundIndex.coerceIn(0, vocab.lastIndex)]
     val letters = remember(currentVocab.text) {
@@ -177,14 +179,14 @@ private fun BlendingContent(
             topBar = {
                 StepHeader(
                     title = stringResource(Res.string.blending_title),
-                    currentIndex = currentIndex,
-                    totalWords = totalWords,
+                    currentStepIndex = STEP_INDEX,
                     onClose = onClose,
+                    onStepJump = onStepJump,
                 )
             },
             bottomBar = {
                 LetterStepperBar(
-                    words = words,
+                    lessons = lessons,
                     currentIndex = currentIndex,
                 )
             },
@@ -498,15 +500,6 @@ private fun CirclePlayButton(
         }
     }
 }
-
-// -------- Helpers --------
-
-private fun Word.toVocabItem(): VocabularyItem = VocabularyItem(
-    text = text.replaceFirstChar { it.uppercase() },
-    emoji = emoji,
-    imageAsset = imageAsset,
-    orderIndex = 0,
-)
 
 // -------- Constants --------
 

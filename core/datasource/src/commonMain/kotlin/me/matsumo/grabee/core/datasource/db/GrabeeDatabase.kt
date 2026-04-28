@@ -4,35 +4,33 @@ import androidx.room.ConstructedBy
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
-import androidx.room.TypeConverters
 import me.matsumo.grabee.core.datasource.db.dao.LearningProgressDao
 import me.matsumo.grabee.core.datasource.db.dao.LevelDao
+import me.matsumo.grabee.core.datasource.db.dao.PhonicsLessonDao
 import me.matsumo.grabee.core.datasource.db.dao.UnitDao
 import me.matsumo.grabee.core.datasource.db.dao.UserProgressDao
-import me.matsumo.grabee.core.datasource.db.dao.WordDao
 import me.matsumo.grabee.core.datasource.db.entity.LearningProgressEntity
 import me.matsumo.grabee.core.datasource.db.entity.LevelEntity
+import me.matsumo.grabee.core.datasource.db.entity.PhonicsLessonEntity
 import me.matsumo.grabee.core.datasource.db.entity.UnitEntity
 import me.matsumo.grabee.core.datasource.db.entity.UserProgressEntity
-import me.matsumo.grabee.core.datasource.db.entity.WordEntity
 
 @Database(
     entities = [
         LevelEntity::class,
         UnitEntity::class,
-        WordEntity::class,
+        PhonicsLessonEntity::class,
         LearningProgressEntity::class,
         UserProgressEntity::class,
     ],
-    version = 4,
+    version = 6,
     exportSchema = false,
 )
-@TypeConverters(VocabularyConverter::class)
 @ConstructedBy(GrabeeDatabaseConstructor::class)
 abstract class GrabeeDatabase : RoomDatabase() {
     abstract fun levelDao(): LevelDao
     abstract fun unitDao(): UnitDao
-    abstract fun wordDao(): WordDao
+    abstract fun phonicsLessonDao(): PhonicsLessonDao
     abstract fun learningProgressDao(): LearningProgressDao
     abstract fun userProgressDao(): UserProgressDao
 }

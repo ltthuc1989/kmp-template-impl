@@ -45,6 +45,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -60,12 +61,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.coroutines.launch
 import me.matsumo.grabee.core.model.UnitCard
 import me.matsumo.grabee.core.model.UnitStatus
+import me.matsumo.grabee.core.repository.LearningProgressRepository
 import me.matsumo.grabee.core.ui.screen.AsyncLoadContents
 import me.matsumo.grabee.core.ui.screen.Destination
 import me.matsumo.grabee.core.ui.screen.ScreenState
 import me.matsumo.grabee.core.ui.theme.LocalNavBackStack
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -81,10 +85,12 @@ private val LockedTextGray = Color(0xFF9AA3AF)
 internal fun UnitSelectionScreen(
     levelId: String,
     modifier: Modifier = Modifier,
-    viewModel: UnitSelectionViewModel = koinViewModel { parametersOf(levelId) },
+    viewModel: UnitSelectionViewModel = koinViewModel(key = levelId) { parametersOf(levelId) },
 ) {
     val screenState by viewModel.screenState.collectAsStateWithLifecycle()
     val navBackStack = LocalNavBackStack.current
+    val progressRepository: LearningProgressRepository = koinInject()
+    val scope = rememberCoroutineScope()
 
     Scaffold(
         modifier = modifier,
@@ -108,14 +114,29 @@ internal fun UnitSelectionScreen(
                 contentPadding = innerPadding,
                 onUnitClick = { card ->
                     if (card.status != UnitStatus.Locked) {
-                        navBackStack.add(
-                            Destination.Learning.Step(
-                                levelId = levelId,
-                                unitId = card.unit.id,
-                                wordIndex = 0,
-                                stepIndex = 0,
-                            ),
-                        )
+                        scope.launch {
+                            // Resume from saved position if the user last left this unit, else
+                            // start fresh at word 0 / step 0.
+                            val active = progressRepository.current()
+                            val startLesson = if (active?.activeUnitId == card.unit.id) {
+                                active.activeLessonIndex
+                            } else {
+                                0
+                            }
+                            val startStep = if (active?.activeUnitId == card.unit.id) {
+                                active.activeStepIndex
+                            } else {
+                                0
+                            }
+                            navBackStack.add(
+                                Destination.Learning.Step(
+                                    levelId = levelId,
+                                    unitId = card.unit.id,
+                                    lessonIndex = startLesson,
+                                    stepIndex = startStep,
+                                ),
+                            )
+                        }
                     }
                 },
             )
@@ -438,6 +459,10 @@ private fun UnitCardItem(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Column(modifier = Modifier.weight(1f)) {
+                card.unit.themeChip?.takeIf { !isLocked }?.let { theme ->
+                    ThemeChip(label = theme)
+                    Spacer(Modifier.height(4.dp))
+                }
                 Text(
                     text = card.unit.title,
                     fontSize = 16.sp,
@@ -447,7 +472,7 @@ private fun UnitCardItem(
                 if (!isLocked && card.previewEmojis.isNotEmpty()) {
                     Spacer(Modifier.height(4.dp))
                     Text(
-                        text = card.previewEmojis.joinToString(" "),
+                        text = card.previewEmojis.take(MAX_PREVIEW_EMOJIS).joinToString(" "),
                         fontSize = 20.sp,
                     )
                 }
@@ -477,6 +502,23 @@ private fun ActionIcon(status: UnitStatus) {
     }
 }
 
+@Composable
+private fun ThemeChip(label: String) {
+    androidx.compose.material3.SuggestionChip(
+        onClick = {},
+        enabled = false,
+        label = {
+            Text(
+                text = label,
+                fontSize = 11.sp,
+                fontWeight = FontWeight.SemiBold,
+            )
+        },
+        modifier = Modifier.height(24.dp),
+    )
+}
+
+private const val MAX_PREVIEW_EMOJIS = 4
 private val NodeSize = 64.dp
 private val NodeElevation = 8.dp
 private val TimelineColumnWidth = 80.dp

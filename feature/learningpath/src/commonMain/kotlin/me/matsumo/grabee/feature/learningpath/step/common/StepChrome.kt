@@ -1,5 +1,8 @@
 package me.matsumo.grabee.feature.learningpath.step.common
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -31,6 +34,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,22 +48,24 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.collections.immutable.ImmutableList
-import me.matsumo.grabee.core.model.Word
+import me.matsumo.grabee.core.model.PhonicsLesson
 import me.matsumo.grabee.core.resource.Res
 import me.matsumo.grabee.core.resource.common_close
 import org.jetbrains.compose.resources.stringResource
 
 /**
  * Shared top header for step screens (Sound Intro, Chant, Vocabulary, ...).
- * Fixed across all 8 steps of a letter — only `title`, `currentIndex`, `totalWords` updates per step/letter.
+ * Fixed across all 8 steps of a letter — `title` + step segments update per step.
+ * Tap a segment → `onStepJump(targetIndex)` to jump to that step within the same letter.
  */
 @Composable
 internal fun StepHeader(
     title: String,
-    currentIndex: Int,
-    totalWords: Int,
+    currentStepIndex: Int,
     onClose: () -> Unit,
+    onStepJump: (Int) -> Unit,
     modifier: Modifier = Modifier,
+    totalSteps: Int = 8,
     onAnalyticsClick: () -> Unit = {},
 ) {
     Row(
@@ -93,7 +99,11 @@ internal fun StepHeader(
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface,
             )
-            ProgressDots(currentIndex = currentIndex, total = totalWords)
+            StepSegmentRow(
+                currentStepIndex = currentStepIndex,
+                totalSteps = totalSteps,
+                onStepJump = onStepJump,
+            )
         }
         IconButton(
             onClick = onAnalyticsClick,
@@ -109,28 +119,113 @@ internal fun StepHeader(
 }
 
 @Composable
-private fun ProgressDots(currentIndex: Int, total: Int) {
+private fun StepSegmentRow(
+    currentStepIndex: Int,
+    totalSteps: Int,
+    onStepJump: (Int) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Row(
-        horizontalArrangement = Arrangement.spacedBy(6.dp),
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 4.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        repeat(total) { index ->
-            val isActive = index == currentIndex
+        repeat(totalSteps) { idx ->
+            StepSegment(
+                isCurrent = idx == currentStepIndex,
+                isPast = idx < currentStepIndex,
+                onClick = { if (idx != currentStepIndex) onStepJump(idx) },
+                modifier = Modifier.weight(1f),
+            )
+        }
+    }
+}
+
+@Composable
+private fun StepSegment(
+    isCurrent: Boolean,
+    isPast: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val primary = MaterialTheme.colorScheme.primary
+    val primaryContainer = MaterialTheme.colorScheme.primaryContainer
+
+    val targetColor by animateColorAsState(
+        targetValue = when {
+            isCurrent -> primary
+            isPast -> primary.copy(alpha = 0.65f)
+            else -> primaryContainer
+        },
+        animationSpec = tween(durationMillis = 500),
+        label = "segmentColor",
+    )
+    val targetHeight by animateDpAsState(
+        targetValue = if (isCurrent) 12.dp else 8.dp,
+        animationSpec = tween(durationMillis = 500),
+        label = "segmentHeight",
+    )
+    val ringPadding by animateDpAsState(
+        targetValue = if (isCurrent) 4.dp else 0.dp,
+        animationSpec = tween(durationMillis = 500),
+        label = "segmentRing",
+    )
+    val interaction = remember { MutableInteractionSource() }
+
+    Box(
+        modifier = modifier
+            .height(52.dp)
+            .clickable(
+                interactionSource = interaction,
+                indication = ripple(color = primary, bounded = true),
+                onClick = onClick,
+            ),
+        contentAlignment = Alignment.Center,
+    ) {
+        val ringWrapper = if (isCurrent) {
+            Modifier
+                .fillMaxWidth()
+                .shadow(
+                    elevation = 4.dp,
+                    shape = CircleShape,
+                    ambientColor = primary.copy(alpha = 0.30f),
+                    spotColor = primary.copy(alpha = 0.30f),
+                )
+                .clip(CircleShape)
+                .background(primaryContainer)
+                .padding(ringPadding)
+        } else {
+            Modifier.fillMaxWidth()
+        }
+        Box(
+            modifier = ringWrapper,
+            contentAlignment = Alignment.Center,
+        ) {
             Box(
                 modifier = Modifier
-                    .size(
-                        width = if (isActive) 20.dp else 8.dp,
-                        height = 8.dp,
+                    .fillMaxWidth()
+                    .height(targetHeight)
+                    .shadow(
+                        elevation = 1.dp,
+                        shape = CircleShape,
+                        ambientColor = Color.Black.copy(alpha = 0.05f),
+                        spotColor = Color.Black.copy(alpha = 0.05f),
                     )
                     .clip(CircleShape)
-                    .background(
-                        if (isActive) {
-                            MaterialTheme.colorScheme.primary
-                        } else {
-                            MaterialTheme.colorScheme.primaryContainer
-                        },
-                    ),
-            )
+                    .background(targetColor),
+                contentAlignment = Alignment.Center,
+            ) {
+                if (isPast) {
+                    Box(
+                        modifier = Modifier
+                            .size(4.dp)
+                            .clip(CircleShape)
+                            .background(Color.White.copy(alpha = 0.5f)),
+                    )
+                }
+            }
         }
     }
 }
@@ -141,7 +236,7 @@ private fun ProgressDots(currentIndex: Int, total: Int) {
  */
 @Composable
 internal fun LetterStepperBar(
-    words: ImmutableList<Word>,
+    lessons: ImmutableList<PhonicsLesson>,
     currentIndex: Int,
     modifier: Modifier = Modifier,
 ) {
@@ -169,14 +264,14 @@ internal fun LetterStepperBar(
                     .padding(horizontal = 20.dp, vertical = 16.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                words.forEachIndexed { index, word ->
+                lessons.forEachIndexed { index, lesson ->
                     val isDone = index < currentIndex
                     val isCurrent = index == currentIndex
                     StepperLetter(
-                        letterPair = word.letterPair(),
+                        letterPair = lesson.letterPair(),
                         isHighlighted = isDone || isCurrent,
                     )
-                    if (index < words.lastIndex) {
+                    if (index < lessons.lastIndex) {
                         StepperConnector(
                             isActive = isDone || isCurrent,
                             modifier = Modifier
@@ -311,10 +406,8 @@ internal fun PuffySurface(
     }
 }
 
-internal fun Word.letterPair(): String {
-    val char = text.firstOrNull() ?: return "?"
-    return "${char.uppercaseChar()}${char.lowercaseChar()}"
-}
+internal fun PhonicsLesson.letterPair(): String =
+    displayLetter.substringBefore(' ').ifEmpty { "?" }
 
 /**
  * Shared step navigation row (Previous + Next). Used by Chant, Vocabulary, ...

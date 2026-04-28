@@ -1,5 +1,9 @@
 package me.matsumo.grabee.feature.learningpath.step.soundintro
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -14,54 +18,58 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.collections.immutable.ImmutableList
-import me.matsumo.grabee.core.model.Word
+import kotlinx.coroutines.delay
+import me.matsumo.grabee.core.model.LessonWord
+import me.matsumo.grabee.core.model.PhonicsLesson
 import me.matsumo.grabee.core.resource.Res
-import me.matsumo.grabee.core.resource.sound_intro_can_you_say
-import me.matsumo.grabee.core.resource.sound_intro_instruction
 import me.matsumo.grabee.core.resource.sound_intro_listen
 import me.matsumo.grabee.core.resource.sound_intro_next_lesson
 import me.matsumo.grabee.core.resource.sound_intro_title
-import me.matsumo.grabee.core.resource.sound_intro_word_example
 import me.matsumo.grabee.core.ui.screen.AsyncLoadContents
+import me.matsumo.grabee.feature.learningpath.step.common.CircularAudioButton
 import me.matsumo.grabee.feature.learningpath.step.common.LetterStepperBar
+import me.matsumo.grabee.feature.learningpath.step.common.PageDotsRow
 import me.matsumo.grabee.feature.learningpath.step.common.PuffySurface
 import me.matsumo.grabee.feature.learningpath.step.common.StepHeader
+import me.matsumo.grabee.feature.learningpath.step.common.StoryStyleCard
 import me.matsumo.grabee.feature.learningpath.step.common.letterPair
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
+private const val STEP_INDEX = 0
+
 @Composable
 internal fun SoundIntroScreen(
     unitId: String,
-    wordIndex: Int,
+    lessonIndex: Int,
     onClose: () -> Unit,
     onNext: () -> Unit,
+    onStepJump: (Int) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: SoundIntroViewModel = koinViewModel { parametersOf(unitId) },
+    viewModel: SoundIntroViewModel = koinViewModel(key = unitId) { parametersOf(unitId) },
 ) {
     val screenState by viewModel.screenState.collectAsStateWithLifecycle()
 
@@ -69,42 +77,55 @@ internal fun SoundIntroScreen(
         modifier = modifier.fillMaxSize(),
         screenState = screenState,
     ) { uiState ->
-        val safeIndex = wordIndex.coerceIn(0, uiState.words.lastIndex)
+        val safeIndex = lessonIndex.coerceIn(0, uiState.lessons.lastIndex)
         SoundIntroContent(
-            currentWord = uiState.words[safeIndex],
-            words = uiState.words,
+            currentLesson = uiState.lessons[safeIndex],
+            lessons = uiState.lessons,
             currentIndex = safeIndex,
-            totalWords = uiState.words.size,
             onClose = onClose,
-            onListen = { /* TODO: wire audio player when assets ready */ },
             onNext = onNext,
+            onStepJump = onStepJump,
         )
     }
 }
 
 @Composable
 private fun SoundIntroContent(
-    currentWord: Word,
-    words: ImmutableList<Word>,
+    currentLesson: PhonicsLesson,
+    lessons: ImmutableList<PhonicsLesson>,
     currentIndex: Int,
-    totalWords: Int,
     onClose: () -> Unit,
-    onListen: () -> Unit,
     onNext: () -> Unit,
+    onStepJump: (Int) -> Unit,
 ) {
+    val frames = remember(currentLesson.id) { currentLesson.cyclingFrames() }
+    val frameCount = frames.size
+    var currentFrame by remember(currentLesson.id) { mutableIntStateOf(0) }
+    var isPlaying by remember(currentLesson.id) { mutableStateOf(false) }
+
+    // TODO replace with audio.durationMs / frameCount once audio player is wired.
+    LaunchedEffect(currentLesson.id, isPlaying, currentFrame) {
+        if (isPlaying && frameCount > 1) {
+            delay(SOUND_INTRO_IMAGE_INTERVAL_MS)
+            val next = (currentFrame + 1) % frameCount
+            currentFrame = next
+            if (next == 0) isPlaying = false
+        }
+    }
+
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             StepHeader(
                 title = stringResource(Res.string.sound_intro_title),
-                currentIndex = currentIndex,
-                totalWords = totalWords,
+                currentStepIndex = STEP_INDEX,
                 onClose = onClose,
+                onStepJump = onStepJump,
             )
         },
         bottomBar = {
             LetterStepperBar(
-                words = words,
+                lessons = lessons,
                 currentIndex = currentIndex,
             )
         },
@@ -117,13 +138,32 @@ private fun SoundIntroContent(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Spacer(Modifier.height(8.dp))
-            LetterHeroCard(
-                word = currentWord,
-                onListen = onListen,
+            Text(
+                text = currentLesson.letterPair(),
+                fontSize = 76.sp,
+                lineHeight = 80.sp,
+                fontWeight = FontWeight.ExtraBold,
+                color = MaterialTheme.colorScheme.primary,
+            )
+            Spacer(Modifier.height(12.dp))
+            StoryStyleCard {
+                AnimatedContent(
+                    targetState = currentFrame,
+                    transitionSpec = { fadeIn() togetherWith fadeOut() },
+                    label = "sound-intro-frames",
+                ) { frameIndex ->
+                    FrameContent(item = frames[frameIndex.coerceIn(0, frames.lastIndex)])
+                }
+            }
+            Spacer(Modifier.height(16.dp))
+            PageDotsRow(currentPage = currentFrame, total = frameCount)
+            Spacer(Modifier.height(16.dp))
+            CircularAudioButton(
+                isPlaying = isPlaying,
+                onClick = { isPlaying = !isPlaying },
+                contentDescription = stringResource(Res.string.sound_intro_listen),
             )
             Spacer(Modifier.weight(1f, fill = true))
-            PromptSection(letterPair = currentWord.letterPair())
-            Spacer(Modifier.height(16.dp))
             NextLessonButton(onClick = onNext)
             Spacer(Modifier.height(8.dp))
         }
@@ -131,159 +171,15 @@ private fun SoundIntroContent(
 }
 
 @Composable
-private fun LetterHeroCard(
-    word: Word,
-    onListen: () -> Unit,
-) {
-    PuffySurface(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(56.dp),
-        containerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
-        shadowElevation = 28.dp,
-        shadowTint = MaterialTheme.colorScheme.primary,
-        shadowAlpha = 0.30f,
-        topHighlightHeight = 20.dp,
-        topHighlightAlpha = 0.9f,
-        bottomShadeHeight = 20.dp,
-        bottomShadeAlpha = 0.15f,
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(28.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Text(
-                text = word.letterPair(),
-                fontSize = 76.sp,
-                lineHeight = 80.sp,
-                fontWeight = FontWeight.ExtraBold,
-                color = MaterialTheme.colorScheme.primary,
-            )
-            Spacer(Modifier.height(16.dp))
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                PhonemePill(phoneme = word.phoneme)
-                Text(
-                    text = stringResource(Res.string.sound_intro_word_example, word.text),
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
-            Spacer(Modifier.height(20.dp))
-            CharacterArtwork(word = word)
-            Spacer(Modifier.height(24.dp))
-            PuffyListenButton(onClick = onListen)
-        }
-    }
-}
-
-@Composable
-private fun PhonemePill(phoneme: String) {
-    Surface(
-        shape = CircleShape,
-        color = MaterialTheme.colorScheme.primaryContainer,
-    ) {
-        Text(
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp),
-            text = phoneme,
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.primary,
-        )
-    }
-}
-
-@Composable
-private fun CharacterArtwork(word: Word) {
+private fun FrameContent(item: LessonWord) {
     Box(
-        modifier = Modifier
-            .size(120.dp)
-            .shadow(
-                elevation = 16.dp,
-                shape = RoundedCornerShape(20.dp),
-                ambientColor = Color.Black.copy(alpha = 0.12f),
-                spotColor = Color.Black.copy(alpha = 0.25f),
-            ),
+        modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center,
     ) {
+        // TODO render imageAsset when asset pipeline is online; emoji is the current placeholder.
         Text(
-            text = word.emoji.orEmpty().ifEmpty { "🎨" },
-            fontSize = 96.sp,
-        )
-    }
-}
-
-@Composable
-private fun PuffyListenButton(onClick: () -> Unit) {
-    val interaction = remember { MutableInteractionSource() }
-    PuffySurface(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(52.dp)
-            .clickable(
-                interactionSource = interaction,
-                indication = ripple(color = MaterialTheme.colorScheme.onSecondaryContainer),
-                onClick = onClick,
-            ),
-        shape = CircleShape,
-        containerColor = MaterialTheme.colorScheme.secondaryContainer,
-        shadowElevation = 8.dp,
-        shadowTint = MaterialTheme.colorScheme.secondary,
-        shadowAlpha = 0.7f,
-        topHighlightHeight = 7.dp,
-        topHighlightAlpha = 0.8f,
-        bottomShadeHeight = 7.dp,
-        bottomShadeAlpha = 0.15f,
-    ) {
-        Row(
-            modifier = Modifier.fillMaxSize(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center,
-        ) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.VolumeUp,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSecondaryContainer,
-                modifier = Modifier.size(24.dp),
-            )
-            Spacer(Modifier.width(12.dp))
-            Text(
-                text = stringResource(Res.string.sound_intro_listen),
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSecondaryContainer,
-            )
-        }
-    }
-}
-
-@Composable
-private fun PromptSection(letterPair: String) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        Text(
-            text = stringResource(Res.string.sound_intro_can_you_say, letterPair),
-            fontSize = 22.sp,
-            fontWeight = FontWeight.ExtraBold,
-            letterSpacing = (-0.5).sp,
-            color = MaterialTheme.colorScheme.onSurface,
-            textAlign = TextAlign.Center,
-        )
-        Text(
-            text = stringResource(Res.string.sound_intro_instruction),
-            fontSize = 16.sp,
-            lineHeight = 22.sp,
-            fontWeight = FontWeight.Normal,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            text = item.emoji.orEmpty().ifEmpty { "🐝" },
+            fontSize = 120.sp,
             textAlign = TextAlign.Center,
         )
     }
@@ -332,3 +228,8 @@ private fun NextLessonButton(onClick: () -> Unit) {
         }
     }
 }
+
+private fun PhonicsLesson.cyclingFrames(): List<LessonWord> =
+    words.ifEmpty { listOf(LessonWord(word = displayLetter, emoji = null)) }
+
+private const val SOUND_INTRO_IMAGE_INTERVAL_MS = 1_800L

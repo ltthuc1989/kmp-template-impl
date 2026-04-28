@@ -20,7 +20,7 @@ fun EntryProviderScope<NavKey>.learningEntry() {
         StepScreen(
             levelId = dest.levelId,
             unitId = dest.unitId,
-            wordIndex = dest.wordIndex,
+            lessonIndex = dest.lessonIndex,
             stepIndex = dest.stepIndex,
             modifier = Modifier.fillMaxSize(),
         )

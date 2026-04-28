@@ -13,7 +13,16 @@
       "Bash(./gradlew :core:resource:compileDebugKotlinAndroid --rerun-tasks)",
       "Bash(xargs cat *)",
       "Bash(unzip -l /Users/ltthuc1989/.gradle/caches/modules-2/files-2.1/org.jetbrains.compose.ui/ui-graphics/1.10.2/8f5fe1f1a8302835ec537c7eb7544dfdcba06e2a/ui-graphics-1.10.2-sources.jar)",
-      "Bash(./gradlew :composeApp:installDebug :feature:learningpath:detekt --auto-correct --continue)"
+      "Bash(./gradlew :composeApp:installDebug :feature:learningpath:detekt --auto-correct --continue)",
+      "Bash(./gradlew :feature:learningpath:compileKotlinIosSimulatorArm64)",
+      "Bash(./gradlew :core:datasource:compileKotlinIosSimulatorArm64)",
+      "Read(//Volumes/Entertainment/GeminiGenerator/opw_audio_project/data/level_1/**)",
+      "Read(//Volumes/Entertainment/GeminiGenerator/opw_audio_project/data/**)",
+      "Bash(python3 scripts/build_curriculum_json.py)",
+      "Bash(./gradlew :composeApp:compileDebugKotlinAndroid -q)",
+      "Bash(./gradlew :composeApp:compileKotlinIosSimulatorArm64)",
+      "Bash(./gradlew :core:datasource:compileKotlinIosSimulatorArm64 :feature:learningpath:compileKotlinIosSimulatorArm64)",
+      "Bash(grep -n \"^import.*VocabularyItem\\\\|^import.*\\\\.Word$\" feature/learningpath/src/commonMain/kotlin/me/matsumo/grabee/feature/learningpath/step/blending/BlendingScreen.kt)"
     ],
     "additionalDirectories": [
       "/tmp"

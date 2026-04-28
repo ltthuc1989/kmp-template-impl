@@ -18,31 +18,35 @@ class DatabaseSeeder(private val database: GrabeeDatabase) {
 
         val existingLevels = database.levelDao().count()
         val existingUnits = database.unitDao().count()
+        val existingLessons = database.phonicsLessonDao().count()
         val expectedLevels = entities.levels.size
         val expectedUnits = entities.units.size
+        val expectedLessons = entities.lessons.size
 
-        // Content already matches current curriculum shipped in JSON — skip re-seed.
-        if (existingLevels >= expectedLevels && existingUnits >= expectedUnits) return
+        if (existingLevels >= expectedLevels &&
+            existingUnits >= expectedUnits &&
+            existingLessons >= expectedLessons
+        ) {
+            return
+        }
 
-        // Stale seed (older build with fewer levels/units). Wipe + re-seed so the app
-        // always matches the bundled curriculum.json without requiring users to clear data.
-        if (existingLevels > 0 || existingUnits > 0) {
+        if (existingLevels > 0 || existingUnits > 0 || existingLessons > 0) {
             Napier.d(tag = TAG) {
                 "Stale curriculum in DB: levels=$existingLevels/$expectedLevels, " +
-                    "units=$existingUnits/$expectedUnits. Wiping + re-seeding."
+                    "units=$existingUnits/$expectedUnits, " +
+                    "lessons=$existingLessons/$expectedLessons. Re-seeding (REPLACE)."
             }
-            database.clearAllTables()
         }
 
         database.levelDao().insertAll(entities.levels)
         database.unitDao().insertAll(entities.units)
-        database.wordDao().insertAll(entities.words)
+        database.phonicsLessonDao().insertAll(entities.lessons)
         database.learningProgressDao().upsert(SEED_PROGRESS)
         SEED_USER_PROGRESS.forEach { database.userProgressDao().upsert(it) }
 
         Napier.d(tag = TAG) {
             "Seeded ${entities.levels.size} levels, ${entities.units.size} units, " +
-                "${entities.words.size} words from $CURRICULUM_RESOURCE_PATH"
+                "${entities.lessons.size} lessons from $CURRICULUM_RESOURCE_PATH"
         }
     }
 
@@ -53,17 +57,17 @@ class DatabaseSeeder(private val database: GrabeeDatabase) {
         private val seedJson = Json { ignoreUnknownKeys = true }
 
         val SEED_PROGRESS = LearningProgressEntity(
-            activeLevelId = "level-1",
-            activeUnitId = "level-1-unit-2",
+            activeLevelId = "L1",
+            activeUnitId = "L1U2",
+            activeLessonIndex = 0,
+            activeStepIndex = 0,
             unitProgressPercent = 25,
         )
 
         val SEED_USER_PROGRESS = listOf(
-            // Unit 1: hoàn thành đủ stars để unlock Unit 2
-            UserProgressEntity("level-1-unit-1", stepIndex = 0, starsEarned = 3, completedAt = 0),
-            UserProgressEntity("level-1-unit-1", stepIndex = 1, starsEarned = 3, completedAt = 0),
-            // Unit 2: đã bắt đầu
-            UserProgressEntity("level-1-unit-2", stepIndex = 0, starsEarned = 2, completedAt = 0),
+            UserProgressEntity("L1U1", stepIndex = 0, starsEarned = 3, completedAt = 0),
+            UserProgressEntity("L1U1", stepIndex = 1, starsEarned = 3, completedAt = 0),
+            UserProgressEntity("L1U2", stepIndex = 0, starsEarned = 2, completedAt = 0),
         )
     }
 }

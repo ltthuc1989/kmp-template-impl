@@ -51,8 +51,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.delay
-import me.matsumo.grabee.core.model.VocabularyItem
-import me.matsumo.grabee.core.model.Word
+import me.matsumo.grabee.core.model.LessonWord
+import me.matsumo.grabee.core.model.PhonicsLesson
 import me.matsumo.grabee.core.resource.Res
 import me.matsumo.grabee.core.resource.chant_next
 import me.matsumo.grabee.core.resource.chant_previous
@@ -75,20 +75,24 @@ import me.matsumo.grabee.feature.learningpath.step.common.ScoreFeedback
 import me.matsumo.grabee.feature.learningpath.step.common.ScoreFeedbackOverlay
 import me.matsumo.grabee.feature.learningpath.step.common.StepHeader
 import me.matsumo.grabee.feature.learningpath.step.common.StepNavRow
+import me.matsumo.grabee.feature.learningpath.step.common.StoryStyleCard
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 import kotlin.random.Random
 
+private const val STEP_INDEX = 2
+
 @Composable
 internal fun VocabularyScreen(
     unitId: String,
-    wordIndex: Int,
+    lessonIndex: Int,
     onClose: () -> Unit,
     onPrevious: () -> Unit,
     onNext: () -> Unit,
+    onStepJump: (Int) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: VocabularyViewModel = koinViewModel { parametersOf(unitId) },
+    viewModel: VocabularyViewModel = koinViewModel(key = unitId) { parametersOf(unitId) },
 ) {
     val screenState by viewModel.screenState.collectAsStateWithLifecycle()
 
@@ -96,44 +100,37 @@ internal fun VocabularyScreen(
         modifier = modifier.fillMaxSize(),
         screenState = screenState,
     ) { uiState ->
-        val safeIndex = wordIndex.coerceIn(0, uiState.words.lastIndex)
+        val safeIndex = lessonIndex.coerceIn(0, uiState.lessons.lastIndex)
         VocabularyContent(
-            currentWord = uiState.words[safeIndex],
-            words = uiState.words,
+            currentLesson = uiState.lessons[safeIndex],
+            lessons = uiState.lessons,
             currentIndex = safeIndex,
-            totalWords = uiState.words.size,
             onClose = onClose,
             onPrevious = onPrevious,
             onNext = onNext,
+            onStepJump = onStepJump,
         )
     }
 }
 
 @Composable
 private fun VocabularyContent(
-    currentWord: Word,
-    words: ImmutableList<Word>,
+    currentLesson: PhonicsLesson,
+    lessons: ImmutableList<PhonicsLesson>,
     currentIndex: Int,
-    totalWords: Int,
     onClose: () -> Unit,
     onPrevious: () -> Unit,
     onNext: () -> Unit,
+    onStepJump: (Int) -> Unit,
 ) {
-    val vocabItems = remember(currentWord.id) {
-        currentWord.vocabulary.takeIf { it.isNotEmpty() }
-            ?: listOf(
-                VocabularyItem(
-                    text = currentWord.text.replaceFirstChar { it.uppercase() },
-                    emoji = currentWord.emoji,
-                    imageAsset = currentWord.imageAsset,
-                    orderIndex = 0,
-                ),
-            )
+    val vocabItems = remember(currentLesson.id) {
+        currentLesson.words.takeIf { it.isNotEmpty() }
+            ?: listOf(LessonWord(word = currentLesson.displayLetter, emoji = null))
     }.toImmutableList()
 
-    var vocabIndex by remember(currentWord.id) { mutableStateOf(0) }
-    var listenPlaying by remember(currentWord.id) { mutableStateOf(false) }
-    var micRecording by remember(currentWord.id) { mutableStateOf(false) }
+    var vocabIndex by remember(currentLesson.id) { mutableStateOf(0) }
+    var listenPlaying by remember(currentLesson.id) { mutableStateOf(false) }
+    var micRecording by remember(currentLesson.id) { mutableStateOf(false) }
     var scoreFeedback by remember { mutableStateOf<ScoreFeedback?>(null) }
 
     val safeVocabIndex = vocabIndex.coerceIn(0, vocabItems.lastIndex)
@@ -182,14 +179,14 @@ private fun VocabularyContent(
             topBar = {
                 StepHeader(
                     title = stringResource(Res.string.vocabulary_title),
-                    currentIndex = currentIndex,
-                    totalWords = totalWords,
+                    currentStepIndex = STEP_INDEX,
                     onClose = onClose,
+                    onStepJump = onStepJump,
                 )
             },
             bottomBar = {
                 LetterStepperBar(
-                    words = words,
+                    lessons = lessons,
                     currentIndex = currentIndex,
                 )
             },
@@ -238,7 +235,7 @@ private fun VocabularyContent(
 
 @Composable
 private fun VocabularyHeroCard(
-    vocab: VocabularyItem,
+    vocab: LessonWord,
     vocabIndex: Int,
     vocabTotal: Int,
     listenPlaying: Boolean,
@@ -248,18 +245,7 @@ private fun VocabularyHeroCard(
     onListenToggle: () -> Unit,
     onMicToggle: () -> Unit,
 ) {
-    PuffySurface(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(56.dp),
-        containerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
-        shadowElevation = 28.dp,
-        shadowTint = MaterialTheme.colorScheme.primary,
-        shadowAlpha = 0.30f,
-        topHighlightHeight = 20.dp,
-        topHighlightAlpha = 0.9f,
-        bottomShadeHeight = 20.dp,
-        bottomShadeAlpha = 0.15f,
-    ) {
+    StoryStyleCard(aspectRatio = null) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()

@@ -57,8 +57,8 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import me.matsumo.grabee.core.model.VocabularyItem
-import me.matsumo.grabee.core.model.Word
+import me.matsumo.grabee.core.model.LessonWord
+import me.matsumo.grabee.core.model.PhonicsLesson
 import me.matsumo.grabee.core.resource.Res
 import me.matsumo.grabee.core.resource.chant_next
 import me.matsumo.grabee.core.resource.chant_previous
@@ -83,15 +83,18 @@ import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 import kotlin.random.Random
 
+private const val STEP_INDEX = 3
+
 @Composable
 internal fun IdentifyScreen(
     unitId: String,
-    wordIndex: Int,
+    lessonIndex: Int,
     onClose: () -> Unit,
     onPrevious: () -> Unit,
     onNext: () -> Unit,
+    onStepJump: (Int) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: IdentifyViewModel = koinViewModel { parametersOf(unitId) },
+    viewModel: IdentifyViewModel = koinViewModel(key = unitId) { parametersOf(unitId) },
 ) {
     val screenState by viewModel.screenState.collectAsStateWithLifecycle()
 
@@ -99,55 +102,55 @@ internal fun IdentifyScreen(
         modifier = modifier.fillMaxSize(),
         screenState = screenState,
     ) { uiState ->
-        val safeIndex = wordIndex.coerceIn(0, uiState.words.lastIndex)
+        val safeIndex = lessonIndex.coerceIn(0, uiState.lessons.lastIndex)
         IdentifyContent(
-            currentWord = uiState.words[safeIndex],
-            words = uiState.words,
+            currentLesson = uiState.lessons[safeIndex],
+            lessons = uiState.lessons,
             currentIndex = safeIndex,
-            totalWords = uiState.words.size,
             onClose = onClose,
             onPrevious = onPrevious,
             onNext = onNext,
+            onStepJump = onStepJump,
         )
     }
 }
 
 @Composable
 private fun IdentifyContent(
-    currentWord: Word,
-    words: ImmutableList<Word>,
+    currentLesson: PhonicsLesson,
+    lessons: ImmutableList<PhonicsLesson>,
     currentIndex: Int,
-    totalWords: Int,
     onClose: () -> Unit,
     onPrevious: () -> Unit,
     onNext: () -> Unit,
+    onStepJump: (Int) -> Unit,
 ) {
-    val vocab = remember(currentWord.id) {
-        currentWord.vocabulary.ifEmpty { listOf(currentWord.toVocabItem()) }
+    val vocab = remember(currentLesson.id) {
+        currentLesson.words
     }
     val totalRounds = vocab.size
-    val otherWords = remember(currentWord.id, words) {
-        words.filter { it.id != currentWord.id }
+    val otherWords = remember(currentLesson.id, lessons) {
+        lessons.filter { it.id != currentLesson.id }
     }
 
-    var roundIndex by remember(currentWord.id) { mutableStateOf(0) }
-    var wrongCount by remember(currentWord.id, roundIndex) { mutableStateOf(0) }
-    var selectedText by remember(currentWord.id, roundIndex) { mutableStateOf<String?>(null) }
-    var wiggleTarget by remember(currentWord.id, roundIndex) { mutableStateOf<String?>(null) }
-    var wiggleKey by remember(currentWord.id, roundIndex) { mutableStateOf(0) }
-    var showHint by remember(currentWord.id, roundIndex) { mutableStateOf(false) }
-    var autoRevealed by remember(currentWord.id, roundIndex) { mutableStateOf(false) }
-    var listenPlaying by remember(currentWord.id, roundIndex) { mutableStateOf(true) }
-    var finalOverlay by remember(currentWord.id) { mutableStateOf<ScoreFeedback?>(null) }
-    var anyRoundFailed by remember(currentWord.id) { mutableStateOf(false) }
+    var roundIndex by remember(currentLesson.id) { mutableStateOf(0) }
+    var wrongCount by remember(currentLesson.id, roundIndex) { mutableStateOf(0) }
+    var selectedText by remember(currentLesson.id, roundIndex) { mutableStateOf<String?>(null) }
+    var wiggleTarget by remember(currentLesson.id, roundIndex) { mutableStateOf<String?>(null) }
+    var wiggleKey by remember(currentLesson.id, roundIndex) { mutableStateOf(0) }
+    var showHint by remember(currentLesson.id, roundIndex) { mutableStateOf(false) }
+    var autoRevealed by remember(currentLesson.id, roundIndex) { mutableStateOf(false) }
+    var listenPlaying by remember(currentLesson.id, roundIndex) { mutableStateOf(true) }
+    var finalOverlay by remember(currentLesson.id) { mutableStateOf<ScoreFeedback?>(null) }
+    var anyRoundFailed by remember(currentLesson.id) { mutableStateOf(false) }
 
     val target = vocab[roundIndex.coerceIn(0, vocab.lastIndex)]
-    val gridItems = remember(currentWord.id, roundIndex) {
+    val gridItems = remember(currentLesson.id, roundIndex) {
         buildRoundGrid(
             target = target,
             sameLetterVocab = vocab,
             otherWords = otherWords,
-            seed = "${currentWord.id}-$roundIndex".hashCode(),
+            seed = "${currentLesson.id}-$roundIndex".hashCode(),
         )
     }
 
@@ -159,7 +162,7 @@ private fun IdentifyContent(
     val scope = rememberCoroutineScope()
 
     // Audio autoplay stub: hide grid, listenPlaying → true → delay 1s → reveal grid
-    LaunchedEffect(currentWord.id, roundIndex) {
+    LaunchedEffect(currentLesson.id, roundIndex) {
         listenPlaying = true
         delay(LISTEN_DURATION_MS)
         listenPlaying = false
@@ -228,14 +231,14 @@ private fun IdentifyContent(
             topBar = {
                 StepHeader(
                     title = stringResource(Res.string.identify_title),
-                    currentIndex = currentIndex,
-                    totalWords = totalWords,
+                    currentStepIndex = STEP_INDEX,
                     onClose = onClose,
+                    onStepJump = onStepJump,
                 )
             },
             bottomBar = {
                 LetterStepperBar(
-                    words = words,
+                    lessons = lessons,
                     currentIndex = currentIndex,
                 )
             },
@@ -382,7 +385,7 @@ private fun RoundProgressRow(
 
 @Composable
 private fun IdentifyGrid(
-    items: ImmutableList<VocabularyItem>,
+    items: ImmutableList<LessonWord>,
     selectedText: String?,
     correctText: String,
     wiggleTarget: String?,
@@ -427,7 +430,7 @@ private fun IdentifyGrid(
 
 @Composable
 private fun IdentifyCard(
-    item: VocabularyItem,
+    item: LessonWord,
     selected: Boolean,
     isCorrect: Boolean,
     wiggleActive: Boolean,
@@ -547,20 +550,13 @@ private fun CheckBadge(modifier: Modifier = Modifier) {
 
 // -------- Helpers --------
 
-private fun Word.toVocabItem(): VocabularyItem = VocabularyItem(
-    text = text.replaceFirstChar { it.uppercase() },
-    emoji = emoji,
-    imageAsset = imageAsset,
-    orderIndex = 0,
-)
-
 private fun buildRoundGrid(
-    target: VocabularyItem,
-    sameLetterVocab: List<VocabularyItem>,
-    otherWords: List<Word>,
+    target: LessonWord,
+    sameLetterVocab: List<LessonWord>,
+    otherWords: List<PhonicsLesson>,
     seed: Int,
     gridSize: Int = OPTIONS_COUNT,
-): ImmutableList<VocabularyItem> {
+): ImmutableList<LessonWord> {
     val rng = Random(seed)
     // Familiar slot: 1 other vocab from same letter (if available)
     val familiar = sameLetterVocab
@@ -570,7 +566,7 @@ private fun buildRoundGrid(
     // Decoy pool: vocab items of OTHER letters (or fallback to main word)
     val decoyPool = otherWords
         .flatMap { word ->
-            word.vocabulary.ifEmpty { listOf(word.toVocabItem()) }
+            word.words
         }
         .distinctBy { it.text }
         .filter { it.text != target.text && it.text != familiar?.text }

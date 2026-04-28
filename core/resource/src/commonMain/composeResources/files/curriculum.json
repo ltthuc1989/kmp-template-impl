@@ -1,7 +1,7 @@
 {
   "levels": [
     {
-      "id": "level-1",
+      "id": "L1",
       "number": 1,
       "title": "The Alphabet",
       "isPremium": false,
@@ -9,451 +9,775 @@
       "orderIndex": 0,
       "units": [
         {
-          "id": "level-1-unit-1",
+          "id": "L1U1",
           "number": 1,
           "title": "Aa Bb Cc",
+          "themeChip": null,
           "orderIndex": 0,
-          "words": [
+          "lessons": [
             {
-              "id": "l1-u1-apple",
-              "text": "apple",
-              "phoneme": "/æ/",
-              "emoji": "🍎",
+              "id": "L1U1_A",
+              "letter": "A",
+              "displayLetter": "Aa",
+              "soundSpelling": "ahh",
+              "sentence": "An apple and an ant.",
+              "stretchedWord": "AAA-pple",
               "orderIndex": 0,
-              "vocabulary": [
-                {"text": "Apple", "emoji": "🍎", "orderIndex": 0},
-                {"text": "Ant", "emoji": "🐜", "orderIndex": 1},
-                {"text": "Airplane", "emoji": "✈️", "orderIndex": 2},
-                {"text": "Alligator", "emoji": "🐊", "orderIndex": 3},
-                {"text": "Axe", "emoji": "🪓", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "apple",
+                  "emoji": "🍎"
+                },
+                {
+                  "word": "ax",
+                  "emoji": "🪓"
+                },
+                {
+                  "word": "ant",
+                  "emoji": "🐜"
+                },
+                {
+                  "word": "alligator",
+                  "emoji": "🐊"
+                }
               ]
             },
             {
-              "id": "l1-u1-bear",
-              "text": "bear",
-              "phoneme": "/b/",
-              "emoji": "🐻",
+              "id": "L1U1_B",
+              "letter": "B",
+              "displayLetter": "Bb",
+              "soundSpelling": "buh",
+              "sentence": "A bear in a bed.",
+              "stretchedWord": "B-B-Bear",
               "orderIndex": 1,
-              "vocabulary": [
-                {"text": "Bear", "emoji": "🐻", "orderIndex": 0},
-                {"text": "Ball", "emoji": "⚽", "orderIndex": 1},
-                {"text": "Banana", "emoji": "🍌", "orderIndex": 2},
-                {"text": "Bird", "emoji": "🐦", "orderIndex": 3},
-                {"text": "Book", "emoji": "📖", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "bear",
+                  "emoji": "🐻"
+                },
+                {
+                  "word": "bird",
+                  "emoji": "🐦"
+                },
+                {
+                  "word": "bed",
+                  "emoji": "🛏️"
+                },
+                {
+                  "word": "banana",
+                  "emoji": "🍌"
+                }
               ]
             },
             {
-              "id": "l1-u1-cat",
-              "text": "cat",
-              "phoneme": "/k/",
-              "emoji": "🐱",
+              "id": "L1U1_C",
+              "letter": "C",
+              "displayLetter": "Cc",
+              "soundSpelling": "kuh",
+              "sentence": "A cat by a cup.",
+              "stretchedWord": "K-K-Cat",
               "orderIndex": 2,
-              "vocabulary": [
-                {"text": "Cat", "emoji": "🐱", "orderIndex": 0},
-                {"text": "Car", "emoji": "🚗", "orderIndex": 1},
-                {"text": "Cake", "emoji": "🎂", "orderIndex": 2},
-                {"text": "Cloud", "emoji": "☁️", "orderIndex": 3},
-                {"text": "Cow", "emoji": "🐄", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "cat",
+                  "emoji": "🐱"
+                },
+                {
+                  "word": "cup",
+                  "emoji": "☕"
+                },
+                {
+                  "word": "car",
+                  "emoji": "🚗"
+                },
+                {
+                  "word": "computer",
+                  "emoji": "💻"
+                }
               ]
             }
           ]
         },
         {
-          "id": "level-1-unit-2",
+          "id": "L1U2",
           "number": 2,
           "title": "Dd Ee Ff",
+          "themeChip": null,
           "orderIndex": 1,
-          "words": [
+          "lessons": [
             {
-              "id": "l1-u2-dog",
-              "text": "dog",
-              "phoneme": "/d/",
-              "emoji": "🐶",
+              "id": "L1U2_D",
+              "letter": "D",
+              "displayLetter": "Dd",
+              "soundSpelling": "duh",
+              "sentence": "A dog and a duck.",
+              "stretchedWord": "D-D-Dog",
               "orderIndex": 0,
-              "vocabulary": [
-                {"text": "Dog", "emoji": "🐶", "orderIndex": 0},
-                {"text": "Duck", "emoji": "🦆", "orderIndex": 1},
-                {"text": "Donut", "emoji": "🍩", "orderIndex": 2},
-                {"text": "Door", "emoji": "🚪", "orderIndex": 3},
-                {"text": "Doll", "emoji": "🪆", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "dog",
+                  "emoji": "🐶"
+                },
+                {
+                  "word": "desk",
+                  "emoji": "📋"
+                },
+                {
+                  "word": "doll",
+                  "emoji": "🪆"
+                },
+                {
+                  "word": "duck",
+                  "emoji": "🦆"
+                }
               ]
             },
             {
-              "id": "l1-u2-egg",
-              "text": "egg",
-              "phoneme": "/ɛ/",
-              "emoji": "🥚",
+              "id": "L1U2_E",
+              "letter": "E",
+              "displayLetter": "Ee",
+              "soundSpelling": "ehh",
+              "sentence": "An egg and an elephant.",
+              "stretchedWord": "EHH-gg",
               "orderIndex": 1,
-              "vocabulary": [
-                {"text": "Egg", "emoji": "🥚", "orderIndex": 0},
-                {"text": "Elephant", "emoji": "🐘", "orderIndex": 1},
-                {"text": "Ear", "emoji": "👂", "orderIndex": 2},
-                {"text": "Eye", "emoji": "👁️", "orderIndex": 3},
-                {"text": "Engine", "emoji": "🚂", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "egg",
+                  "emoji": "🥚"
+                },
+                {
+                  "word": "elbow",
+                  "emoji": "💪"
+                },
+                {
+                  "word": "envelope",
+                  "emoji": "✉️"
+                },
+                {
+                  "word": "elephant",
+                  "emoji": "🐘"
+                }
               ]
             },
             {
-              "id": "l1-u2-fish",
-              "text": "fish",
-              "phoneme": "/f/",
-              "emoji": "🐟",
+              "id": "L1U2_F",
+              "letter": "F",
+              "displayLetter": "Ff",
+              "soundSpelling": "ffff",
+              "sentence": "A fish on a farm.",
+              "stretchedWord": "F-F-Fish",
               "orderIndex": 2,
-              "vocabulary": [
-                {"text": "Fish", "emoji": "🐟", "orderIndex": 0},
-                {"text": "Frog", "emoji": "🐸", "orderIndex": 1},
-                {"text": "Fan", "emoji": "🪭", "orderIndex": 2},
-                {"text": "Fox", "emoji": "🦊", "orderIndex": 3},
-                {"text": "Flower", "emoji": "🌸", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "fish",
+                  "emoji": "🐟"
+                },
+                {
+                  "word": "fan",
+                  "emoji": "🪭"
+                },
+                {
+                  "word": "farm",
+                  "emoji": "🚜"
+                },
+                {
+                  "word": "fork",
+                  "emoji": "🍴"
+                }
               ]
             }
           ]
         },
         {
-          "id": "level-1-unit-3",
+          "id": "L1U3",
           "number": 3,
           "title": "Gg Hh Ii",
+          "themeChip": null,
           "orderIndex": 2,
-          "words": [
+          "lessons": [
             {
-              "id": "l1-u3-goat",
-              "text": "goat",
-              "phoneme": "/g/",
-              "emoji": "🐐",
+              "id": "L1U3_G",
+              "letter": "G",
+              "displayLetter": "Gg",
+              "soundSpelling": "guh",
+              "sentence": "A goat and a girl.",
+              "stretchedWord": "G-G-Goat",
               "orderIndex": 0,
-              "vocabulary": [
-                {"text": "Goat", "emoji": "🐐", "orderIndex": 0},
-                {"text": "Gift", "emoji": "🎁", "orderIndex": 1},
-                {"text": "Grape", "emoji": "🍇", "orderIndex": 2},
-                {"text": "Girl", "emoji": "👧", "orderIndex": 3},
-                {"text": "Glove", "emoji": "🧤", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "gorilla",
+                  "emoji": "🦍"
+                },
+                {
+                  "word": "goat",
+                  "emoji": "🐐"
+                },
+                {
+                  "word": "gift",
+                  "emoji": "🎁"
+                },
+                {
+                  "word": "girl",
+                  "emoji": "👧"
+                }
               ]
             },
             {
-              "id": "l1-u3-hat",
-              "text": "hat",
-              "phoneme": "/h/",
-              "emoji": "🎩",
+              "id": "L1U3_H",
+              "letter": "H",
+              "displayLetter": "Hh",
+              "soundSpelling": "huh",
+              "sentence": "A horse in a house.",
+              "stretchedWord": "H-H-Horse",
               "orderIndex": 1,
-              "vocabulary": [
-                {"text": "Hat", "emoji": "🎩", "orderIndex": 0},
-                {"text": "Horse", "emoji": "🐴", "orderIndex": 1},
-                {"text": "House", "emoji": "🏠", "orderIndex": 2},
-                {"text": "Hand", "emoji": "✋", "orderIndex": 3},
-                {"text": "Heart", "emoji": "❤️", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "horse",
+                  "emoji": "🐴"
+                },
+                {
+                  "word": "hat",
+                  "emoji": "🎩"
+                },
+                {
+                  "word": "house",
+                  "emoji": "🏠"
+                },
+                {
+                  "word": "hot dog",
+                  "emoji": "🌭"
+                }
               ]
             },
             {
-              "id": "l1-u3-ice",
-              "text": "ice",
-              "phoneme": "/ɪ/",
-              "emoji": "🧊",
+              "id": "L1U3_I",
+              "letter": "I",
+              "displayLetter": "Ii",
+              "soundSpelling": "ihh",
+              "sentence": "An insect in an igloo.",
+              "stretchedWord": "IHH-nsect",
               "orderIndex": 2,
-              "vocabulary": [
-                {"text": "Ice", "emoji": "🧊", "orderIndex": 0},
-                {"text": "Insect", "emoji": "🐛", "orderIndex": 1},
-                {"text": "Igloo", "emoji": "🛖", "orderIndex": 2},
-                {"text": "Ink", "emoji": "🖋️", "orderIndex": 3},
-                {"text": "Iguana", "emoji": "🦎", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "insect",
+                  "emoji": "🐛"
+                },
+                {
+                  "word": "ink",
+                  "emoji": "🖋️"
+                },
+                {
+                  "word": "igloo",
+                  "emoji": "🛖"
+                },
+                {
+                  "word": "iguana",
+                  "emoji": "🦎"
+                }
               ]
             }
           ]
         },
         {
-          "id": "level-1-unit-4",
+          "id": "L1U4",
           "number": 4,
           "title": "Jj Kk Ll",
+          "themeChip": null,
           "orderIndex": 3,
-          "words": [
+          "lessons": [
             {
-              "id": "l1-u4-jam",
-              "text": "jam",
-              "phoneme": "/dʒ/",
-              "emoji": "🍓",
+              "id": "L1U4_J",
+              "letter": "J",
+              "displayLetter": "Jj",
+              "soundSpelling": "juh",
+              "sentence": "A jet and a jacket.",
+              "stretchedWord": "J-J-Jet",
               "orderIndex": 0,
-              "vocabulary": [
-                {"text": "Jam", "emoji": "🍓", "orderIndex": 0},
-                {"text": "Jug", "emoji": "🫗", "orderIndex": 1},
-                {"text": "Jet", "emoji": "✈️", "orderIndex": 2},
-                {"text": "Juice", "emoji": "🧃", "orderIndex": 3},
-                {"text": "Jar", "emoji": "🫙", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "jet",
+                  "emoji": "✈️"
+                },
+                {
+                  "word": "jam",
+                  "emoji": "🍓"
+                },
+                {
+                  "word": "juice",
+                  "emoji": "🧃"
+                },
+                {
+                  "word": "jacket",
+                  "emoji": "🧥"
+                }
               ]
             },
             {
-              "id": "l1-u4-key",
-              "text": "key",
-              "phoneme": "/k/",
-              "emoji": "🔑",
+              "id": "L1U4_K",
+              "letter": "K",
+              "displayLetter": "Kk",
+              "soundSpelling": "kuh",
+              "sentence": "A king with a kite.",
+              "stretchedWord": "K-K-King",
               "orderIndex": 1,
-              "vocabulary": [
-                {"text": "Key", "emoji": "🔑", "orderIndex": 0},
-                {"text": "King", "emoji": "🤴", "orderIndex": 1},
-                {"text": "Kite", "emoji": "🪁", "orderIndex": 2},
-                {"text": "Kitten", "emoji": "🐈", "orderIndex": 3},
-                {"text": "Koala", "emoji": "🐨", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "kangaroo",
+                  "emoji": "🦘"
+                },
+                {
+                  "word": "key",
+                  "emoji": "🔑"
+                },
+                {
+                  "word": "king",
+                  "emoji": "🤴"
+                },
+                {
+                  "word": "kite",
+                  "emoji": "🪁"
+                }
               ]
             },
             {
-              "id": "l1-u4-lion",
-              "text": "lion",
-              "phoneme": "/l/",
-              "emoji": "🦁",
+              "id": "L1U4_L",
+              "letter": "L",
+              "displayLetter": "Ll",
+              "soundSpelling": "lll",
+              "sentence": "A lion and a leaf.",
+              "stretchedWord": "L-L-Lion",
               "orderIndex": 2,
-              "vocabulary": [
-                {"text": "Lion", "emoji": "🦁", "orderIndex": 0},
-                {"text": "Leaf", "emoji": "🍃", "orderIndex": 1},
-                {"text": "Lamp", "emoji": "💡", "orderIndex": 2},
-                {"text": "Lemon", "emoji": "🍋", "orderIndex": 3},
-                {"text": "Ladder", "emoji": "🪜", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "lion",
+                  "emoji": "🦁"
+                },
+                {
+                  "word": "lamp",
+                  "emoji": "💡"
+                },
+                {
+                  "word": "leaf",
+                  "emoji": "🍃"
+                },
+                {
+                  "word": "lemon",
+                  "emoji": "🍋"
+                }
               ]
             }
           ]
         },
         {
-          "id": "level-1-unit-5",
+          "id": "L1U5",
           "number": 5,
           "title": "Mm Nn Oo",
+          "themeChip": null,
           "orderIndex": 4,
-          "words": [
+          "lessons": [
             {
-              "id": "l1-u5-moon",
-              "text": "moon",
-              "phoneme": "/m/",
-              "emoji": "🌙",
+              "id": "L1U5_M",
+              "letter": "M",
+              "displayLetter": "Mm",
+              "soundSpelling": "mmm",
+              "sentence": "A monkey drinks milk.",
+              "stretchedWord": "M-M-Monkey",
               "orderIndex": 0,
-              "vocabulary": [
-                {"text": "Moon", "emoji": "🌙", "orderIndex": 0},
-                {"text": "Mouse", "emoji": "🐭", "orderIndex": 1},
-                {"text": "Milk", "emoji": "🥛", "orderIndex": 2},
-                {"text": "Map", "emoji": "🗺️", "orderIndex": 3},
-                {"text": "Mouth", "emoji": "👄", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "monkey",
+                  "emoji": "🐵"
+                },
+                {
+                  "word": "milk",
+                  "emoji": "🥛"
+                },
+                {
+                  "word": "money",
+                  "emoji": "💰"
+                },
+                {
+                  "word": "mouse",
+                  "emoji": "🐭"
+                }
               ]
             },
             {
-              "id": "l1-u5-nest",
-              "text": "nest",
-              "phoneme": "/n/",
-              "emoji": "🪺",
+              "id": "L1U5_N",
+              "letter": "N",
+              "displayLetter": "Nn",
+              "soundSpelling": "nnn",
+              "sentence": "A nut in a nest.",
+              "stretchedWord": "N-N-Nut",
               "orderIndex": 1,
-              "vocabulary": [
-                {"text": "Nest", "emoji": "🪺", "orderIndex": 0},
-                {"text": "Nut", "emoji": "🌰", "orderIndex": 1},
-                {"text": "Nose", "emoji": "👃", "orderIndex": 2},
-                {"text": "Net", "emoji": "🥅", "orderIndex": 3},
-                {"text": "Nurse", "emoji": "👩‍⚕️", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "nut",
+                  "emoji": "🌰"
+                },
+                {
+                  "word": "net",
+                  "emoji": "🥅"
+                },
+                {
+                  "word": "nest",
+                  "emoji": "🪺"
+                },
+                {
+                  "word": "nose",
+                  "emoji": "👃"
+                }
               ]
             },
             {
-              "id": "l1-u5-owl",
-              "text": "owl",
-              "phoneme": "/ɒ/",
-              "emoji": "🦉",
+              "id": "L1U5_O",
+              "letter": "O",
+              "displayLetter": "Oo",
+              "soundSpelling": "ohh",
+              "sentence": "An octopus and an ox.",
+              "stretchedWord": "OHH-ctopus",
               "orderIndex": 2,
-              "vocabulary": [
-                {"text": "Owl", "emoji": "🦉", "orderIndex": 0},
-                {"text": "Orange", "emoji": "🍊", "orderIndex": 1},
-                {"text": "Octopus", "emoji": "🐙", "orderIndex": 2},
-                {"text": "Ostrich", "emoji": "🦢", "orderIndex": 3},
-                {"text": "Onion", "emoji": "🧅", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "octopus",
+                  "emoji": "🐙"
+                },
+                {
+                  "word": "ox",
+                  "emoji": "🐂"
+                },
+                {
+                  "word": "olive",
+                  "emoji": "🫒"
+                },
+                {
+                  "word": "ostrich",
+                  "emoji": "🦢"
+                }
               ]
             }
           ]
         },
         {
-          "id": "level-1-unit-6",
+          "id": "L1U6",
           "number": 6,
           "title": "Pp Qq Rr",
+          "themeChip": null,
           "orderIndex": 5,
-          "words": [
+          "lessons": [
             {
-              "id": "l1-u6-pig",
-              "text": "pig",
-              "phoneme": "/p/",
-              "emoji": "🐷",
+              "id": "L1U6_P",
+              "letter": "P",
+              "displayLetter": "Pp",
+              "soundSpelling": "puh",
+              "sentence": "A panda eats a peach.",
+              "stretchedWord": "P-P-Panda",
               "orderIndex": 0,
-              "vocabulary": [
-                {"text": "Pig", "emoji": "🐷", "orderIndex": 0},
-                {"text": "Pen", "emoji": "🖊️", "orderIndex": 1},
-                {"text": "Pie", "emoji": "🥧", "orderIndex": 2},
-                {"text": "Pizza", "emoji": "🍕", "orderIndex": 3},
-                {"text": "Parrot", "emoji": "🦜", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "peach",
+                  "emoji": "🍑"
+                },
+                {
+                  "word": "pen",
+                  "emoji": "🖊️"
+                },
+                {
+                  "word": "panda",
+                  "emoji": "🐼"
+                },
+                {
+                  "word": "pineapple",
+                  "emoji": "🍍"
+                }
               ]
             },
             {
-              "id": "l1-u6-queen",
-              "text": "queen",
-              "phoneme": "/kw/",
-              "emoji": "👸",
+              "id": "L1U6_Q",
+              "letter": "Q",
+              "displayLetter": "Qq",
+              "soundSpelling": "kwuh",
+              "sentence": "The queen asks a question.",
+              "stretchedWord": "KW-Queen",
               "orderIndex": 1,
-              "vocabulary": [
-                {"text": "Queen", "emoji": "👸", "orderIndex": 0},
-                {"text": "Quilt", "emoji": "🛏️", "orderIndex": 1},
-                {"text": "Question", "emoji": "❓", "orderIndex": 2},
-                {"text": "Quail", "emoji": "🐦", "orderIndex": 3},
-                {"text": "Quiet", "emoji": "🤫", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "queen",
+                  "emoji": "👸"
+                },
+                {
+                  "word": "quiz",
+                  "emoji": "❓"
+                },
+                {
+                  "word": "quilt",
+                  "emoji": "🛏️"
+                },
+                {
+                  "word": "question",
+                  "emoji": "❓"
+                }
               ]
             },
             {
-              "id": "l1-u6-rabbit",
-              "text": "rabbit",
-              "phoneme": "/r/",
-              "emoji": "🐰",
+              "id": "L1U6_R",
+              "letter": "R",
+              "displayLetter": "Rr",
+              "soundSpelling": "rrr",
+              "sentence": "A rabbit and a rose.",
+              "stretchedWord": "R-R-Rabbit",
               "orderIndex": 2,
-              "vocabulary": [
-                {"text": "Rabbit", "emoji": "🐰", "orderIndex": 0},
-                {"text": "Rose", "emoji": "🌹", "orderIndex": 1},
-                {"text": "Ring", "emoji": "💍", "orderIndex": 2},
-                {"text": "Rainbow", "emoji": "🌈", "orderIndex": 3},
-                {"text": "Robot", "emoji": "🤖", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "rabbit",
+                  "emoji": "🐰"
+                },
+                {
+                  "word": "rose",
+                  "emoji": "🌹"
+                },
+                {
+                  "word": "rice",
+                  "emoji": "🍚"
+                },
+                {
+                  "word": "robot",
+                  "emoji": "🤖"
+                }
               ]
             }
           ]
         },
         {
-          "id": "level-1-unit-7",
+          "id": "L1U7",
           "number": 7,
-          "title": "Ss Tt Uu",
+          "title": "Ss Tt Uu Vv",
+          "themeChip": null,
           "orderIndex": 6,
-          "words": [
+          "lessons": [
             {
-              "id": "l1-u7-sun",
-              "text": "sun",
-              "phoneme": "/s/",
-              "emoji": "☀️",
+              "id": "L1U7_S",
+              "letter": "S",
+              "displayLetter": "Ss",
+              "soundSpelling": "sss",
+              "sentence": "A seal in the sun.",
+              "stretchedWord": "S-S-Seal",
               "orderIndex": 0,
-              "vocabulary": [
-                {"text": "Sun", "emoji": "☀️", "orderIndex": 0},
-                {"text": "Sock", "emoji": "🧦", "orderIndex": 1},
-                {"text": "Snake", "emoji": "🐍", "orderIndex": 2},
-                {"text": "Star", "emoji": "⭐", "orderIndex": 3},
-                {"text": "Ship", "emoji": "🚢", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "seal",
+                  "emoji": "🦭"
+                },
+                {
+                  "word": "sun",
+                  "emoji": "☀️"
+                },
+                {
+                  "word": "soap",
+                  "emoji": "🧼"
+                },
+                {
+                  "word": "socks",
+                  "emoji": "🧦"
+                }
               ]
             },
             {
-              "id": "l1-u7-tiger",
-              "text": "tiger",
-              "phoneme": "/t/",
-              "emoji": "🐯",
+              "id": "L1U7_T",
+              "letter": "T",
+              "displayLetter": "Tt",
+              "soundSpelling": "tuh",
+              "sentence": "A tiger and a turtle.",
+              "stretchedWord": "T-T-Tiger",
               "orderIndex": 1,
-              "vocabulary": [
-                {"text": "Tiger", "emoji": "🐯", "orderIndex": 0},
-                {"text": "Tree", "emoji": "🌳", "orderIndex": 1},
-                {"text": "Toy", "emoji": "🧸", "orderIndex": 2},
-                {"text": "Turtle", "emoji": "🐢", "orderIndex": 3},
-                {"text": "Train", "emoji": "🚂", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "turtle",
+                  "emoji": "🐢"
+                },
+                {
+                  "word": "tent",
+                  "emoji": "⛺"
+                },
+                {
+                  "word": "tiger",
+                  "emoji": "🐯"
+                },
+                {
+                  "word": "teacher",
+                  "emoji": "👩‍🏫"
+                }
               ]
             },
             {
-              "id": "l1-u7-umbrella",
-              "text": "umbrella",
-              "phoneme": "/ʌ/",
-              "emoji": "☂️",
+              "id": "L1U7_U",
+              "letter": "U",
+              "displayLetter": "Uu",
+              "soundSpelling": "uhh",
+              "sentence": "An umbrella up high.",
+              "stretchedWord": "UHH-mbrella",
               "orderIndex": 2,
-              "vocabulary": [
-                {"text": "Umbrella", "emoji": "☂️", "orderIndex": 0},
-                {"text": "Up", "emoji": "⬆️", "orderIndex": 1},
-                {"text": "Under", "emoji": "⤵️", "orderIndex": 2},
-                {"text": "Unicorn", "emoji": "🦄", "orderIndex": 3},
-                {"text": "Uniform", "emoji": "👔", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "umbrella",
+                  "emoji": "☂️"
+                },
+                {
+                  "word": "up",
+                  "emoji": "⬆️"
+                },
+                {
+                  "word": "uncle",
+                  "emoji": "👨"
+                },
+                {
+                  "word": "umpire",
+                  "emoji": "🧑‍⚖️"
+                }
+              ]
+            },
+            {
+              "id": "L1U7_V",
+              "letter": "V",
+              "displayLetter": "Vv",
+              "soundSpelling": "vvv",
+              "sentence": "A vet in a van.",
+              "stretchedWord": "V-V-Van",
+              "orderIndex": 3,
+              "words": [
+                {
+                  "word": "van",
+                  "emoji": "🚐"
+                },
+                {
+                  "word": "vet",
+                  "emoji": "👨‍⚕️"
+                },
+                {
+                  "word": "vest",
+                  "emoji": "🦺"
+                },
+                {
+                  "word": "violin",
+                  "emoji": "🎻"
+                }
               ]
             }
           ]
         },
         {
-          "id": "level-1-unit-8",
+          "id": "L1U8",
           "number": 8,
-          "title": "Vv Ww Xx",
+          "title": "Ww Xx Yy Zz",
+          "themeChip": null,
           "orderIndex": 7,
-          "words": [
+          "lessons": [
             {
-              "id": "l1-u8-van",
-              "text": "van",
-              "phoneme": "/v/",
-              "emoji": "🚐",
+              "id": "L1U8_W",
+              "letter": "W",
+              "displayLetter": "Ww",
+              "soundSpelling": "wuh",
+              "sentence": "A wolf in the water.",
+              "stretchedWord": "W-W-Wolf",
               "orderIndex": 0,
-              "vocabulary": [
-                {"text": "Van", "emoji": "🚐", "orderIndex": 0},
-                {"text": "Violin", "emoji": "🎻", "orderIndex": 1},
-                {"text": "Vest", "emoji": "🦺", "orderIndex": 2},
-                {"text": "Volcano", "emoji": "🌋", "orderIndex": 3},
-                {"text": "Vase", "emoji": "🏺", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "wolf",
+                  "emoji": "🐺"
+                },
+                {
+                  "word": "web",
+                  "emoji": "🕸️"
+                },
+                {
+                  "word": "water",
+                  "emoji": "💧"
+                },
+                {
+                  "word": "watch",
+                  "emoji": "⌚"
+                }
               ]
             },
             {
-              "id": "l1-u8-whale",
-              "text": "whale",
-              "phoneme": "/w/",
-              "emoji": "🐳",
+              "id": "L1U8_X",
+              "letter": "X",
+              "displayLetter": "Xx",
+              "soundSpelling": "ks",
+              "sentence": "A fox in a box.",
+              "stretchedWord": "B-O-Ks",
               "orderIndex": 1,
-              "vocabulary": [
-                {"text": "Whale", "emoji": "🐳", "orderIndex": 0},
-                {"text": "Water", "emoji": "💧", "orderIndex": 1},
-                {"text": "Wind", "emoji": "🌬️", "orderIndex": 2},
-                {"text": "Wolf", "emoji": "🐺", "orderIndex": 3},
-                {"text": "Window", "emoji": "🪟", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "fox",
+                  "emoji": "🦊"
+                },
+                {
+                  "word": "box",
+                  "emoji": "📦"
+                },
+                {
+                  "word": "six",
+                  "emoji": "6️⃣"
+                },
+                {
+                  "word": "wax",
+                  "emoji": "🕯️"
+                }
               ]
             },
             {
-              "id": "l1-u8-fox",
-              "text": "fox",
-              "phoneme": "/ks/",
-              "emoji": "🦊",
+              "id": "L1U8_Y",
+              "letter": "Y",
+              "displayLetter": "Yy",
+              "soundSpelling": "yuh",
+              "sentence": "A yak with a yo-yo.",
+              "stretchedWord": "Y-Y-Yak",
               "orderIndex": 2,
-              "vocabulary": [
-                {"text": "Fox", "emoji": "🦊", "orderIndex": 0},
-                {"text": "Box", "emoji": "📦", "orderIndex": 1},
-                {"text": "Six", "emoji": "6️⃣", "orderIndex": 2},
-                {"text": "Ox", "emoji": "🐂", "orderIndex": 3},
-                {"text": "Mix", "emoji": "🥣", "orderIndex": 4}
-              ]
-            }
-          ]
-        },
-        {
-          "id": "level-1-unit-9",
-          "number": 9,
-          "title": "Yy Zz Review",
-          "orderIndex": 8,
-          "words": [
-            {
-              "id": "l1-u9-yak",
-              "text": "yak",
-              "phoneme": "/j/",
-              "emoji": "🐃",
-              "orderIndex": 0,
-              "vocabulary": [
-                {"text": "Yak", "emoji": "🐃", "orderIndex": 0},
-                {"text": "Yarn", "emoji": "🧶", "orderIndex": 1},
-                {"text": "Yo-yo", "emoji": "🪀", "orderIndex": 2},
-                {"text": "Yogurt", "emoji": "🥛", "orderIndex": 3},
-                {"text": "Yellow", "emoji": "🟡", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "yo-yo",
+                  "emoji": "🪀"
+                },
+                {
+                  "word": "yak",
+                  "emoji": "🐃"
+                },
+                {
+                  "word": "yogurt",
+                  "emoji": "🥛"
+                },
+                {
+                  "word": "yacht",
+                  "emoji": "⛵"
+                }
               ]
             },
             {
-              "id": "l1-u9-zebra",
-              "text": "zebra",
-              "phoneme": "/z/",
-              "emoji": "🦓",
-              "orderIndex": 1,
-              "vocabulary": [
-                {"text": "Zebra", "emoji": "🦓", "orderIndex": 0},
-                {"text": "Zero", "emoji": "0️⃣", "orderIndex": 1},
-                {"text": "Zoo", "emoji": "🐘", "orderIndex": 2},
-                {"text": "Zip", "emoji": "🤐", "orderIndex": 3},
-                {"text": "Zucchini", "emoji": "🥒", "orderIndex": 4}
-              ]
-            },
-            {
-              "id": "l1-u9-apple-review",
-              "text": "apple",
-              "phoneme": "/æ/",
-              "emoji": "🍎",
-              "orderIndex": 2,
-              "vocabulary": [
-                {"text": "Apple", "emoji": "🍎", "orderIndex": 0},
-                {"text": "Bear", "emoji": "🐻", "orderIndex": 1},
-                {"text": "Cat", "emoji": "🐱", "orderIndex": 2},
-                {"text": "Dog", "emoji": "🐶", "orderIndex": 3},
-                {"text": "Egg", "emoji": "🥚", "orderIndex": 4}
+              "id": "L1U8_Z",
+              "letter": "Z",
+              "displayLetter": "Zz",
+              "soundSpelling": "zzz",
+              "sentence": "A zebra at the zoo.",
+              "stretchedWord": "Z-Z-Zebra",
+              "orderIndex": 3,
+              "words": [
+                {
+                  "word": "zipper",
+                  "emoji": "🤐"
+                },
+                {
+                  "word": "zero",
+                  "emoji": "0️⃣"
+                },
+                {
+                  "word": "zoo",
+                  "emoji": "🐘"
+                },
+                {
+                  "word": "zebra",
+                  "emoji": "🦓"
+                }
               ]
             }
           ]
@@ -461,7 +785,7 @@
       ]
     },
     {
-      "id": "level-2",
+      "id": "L2",
       "number": 2,
       "title": "Short Vowels",
       "isPremium": true,
@@ -469,451 +793,721 @@
       "orderIndex": 1,
       "units": [
         {
-          "id": "level-2-unit-1",
+          "id": "L2U1",
           "number": 1,
-          "title": "-am family",
+          "title": "a a am a an",
+          "themeChip": "short a",
           "orderIndex": 0,
-          "words": [
+          "lessons": [
             {
-              "id": "l2-u1-ham",
-              "text": "ham",
-              "phoneme": "/hæm/",
-              "emoji": "🍖",
+              "id": "L2U1_a",
+              "letter": "SHORT-A",
+              "displayLetter": "a",
+              "soundSpelling": "ahh",
+              "sentence": "A cat and an ant.",
+              "stretchedWord": "K-A-T",
               "orderIndex": 0,
-              "vocabulary": [
-                {"text": "Ham", "emoji": "🍖", "orderIndex": 0},
-                {"text": "Jam", "emoji": "🍓", "orderIndex": 1},
-                {"text": "Ram", "emoji": "🐏", "orderIndex": 2},
-                {"text": "Yam", "emoji": "🍠", "orderIndex": 3},
-                {"text": "Dam", "emoji": "🌊", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "cat",
+                  "emoji": "🐱"
+                },
+                {
+                  "word": "ant",
+                  "emoji": "🐜"
+                },
+                {
+                  "word": "yak",
+                  "emoji": "🐃"
+                },
+                {
+                  "word": "ax",
+                  "emoji": "🪓"
+                }
               ]
             },
             {
-              "id": "l2-u1-jam",
-              "text": "jam",
-              "phoneme": "/dʒæm/",
-              "emoji": "🍓",
+              "id": "L2U1_am",
+              "letter": "SHORT-A-AM",
+              "displayLetter": "a am",
+              "soundSpelling": "ahh",
+              "sentence": "A ram and some jam.",
+              "stretchedWord": "R-A-M",
               "orderIndex": 1,
-              "vocabulary": [
-                {"text": "Jam", "emoji": "🍓", "orderIndex": 0},
-                {"text": "Ham", "emoji": "🍖", "orderIndex": 1},
-                {"text": "Yam", "emoji": "🍠", "orderIndex": 2},
-                {"text": "Pam", "emoji": "👧", "orderIndex": 3},
-                {"text": "Sam", "emoji": "👦", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "ram",
+                  "emoji": "🐏"
+                },
+                {
+                  "word": "jam",
+                  "emoji": "🍓"
+                },
+                {
+                  "word": "yam",
+                  "emoji": "🍠"
+                },
+                {
+                  "word": "dam",
+                  "emoji": "🌊"
+                }
               ]
             },
             {
-              "id": "l2-u1-ram",
-              "text": "ram",
-              "phoneme": "/ræm/",
-              "emoji": "🐏",
+              "id": "L2U1_an",
+              "letter": "SHORT-A-AN",
+              "displayLetter": "a an",
+              "soundSpelling": "ahh",
+              "sentence": "A man and a fan.",
+              "stretchedWord": "F-A-N",
               "orderIndex": 2,
-              "vocabulary": [
-                {"text": "Ram", "emoji": "🐏", "orderIndex": 0},
-                {"text": "Ham", "emoji": "🍖", "orderIndex": 1},
-                {"text": "Jam", "emoji": "🍓", "orderIndex": 2},
-                {"text": "Yam", "emoji": "🍠", "orderIndex": 3},
-                {"text": "Pam", "emoji": "👧", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "fan",
+                  "emoji": "🪭"
+                },
+                {
+                  "word": "man",
+                  "emoji": "👨"
+                },
+                {
+                  "word": "pan",
+                  "emoji": "🍳"
+                },
+                {
+                  "word": "can",
+                  "emoji": "🥫"
+                }
               ]
             }
           ]
         },
         {
-          "id": "level-2-unit-2",
+          "id": "L2U2",
           "number": 2,
-          "title": "-an family",
+          "title": "a ad ag a ap a at",
+          "themeChip": "short a",
           "orderIndex": 1,
-          "words": [
+          "lessons": [
             {
-              "id": "l2-u2-can",
-              "text": "can",
-              "phoneme": "/kæn/",
-              "emoji": "🥫",
+              "id": "L2U2_ad_ag",
+              "letter": "SHORT-A-AD-AG",
+              "displayLetter": "a ad ag",
+              "soundSpelling": "ahh",
+              "sentence": "Dad has a bag.",
+              "stretchedWord": "D-A-D",
               "orderIndex": 0,
-              "vocabulary": [
-                {"text": "Can", "emoji": "🥫", "orderIndex": 0},
-                {"text": "Fan", "emoji": "🪭", "orderIndex": 1},
-                {"text": "Pan", "emoji": "🍳", "orderIndex": 2},
-                {"text": "Van", "emoji": "🚐", "orderIndex": 3},
-                {"text": "Man", "emoji": "👨", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "dad",
+                  "emoji": "👨"
+                },
+                {
+                  "word": "pad",
+                  "emoji": "📒"
+                },
+                {
+                  "word": "bag",
+                  "emoji": "👜"
+                },
+                {
+                  "word": "rag",
+                  "emoji": "🧹"
+                }
               ]
             },
             {
-              "id": "l2-u2-fan",
-              "text": "fan",
-              "phoneme": "/fæn/",
-              "emoji": "🪭",
+              "id": "L2U2_ap",
+              "letter": "SHORT-A-AP",
+              "displayLetter": "a ap",
+              "soundSpelling": "ahh",
+              "sentence": "A cap on a map.",
+              "stretchedWord": "K-A-P",
               "orderIndex": 1,
-              "vocabulary": [
-                {"text": "Fan", "emoji": "🪭", "orderIndex": 0},
-                {"text": "Van", "emoji": "🚐", "orderIndex": 1},
-                {"text": "Man", "emoji": "👨", "orderIndex": 2},
-                {"text": "Pan", "emoji": "🍳", "orderIndex": 3},
-                {"text": "Ran", "emoji": "🏃", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "cap",
+                  "emoji": "🧢"
+                },
+                {
+                  "word": "map",
+                  "emoji": "🗺️"
+                },
+                {
+                  "word": "nap",
+                  "emoji": "😴"
+                },
+                {
+                  "word": "tap",
+                  "emoji": "🚰"
+                }
               ]
             },
             {
-              "id": "l2-u2-van",
-              "text": "van",
-              "phoneme": "/væn/",
-              "emoji": "🚐",
+              "id": "L2U2_at",
+              "letter": "SHORT-A-AT",
+              "displayLetter": "a at",
+              "soundSpelling": "ahh",
+              "sentence": "A bat on a mat.",
+              "stretchedWord": "B-A-T",
               "orderIndex": 2,
-              "vocabulary": [
-                {"text": "Van", "emoji": "🚐", "orderIndex": 0},
-                {"text": "Pan", "emoji": "🍳", "orderIndex": 1},
-                {"text": "Can", "emoji": "🥫", "orderIndex": 2},
-                {"text": "Fan", "emoji": "🪭", "orderIndex": 3},
-                {"text": "Tan", "emoji": "🟫", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "bat",
+                  "emoji": "🦇"
+                },
+                {
+                  "word": "rat",
+                  "emoji": "🐀"
+                },
+                {
+                  "word": "hat",
+                  "emoji": "🎩"
+                },
+                {
+                  "word": "mat",
+                  "emoji": "🟫"
+                }
               ]
             }
           ]
         },
         {
-          "id": "level-2-unit-3",
+          "id": "L2U3",
           "number": 3,
-          "title": "-at family",
+          "title": "e e et e en ed",
+          "themeChip": "short e",
           "orderIndex": 2,
-          "words": [
+          "lessons": [
             {
-              "id": "l2-u3-cat",
-              "text": "cat",
-              "phoneme": "/kæt/",
-              "emoji": "🐱",
+              "id": "L2U3_e",
+              "letter": "SHORT-E",
+              "displayLetter": "e",
+              "soundSpelling": "ehh",
+              "sentence": "Ten eggs on a web.",
+              "stretchedWord": "W-E-B",
               "orderIndex": 0,
-              "vocabulary": [
-                {"text": "Cat", "emoji": "🐱", "orderIndex": 0},
-                {"text": "Bat", "emoji": "🦇", "orderIndex": 1},
-                {"text": "Hat", "emoji": "🎩", "orderIndex": 2},
-                {"text": "Mat", "emoji": "🟫", "orderIndex": 3},
-                {"text": "Rat", "emoji": "🐀", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "web",
+                  "emoji": "🕸️"
+                },
+                {
+                  "word": "egg",
+                  "emoji": "🥚"
+                },
+                {
+                  "word": "vet",
+                  "emoji": "👨‍⚕️"
+                },
+                {
+                  "word": "ten",
+                  "emoji": "🔟"
+                }
               ]
             },
             {
-              "id": "l2-u3-bat",
-              "text": "bat",
-              "phoneme": "/bæt/",
-              "emoji": "🦇",
+              "id": "L2U3_et",
+              "letter": "SHORT-E-ET",
+              "displayLetter": "e et",
+              "soundSpelling": "ehh",
+              "sentence": "A wet pet jet.",
+              "stretchedWord": "J-E-T",
               "orderIndex": 1,
-              "vocabulary": [
-                {"text": "Bat", "emoji": "🦇", "orderIndex": 0},
-                {"text": "Mat", "emoji": "🟫", "orderIndex": 1},
-                {"text": "Rat", "emoji": "🐀", "orderIndex": 2},
-                {"text": "Fat", "emoji": "🍖", "orderIndex": 3},
-                {"text": "Sat", "emoji": "🪑", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "jet",
+                  "emoji": "✈️"
+                },
+                {
+                  "word": "net",
+                  "emoji": "🥅"
+                },
+                {
+                  "word": "wet",
+                  "emoji": "💧"
+                },
+                {
+                  "word": "pet",
+                  "emoji": "🐾"
+                }
               ]
             },
             {
-              "id": "l2-u3-hat",
-              "text": "hat",
-              "phoneme": "/hæt/",
-              "emoji": "🎩",
+              "id": "L2U3_en_ed",
+              "letter": "SHORT-E-EN-ED",
+              "displayLetter": "e en ed",
+              "soundSpelling": "ehh",
+              "sentence": "A red hen on a bed.",
+              "stretchedWord": "H-E-N",
               "orderIndex": 2,
-              "vocabulary": [
-                {"text": "Hat", "emoji": "🎩", "orderIndex": 0},
-                {"text": "Cat", "emoji": "🐱", "orderIndex": 1},
-                {"text": "Bat", "emoji": "🦇", "orderIndex": 2},
-                {"text": "Mat", "emoji": "🟫", "orderIndex": 3},
-                {"text": "Pat", "emoji": "✋", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "hen",
+                  "emoji": "🐔"
+                },
+                {
+                  "word": "pen",
+                  "emoji": "🖊️"
+                },
+                {
+                  "word": "red",
+                  "emoji": "🟥"
+                },
+                {
+                  "word": "bed",
+                  "emoji": "🛏️"
+                }
               ]
             }
           ]
         },
         {
-          "id": "level-2-unit-4",
+          "id": "L2U4",
           "number": 4,
-          "title": "-ed family",
+          "title": "i i ip i ib id",
+          "themeChip": "short i",
           "orderIndex": 3,
-          "words": [
+          "lessons": [
             {
-              "id": "l2-u4-bed",
-              "text": "bed",
-              "phoneme": "/bɛd/",
-              "emoji": "🛏️",
+              "id": "L2U4_i",
+              "letter": "SHORT-I",
+              "displayLetter": "i",
+              "soundSpelling": "ihh",
+              "sentence": "Ink on the hip.",
+              "stretchedWord": "H-I-P",
               "orderIndex": 0,
-              "vocabulary": [
-                {"text": "Bed", "emoji": "🛏️", "orderIndex": 0},
-                {"text": "Red", "emoji": "🟥", "orderIndex": 1},
-                {"text": "Sled", "emoji": "🛷", "orderIndex": 2},
-                {"text": "Shed", "emoji": "🏚️", "orderIndex": 3},
-                {"text": "Led", "emoji": "🚦", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "hip",
+                  "emoji": "🍑"
+                },
+                {
+                  "word": "ink",
+                  "emoji": "🖋️"
+                },
+                {
+                  "word": "zip",
+                  "emoji": "🤐"
+                },
+                {
+                  "word": "in",
+                  "emoji": "📥"
+                }
               ]
             },
             {
-              "id": "l2-u4-red",
-              "text": "red",
-              "phoneme": "/rɛd/",
-              "emoji": "🟥",
+              "id": "L2U4_ip",
+              "letter": "SHORT-I-IP",
+              "displayLetter": "i ip",
+              "soundSpelling": "ihh",
+              "sentence": "A sip on the lip.",
+              "stretchedWord": "L-I-P",
               "orderIndex": 1,
-              "vocabulary": [
-                {"text": "Red", "emoji": "🟥", "orderIndex": 0},
-                {"text": "Bed", "emoji": "🛏️", "orderIndex": 1},
-                {"text": "Fed", "emoji": "🍽️", "orderIndex": 2},
-                {"text": "Wed", "emoji": "💍", "orderIndex": 3},
-                {"text": "Led", "emoji": "🚦", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "lip",
+                  "emoji": "💋"
+                },
+                {
+                  "word": "tip",
+                  "emoji": "📌"
+                },
+                {
+                  "word": "sip",
+                  "emoji": "🥤"
+                },
+                {
+                  "word": "rip",
+                  "emoji": "✂️"
+                }
               ]
             },
             {
-              "id": "l2-u4-sled",
-              "text": "sled",
-              "phoneme": "/slɛd/",
-              "emoji": "🛷",
+              "id": "L2U4_ib_id",
+              "letter": "SHORT-I-IB-ID",
+              "displayLetter": "i ib id",
+              "soundSpelling": "ihh",
+              "sentence": "A kid with a lid.",
+              "stretchedWord": "B-I-B",
               "orderIndex": 2,
-              "vocabulary": [
-                {"text": "Sled", "emoji": "🛷", "orderIndex": 0},
-                {"text": "Fed", "emoji": "🍽️", "orderIndex": 1},
-                {"text": "Wed", "emoji": "💍", "orderIndex": 2},
-                {"text": "Bed", "emoji": "🛏️", "orderIndex": 3},
-                {"text": "Red", "emoji": "🟥", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "bib",
+                  "emoji": "👶"
+                },
+                {
+                  "word": "rib",
+                  "emoji": "🍖"
+                },
+                {
+                  "word": "kid",
+                  "emoji": "👶"
+                },
+                {
+                  "word": "lid",
+                  "emoji": "🥫"
+                }
               ]
             }
           ]
         },
         {
-          "id": "level-2-unit-5",
+          "id": "L2U5",
           "number": 5,
-          "title": "-en family",
+          "title": "i in i ig i it ix",
+          "themeChip": "short i",
           "orderIndex": 4,
-          "words": [
+          "lessons": [
             {
-              "id": "l2-u5-hen",
-              "text": "hen",
-              "phoneme": "/hɛn/",
-              "emoji": "🐔",
+              "id": "L2U5_in",
+              "letter": "SHORT-I-IN",
+              "displayLetter": "i in",
+              "soundSpelling": "ihh",
+              "sentence": "A pin in the bin.",
+              "stretchedWord": "P-I-N",
               "orderIndex": 0,
-              "vocabulary": [
-                {"text": "Hen", "emoji": "🐔", "orderIndex": 0},
-                {"text": "Pen", "emoji": "🖊️", "orderIndex": 1},
-                {"text": "Ten", "emoji": "🔟", "orderIndex": 2},
-                {"text": "Den", "emoji": "🏕️", "orderIndex": 3},
-                {"text": "Men", "emoji": "👥", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "pin",
+                  "emoji": "📍"
+                },
+                {
+                  "word": "fin",
+                  "emoji": "🐟"
+                },
+                {
+                  "word": "bin",
+                  "emoji": "🗑️"
+                },
+                {
+                  "word": "win",
+                  "emoji": "🏆"
+                }
               ]
             },
             {
-              "id": "l2-u5-pen",
-              "text": "pen",
-              "phoneme": "/pɛn/",
-              "emoji": "🖊️",
+              "id": "L2U5_ig",
+              "letter": "SHORT-I-IG",
+              "displayLetter": "i ig",
+              "soundSpelling": "ihh",
+              "sentence": "A big fig.",
+              "stretchedWord": "F-I-G",
               "orderIndex": 1,
-              "vocabulary": [
-                {"text": "Pen", "emoji": "🖊️", "orderIndex": 0},
-                {"text": "Men", "emoji": "👥", "orderIndex": 1},
-                {"text": "Den", "emoji": "🏕️", "orderIndex": 2},
-                {"text": "Ten", "emoji": "🔟", "orderIndex": 3},
-                {"text": "Ben", "emoji": "👦", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "fig",
+                  "emoji": "🌿"
+                },
+                {
+                  "word": "wig",
+                  "emoji": "💇"
+                },
+                {
+                  "word": "big",
+                  "emoji": "🦏"
+                },
+                {
+                  "word": "dig",
+                  "emoji": "⛏️"
+                }
               ]
             },
             {
-              "id": "l2-u5-ten",
-              "text": "ten",
-              "phoneme": "/tɛn/",
-              "emoji": "🔟",
+              "id": "L2U5_it_ix",
+              "letter": "SHORT-I-IT-IX",
+              "displayLetter": "i it ix",
+              "soundSpelling": "ihh",
+              "sentence": "Six hit the pit.",
+              "stretchedWord": "P-I-T",
               "orderIndex": 2,
-              "vocabulary": [
-                {"text": "Ten", "emoji": "🔟", "orderIndex": 0},
-                {"text": "Hen", "emoji": "🐔", "orderIndex": 1},
-                {"text": "Pen", "emoji": "🖊️", "orderIndex": 2},
-                {"text": "Ken", "emoji": "👦", "orderIndex": 3},
-                {"text": "Den", "emoji": "🏕️", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "pit",
+                  "emoji": "🕳️"
+                },
+                {
+                  "word": "hit",
+                  "emoji": "🥊"
+                },
+                {
+                  "word": "six",
+                  "emoji": "6️⃣"
+                },
+                {
+                  "word": "mix",
+                  "emoji": "🥣"
+                }
               ]
             }
           ]
         },
         {
-          "id": "level-2-unit-6",
+          "id": "L2U6",
           "number": 6,
-          "title": "-et family",
+          "title": "o o ot o op",
+          "themeChip": "short o",
           "orderIndex": 5,
-          "words": [
+          "lessons": [
             {
-              "id": "l2-u6-jet",
-              "text": "jet",
-              "phoneme": "/dʒɛt/",
-              "emoji": "✈️",
+              "id": "L2U6_o",
+              "letter": "SHORT-O",
+              "displayLetter": "o",
+              "soundSpelling": "ohh",
+              "sentence": "A fox on a log.",
+              "stretchedWord": "F-O-X",
               "orderIndex": 0,
-              "vocabulary": [
-                {"text": "Jet", "emoji": "✈️", "orderIndex": 0},
-                {"text": "Net", "emoji": "🥅", "orderIndex": 1},
-                {"text": "Pet", "emoji": "🐾", "orderIndex": 2},
-                {"text": "Set", "emoji": "🎯", "orderIndex": 3},
-                {"text": "Let", "emoji": "👉", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "fox",
+                  "emoji": "🦊"
+                },
+                {
+                  "word": "log",
+                  "emoji": "🪵"
+                },
+                {
+                  "word": "ox",
+                  "emoji": "🐂"
+                },
+                {
+                  "word": "rod",
+                  "emoji": "🎣"
+                }
               ]
             },
             {
-              "id": "l2-u6-net",
-              "text": "net",
-              "phoneme": "/nɛt/",
-              "emoji": "🥅",
+              "id": "L2U6_ot",
+              "letter": "SHORT-O-OT",
+              "displayLetter": "o ot",
+              "soundSpelling": "ohh",
+              "sentence": "A hot pot.",
+              "stretchedWord": "P-O-T",
               "orderIndex": 1,
-              "vocabulary": [
-                {"text": "Net", "emoji": "🥅", "orderIndex": 0},
-                {"text": "Wet", "emoji": "💧", "orderIndex": 1},
-                {"text": "Set", "emoji": "🎯", "orderIndex": 2},
-                {"text": "Vet", "emoji": "👨‍⚕️", "orderIndex": 3},
-                {"text": "Get", "emoji": "🙌", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "pot",
+                  "emoji": "🍯"
+                },
+                {
+                  "word": "hot",
+                  "emoji": "🔥"
+                },
+                {
+                  "word": "cot",
+                  "emoji": "🛏️"
+                },
+                {
+                  "word": "dot",
+                  "emoji": "🔵"
+                }
               ]
             },
             {
-              "id": "l2-u6-pet",
-              "text": "pet",
-              "phoneme": "/pɛt/",
-              "emoji": "🐾",
+              "id": "L2U6_op",
+              "letter": "SHORT-O-OP",
+              "displayLetter": "o op",
+              "soundSpelling": "ohh",
+              "sentence": "A top hops.",
+              "stretchedWord": "T-O-P",
               "orderIndex": 2,
-              "vocabulary": [
-                {"text": "Pet", "emoji": "🐾", "orderIndex": 0},
-                {"text": "Jet", "emoji": "✈️", "orderIndex": 1},
-                {"text": "Let", "emoji": "👉", "orderIndex": 2},
-                {"text": "Set", "emoji": "🎯", "orderIndex": 3},
-                {"text": "Get", "emoji": "🙌", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "top",
+                  "emoji": "🔝"
+                },
+                {
+                  "word": "mop",
+                  "emoji": "🧹"
+                },
+                {
+                  "word": "hop",
+                  "emoji": "🐇"
+                },
+                {
+                  "word": "pop",
+                  "emoji": "🍿"
+                }
               ]
             }
           ]
         },
         {
-          "id": "level-2-unit-7",
+          "id": "L2U7",
           "number": 7,
-          "title": "-in family",
+          "title": "u u ug u ud up",
+          "themeChip": "short u",
           "orderIndex": 6,
-          "words": [
+          "lessons": [
             {
-              "id": "l2-u7-pin",
-              "text": "pin",
-              "phoneme": "/pɪn/",
-              "emoji": "📍",
+              "id": "L2U7_u",
+              "letter": "SHORT-U",
+              "displayLetter": "u",
+              "soundSpelling": "uhh",
+              "sentence": "Sun is up.",
+              "stretchedWord": "S-U-N",
               "orderIndex": 0,
-              "vocabulary": [
-                {"text": "Pin", "emoji": "📍", "orderIndex": 0},
-                {"text": "Bin", "emoji": "🗑️", "orderIndex": 1},
-                {"text": "Fin", "emoji": "🐟", "orderIndex": 2},
-                {"text": "Tin", "emoji": "🥫", "orderIndex": 3},
-                {"text": "Skin", "emoji": "🤚", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "sun",
+                  "emoji": "☀️"
+                },
+                {
+                  "word": "up",
+                  "emoji": "⬆️"
+                },
+                {
+                  "word": "jug",
+                  "emoji": "🫗"
+                },
+                {
+                  "word": "hug",
+                  "emoji": "🤗"
+                }
               ]
             },
             {
-              "id": "l2-u7-bin",
-              "text": "bin",
-              "phoneme": "/bɪn/",
-              "emoji": "🗑️",
+              "id": "L2U7_ug",
+              "letter": "SHORT-U-UG",
+              "displayLetter": "u ug",
+              "soundSpelling": "uhh",
+              "sentence": "A bug on the rug.",
+              "stretchedWord": "B-U-G",
               "orderIndex": 1,
-              "vocabulary": [
-                {"text": "Bin", "emoji": "🗑️", "orderIndex": 0},
-                {"text": "Win", "emoji": "🏆", "orderIndex": 1},
-                {"text": "Tin", "emoji": "🥫", "orderIndex": 2},
-                {"text": "Pin", "emoji": "📍", "orderIndex": 3},
-                {"text": "Chin", "emoji": "👤", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "bug",
+                  "emoji": "🐛"
+                },
+                {
+                  "word": "rug",
+                  "emoji": "🟫"
+                },
+                {
+                  "word": "mug",
+                  "emoji": "☕"
+                },
+                {
+                  "word": "jug",
+                  "emoji": "🫗"
+                }
               ]
             },
             {
-              "id": "l2-u7-win",
-              "text": "win",
-              "phoneme": "/wɪn/",
-              "emoji": "🏆",
+              "id": "L2U7_ud_up",
+              "letter": "SHORT-U-UD-UP",
+              "displayLetter": "u ud up",
+              "soundSpelling": "uhh",
+              "sentence": "A pup in the mud.",
+              "stretchedWord": "B-U-D",
               "orderIndex": 2,
-              "vocabulary": [
-                {"text": "Win", "emoji": "🏆", "orderIndex": 0},
-                {"text": "Pin", "emoji": "📍", "orderIndex": 1},
-                {"text": "Fin", "emoji": "🐟", "orderIndex": 2},
-                {"text": "Tin", "emoji": "🥫", "orderIndex": 3},
-                {"text": "Bin", "emoji": "🗑️", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "bud",
+                  "emoji": "🌱"
+                },
+                {
+                  "word": "mud",
+                  "emoji": "💧"
+                },
+                {
+                  "word": "pup",
+                  "emoji": "🐶"
+                },
+                {
+                  "word": "cup",
+                  "emoji": "☕"
+                }
               ]
             }
           ]
         },
         {
-          "id": "level-2-unit-8",
+          "id": "L2U8",
           "number": 8,
-          "title": "-ig family",
+          "title": "u ut u ub um u un",
+          "themeChip": "short u",
           "orderIndex": 7,
-          "words": [
+          "lessons": [
             {
-              "id": "l2-u8-pig",
-              "text": "pig",
-              "phoneme": "/pɪɡ/",
-              "emoji": "🐷",
+              "id": "L2U8_ut",
+              "letter": "SHORT-U-UT",
+              "displayLetter": "u ut",
+              "soundSpelling": "uhh",
+              "sentence": "A nut in a hut.",
+              "stretchedWord": "N-U-T",
               "orderIndex": 0,
-              "vocabulary": [
-                {"text": "Pig", "emoji": "🐷", "orderIndex": 0},
-                {"text": "Big", "emoji": "🦏", "orderIndex": 1},
-                {"text": "Dig", "emoji": "⛏️", "orderIndex": 2},
-                {"text": "Wig", "emoji": "💇", "orderIndex": 3},
-                {"text": "Fig", "emoji": "🌿", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "nut",
+                  "emoji": "🌰"
+                },
+                {
+                  "word": "hut",
+                  "emoji": "🛖"
+                },
+                {
+                  "word": "cut",
+                  "emoji": "✂️"
+                },
+                {
+                  "word": "but",
+                  "emoji": "❗"
+                }
               ]
             },
             {
-              "id": "l2-u8-big",
-              "text": "big",
-              "phoneme": "/bɪɡ/",
-              "emoji": "🦏",
+              "id": "L2U8_ub_um",
+              "letter": "SHORT-U-UB-UM",
+              "displayLetter": "u ub um",
+              "soundSpelling": "uhh",
+              "sentence": "A cub in a tub.",
+              "stretchedWord": "K-U-B",
               "orderIndex": 1,
-              "vocabulary": [
-                {"text": "Big", "emoji": "🦏", "orderIndex": 0},
-                {"text": "Wig", "emoji": "💇", "orderIndex": 1},
-                {"text": "Fig", "emoji": "🌿", "orderIndex": 2},
-                {"text": "Jig", "emoji": "💃", "orderIndex": 3},
-                {"text": "Pig", "emoji": "🐷", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "cub",
+                  "emoji": "🐻"
+                },
+                {
+                  "word": "tub",
+                  "emoji": "🛁"
+                },
+                {
+                  "word": "gum",
+                  "emoji": "🍬"
+                },
+                {
+                  "word": "hum",
+                  "emoji": "🎵"
+                }
               ]
             },
             {
-              "id": "l2-u8-dig",
-              "text": "dig",
-              "phoneme": "/dɪɡ/",
-              "emoji": "⛏️",
+              "id": "L2U8_un",
+              "letter": "SHORT-U-UN",
+              "displayLetter": "u un",
+              "soundSpelling": "uhh",
+              "sentence": "Run in the sun.",
+              "stretchedWord": "B-U-N",
               "orderIndex": 2,
-              "vocabulary": [
-                {"text": "Dig", "emoji": "⛏️", "orderIndex": 0},
-                {"text": "Pig", "emoji": "🐷", "orderIndex": 1},
-                {"text": "Wig", "emoji": "💇", "orderIndex": 2},
-                {"text": "Rig", "emoji": "🚜", "orderIndex": 3},
-                {"text": "Twig", "emoji": "🌱", "orderIndex": 4}
-              ]
-            }
-          ]
-        },
-        {
-          "id": "level-2-unit-9",
-          "number": 9,
-          "title": "-op family",
-          "orderIndex": 8,
-          "words": [
-            {
-              "id": "l2-u9-pop",
-              "text": "pop",
-              "phoneme": "/pɒp/",
-              "emoji": "🍿",
-              "orderIndex": 0,
-              "vocabulary": [
-                {"text": "Pop", "emoji": "🍿", "orderIndex": 0},
-                {"text": "Top", "emoji": "🔝", "orderIndex": 1},
-                {"text": "Mop", "emoji": "🧹", "orderIndex": 2},
-                {"text": "Hop", "emoji": "🐇", "orderIndex": 3},
-                {"text": "Cop", "emoji": "👮", "orderIndex": 4}
-              ]
-            },
-            {
-              "id": "l2-u9-top",
-              "text": "top",
-              "phoneme": "/tɒp/",
-              "emoji": "🔝",
-              "orderIndex": 1,
-              "vocabulary": [
-                {"text": "Top", "emoji": "🔝", "orderIndex": 0},
-                {"text": "Hop", "emoji": "🐇", "orderIndex": 1},
-                {"text": "Stop", "emoji": "🛑", "orderIndex": 2},
-                {"text": "Drop", "emoji": "💧", "orderIndex": 3},
-                {"text": "Mop", "emoji": "🧹", "orderIndex": 4}
-              ]
-            },
-            {
-              "id": "l2-u9-hop",
-              "text": "hop",
-              "phoneme": "/hɒp/",
-              "emoji": "🐇",
-              "orderIndex": 2,
-              "vocabulary": [
-                {"text": "Hop", "emoji": "🐇", "orderIndex": 0},
-                {"text": "Mop", "emoji": "🧹", "orderIndex": 1},
-                {"text": "Pop", "emoji": "🍿", "orderIndex": 2},
-                {"text": "Top", "emoji": "🔝", "orderIndex": 3},
-                {"text": "Shop", "emoji": "🏪", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "bun",
+                  "emoji": "🥯"
+                },
+                {
+                  "word": "run",
+                  "emoji": "🏃"
+                },
+                {
+                  "word": "fun",
+                  "emoji": "🎉"
+                },
+                {
+                  "word": "sun",
+                  "emoji": "☀️"
+                }
               ]
             }
           ]
@@ -921,7 +1515,7 @@
       ]
     },
     {
-      "id": "level-3",
+      "id": "L3",
       "number": 3,
       "title": "Long Vowels",
       "isPremium": true,
@@ -929,451 +1523,721 @@
       "orderIndex": 2,
       "units": [
         {
-          "id": "level-3-unit-1",
+          "id": "L3U1",
           "number": 1,
-          "title": "a_e pattern",
+          "title": "a_e a_e ame ake a_e ate ave",
+          "themeChip": "long a",
           "orderIndex": 0,
-          "words": [
+          "lessons": [
             {
-              "id": "l3-u1-cake",
-              "text": "cake",
-              "phoneme": "/keɪk/",
-              "emoji": "🎂",
+              "id": "L3U1_a_e",
+              "letter": "A_E",
+              "displayLetter": "a_e",
+              "soundSpelling": "aaay",
+              "sentence": "A cape and a cane.",
+              "stretchedWord": "T-AY-P",
               "orderIndex": 0,
-              "vocabulary": [
-                {"text": "Cake", "emoji": "🎂", "orderIndex": 0},
-                {"text": "Lake", "emoji": "🏞️", "orderIndex": 1},
-                {"text": "Snake", "emoji": "🐍", "orderIndex": 2},
-                {"text": "Bake", "emoji": "🥧", "orderIndex": 3},
-                {"text": "Gate", "emoji": "🚪", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "tape",
+                  "emoji": "📼"
+                },
+                {
+                  "word": "cape",
+                  "emoji": "🦸"
+                },
+                {
+                  "word": "cane",
+                  "emoji": "🦯"
+                },
+                {
+                  "word": "mane",
+                  "emoji": "🦁"
+                }
               ]
             },
             {
-              "id": "l3-u1-lake",
-              "text": "lake",
-              "phoneme": "/leɪk/",
-              "emoji": "🏞️",
+              "id": "L3U1_ame_ake",
+              "letter": "A_E-AME-AKE",
+              "displayLetter": "a_e ame ake",
+              "soundSpelling": "aaay",
+              "sentence": "My name is on the cake.",
+              "stretchedWord": "G-AY-M",
               "orderIndex": 1,
-              "vocabulary": [
-                {"text": "Lake", "emoji": "🏞️", "orderIndex": 0},
-                {"text": "Bake", "emoji": "🥧", "orderIndex": 1},
-                {"text": "Gate", "emoji": "🚪", "orderIndex": 2},
-                {"text": "Make", "emoji": "🛠️", "orderIndex": 3},
-                {"text": "Plate", "emoji": "🍽️", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "game",
+                  "emoji": "🎮"
+                },
+                {
+                  "word": "cake",
+                  "emoji": "🎂"
+                },
+                {
+                  "word": "name",
+                  "emoji": "🪪"
+                },
+                {
+                  "word": "lake",
+                  "emoji": "🏞️"
+                }
               ]
             },
             {
-              "id": "l3-u1-snake",
-              "text": "snake",
-              "phoneme": "/sneɪk/",
-              "emoji": "🐍",
+              "id": "L3U1_ate_ave",
+              "letter": "A_E-ATE-AVE",
+              "displayLetter": "a_e ate ave",
+              "soundSpelling": "aaay",
+              "sentence": "A wave by the gate.",
+              "stretchedWord": "G-AY-T",
               "orderIndex": 2,
-              "vocabulary": [
-                {"text": "Snake", "emoji": "🐍", "orderIndex": 0},
-                {"text": "Cake", "emoji": "🎂", "orderIndex": 1},
-                {"text": "Plate", "emoji": "🍽️", "orderIndex": 2},
-                {"text": "Make", "emoji": "🛠️", "orderIndex": 3},
-                {"text": "Lake", "emoji": "🏞️", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "gate",
+                  "emoji": "🚪"
+                },
+                {
+                  "word": "wave",
+                  "emoji": "🌊"
+                },
+                {
+                  "word": "skate",
+                  "emoji": "⛸️"
+                },
+                {
+                  "word": "cave",
+                  "emoji": "🕳️"
+                }
               ]
             }
           ]
         },
         {
-          "id": "level-3-unit-2",
+          "id": "L3U2",
           "number": 2,
-          "title": "ai pattern",
+          "title": "i_e i_e ime ike i_e ive ine",
+          "themeChip": "long i",
           "orderIndex": 1,
-          "words": [
+          "lessons": [
             {
-              "id": "l3-u2-rain",
-              "text": "rain",
-              "phoneme": "/reɪn/",
-              "emoji": "🌧️",
+              "id": "L3U2_i_e",
+              "letter": "I_E",
+              "displayLetter": "i_e",
+              "soundSpelling": "eye",
+              "sentence": "A fine kite.",
+              "stretchedWord": "K-EYE-T",
               "orderIndex": 0,
-              "vocabulary": [
-                {"text": "Rain", "emoji": "🌧️", "orderIndex": 0},
-                {"text": "Train", "emoji": "🚂", "orderIndex": 1},
-                {"text": "Chain", "emoji": "⛓️", "orderIndex": 2},
-                {"text": "Brain", "emoji": "🧠", "orderIndex": 3},
-                {"text": "Snail", "emoji": "🐌", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "kite",
+                  "emoji": "🪁"
+                },
+                {
+                  "word": "pine",
+                  "emoji": "🌲"
+                },
+                {
+                  "word": "ripe",
+                  "emoji": "🍒"
+                },
+                {
+                  "word": "fine",
+                  "emoji": "👌"
+                }
               ]
             },
             {
-              "id": "l3-u2-train",
-              "text": "train",
-              "phoneme": "/treɪn/",
-              "emoji": "🚂",
+              "id": "L3U2_ime_ike",
+              "letter": "I_E-IME-IKE",
+              "displayLetter": "i_e ime ike",
+              "soundSpelling": "eye",
+              "sentence": "Time for a bike hike.",
+              "stretchedWord": "L-EYE-M",
               "orderIndex": 1,
-              "vocabulary": [
-                {"text": "Train", "emoji": "🚂", "orderIndex": 0},
-                {"text": "Brain", "emoji": "🧠", "orderIndex": 1},
-                {"text": "Snail", "emoji": "🐌", "orderIndex": 2},
-                {"text": "Mail", "emoji": "📬", "orderIndex": 3},
-                {"text": "Chain", "emoji": "⛓️", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "lime",
+                  "emoji": "🍈"
+                },
+                {
+                  "word": "bike",
+                  "emoji": "🚲"
+                },
+                {
+                  "word": "time",
+                  "emoji": "⏰"
+                },
+                {
+                  "word": "hike",
+                  "emoji": "🥾"
+                }
               ]
             },
             {
-              "id": "l3-u2-snail",
-              "text": "snail",
-              "phoneme": "/sneɪl/",
-              "emoji": "🐌",
+              "id": "L3U2_ive_ine",
+              "letter": "I_E-IVE-INE",
+              "displayLetter": "i_e ive ine",
+              "soundSpelling": "eye",
+              "sentence": "Five and nine in a line.",
+              "stretchedWord": "F-EYE-V",
               "orderIndex": 2,
-              "vocabulary": [
-                {"text": "Snail", "emoji": "🐌", "orderIndex": 0},
-                {"text": "Mail", "emoji": "📬", "orderIndex": 1},
-                {"text": "Nail", "emoji": "💅", "orderIndex": 2},
-                {"text": "Train", "emoji": "🚂", "orderIndex": 3},
-                {"text": "Rain", "emoji": "🌧️", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "five",
+                  "emoji": "5️⃣"
+                },
+                {
+                  "word": "nine",
+                  "emoji": "9️⃣"
+                },
+                {
+                  "word": "dive",
+                  "emoji": "🏊"
+                },
+                {
+                  "word": "line",
+                  "emoji": "📏"
+                }
               ]
             }
           ]
         },
         {
-          "id": "level-3-unit-3",
+          "id": "L3U3",
           "number": 3,
-          "title": "ay pattern",
+          "title": "o_e u_e u_e",
+          "themeChip": "long o & long u",
           "orderIndex": 2,
-          "words": [
+          "lessons": [
             {
-              "id": "l3-u3-play",
-              "text": "play",
-              "phoneme": "/pleɪ/",
-              "emoji": "🎮",
+              "id": "L3U3_o_e",
+              "letter": "O_E",
+              "displayLetter": "o_e",
+              "soundSpelling": "ohh",
+              "sentence": "A bone at home.",
+              "stretchedWord": "H-OH-M",
               "orderIndex": 0,
-              "vocabulary": [
-                {"text": "Play", "emoji": "🎮", "orderIndex": 0},
-                {"text": "Day", "emoji": "📅", "orderIndex": 1},
-                {"text": "Say", "emoji": "💬", "orderIndex": 2},
-                {"text": "Stay", "emoji": "🧍", "orderIndex": 3},
-                {"text": "Way", "emoji": "🛣️", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "home",
+                  "emoji": "🏠"
+                },
+                {
+                  "word": "bone",
+                  "emoji": "🦴"
+                },
+                {
+                  "word": "cone",
+                  "emoji": "🍦"
+                },
+                {
+                  "word": "rope",
+                  "emoji": "🪢"
+                }
               ]
             },
             {
-              "id": "l3-u3-day",
-              "text": "day",
-              "phoneme": "/deɪ/",
-              "emoji": "📅",
+              "id": "L3U3_u_e_1",
+              "letter": "U_E-1",
+              "displayLetter": "u_e",
+              "soundSpelling": "yoo",
+              "sentence": "A cute cube and mule.",
+              "stretchedWord": "K-YOO-B",
               "orderIndex": 1,
-              "vocabulary": [
-                {"text": "Day", "emoji": "📅", "orderIndex": 0},
-                {"text": "Stay", "emoji": "🧍", "orderIndex": 1},
-                {"text": "Way", "emoji": "🛣️", "orderIndex": 2},
-                {"text": "Tray", "emoji": "🍱", "orderIndex": 3},
-                {"text": "Play", "emoji": "🎮", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "cube",
+                  "emoji": "🟦"
+                },
+                {
+                  "word": "mute",
+                  "emoji": "🔇"
+                },
+                {
+                  "word": "cute",
+                  "emoji": "🥰"
+                },
+                {
+                  "word": "mule",
+                  "emoji": "🫏"
+                }
               ]
             },
             {
-              "id": "l3-u3-tray",
-              "text": "tray",
-              "phoneme": "/treɪ/",
-              "emoji": "🍱",
+              "id": "L3U3_u_e_2",
+              "letter": "U_E-2",
+              "displayLetter": "u_e",
+              "soundSpelling": "yoo",
+              "sentence": "A tune in June.",
+              "stretchedWord": "T-YOO-B",
               "orderIndex": 2,
-              "vocabulary": [
-                {"text": "Tray", "emoji": "🍱", "orderIndex": 0},
-                {"text": "Gray", "emoji": "🌫️", "orderIndex": 1},
-                {"text": "Spray", "emoji": "💦", "orderIndex": 2},
-                {"text": "Say", "emoji": "💬", "orderIndex": 3},
-                {"text": "Way", "emoji": "🛣️", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "tube",
+                  "emoji": "🧴"
+                },
+                {
+                  "word": "June",
+                  "emoji": "📆"
+                },
+                {
+                  "word": "tune",
+                  "emoji": "🎶"
+                },
+                {
+                  "word": "rule",
+                  "emoji": "📜"
+                }
               ]
             }
           ]
         },
         {
-          "id": "level-3-unit-4",
+          "id": "L3U4",
           "number": 4,
-          "title": "ee pattern",
+          "title": "ai ay ai ay",
+          "themeChip": "long a",
           "orderIndex": 3,
-          "words": [
+          "lessons": [
             {
-              "id": "l3-u4-bee",
-              "text": "bee",
-              "phoneme": "/biː/",
-              "emoji": "🐝",
+              "id": "L3U4_ai",
+              "letter": "AI",
+              "displayLetter": "ai",
+              "soundSpelling": "aaay",
+              "sentence": "Wait in the rain.",
+              "stretchedWord": "R-AY-N",
               "orderIndex": 0,
-              "vocabulary": [
-                {"text": "Bee", "emoji": "🐝", "orderIndex": 0},
-                {"text": "Tree", "emoji": "🌳", "orderIndex": 1},
-                {"text": "See", "emoji": "👀", "orderIndex": 2},
-                {"text": "Three", "emoji": "3️⃣", "orderIndex": 3},
-                {"text": "Queen", "emoji": "👸", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "rain",
+                  "emoji": "🌧️"
+                },
+                {
+                  "word": "nail",
+                  "emoji": "💅"
+                },
+                {
+                  "word": "tail",
+                  "emoji": "🐈"
+                },
+                {
+                  "word": "wait",
+                  "emoji": "⏳"
+                }
               ]
             },
             {
-              "id": "l3-u4-tree",
-              "text": "tree",
-              "phoneme": "/triː/",
-              "emoji": "🌳",
+              "id": "L3U4_ay",
+              "letter": "AY",
+              "displayLetter": "ay",
+              "soundSpelling": "aaay",
+              "sentence": "Say it all day.",
+              "stretchedWord": "D-AY",
               "orderIndex": 1,
-              "vocabulary": [
-                {"text": "Tree", "emoji": "🌳", "orderIndex": 0},
-                {"text": "Three", "emoji": "3️⃣", "orderIndex": 1},
-                {"text": "Sheep", "emoji": "🐑", "orderIndex": 2},
-                {"text": "Feet", "emoji": "🦶", "orderIndex": 3},
-                {"text": "See", "emoji": "👀", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "bay",
+                  "emoji": "🏝️"
+                },
+                {
+                  "word": "day",
+                  "emoji": "📅"
+                },
+                {
+                  "word": "say",
+                  "emoji": "💬"
+                },
+                {
+                  "word": "pay",
+                  "emoji": "💵"
+                }
               ]
             },
             {
-              "id": "l3-u4-sheep",
-              "text": "sheep",
-              "phoneme": "/ʃiːp/",
-              "emoji": "🐑",
+              "id": "L3U4_ai_ay",
+              "letter": "AI-AY",
+              "displayLetter": "ai ay",
+              "soundSpelling": "aaay",
+              "sentence": "Mail and hay in May.",
+              "stretchedWord": "S-AY-L",
               "orderIndex": 2,
-              "vocabulary": [
-                {"text": "Sheep", "emoji": "🐑", "orderIndex": 0},
-                {"text": "Feet", "emoji": "🦶", "orderIndex": 1},
-                {"text": "Queen", "emoji": "👸", "orderIndex": 2},
-                {"text": "Tree", "emoji": "🌳", "orderIndex": 3},
-                {"text": "Three", "emoji": "3️⃣", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "sail",
+                  "emoji": "⛵"
+                },
+                {
+                  "word": "mail",
+                  "emoji": "📬"
+                },
+                {
+                  "word": "hay",
+                  "emoji": "🌾"
+                },
+                {
+                  "word": "May",
+                  "emoji": "🌼"
+                }
               ]
             }
           ]
         },
         {
-          "id": "level-3-unit-5",
+          "id": "L3U5",
           "number": 5,
-          "title": "ea pattern",
+          "title": "ee ea y ey",
+          "themeChip": "long e",
           "orderIndex": 4,
-          "words": [
+          "lessons": [
             {
-              "id": "l3-u5-eat",
-              "text": "eat",
-              "phoneme": "/iːt/",
-              "emoji": "🍽️",
+              "id": "L3U5_ee",
+              "letter": "EE",
+              "displayLetter": "ee",
+              "soundSpelling": "eee",
+              "sentence": "A bee on the jeep.",
+              "stretchedWord": "B-EE",
               "orderIndex": 0,
-              "vocabulary": [
-                {"text": "Eat", "emoji": "🍽️", "orderIndex": 0},
-                {"text": "Meat", "emoji": "🥩", "orderIndex": 1},
-                {"text": "Leaf", "emoji": "🍃", "orderIndex": 2},
-                {"text": "Read", "emoji": "📖", "orderIndex": 3},
-                {"text": "Tea", "emoji": "🍵", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "bee",
+                  "emoji": "🐝"
+                },
+                {
+                  "word": "feet",
+                  "emoji": "🦶"
+                },
+                {
+                  "word": "seed",
+                  "emoji": "🌱"
+                },
+                {
+                  "word": "jeep",
+                  "emoji": "🚙"
+                }
               ]
             },
             {
-              "id": "l3-u5-leaf",
-              "text": "leaf",
-              "phoneme": "/liːf/",
-              "emoji": "🍃",
+              "id": "L3U5_ea",
+              "letter": "EA",
+              "displayLetter": "ea",
+              "soundSpelling": "eee",
+              "sentence": "Eat meat by the sea.",
+              "stretchedWord": "L-EE-F",
               "orderIndex": 1,
-              "vocabulary": [
-                {"text": "Leaf", "emoji": "🍃", "orderIndex": 0},
-                {"text": "Read", "emoji": "📖", "orderIndex": 1},
-                {"text": "Sea", "emoji": "🌊", "orderIndex": 2},
-                {"text": "Tea", "emoji": "🍵", "orderIndex": 3},
-                {"text": "Peach", "emoji": "🍑", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "leaf",
+                  "emoji": "🍃"
+                },
+                {
+                  "word": "eat",
+                  "emoji": "🍽️"
+                },
+                {
+                  "word": "sea",
+                  "emoji": "🌊"
+                },
+                {
+                  "word": "meat",
+                  "emoji": "🥩"
+                }
               ]
             },
             {
-              "id": "l3-u5-sea",
-              "text": "sea",
-              "phoneme": "/siː/",
-              "emoji": "🌊",
+              "id": "L3U5_y_ey",
+              "letter": "Y-EY",
+              "displayLetter": "y ey",
+              "soundSpelling": "eee",
+              "sentence": "Happy with candy and money.",
+              "stretchedWord": "K-EE",
               "orderIndex": 2,
-              "vocabulary": [
-                {"text": "Sea", "emoji": "🌊", "orderIndex": 0},
-                {"text": "Tea", "emoji": "🍵", "orderIndex": 1},
-                {"text": "Peach", "emoji": "🍑", "orderIndex": 2},
-                {"text": "Beach", "emoji": "🏖️", "orderIndex": 3},
-                {"text": "Leaf", "emoji": "🍃", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "candy",
+                  "emoji": "🍬"
+                },
+                {
+                  "word": "key",
+                  "emoji": "🔑"
+                },
+                {
+                  "word": "happy",
+                  "emoji": "😄"
+                },
+                {
+                  "word": "money",
+                  "emoji": "💰"
+                }
               ]
             }
           ]
         },
         {
-          "id": "level-3-unit-6",
+          "id": "L3U6",
           "number": 6,
-          "title": "i_e pattern",
+          "title": "igh ie Yy",
+          "themeChip": "long i",
           "orderIndex": 5,
-          "words": [
+          "lessons": [
             {
-              "id": "l3-u6-bike",
-              "text": "bike",
-              "phoneme": "/baɪk/",
-              "emoji": "🚲",
+              "id": "L3U6_igh",
+              "letter": "IGH",
+              "displayLetter": "igh",
+              "soundSpelling": "eye",
+              "sentence": "A high light at night.",
+              "stretchedWord": "L-EYE-T",
               "orderIndex": 0,
-              "vocabulary": [
-                {"text": "Bike", "emoji": "🚲", "orderIndex": 0},
-                {"text": "Kite", "emoji": "🪁", "orderIndex": 1},
-                {"text": "Like", "emoji": "👍", "orderIndex": 2},
-                {"text": "Ride", "emoji": "🏇", "orderIndex": 3},
-                {"text": "Five", "emoji": "5️⃣", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "light",
+                  "emoji": "💡"
+                },
+                {
+                  "word": "night",
+                  "emoji": "🌃"
+                },
+                {
+                  "word": "high",
+                  "emoji": "⬆️"
+                },
+                {
+                  "word": "right",
+                  "emoji": "✅"
+                }
               ]
             },
             {
-              "id": "l3-u6-kite",
-              "text": "kite",
-              "phoneme": "/kaɪt/",
-              "emoji": "🪁",
+              "id": "L3U6_ie",
+              "letter": "IE",
+              "displayLetter": "ie",
+              "soundSpelling": "eye",
+              "sentence": "A pie and a tie.",
+              "stretchedWord": "P-EYE",
               "orderIndex": 1,
-              "vocabulary": [
-                {"text": "Kite", "emoji": "🪁", "orderIndex": 0},
-                {"text": "Five", "emoji": "5️⃣", "orderIndex": 1},
-                {"text": "Ride", "emoji": "🏇", "orderIndex": 2},
-                {"text": "Slide", "emoji": "🛝", "orderIndex": 3},
-                {"text": "Mice", "emoji": "🐭", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "pie",
+                  "emoji": "🥧"
+                },
+                {
+                  "word": "tie",
+                  "emoji": "👔"
+                },
+                {
+                  "word": "lie",
+                  "emoji": "🤥"
+                },
+                {
+                  "word": "die",
+                  "emoji": "🎲"
+                }
               ]
             },
             {
-              "id": "l3-u6-fire",
-              "text": "fire",
-              "phoneme": "/faɪər/",
-              "emoji": "🔥",
+              "id": "L3U6_y",
+              "letter": "Y",
+              "displayLetter": "Yy",
+              "soundSpelling": "eye",
+              "sentence": "My spy in the sky.",
+              "stretchedWord": "SK-EYE",
               "orderIndex": 2,
-              "vocabulary": [
-                {"text": "Fire", "emoji": "🔥", "orderIndex": 0},
-                {"text": "Time", "emoji": "⏰", "orderIndex": 1},
-                {"text": "Mice", "emoji": "🐭", "orderIndex": 2},
-                {"text": "Rice", "emoji": "🍚", "orderIndex": 3},
-                {"text": "Slide", "emoji": "🛝", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "spy",
+                  "emoji": "🕵️"
+                },
+                {
+                  "word": "sky",
+                  "emoji": "☁️"
+                },
+                {
+                  "word": "cry",
+                  "emoji": "😭"
+                },
+                {
+                  "word": "my",
+                  "emoji": "👇"
+                }
               ]
             }
           ]
         },
         {
-          "id": "level-3-unit-7",
+          "id": "L3U7",
           "number": 7,
-          "title": "igh pattern",
+          "title": "oa ow oa ow",
+          "themeChip": "long o",
           "orderIndex": 6,
-          "words": [
+          "lessons": [
             {
-              "id": "l3-u7-light",
-              "text": "light",
-              "phoneme": "/laɪt/",
-              "emoji": "💡",
+              "id": "L3U7_oa",
+              "letter": "OA",
+              "displayLetter": "oa",
+              "soundSpelling": "ohh",
+              "sentence": "A coat on a boat.",
+              "stretchedWord": "B-OH-T",
               "orderIndex": 0,
-              "vocabulary": [
-                {"text": "Light", "emoji": "💡", "orderIndex": 0},
-                {"text": "Night", "emoji": "🌃", "orderIndex": 1},
-                {"text": "High", "emoji": "⬆️", "orderIndex": 2},
-                {"text": "Right", "emoji": "✅", "orderIndex": 3},
-                {"text": "Bright", "emoji": "✨", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "boat",
+                  "emoji": "⛵"
+                },
+                {
+                  "word": "coat",
+                  "emoji": "🧥"
+                },
+                {
+                  "word": "soap",
+                  "emoji": "🧼"
+                },
+                {
+                  "word": "road",
+                  "emoji": "🛣️"
+                }
               ]
             },
             {
-              "id": "l3-u7-night",
-              "text": "night",
-              "phoneme": "/naɪt/",
-              "emoji": "🌃",
+              "id": "L3U7_ow",
+              "letter": "OW",
+              "displayLetter": "ow",
+              "soundSpelling": "ohh",
+              "sentence": "A yellow pillow and bow.",
+              "stretchedWord": "B-OH",
               "orderIndex": 1,
-              "vocabulary": [
-                {"text": "Night", "emoji": "🌃", "orderIndex": 0},
-                {"text": "Right", "emoji": "✅", "orderIndex": 1},
-                {"text": "Fight", "emoji": "🥊", "orderIndex": 2},
-                {"text": "Flight", "emoji": "🛫", "orderIndex": 3},
-                {"text": "Light", "emoji": "💡", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "bow",
+                  "emoji": "🎀"
+                },
+                {
+                  "word": "row",
+                  "emoji": "🚣"
+                },
+                {
+                  "word": "yellow",
+                  "emoji": "🟡"
+                },
+                {
+                  "word": "pillow",
+                  "emoji": "🛏️"
+                }
               ]
             },
             {
-              "id": "l3-u7-bright",
-              "text": "bright",
-              "phoneme": "/braɪt/",
-              "emoji": "✨",
+              "id": "L3U7_oa_ow",
+              "letter": "OA-OW",
+              "displayLetter": "oa ow",
+              "soundSpelling": "ohh",
+              "sentence": "A goat at the window.",
+              "stretchedWord": "G-OH-T",
               "orderIndex": 2,
-              "vocabulary": [
-                {"text": "Bright", "emoji": "✨", "orderIndex": 0},
-                {"text": "Sight", "emoji": "👁️", "orderIndex": 1},
-                {"text": "Flight", "emoji": "🛫", "orderIndex": 2},
-                {"text": "Right", "emoji": "✅", "orderIndex": 3},
-                {"text": "Night", "emoji": "🌃", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "goat",
+                  "emoji": "🐐"
+                },
+                {
+                  "word": "toad",
+                  "emoji": "🐸"
+                },
+                {
+                  "word": "elbow",
+                  "emoji": "💪"
+                },
+                {
+                  "word": "window",
+                  "emoji": "🪟"
+                }
               ]
             }
           ]
         },
         {
-          "id": "level-3-unit-8",
+          "id": "L3U8",
           "number": 8,
-          "title": "o_e pattern",
+          "title": "ue ui ew oo",
+          "themeChip": "long u",
           "orderIndex": 7,
-          "words": [
+          "lessons": [
             {
-              "id": "l3-u8-bone",
-              "text": "bone",
-              "phoneme": "/boʊn/",
-              "emoji": "🦴",
+              "id": "L3U8_ue",
+              "letter": "UE",
+              "displayLetter": "ue",
+              "soundSpelling": "yoo",
+              "sentence": "Blue glue on Tuesday.",
+              "stretchedWord": "BL-yoo",
               "orderIndex": 0,
-              "vocabulary": [
-                {"text": "Bone", "emoji": "🦴", "orderIndex": 0},
-                {"text": "Home", "emoji": "🏠", "orderIndex": 1},
-                {"text": "Nose", "emoji": "👃", "orderIndex": 2},
-                {"text": "Rope", "emoji": "🪢", "orderIndex": 3},
-                {"text": "Stone", "emoji": "🪨", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "blue",
+                  "emoji": "🟦"
+                },
+                {
+                  "word": "glue",
+                  "emoji": "🧴"
+                },
+                {
+                  "word": "clue",
+                  "emoji": "🔍"
+                },
+                {
+                  "word": "Tuesday",
+                  "emoji": "📅"
+                }
               ]
             },
             {
-              "id": "l3-u8-home",
-              "text": "home",
-              "phoneme": "/hoʊm/",
-              "emoji": "🏠",
+              "id": "L3U8_ui_ew",
+              "letter": "UI-EW",
+              "displayLetter": "ui ew",
+              "soundSpelling": "yoo",
+              "sentence": "New fruit with dew.",
+              "stretchedWord": "FR-yoo-T",
               "orderIndex": 1,
-              "vocabulary": [
-                {"text": "Home", "emoji": "🏠", "orderIndex": 0},
-                {"text": "Rope", "emoji": "🪢", "orderIndex": 1},
-                {"text": "Rose", "emoji": "🌹", "orderIndex": 2},
-                {"text": "Bone", "emoji": "🦴", "orderIndex": 3},
-                {"text": "Nose", "emoji": "👃", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "fruit",
+                  "emoji": "🍇"
+                },
+                {
+                  "word": "suit",
+                  "emoji": "🤵"
+                },
+                {
+                  "word": "new",
+                  "emoji": "🆕"
+                },
+                {
+                  "word": "dew",
+                  "emoji": "💧"
+                }
               ]
             },
             {
-              "id": "l3-u8-rose",
-              "text": "rose",
-              "phoneme": "/roʊz/",
-              "emoji": "🌹",
+              "id": "L3U8_oo",
+              "letter": "OO",
+              "displayLetter": "oo",
+              "soundSpelling": "oooo",
+              "sentence": "Food at the zoo.",
+              "stretchedWord": "M-OO-N",
               "orderIndex": 2,
-              "vocabulary": [
-                {"text": "Rose", "emoji": "🌹", "orderIndex": 0},
-                {"text": "Stone", "emoji": "🪨", "orderIndex": 1},
-                {"text": "Globe", "emoji": "🌍", "orderIndex": 2},
-                {"text": "Home", "emoji": "🏠", "orderIndex": 3},
-                {"text": "Nose", "emoji": "👃", "orderIndex": 4}
-              ]
-            }
-          ]
-        },
-        {
-          "id": "level-3-unit-9",
-          "number": 9,
-          "title": "oa / ow pattern",
-          "orderIndex": 8,
-          "words": [
-            {
-              "id": "l3-u9-boat",
-              "text": "boat",
-              "phoneme": "/boʊt/",
-              "emoji": "⛵",
-              "orderIndex": 0,
-              "vocabulary": [
-                {"text": "Boat", "emoji": "⛵", "orderIndex": 0},
-                {"text": "Coat", "emoji": "🧥", "orderIndex": 1},
-                {"text": "Goat", "emoji": "🐐", "orderIndex": 2},
-                {"text": "Soap", "emoji": "🧼", "orderIndex": 3},
-                {"text": "Road", "emoji": "🛣️", "orderIndex": 4}
-              ]
-            },
-            {
-              "id": "l3-u9-snow",
-              "text": "snow",
-              "phoneme": "/snoʊ/",
-              "emoji": "❄️",
-              "orderIndex": 1,
-              "vocabulary": [
-                {"text": "Snow", "emoji": "❄️", "orderIndex": 0},
-                {"text": "Crow", "emoji": "🐦‍⬛", "orderIndex": 1},
-                {"text": "Bow", "emoji": "🎀", "orderIndex": 2},
-                {"text": "Low", "emoji": "⬇️", "orderIndex": 3},
-                {"text": "Row", "emoji": "🚣", "orderIndex": 4}
-              ]
-            },
-            {
-              "id": "l3-u9-road",
-              "text": "road",
-              "phoneme": "/roʊd/",
-              "emoji": "🛣️",
-              "orderIndex": 2,
-              "vocabulary": [
-                {"text": "Road", "emoji": "🛣️", "orderIndex": 0},
-                {"text": "Toad", "emoji": "🐸", "orderIndex": 1},
-                {"text": "Soap", "emoji": "🧼", "orderIndex": 2},
-                {"text": "Load", "emoji": "📦", "orderIndex": 3},
-                {"text": "Boat", "emoji": "⛵", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "moon",
+                  "emoji": "🌙"
+                },
+                {
+                  "word": "zoo",
+                  "emoji": "🐘"
+                },
+                {
+                  "word": "food",
+                  "emoji": "🍽️"
+                },
+                {
+                  "word": "boot",
+                  "emoji": "👢"
+                }
               ]
             }
           ]
@@ -1381,459 +2245,729 @@
       ]
     },
     {
-      "id": "level-4",
+      "id": "L4",
       "number": 4,
       "title": "Blends & Digraphs",
       "isPremium": true,
-      "ageRange": "6-8",
+      "ageRange": "5-8",
       "orderIndex": 3,
       "units": [
         {
-          "id": "level-4-unit-1",
+          "id": "L4U1",
           "number": 1,
-          "title": "L-blends",
+          "title": "bl cl br cr fl gl",
+          "themeChip": null,
           "orderIndex": 0,
-          "words": [
+          "lessons": [
             {
-              "id": "l4-u1-blue",
-              "text": "blue",
-              "phoneme": "/bluː/",
-              "emoji": "🟦",
+              "id": "L4U1_bl_cl",
+              "letter": "BL-CL",
+              "displayLetter": "bl cl",
+              "soundSpelling": "bl-cl",
+              "sentence": "A black clock.",
+              "stretchedWord": "BL-ack",
               "orderIndex": 0,
-              "vocabulary": [
-                {"text": "Blue", "emoji": "🟦", "orderIndex": 0},
-                {"text": "Block", "emoji": "🧱", "orderIndex": 1},
-                {"text": "Black", "emoji": "⬛", "orderIndex": 2},
-                {"text": "Clown", "emoji": "🤡", "orderIndex": 3},
-                {"text": "Clock", "emoji": "🕰️", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "black",
+                  "emoji": "⬛"
+                },
+                {
+                  "word": "blanket",
+                  "emoji": "🛏️"
+                },
+                {
+                  "word": "clock",
+                  "emoji": "🕰️"
+                },
+                {
+                  "word": "club",
+                  "emoji": "🃏"
+                }
               ]
             },
             {
-              "id": "l4-u1-clown",
-              "text": "clown",
-              "phoneme": "/klaʊn/",
-              "emoji": "🤡",
+              "id": "L4U1_br_cr",
+              "letter": "BR-CR",
+              "displayLetter": "br cr",
+              "soundSpelling": "br-cr",
+              "sentence": "A crab with a broom.",
+              "stretchedWord": "BR-oom",
               "orderIndex": 1,
-              "vocabulary": [
-                {"text": "Clown", "emoji": "🤡", "orderIndex": 0},
-                {"text": "Cloud", "emoji": "☁️", "orderIndex": 1},
-                {"text": "Clock", "emoji": "🕰️", "orderIndex": 2},
-                {"text": "Black", "emoji": "⬛", "orderIndex": 3},
-                {"text": "Block", "emoji": "🧱", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "broom",
+                  "emoji": "🧹"
+                },
+                {
+                  "word": "bride",
+                  "emoji": "👰"
+                },
+                {
+                  "word": "crab",
+                  "emoji": "🦀"
+                },
+                {
+                  "word": "crocodile",
+                  "emoji": "🐊"
+                }
               ]
             },
             {
-              "id": "l4-u1-flag",
-              "text": "flag",
-              "phoneme": "/flæɡ/",
-              "emoji": "🏁",
+              "id": "L4U1_fl_gl",
+              "letter": "FL-GL",
+              "displayLetter": "fl gl",
+              "soundSpelling": "fl-gl",
+              "sentence": "A fly on the glass.",
+              "stretchedWord": "FL-y",
               "orderIndex": 2,
-              "vocabulary": [
-                {"text": "Flag", "emoji": "🏁", "orderIndex": 0},
-                {"text": "Plant", "emoji": "🪴", "orderIndex": 1},
-                {"text": "Glove", "emoji": "🧤", "orderIndex": 2},
-                {"text": "Clock", "emoji": "🕰️", "orderIndex": 3},
-                {"text": "Blue", "emoji": "🟦", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "fly",
+                  "emoji": "🪰"
+                },
+                {
+                  "word": "flag",
+                  "emoji": "🏁"
+                },
+                {
+                  "word": "globe",
+                  "emoji": "🌍"
+                },
+                {
+                  "word": "glass",
+                  "emoji": "🥃"
+                }
               ]
             }
           ]
         },
         {
-          "id": "level-4-unit-2",
+          "id": "L4U2",
           "number": 2,
-          "title": "R-blends",
+          "title": "fr gr pl sl dr tr",
+          "themeChip": null,
           "orderIndex": 1,
-          "words": [
+          "lessons": [
             {
-              "id": "l4-u2-bread",
-              "text": "bread",
-              "phoneme": "/brɛd/",
-              "emoji": "🍞",
+              "id": "L4U2_fr_gr",
+              "letter": "FR-GR",
+              "displayLetter": "fr gr",
+              "soundSpelling": "fr-gr",
+              "sentence": "A green frog on Friday.",
+              "stretchedWord": "FR-og",
               "orderIndex": 0,
-              "vocabulary": [
-                {"text": "Bread", "emoji": "🍞", "orderIndex": 0},
-                {"text": "Brown", "emoji": "🟫", "orderIndex": 1},
-                {"text": "Brush", "emoji": "🪥", "orderIndex": 2},
-                {"text": "Crab", "emoji": "🦀", "orderIndex": 3},
-                {"text": "Crown", "emoji": "👑", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "frog",
+                  "emoji": "🐸"
+                },
+                {
+                  "word": "Friday",
+                  "emoji": "📅"
+                },
+                {
+                  "word": "green",
+                  "emoji": "🟢"
+                },
+                {
+                  "word": "grass",
+                  "emoji": "🌱"
+                }
               ]
             },
             {
-              "id": "l4-u2-crab",
-              "text": "crab",
-              "phoneme": "/kræb/",
-              "emoji": "🦀",
+              "id": "L4U2_pl_sl",
+              "letter": "PL-SL",
+              "displayLetter": "pl sl",
+              "soundSpelling": "pl-sl",
+              "sentence": "Play on the slide.",
+              "stretchedWord": "PL-ay",
               "orderIndex": 1,
-              "vocabulary": [
-                {"text": "Crab", "emoji": "🦀", "orderIndex": 0},
-                {"text": "Crown", "emoji": "👑", "orderIndex": 1},
-                {"text": "Cry", "emoji": "😭", "orderIndex": 2},
-                {"text": "Brown", "emoji": "🟫", "orderIndex": 3},
-                {"text": "Brush", "emoji": "🪥", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "plate",
+                  "emoji": "🍽️"
+                },
+                {
+                  "word": "play",
+                  "emoji": "🎮"
+                },
+                {
+                  "word": "slide",
+                  "emoji": "🛝"
+                },
+                {
+                  "word": "sleep",
+                  "emoji": "😴"
+                }
               ]
             },
             {
-              "id": "l4-u2-drum",
-              "text": "drum",
-              "phoneme": "/drʌm/",
-              "emoji": "🥁",
+              "id": "L4U2_dr_tr",
+              "letter": "DR-TR",
+              "displayLetter": "dr tr",
+              "soundSpelling": "dr-tr",
+              "sentence": "A truck and a tree.",
+              "stretchedWord": "DR-um",
               "orderIndex": 2,
-              "vocabulary": [
-                {"text": "Drum", "emoji": "🥁", "orderIndex": 0},
-                {"text": "Dragon", "emoji": "🐉", "orderIndex": 1},
-                {"text": "Grass", "emoji": "🌱", "orderIndex": 2},
-                {"text": "Cry", "emoji": "😭", "orderIndex": 3},
-                {"text": "Crab", "emoji": "🦀", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "drum",
+                  "emoji": "🥁"
+                },
+                {
+                  "word": "dress",
+                  "emoji": "👗"
+                },
+                {
+                  "word": "truck",
+                  "emoji": "🚚"
+                },
+                {
+                  "word": "tree",
+                  "emoji": "🌳"
+                }
               ]
             }
           ]
         },
         {
-          "id": "level-4-unit-3",
+          "id": "L4U3",
           "number": 3,
-          "title": "S-blends",
+          "title": "sm sn sp sw st",
+          "themeChip": null,
           "orderIndex": 2,
-          "words": [
+          "lessons": [
             {
-              "id": "l4-u3-star",
-              "text": "star",
-              "phoneme": "/stɑːr/",
-              "emoji": "⭐",
+              "id": "L4U3_sm_sn",
+              "letter": "SM-SN",
+              "displayLetter": "sm sn",
+              "soundSpelling": "sm-sn",
+              "sentence": "A snake in the snow.",
+              "stretchedWord": "SM-ile",
               "orderIndex": 0,
-              "vocabulary": [
-                {"text": "Star", "emoji": "⭐", "orderIndex": 0},
-                {"text": "Stop", "emoji": "🛑", "orderIndex": 1},
-                {"text": "Stone", "emoji": "🪨", "orderIndex": 2},
-                {"text": "Smile", "emoji": "😊", "orderIndex": 3},
-                {"text": "Snail", "emoji": "🐌", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "smile",
+                  "emoji": "😊"
+                },
+                {
+                  "word": "smoke",
+                  "emoji": "💨"
+                },
+                {
+                  "word": "snake",
+                  "emoji": "🐍"
+                },
+                {
+                  "word": "snow",
+                  "emoji": "❄️"
+                }
               ]
             },
             {
-              "id": "l4-u3-snail",
-              "text": "snail",
-              "phoneme": "/sneɪl/",
-              "emoji": "🐌",
+              "id": "L4U3_sp_sw",
+              "letter": "SP-SW",
+              "displayLetter": "sp sw",
+              "soundSpelling": "sp-sw",
+              "sentence": "Swim with a spoon.",
+              "stretchedWord": "SP-oon",
               "orderIndex": 1,
-              "vocabulary": [
-                {"text": "Snail", "emoji": "🐌", "orderIndex": 0},
-                {"text": "Snake", "emoji": "🐍", "orderIndex": 1},
-                {"text": "Snow", "emoji": "❄️", "orderIndex": 2},
-                {"text": "Smile", "emoji": "😊", "orderIndex": 3},
-                {"text": "Small", "emoji": "🤏", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "spoon",
+                  "emoji": "🥄"
+                },
+                {
+                  "word": "spot",
+                  "emoji": "🔘"
+                },
+                {
+                  "word": "swing",
+                  "emoji": "🎢"
+                },
+                {
+                  "word": "swim",
+                  "emoji": "🏊"
+                }
               ]
             },
             {
-              "id": "l4-u3-smile",
-              "text": "smile",
-              "phoneme": "/smaɪl/",
-              "emoji": "😊",
+              "id": "L4U3_st",
+              "letter": "ST",
+              "displayLetter": "st",
+              "soundSpelling": "st",
+              "sentence": "A fast stamp.",
+              "stretchedWord": "ST-op",
               "orderIndex": 2,
-              "vocabulary": [
-                {"text": "Smile", "emoji": "😊", "orderIndex": 0},
-                {"text": "Smoke", "emoji": "💨", "orderIndex": 1},
-                {"text": "Small", "emoji": "🤏", "orderIndex": 2},
-                {"text": "Snail", "emoji": "🐌", "orderIndex": 3},
-                {"text": "Snow", "emoji": "❄️", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "stop",
+                  "emoji": "🛑"
+                },
+                {
+                  "word": "test",
+                  "emoji": "📝"
+                },
+                {
+                  "word": "stamp",
+                  "emoji": "📮"
+                },
+                {
+                  "word": "fast",
+                  "emoji": "💨"
+                }
               ]
             }
           ]
         },
         {
-          "id": "level-4-unit-4",
+          "id": "L4U4",
           "number": 4,
-          "title": "ch digraph",
+          "title": "sh ch tch ph wh",
+          "themeChip": null,
           "orderIndex": 3,
-          "words": [
+          "lessons": [
             {
-              "id": "l4-u4-chair",
-              "text": "chair",
-              "phoneme": "/tʃɛər/",
-              "emoji": "🪑",
+              "id": "L4U4_sh",
+              "letter": "SH",
+              "displayLetter": "sh",
+              "soundSpelling": "shhh",
+              "sentence": "A shell on the ship.",
+              "stretchedWord": "SH-ell",
               "orderIndex": 0,
-              "vocabulary": [
-                {"text": "Chair", "emoji": "🪑", "orderIndex": 0},
-                {"text": "Cheese", "emoji": "🧀", "orderIndex": 1},
-                {"text": "Chicken", "emoji": "🐔", "orderIndex": 2},
-                {"text": "Cherry", "emoji": "🍒", "orderIndex": 3},
-                {"text": "Chef", "emoji": "👨‍🍳", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "shell",
+                  "emoji": "🐚"
+                },
+                {
+                  "word": "fish",
+                  "emoji": "🐟"
+                },
+                {
+                  "word": "ship",
+                  "emoji": "🚢"
+                },
+                {
+                  "word": "brush",
+                  "emoji": "🪥"
+                }
               ]
             },
             {
-              "id": "l4-u4-cherry",
-              "text": "cherry",
-              "phoneme": "/tʃɛri/",
-              "emoji": "🍒",
+              "id": "L4U4_ch_tch",
+              "letter": "CH-TCH",
+              "displayLetter": "ch tch",
+              "soundSpelling": "ch",
+              "sentence": "A chick has lunch.",
+              "stretchedWord": "CH-ick",
               "orderIndex": 1,
-              "vocabulary": [
-                {"text": "Cherry", "emoji": "🍒", "orderIndex": 0},
-                {"text": "Chef", "emoji": "👨‍🍳", "orderIndex": 1},
-                {"text": "Church", "emoji": "⛪", "orderIndex": 2},
-                {"text": "Child", "emoji": "🧒", "orderIndex": 3},
-                {"text": "Chin", "emoji": "👤", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "chick",
+                  "emoji": "🐤"
+                },
+                {
+                  "word": "lunch",
+                  "emoji": "🍱"
+                },
+                {
+                  "word": "watch",
+                  "emoji": "⌚"
+                },
+                {
+                  "word": "catch",
+                  "emoji": "🤲"
+                }
               ]
             },
             {
-              "id": "l4-u4-chocolate",
-              "text": "chocolate",
-              "phoneme": "/tʃɒklət/",
-              "emoji": "🍫",
+              "id": "L4U4_ph_wh",
+              "letter": "PH-WH",
+              "displayLetter": "ph wh",
+              "soundSpelling": "ph-wh",
+              "sentence": "A white whale on the phone.",
+              "stretchedWord": "PH-one",
               "orderIndex": 2,
-              "vocabulary": [
-                {"text": "Chocolate", "emoji": "🍫", "orderIndex": 0},
-                {"text": "Child", "emoji": "🧒", "orderIndex": 1},
-                {"text": "Chin", "emoji": "👤", "orderIndex": 2},
-                {"text": "Chair", "emoji": "🪑", "orderIndex": 3},
-                {"text": "Cheese", "emoji": "🧀", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "phone",
+                  "emoji": "📞"
+                },
+                {
+                  "word": "dolphin",
+                  "emoji": "🐬"
+                },
+                {
+                  "word": "whale",
+                  "emoji": "🐳"
+                },
+                {
+                  "word": "white",
+                  "emoji": "⬜"
+                }
               ]
             }
           ]
         },
         {
-          "id": "level-4-unit-5",
+          "id": "L4U5",
           "number": 5,
-          "title": "sh digraph",
+          "title": "th th ck qu",
+          "themeChip": "voiced & unvoiced",
           "orderIndex": 4,
-          "words": [
+          "lessons": [
             {
-              "id": "l4-u5-shark",
-              "text": "shark",
-              "phoneme": "/ʃɑːrk/",
-              "emoji": "🦈",
+              "id": "L4U5_th_voiced",
+              "letter": "TH-voiced",
+              "displayLetter": "th",
+              "soundSpelling": "thh",
+              "sentence": "This is mother and father.",
+              "stretchedWord": "TH-is",
               "orderIndex": 0,
-              "vocabulary": [
-                {"text": "Shark", "emoji": "🦈", "orderIndex": 0},
-                {"text": "Shell", "emoji": "🐚", "orderIndex": 1},
-                {"text": "Ship", "emoji": "🚢", "orderIndex": 2},
-                {"text": "Shoe", "emoji": "👟", "orderIndex": 3},
-                {"text": "Shirt", "emoji": "👕", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "this",
+                  "emoji": "👉"
+                },
+                {
+                  "word": "that",
+                  "emoji": "👈"
+                },
+                {
+                  "word": "mother",
+                  "emoji": "👩"
+                },
+                {
+                  "word": "father",
+                  "emoji": "👨"
+                }
               ]
             },
             {
-              "id": "l4-u5-shoe",
-              "text": "shoe",
-              "phoneme": "/ʃuː/",
-              "emoji": "👟",
+              "id": "L4U5_th_unvoiced",
+              "letter": "TH-unvoiced",
+              "displayLetter": "th",
+              "soundSpelling": "thhh",
+              "sentence": "Three teeth in the bath.",
+              "stretchedWord": "TH-ree",
               "orderIndex": 1,
-              "vocabulary": [
-                {"text": "Shoe", "emoji": "👟", "orderIndex": 0},
-                {"text": "Shirt", "emoji": "👕", "orderIndex": 1},
-                {"text": "Sheep", "emoji": "🐑", "orderIndex": 2},
-                {"text": "Shop", "emoji": "🏪", "orderIndex": 3},
-                {"text": "Shark", "emoji": "🦈", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "three",
+                  "emoji": "3️⃣"
+                },
+                {
+                  "word": "teeth",
+                  "emoji": "🦷"
+                },
+                {
+                  "word": "think",
+                  "emoji": "🤔"
+                },
+                {
+                  "word": "bath",
+                  "emoji": "🛁"
+                }
               ]
             },
             {
-              "id": "l4-u5-shell",
-              "text": "shell",
-              "phoneme": "/ʃɛl/",
-              "emoji": "🐚",
+              "id": "L4U5_ck_qu",
+              "letter": "CK-QU",
+              "displayLetter": "ck qu",
+              "soundSpelling": "ck-qu",
+              "sentence": "A duck and a queen.",
+              "stretchedWord": "D-uh-CK",
               "orderIndex": 2,
-              "vocabulary": [
-                {"text": "Shell", "emoji": "🐚", "orderIndex": 0},
-                {"text": "Shine", "emoji": "✨", "orderIndex": 1},
-                {"text": "Shop", "emoji": "🏪", "orderIndex": 2},
-                {"text": "Ship", "emoji": "🚢", "orderIndex": 3},
-                {"text": "Shoe", "emoji": "👟", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "duck",
+                  "emoji": "🦆"
+                },
+                {
+                  "word": "rocket",
+                  "emoji": "🚀"
+                },
+                {
+                  "word": "queen",
+                  "emoji": "👸"
+                },
+                {
+                  "word": "quilt",
+                  "emoji": "🛏️"
+                }
               ]
             }
           ]
         },
         {
-          "id": "level-4-unit-6",
+          "id": "L4U6",
           "number": 6,
-          "title": "th digraph",
+          "title": "ng nk nd nt lt mp",
+          "themeChip": null,
           "orderIndex": 5,
-          "words": [
+          "lessons": [
             {
-              "id": "l4-u6-three",
-              "text": "three",
-              "phoneme": "/θriː/",
-              "emoji": "3️⃣",
+              "id": "L4U6_ng_nk",
+              "letter": "NG-NK",
+              "displayLetter": "ng nk",
+              "soundSpelling": "ng-nk",
+              "sentence": "A pink king at the bank.",
+              "stretchedWord": "KI-NG",
               "orderIndex": 0,
-              "vocabulary": [
-                {"text": "Three", "emoji": "3️⃣", "orderIndex": 0},
-                {"text": "Thumb", "emoji": "👍", "orderIndex": 1},
-                {"text": "Thin", "emoji": "📏", "orderIndex": 2},
-                {"text": "Thorn", "emoji": "🌵", "orderIndex": 3},
-                {"text": "Thirty", "emoji": "3️⃣", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "king",
+                  "emoji": "🤴"
+                },
+                {
+                  "word": "long",
+                  "emoji": "📏"
+                },
+                {
+                  "word": "bank",
+                  "emoji": "🏦"
+                },
+                {
+                  "word": "pink",
+                  "emoji": "🩷"
+                }
               ]
             },
             {
-              "id": "l4-u6-thumb",
-              "text": "thumb",
-              "phoneme": "/θʌm/",
-              "emoji": "👍",
+              "id": "L4U6_nd_nt",
+              "letter": "ND-NT",
+              "displayLetter": "nd nt",
+              "soundSpelling": "nd-nt",
+              "sentence": "Paint the tent.",
+              "stretchedWord": "W-I-ND",
               "orderIndex": 1,
-              "vocabulary": [
-                {"text": "Thumb", "emoji": "👍", "orderIndex": 0},
-                {"text": "Thorn", "emoji": "🌵", "orderIndex": 1},
-                {"text": "Thirty", "emoji": "3️⃣", "orderIndex": 2},
-                {"text": "Think", "emoji": "🤔", "orderIndex": 3},
-                {"text": "Thick", "emoji": "📚", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "wind",
+                  "emoji": "🌬️"
+                },
+                {
+                  "word": "hand",
+                  "emoji": "✋"
+                },
+                {
+                  "word": "tent",
+                  "emoji": "⛺"
+                },
+                {
+                  "word": "paint",
+                  "emoji": "🎨"
+                }
               ]
             },
             {
-              "id": "l4-u6-throne",
-              "text": "throne",
-              "phoneme": "/θroʊn/",
-              "emoji": "👑",
+              "id": "L4U6_lt_mp",
+              "letter": "LT-MP",
+              "displayLetter": "lt mp",
+              "soundSpelling": "lt-mp",
+              "sentence": "A lamp at camp.",
+              "stretchedWord": "B-E-LT",
               "orderIndex": 2,
-              "vocabulary": [
-                {"text": "Throne", "emoji": "👑", "orderIndex": 0},
-                {"text": "Think", "emoji": "🤔", "orderIndex": 1},
-                {"text": "Thick", "emoji": "📚", "orderIndex": 2},
-                {"text": "Thumb", "emoji": "👍", "orderIndex": 3},
-                {"text": "Three", "emoji": "3️⃣", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "belt",
+                  "emoji": "🧷"
+                },
+                {
+                  "word": "adult",
+                  "emoji": "🧑"
+                },
+                {
+                  "word": "lamp",
+                  "emoji": "💡"
+                },
+                {
+                  "word": "camp",
+                  "emoji": "🏕️"
+                }
               ]
             }
           ]
         },
         {
-          "id": "level-4-unit-7",
+          "id": "L4U7",
           "number": 7,
-          "title": "wh digraph",
+          "title": "sk sc spr str spl squ",
+          "themeChip": null,
           "orderIndex": 6,
-          "words": [
+          "lessons": [
             {
-              "id": "l4-u7-whale",
-              "text": "whale",
-              "phoneme": "/weɪl/",
-              "emoji": "🐳",
+              "id": "L4U7_sk_sc",
+              "letter": "SK-SC",
+              "displayLetter": "sk sc",
+              "soundSpelling": "sk-sc",
+              "sentence": "A scale at school.",
+              "stretchedWord": "SK-unk",
               "orderIndex": 0,
-              "vocabulary": [
-                {"text": "Whale", "emoji": "🐳", "orderIndex": 0},
-                {"text": "Wheel", "emoji": "☸️", "orderIndex": 1},
-                {"text": "White", "emoji": "⬜", "orderIndex": 2},
-                {"text": "Whisper", "emoji": "🤫", "orderIndex": 3},
-                {"text": "Whistle", "emoji": "😗", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "skunk",
+                  "emoji": "🦨"
+                },
+                {
+                  "word": "desk",
+                  "emoji": "📋"
+                },
+                {
+                  "word": "scale",
+                  "emoji": "⚖️"
+                },
+                {
+                  "word": "school",
+                  "emoji": "🏫"
+                }
               ]
             },
             {
-              "id": "l4-u7-wheel",
-              "text": "wheel",
-              "phoneme": "/wiːl/",
-              "emoji": "☸️",
+              "id": "L4U7_spr_str",
+              "letter": "SPR-STR",
+              "displayLetter": "spr str",
+              "soundSpelling": "spr-str",
+              "sentence": "A strong string in spring.",
+              "stretchedWord": "SPR-ay",
               "orderIndex": 1,
-              "vocabulary": [
-                {"text": "Wheel", "emoji": "☸️", "orderIndex": 0},
-                {"text": "Whisper", "emoji": "🤫", "orderIndex": 1},
-                {"text": "Whistle", "emoji": "😗", "orderIndex": 2},
-                {"text": "Whiskers", "emoji": "🐱", "orderIndex": 3},
-                {"text": "Where", "emoji": "❓", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "spray",
+                  "emoji": "💦"
+                },
+                {
+                  "word": "spring",
+                  "emoji": "🌸"
+                },
+                {
+                  "word": "string",
+                  "emoji": "🧶"
+                },
+                {
+                  "word": "strong",
+                  "emoji": "💪"
+                }
               ]
             },
             {
-              "id": "l4-u7-whiskers",
-              "text": "whiskers",
-              "phoneme": "/wɪskərz/",
-              "emoji": "🐱",
+              "id": "L4U7_spl_squ",
+              "letter": "SPL-SQU",
+              "displayLetter": "spl squ",
+              "soundSpelling": "spl-squ",
+              "sentence": "A squid in a square.",
+              "stretchedWord": "SPL-ash",
               "orderIndex": 2,
-              "vocabulary": [
-                {"text": "Whiskers", "emoji": "🐱", "orderIndex": 0},
-                {"text": "Where", "emoji": "❓", "orderIndex": 1},
-                {"text": "What", "emoji": "❔", "orderIndex": 2},
-                {"text": "Whale", "emoji": "🐳", "orderIndex": 3},
-                {"text": "White", "emoji": "⬜", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "splash",
+                  "emoji": "💦"
+                },
+                {
+                  "word": "splint",
+                  "emoji": "🩹"
+                },
+                {
+                  "word": "squid",
+                  "emoji": "🦑"
+                },
+                {
+                  "word": "square",
+                  "emoji": "🟦"
+                }
               ]
             }
           ]
         },
         {
-          "id": "level-4-unit-8",
+          "id": "L4U8",
           "number": 8,
-          "title": "ph digraph",
+          "title": "c g s",
+          "themeChip": "soft c · soft g · voiced s",
           "orderIndex": 7,
-          "words": [
+          "lessons": [
             {
-              "id": "l4-u8-phone",
-              "text": "phone",
-              "phoneme": "/foʊn/",
-              "emoji": "📞",
+              "id": "L4U8_soft_c",
+              "letter": "SOFT-C",
+              "displayLetter": "c",
+              "soundSpelling": "sss",
+              "sentence": "Ice cream in the city.",
+              "stretchedWord": "RI-ce",
               "orderIndex": 0,
-              "vocabulary": [
-                {"text": "Phone", "emoji": "📞", "orderIndex": 0},
-                {"text": "Photo", "emoji": "📷", "orderIndex": 1},
-                {"text": "Elephant", "emoji": "🐘", "orderIndex": 2},
-                {"text": "Dolphin", "emoji": "🐬", "orderIndex": 3},
-                {"text": "Graph", "emoji": "📊", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "rice",
+                  "emoji": "🍚"
+                },
+                {
+                  "word": "city",
+                  "emoji": "🏙️"
+                },
+                {
+                  "word": "ice cream",
+                  "emoji": "🍦"
+                },
+                {
+                  "word": "cell phone",
+                  "emoji": "📱"
+                }
               ]
             },
             {
-              "id": "l4-u8-photo",
-              "text": "photo",
-              "phoneme": "/foʊtoʊ/",
-              "emoji": "📷",
+              "id": "L4U8_soft_g",
+              "letter": "SOFT-G",
+              "displayLetter": "g",
+              "soundSpelling": "juh",
+              "sentence": "A giant giraffe in a cage.",
+              "stretchedWord": "GI-raffe",
               "orderIndex": 1,
-              "vocabulary": [
-                {"text": "Photo", "emoji": "📷", "orderIndex": 0},
-                {"text": "Dolphin", "emoji": "🐬", "orderIndex": 1},
-                {"text": "Graph", "emoji": "📊", "orderIndex": 2},
-                {"text": "Alphabet", "emoji": "🔤", "orderIndex": 3},
-                {"text": "Trophy", "emoji": "🏆", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "giraffe",
+                  "emoji": "🦒"
+                },
+                {
+                  "word": "orange",
+                  "emoji": "🍊"
+                },
+                {
+                  "word": "giant",
+                  "emoji": "🗿"
+                },
+                {
+                  "word": "cage",
+                  "emoji": "🪺"
+                }
               ]
             },
             {
-              "id": "l4-u8-dolphin",
-              "text": "dolphin",
-              "phoneme": "/dɒlfɪn/",
-              "emoji": "🐬",
+              "id": "L4U8_voiced_s",
+              "letter": "VOICED-S",
+              "displayLetter": "s",
+              "soundSpelling": "zzz",
+              "sentence": "Cheese and jeans.",
+              "stretchedWord": "RO-se",
               "orderIndex": 2,
-              "vocabulary": [
-                {"text": "Dolphin", "emoji": "🐬", "orderIndex": 0},
-                {"text": "Alphabet", "emoji": "🔤", "orderIndex": 1},
-                {"text": "Trophy", "emoji": "🏆", "orderIndex": 2},
-                {"text": "Photo", "emoji": "📷", "orderIndex": 3},
-                {"text": "Phone", "emoji": "📞", "orderIndex": 4}
-              ]
-            }
-          ]
-        },
-        {
-          "id": "level-4-unit-9",
-          "number": 9,
-          "title": "Blends review",
-          "orderIndex": 8,
-          "words": [
-            {
-              "id": "l4-u9-clown",
-              "text": "clown",
-              "phoneme": "/klaʊn/",
-              "emoji": "🤡",
-              "orderIndex": 0,
-              "vocabulary": [
-                {"text": "Clown", "emoji": "🤡", "orderIndex": 0},
-                {"text": "Crab", "emoji": "🦀", "orderIndex": 1},
-                {"text": "Shark", "emoji": "🦈", "orderIndex": 2},
-                {"text": "Smile", "emoji": "😊", "orderIndex": 3},
-                {"text": "Phone", "emoji": "📞", "orderIndex": 4}
-              ]
-            },
-            {
-              "id": "l4-u9-chocolate",
-              "text": "chocolate",
-              "phoneme": "/tʃɒklət/",
-              "emoji": "🍫",
-              "orderIndex": 1,
-              "vocabulary": [
-                {"text": "Chocolate", "emoji": "🍫", "orderIndex": 0},
-                {"text": "Phone", "emoji": "📞", "orderIndex": 1},
-                {"text": "Three", "emoji": "3️⃣", "orderIndex": 2},
-                {"text": "Shark", "emoji": "🦈", "orderIndex": 3},
-                {"text": "Drum", "emoji": "🥁", "orderIndex": 4}
-              ]
-            },
-            {
-              "id": "l4-u9-whale",
-              "text": "whale",
-              "phoneme": "/weɪl/",
-              "emoji": "🐳",
-              "orderIndex": 2,
-              "vocabulary": [
-                {"text": "Whale", "emoji": "🐳", "orderIndex": 0},
-                {"text": "Smile", "emoji": "😊", "orderIndex": 1},
-                {"text": "Drum", "emoji": "🥁", "orderIndex": 2},
-                {"text": "Chair", "emoji": "🪑", "orderIndex": 3},
-                {"text": "Bread", "emoji": "🍞", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "rose",
+                  "emoji": "🌹"
+                },
+                {
+                  "word": "jeans",
+                  "emoji": "👖"
+                },
+                {
+                  "word": "cheese",
+                  "emoji": "🧀"
+                },
+                {
+                  "word": "legs",
+                  "emoji": "🦵"
+                }
               ]
             }
           ]
@@ -1841,459 +2975,729 @@
       ]
     },
     {
-      "id": "level-5",
+      "id": "L5",
       "number": 5,
-      "title": "Advanced Patterns",
+      "title": "Letter Combinations",
       "isPremium": true,
-      "ageRange": "7-9",
+      "ageRange": "6-8",
       "orderIndex": 4,
       "units": [
         {
-          "id": "level-5-unit-1",
+          "id": "L5U1",
           "number": 1,
-          "title": "ar r-controlled",
+          "title": "ar ir ur er or",
+          "themeChip": null,
           "orderIndex": 0,
-          "words": [
+          "lessons": [
             {
-              "id": "l5-u1-car",
-              "text": "car",
-              "phoneme": "/kɑːr/",
-              "emoji": "🚗",
+              "id": "L5U1_ar",
+              "letter": "AR",
+              "displayLetter": "ar",
+              "soundSpelling": "ahr",
+              "sentence": "A car at the park.",
+              "stretchedWord": "K-AHR",
               "orderIndex": 0,
-              "vocabulary": [
-                {"text": "Car", "emoji": "🚗", "orderIndex": 0},
-                {"text": "Star", "emoji": "⭐", "orderIndex": 1},
-                {"text": "Park", "emoji": "🏞️", "orderIndex": 2},
-                {"text": "Farm", "emoji": "🚜", "orderIndex": 3},
-                {"text": "Arm", "emoji": "💪", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "car",
+                  "emoji": "🚗"
+                },
+                {
+                  "word": "farm",
+                  "emoji": "🚜"
+                },
+                {
+                  "word": "park",
+                  "emoji": "🏞️"
+                },
+                {
+                  "word": "star",
+                  "emoji": "⭐"
+                }
               ]
             },
             {
-              "id": "l5-u1-star",
-              "text": "star",
-              "phoneme": "/stɑːr/",
-              "emoji": "⭐",
+              "id": "L5U1_ir_ur",
+              "letter": "IR-UR",
+              "displayLetter": "ir ur",
+              "soundSpelling": "er",
+              "sentence": "A girl and a nurse.",
+              "stretchedWord": "B-er-D",
               "orderIndex": 1,
-              "vocabulary": [
-                {"text": "Star", "emoji": "⭐", "orderIndex": 0},
-                {"text": "Farm", "emoji": "🚜", "orderIndex": 1},
-                {"text": "Arm", "emoji": "💪", "orderIndex": 2},
-                {"text": "Card", "emoji": "🃏", "orderIndex": 3},
-                {"text": "Garden", "emoji": "🌷", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "bird",
+                  "emoji": "🐦"
+                },
+                {
+                  "word": "girl",
+                  "emoji": "👧"
+                },
+                {
+                  "word": "nurse",
+                  "emoji": "👩‍⚕️"
+                },
+                {
+                  "word": "purple",
+                  "emoji": "🟣"
+                }
               ]
             },
             {
-              "id": "l5-u1-farm",
-              "text": "farm",
-              "phoneme": "/fɑːrm/",
-              "emoji": "🚜",
+              "id": "L5U1_er_or",
+              "letter": "ER-OR",
+              "displayLetter": "er or",
+              "soundSpelling": "er",
+              "sentence": "A teacher and a doctor.",
+              "stretchedWord": "T-EE-cher",
               "orderIndex": 2,
-              "vocabulary": [
-                {"text": "Farm", "emoji": "🚜", "orderIndex": 0},
-                {"text": "Card", "emoji": "🃏", "orderIndex": 1},
-                {"text": "Garden", "emoji": "🌷", "orderIndex": 2},
-                {"text": "Art", "emoji": "🎨", "orderIndex": 3},
-                {"text": "Park", "emoji": "🏞️", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "teacher",
+                  "emoji": "👩‍🏫"
+                },
+                {
+                  "word": "sister",
+                  "emoji": "👭"
+                },
+                {
+                  "word": "doctor",
+                  "emoji": "👨‍⚕️"
+                },
+                {
+                  "word": "tractor",
+                  "emoji": "🚜"
+                }
               ]
             }
           ]
         },
         {
-          "id": "level-5-unit-2",
+          "id": "L5U2",
           "number": 2,
-          "title": "er/ir/ur r-controlled",
+          "title": "ou ow oi oy oo u",
+          "themeChip": null,
           "orderIndex": 1,
-          "words": [
+          "lessons": [
             {
-              "id": "l5-u2-bird",
-              "text": "bird",
-              "phoneme": "/bɜːrd/",
-              "emoji": "🐦",
+              "id": "L5U2_ou_ow",
+              "letter": "OU-OW",
+              "displayLetter": "ou ow",
+              "soundSpelling": "ow",
+              "sentence": "A brown mouse in the house.",
+              "stretchedWord": "M-OW-S",
               "orderIndex": 0,
-              "vocabulary": [
-                {"text": "Bird", "emoji": "🐦", "orderIndex": 0},
-                {"text": "Nurse", "emoji": "👩‍⚕️", "orderIndex": 1},
-                {"text": "Turtle", "emoji": "🐢", "orderIndex": 2},
-                {"text": "Purple", "emoji": "🟣", "orderIndex": 3},
-                {"text": "Shirt", "emoji": "👕", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "mouse",
+                  "emoji": "🐭"
+                },
+                {
+                  "word": "house",
+                  "emoji": "🏠"
+                },
+                {
+                  "word": "cow",
+                  "emoji": "🐄"
+                },
+                {
+                  "word": "brown",
+                  "emoji": "🟫"
+                }
               ]
             },
             {
-              "id": "l5-u2-turtle",
-              "text": "turtle",
-              "phoneme": "/tɜːrtl/",
-              "emoji": "🐢",
+              "id": "L5U2_oi_oy",
+              "letter": "OI-OY",
+              "displayLetter": "oi oy",
+              "soundSpelling": "oy",
+              "sentence": "A boy with a coin.",
+              "stretchedWord": "K-OY-N",
               "orderIndex": 1,
-              "vocabulary": [
-                {"text": "Turtle", "emoji": "🐢", "orderIndex": 0},
-                {"text": "Purple", "emoji": "🟣", "orderIndex": 1},
-                {"text": "Shirt", "emoji": "👕", "orderIndex": 2},
-                {"text": "Bird", "emoji": "🐦", "orderIndex": 3},
-                {"text": "Nurse", "emoji": "👩‍⚕️", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "coin",
+                  "emoji": "🪙"
+                },
+                {
+                  "word": "soil",
+                  "emoji": "🟫"
+                },
+                {
+                  "word": "toy",
+                  "emoji": "🧸"
+                },
+                {
+                  "word": "boy",
+                  "emoji": "👦"
+                }
               ]
             },
             {
-              "id": "l5-u2-girl",
-              "text": "girl",
-              "phoneme": "/ɡɜːrl/",
-              "emoji": "👧",
+              "id": "L5U2_oo_u",
+              "letter": "OO-U",
+              "displayLetter": "oo u",
+              "soundSpelling": "uhh",
+              "sentence": "Pull the book.",
+              "stretchedWord": "B-uh-K",
               "orderIndex": 2,
-              "vocabulary": [
-                {"text": "Girl", "emoji": "👧", "orderIndex": 0},
-                {"text": "Circle", "emoji": "⭕", "orderIndex": 1},
-                {"text": "Finger", "emoji": "👆", "orderIndex": 2},
-                {"text": "Bird", "emoji": "🐦", "orderIndex": 3},
-                {"text": "Shirt", "emoji": "👕", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "book",
+                  "emoji": "📖"
+                },
+                {
+                  "word": "foot",
+                  "emoji": "🦶"
+                },
+                {
+                  "word": "bush",
+                  "emoji": "🌳"
+                },
+                {
+                  "word": "pull",
+                  "emoji": "🤜"
+                }
               ]
             }
           ]
         },
         {
-          "id": "level-5-unit-3",
+          "id": "L5U3",
           "number": 3,
-          "title": "or r-controlled",
+          "title": "au aw all wa or oar",
+          "themeChip": null,
           "orderIndex": 2,
-          "words": [
+          "lessons": [
             {
-              "id": "l5-u3-corn",
-              "text": "corn",
-              "phoneme": "/kɔːrn/",
-              "emoji": "🌽",
+              "id": "L5U3_au_aw",
+              "letter": "AU-AW",
+              "displayLetter": "au aw",
+              "soundSpelling": "aw",
+              "sentence": "Draw a prawn.",
+              "stretchedWord": "S-AW-S",
               "orderIndex": 0,
-              "vocabulary": [
-                {"text": "Corn", "emoji": "🌽", "orderIndex": 0},
-                {"text": "Fork", "emoji": "🍴", "orderIndex": 1},
-                {"text": "Horse", "emoji": "🐴", "orderIndex": 2},
-                {"text": "Storm", "emoji": "🌩️", "orderIndex": 3},
-                {"text": "Sport", "emoji": "⚽", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "sauce",
+                  "emoji": "🥣"
+                },
+                {
+                  "word": "August",
+                  "emoji": "📅"
+                },
+                {
+                  "word": "prawn",
+                  "emoji": "🦐"
+                },
+                {
+                  "word": "draw",
+                  "emoji": "✏️"
+                }
               ]
             },
             {
-              "id": "l5-u3-horse",
-              "text": "horse",
-              "phoneme": "/hɔːrs/",
-              "emoji": "🐴",
+              "id": "L5U3_all_wa",
+              "letter": "ALL-WA",
+              "displayLetter": "all wa",
+              "soundSpelling": "awl",
+              "sentence": "Walk by the water.",
+              "stretchedWord": "B-AWL",
               "orderIndex": 1,
-              "vocabulary": [
-                {"text": "Horse", "emoji": "🐴", "orderIndex": 0},
-                {"text": "Storm", "emoji": "🌩️", "orderIndex": 1},
-                {"text": "Sport", "emoji": "⚽", "orderIndex": 2},
-                {"text": "Short", "emoji": "📏", "orderIndex": 3},
-                {"text": "Door", "emoji": "🚪", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "ball",
+                  "emoji": "⚽"
+                },
+                {
+                  "word": "tall",
+                  "emoji": "📏"
+                },
+                {
+                  "word": "water",
+                  "emoji": "💧"
+                },
+                {
+                  "word": "walk",
+                  "emoji": "🚶"
+                }
               ]
             },
             {
-              "id": "l5-u3-storm",
-              "text": "storm",
-              "phoneme": "/stɔːrm/",
-              "emoji": "🌩️",
+              "id": "L5U3_or_oar",
+              "letter": "OR-OAR",
+              "displayLetter": "or oar",
+              "soundSpelling": "or",
+              "sentence": "A horse with a fork.",
+              "stretchedWord": "H-OR-S",
               "orderIndex": 2,
-              "vocabulary": [
-                {"text": "Storm", "emoji": "🌩️", "orderIndex": 0},
-                {"text": "Short", "emoji": "📏", "orderIndex": 1},
-                {"text": "Door", "emoji": "🚪", "orderIndex": 2},
-                {"text": "Corn", "emoji": "🌽", "orderIndex": 3},
-                {"text": "Horse", "emoji": "🐴", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "horse",
+                  "emoji": "🐴"
+                },
+                {
+                  "word": "fork",
+                  "emoji": "🍴"
+                },
+                {
+                  "word": "roar",
+                  "emoji": "🦁"
+                },
+                {
+                  "word": "board",
+                  "emoji": "🪵"
+                }
               ]
             }
           ]
         },
         {
-          "id": "level-5-unit-4",
+          "id": "L5U4",
           "number": 4,
-          "title": "ou/ow diphthong",
+          "title": "are air ea ear ear eer",
+          "themeChip": null,
           "orderIndex": 3,
-          "words": [
+          "lessons": [
             {
-              "id": "l5-u4-cloud",
-              "text": "cloud",
-              "phoneme": "/klaʊd/",
-              "emoji": "☁️",
+              "id": "L5U4_are_air",
+              "letter": "ARE-AIR",
+              "displayLetter": "are air",
+              "soundSpelling": "air",
+              "sentence": "Share the chair.",
+              "stretchedWord": "SQU-AIR",
               "orderIndex": 0,
-              "vocabulary": [
-                {"text": "Cloud", "emoji": "☁️", "orderIndex": 0},
-                {"text": "Mouse", "emoji": "🐭", "orderIndex": 1},
-                {"text": "House", "emoji": "🏠", "orderIndex": 2},
-                {"text": "Crown", "emoji": "👑", "orderIndex": 3},
-                {"text": "Flower", "emoji": "🌸", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "square",
+                  "emoji": "🟦"
+                },
+                {
+                  "word": "share",
+                  "emoji": "🤝"
+                },
+                {
+                  "word": "chair",
+                  "emoji": "🪑"
+                },
+                {
+                  "word": "hair",
+                  "emoji": "💇"
+                }
               ]
             },
             {
-              "id": "l5-u4-crown",
-              "text": "crown",
-              "phoneme": "/kraʊn/",
-              "emoji": "👑",
+              "id": "L5U4_ea_ear",
+              "letter": "EA-EAR",
+              "displayLetter": "ea ear",
+              "soundSpelling": "air",
+              "sentence": "A bear with a pear.",
+              "stretchedWord": "B-AIR",
               "orderIndex": 1,
-              "vocabulary": [
-                {"text": "Crown", "emoji": "👑", "orderIndex": 0},
-                {"text": "Flower", "emoji": "🌸", "orderIndex": 1},
-                {"text": "Owl", "emoji": "🦉", "orderIndex": 2},
-                {"text": "Cloud", "emoji": "☁️", "orderIndex": 3},
-                {"text": "House", "emoji": "🏠", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "bread",
+                  "emoji": "🍞"
+                },
+                {
+                  "word": "head",
+                  "emoji": "🗣️"
+                },
+                {
+                  "word": "bear",
+                  "emoji": "🐻"
+                },
+                {
+                  "word": "pear",
+                  "emoji": "🍐"
+                }
               ]
             },
             {
-              "id": "l5-u4-mouth",
-              "text": "mouth",
-              "phoneme": "/maʊθ/",
-              "emoji": "👄",
+              "id": "L5U4_ear_eer",
+              "letter": "EAR-EER",
+              "displayLetter": "ear eer",
+              "soundSpelling": "eer",
+              "sentence": "A clear cheer for the deer.",
+              "stretchedWord": "EER",
               "orderIndex": 2,
-              "vocabulary": [
-                {"text": "Mouth", "emoji": "👄", "orderIndex": 0},
-                {"text": "Shower", "emoji": "🚿", "orderIndex": 1},
-                {"text": "Round", "emoji": "⭕", "orderIndex": 2},
-                {"text": "Cloud", "emoji": "☁️", "orderIndex": 3},
-                {"text": "Mouse", "emoji": "🐭", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "ear",
+                  "emoji": "👂"
+                },
+                {
+                  "word": "clear",
+                  "emoji": "💎"
+                },
+                {
+                  "word": "deer",
+                  "emoji": "🦌"
+                },
+                {
+                  "word": "cheer",
+                  "emoji": "📣"
+                }
               ]
             }
           ]
         },
         {
-          "id": "level-5-unit-5",
+          "id": "L5U5",
           "number": 5,
-          "title": "oi/oy diphthong",
+          "title": "a e i o u",
+          "themeChip": null,
           "orderIndex": 4,
-          "words": [
+          "lessons": [
             {
-              "id": "l5-u5-coin",
-              "text": "coin",
-              "phoneme": "/kɔɪn/",
-              "emoji": "🪙",
+              "id": "L5U5_a_open",
+              "letter": "A-OPEN",
+              "displayLetter": "a",
+              "soundSpelling": "aaay",
+              "sentence": "A lady and a baby.",
+              "stretchedWord": "AY-corn",
               "orderIndex": 0,
-              "vocabulary": [
-                {"text": "Coin", "emoji": "🪙", "orderIndex": 0},
-                {"text": "Soil", "emoji": "🟫", "orderIndex": 1},
-                {"text": "Boy", "emoji": "👦", "orderIndex": 2},
-                {"text": "Toy", "emoji": "🧸", "orderIndex": 3},
-                {"text": "Noise", "emoji": "🔊", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "acorn",
+                  "emoji": "🌰"
+                },
+                {
+                  "word": "baby",
+                  "emoji": "👶"
+                },
+                {
+                  "word": "elevator",
+                  "emoji": "🛗"
+                },
+                {
+                  "word": "lady",
+                  "emoji": "👩"
+                }
               ]
             },
             {
-              "id": "l5-u5-boy",
-              "text": "boy",
-              "phoneme": "/bɔɪ/",
-              "emoji": "👦",
+              "id": "L5U5_e_i_open",
+              "letter": "E-I-OPEN",
+              "displayLetter": "e i",
+              "soundSpelling": "eee-eye",
+              "sentence": "He and she are kind.",
+              "stretchedWord": "HEE",
               "orderIndex": 1,
-              "vocabulary": [
-                {"text": "Boy", "emoji": "👦", "orderIndex": 0},
-                {"text": "Toy", "emoji": "🧸", "orderIndex": 1},
-                {"text": "Joy", "emoji": "😊", "orderIndex": 2},
-                {"text": "Oil", "emoji": "🛢️", "orderIndex": 3},
-                {"text": "Coin", "emoji": "🪙", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "he",
+                  "emoji": "👨"
+                },
+                {
+                  "word": "she",
+                  "emoji": "👩"
+                },
+                {
+                  "word": "tiger",
+                  "emoji": "🐯"
+                },
+                {
+                  "word": "child",
+                  "emoji": "🧒"
+                }
               ]
             },
             {
-              "id": "l5-u5-toy",
-              "text": "toy",
-              "phoneme": "/tɔɪ/",
-              "emoji": "🧸",
+              "id": "L5U5_o_u_open",
+              "letter": "O-U-OPEN",
+              "displayLetter": "o u",
+              "soundSpelling": "ohh-yoo",
+              "sentence": "Music in the hotel.",
+              "stretchedWord": "KOH-LD",
               "orderIndex": 2,
-              "vocabulary": [
-                {"text": "Toy", "emoji": "🧸", "orderIndex": 0},
-                {"text": "Noise", "emoji": "🔊", "orderIndex": 1},
-                {"text": "Voice", "emoji": "🎤", "orderIndex": 2},
-                {"text": "Joy", "emoji": "😊", "orderIndex": 3},
-                {"text": "Boy", "emoji": "👦", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "cold",
+                  "emoji": "🥶"
+                },
+                {
+                  "word": "hotel",
+                  "emoji": "🏨"
+                },
+                {
+                  "word": "uniform",
+                  "emoji": "👔"
+                },
+                {
+                  "word": "music",
+                  "emoji": "🎵"
+                }
               ]
             }
           ]
         },
         {
-          "id": "level-5-unit-6",
+          "id": "L5U6",
           "number": 6,
-          "title": "Silent letters",
+          "title": "a e i o u o",
+          "themeChip": "schwa",
           "orderIndex": 5,
-          "words": [
+          "lessons": [
             {
-              "id": "l5-u6-knee",
-              "text": "knee",
-              "phoneme": "/niː/",
-              "emoji": "🦵",
+              "id": "L5U6_schwa_a",
+              "letter": "SCHWA-A",
+              "displayLetter": "a",
+              "soundSpelling": "uh",
+              "sentence": "A panda with an umbrella.",
+              "stretchedWord": "PAN-duh",
               "orderIndex": 0,
-              "vocabulary": [
-                {"text": "Knee", "emoji": "🦵", "orderIndex": 0},
-                {"text": "Knock", "emoji": "👊", "orderIndex": 1},
-                {"text": "Knife", "emoji": "🔪", "orderIndex": 2},
-                {"text": "Write", "emoji": "✍️", "orderIndex": 3},
-                {"text": "Wrap", "emoji": "🎁", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "panda",
+                  "emoji": "🐼"
+                },
+                {
+                  "word": "gorilla",
+                  "emoji": "🦍"
+                },
+                {
+                  "word": "banana",
+                  "emoji": "🍌"
+                },
+                {
+                  "word": "umbrella",
+                  "emoji": "☂️"
+                }
               ]
             },
             {
-              "id": "l5-u6-write",
-              "text": "write",
-              "phoneme": "/raɪt/",
-              "emoji": "✍️",
+              "id": "L5U6_schwa_eiou",
+              "letter": "SCHWA-EIOU",
+              "displayLetter": "e i o u",
+              "soundSpelling": "uh",
+              "sentence": "A lemon surprise.",
+              "stretchedWord": "CHIK-en",
               "orderIndex": 1,
-              "vocabulary": [
-                {"text": "Write", "emoji": "✍️", "orderIndex": 0},
-                {"text": "Wrap", "emoji": "🎁", "orderIndex": 1},
-                {"text": "Wrist", "emoji": "⌚", "orderIndex": 2},
-                {"text": "Knee", "emoji": "🦵", "orderIndex": 3},
-                {"text": "Knife", "emoji": "🔪", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "chicken",
+                  "emoji": "🐔"
+                },
+                {
+                  "word": "pencil",
+                  "emoji": "✏️"
+                },
+                {
+                  "word": "lemon",
+                  "emoji": "🍋"
+                },
+                {
+                  "word": "surprise",
+                  "emoji": "🎁"
+                }
               ]
             },
             {
-              "id": "l5-u6-comb",
-              "text": "comb",
-              "phoneme": "/koʊm/",
-              "emoji": "💇",
+              "id": "L5U6_schwa_o",
+              "letter": "SCHWA-O",
+              "displayLetter": "o",
+              "soundSpelling": "uh",
+              "sentence": "My son loves honey.",
+              "stretchedWord": "MUN-key",
               "orderIndex": 2,
-              "vocabulary": [
-                {"text": "Comb", "emoji": "💇", "orderIndex": 0},
-                {"text": "Lamb", "emoji": "🐑", "orderIndex": 1},
-                {"text": "Thumb", "emoji": "👍", "orderIndex": 2},
-                {"text": "Knee", "emoji": "🦵", "orderIndex": 3},
-                {"text": "Write", "emoji": "✍️", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "monkey",
+                  "emoji": "🐵"
+                },
+                {
+                  "word": "love",
+                  "emoji": "❤️"
+                },
+                {
+                  "word": "son",
+                  "emoji": "👦"
+                },
+                {
+                  "word": "honey",
+                  "emoji": "🍯"
+                }
               ]
             }
           ]
         },
         {
-          "id": "level-5-unit-7",
+          "id": "L5U7",
           "number": 7,
-          "title": "oo short sound",
+          "title": "kn wr mb e rh st",
+          "themeChip": "silent letters",
           "orderIndex": 6,
-          "words": [
+          "lessons": [
             {
-              "id": "l5-u7-book",
-              "text": "book",
-              "phoneme": "/bʊk/",
-              "emoji": "📖",
+              "id": "L5U7_kn_wr",
+              "letter": "KN-WR",
+              "displayLetter": "kn wr",
+              "soundSpelling": "nn-rr",
+              "sentence": "Write with care.",
+              "stretchedWord": "N-EYE-F",
               "orderIndex": 0,
-              "vocabulary": [
-                {"text": "Book", "emoji": "📖", "orderIndex": 0},
-                {"text": "Foot", "emoji": "🦶", "orderIndex": 1},
-                {"text": "Cookie", "emoji": "🍪", "orderIndex": 2},
-                {"text": "Wood", "emoji": "🪵", "orderIndex": 3},
-                {"text": "Hood", "emoji": "🧥", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "knife",
+                  "emoji": "🔪"
+                },
+                {
+                  "word": "knee",
+                  "emoji": "🦵"
+                },
+                {
+                  "word": "write",
+                  "emoji": "✍️"
+                },
+                {
+                  "word": "wrong",
+                  "emoji": "❌"
+                }
               ]
             },
             {
-              "id": "l5-u7-wood",
-              "text": "wood",
-              "phoneme": "/wʊd/",
-              "emoji": "🪵",
+              "id": "L5U7_mb_e",
+              "letter": "MB-E",
+              "displayLetter": "mb e",
+              "soundSpelling": "mm",
+              "sentence": "A lamb and a glove.",
+              "stretchedWord": "L-A-M",
               "orderIndex": 1,
-              "vocabulary": [
-                {"text": "Wood", "emoji": "🪵", "orderIndex": 0},
-                {"text": "Hood", "emoji": "🧥", "orderIndex": 1},
-                {"text": "Look", "emoji": "👀", "orderIndex": 2},
-                {"text": "Book", "emoji": "📖", "orderIndex": 3},
-                {"text": "Foot", "emoji": "🦶", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "lamb",
+                  "emoji": "🐑"
+                },
+                {
+                  "word": "comb",
+                  "emoji": "💇"
+                },
+                {
+                  "word": "glove",
+                  "emoji": "🧤"
+                },
+                {
+                  "word": "live",
+                  "emoji": "🎙️"
+                }
               ]
             },
             {
-              "id": "l5-u7-cook",
-              "text": "cook",
-              "phoneme": "/kʊk/",
-              "emoji": "👨‍🍳",
+              "id": "L5U7_rh_st",
+              "letter": "RH-ST",
+              "displayLetter": "rh st",
+              "soundSpelling": "rr-ss",
+              "sentence": "A whistle at the castle.",
+              "stretchedWord": "RY-no",
               "orderIndex": 2,
-              "vocabulary": [
-                {"text": "Cook", "emoji": "👨‍🍳", "orderIndex": 0},
-                {"text": "Good", "emoji": "👍", "orderIndex": 1},
-                {"text": "Hook", "emoji": "🪝", "orderIndex": 2},
-                {"text": "Book", "emoji": "📖", "orderIndex": 3},
-                {"text": "Wood", "emoji": "🪵", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "rhino",
+                  "emoji": "🦏"
+                },
+                {
+                  "word": "rhubarb",
+                  "emoji": "🌱"
+                },
+                {
+                  "word": "whistle",
+                  "emoji": "😗"
+                },
+                {
+                  "word": "castle",
+                  "emoji": "🏰"
+                }
               ]
             }
           ]
         },
         {
-          "id": "level-5-unit-8",
+          "id": "L5U8",
           "number": 8,
-          "title": "oo long sound",
+          "title": "ture sure tion sion ous ful",
+          "themeChip": null,
           "orderIndex": 7,
-          "words": [
+          "lessons": [
             {
-              "id": "l5-u8-moon",
-              "text": "moon",
-              "phoneme": "/muːn/",
-              "emoji": "🌙",
+              "id": "L5U8_ture_sure",
+              "letter": "TURE-SURE",
+              "displayLetter": "ture sure",
+              "soundSpelling": "cher",
+              "sentence": "A picture of nature.",
+              "stretchedWord": "PIK-cher",
               "orderIndex": 0,
-              "vocabulary": [
-                {"text": "Moon", "emoji": "🌙", "orderIndex": 0},
-                {"text": "Zoo", "emoji": "🐘", "orderIndex": 1},
-                {"text": "School", "emoji": "🏫", "orderIndex": 2},
-                {"text": "Boot", "emoji": "👢", "orderIndex": 3},
-                {"text": "Tooth", "emoji": "🦷", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "picture",
+                  "emoji": "🖼️"
+                },
+                {
+                  "word": "nature",
+                  "emoji": "🌿"
+                },
+                {
+                  "word": "treasure",
+                  "emoji": "💎"
+                },
+                {
+                  "word": "measure",
+                  "emoji": "📏"
+                }
               ]
             },
             {
-              "id": "l5-u8-zoo",
-              "text": "zoo",
-              "phoneme": "/zuː/",
-              "emoji": "🐘",
+              "id": "L5U8_tion_sion",
+              "letter": "TION-SION",
+              "displayLetter": "tion sion",
+              "soundSpelling": "shun",
+              "sentence": "A television at the station.",
+              "stretchedWord": "STAY-shun",
               "orderIndex": 1,
-              "vocabulary": [
-                {"text": "Zoo", "emoji": "🐘", "orderIndex": 0},
-                {"text": "Boot", "emoji": "👢", "orderIndex": 1},
-                {"text": "Tooth", "emoji": "🦷", "orderIndex": 2},
-                {"text": "Spoon", "emoji": "🥄", "orderIndex": 3},
-                {"text": "Broom", "emoji": "🧹", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "station",
+                  "emoji": "🚉"
+                },
+                {
+                  "word": "competition",
+                  "emoji": "🏆"
+                },
+                {
+                  "word": "television",
+                  "emoji": "📺"
+                },
+                {
+                  "word": "excursion",
+                  "emoji": "🗺️"
+                }
               ]
             },
             {
-              "id": "l5-u8-spoon",
-              "text": "spoon",
-              "phoneme": "/spuːn/",
-              "emoji": "🥄",
+              "id": "L5U8_ous_ful",
+              "letter": "OUS-FUL",
+              "displayLetter": "ous ful",
+              "soundSpelling": "us-ful",
+              "sentence": "A famous and helpful person.",
+              "stretchedWord": "FAY-mus",
               "orderIndex": 2,
-              "vocabulary": [
-                {"text": "Spoon", "emoji": "🥄", "orderIndex": 0},
-                {"text": "Broom", "emoji": "🧹", "orderIndex": 1},
-                {"text": "Balloon", "emoji": "🎈", "orderIndex": 2},
-                {"text": "Moon", "emoji": "🌙", "orderIndex": 3},
-                {"text": "Zoo", "emoji": "🐘", "orderIndex": 4}
-              ]
-            }
-          ]
-        },
-        {
-          "id": "level-5-unit-9",
-          "number": 9,
-          "title": "Advanced review",
-          "orderIndex": 8,
-          "words": [
-            {
-              "id": "l5-u9-crown",
-              "text": "crown",
-              "phoneme": "/kraʊn/",
-              "emoji": "👑",
-              "orderIndex": 0,
-              "vocabulary": [
-                {"text": "Crown", "emoji": "👑", "orderIndex": 0},
-                {"text": "Farm", "emoji": "🚜", "orderIndex": 1},
-                {"text": "Turtle", "emoji": "🐢", "orderIndex": 2},
-                {"text": "Storm", "emoji": "🌩️", "orderIndex": 3},
-                {"text": "Cloud", "emoji": "☁️", "orderIndex": 4}
-              ]
-            },
-            {
-              "id": "l5-u9-knife",
-              "text": "knife",
-              "phoneme": "/naɪf/",
-              "emoji": "🔪",
-              "orderIndex": 1,
-              "vocabulary": [
-                {"text": "Knife", "emoji": "🔪", "orderIndex": 0},
-                {"text": "Moon", "emoji": "🌙", "orderIndex": 1},
-                {"text": "Toy", "emoji": "🧸", "orderIndex": 2},
-                {"text": "Coin", "emoji": "🪙", "orderIndex": 3},
-                {"text": "Book", "emoji": "📖", "orderIndex": 4}
-              ]
-            },
-            {
-              "id": "l5-u9-school",
-              "text": "school",
-              "phoneme": "/skuːl/",
-              "emoji": "🏫",
-              "orderIndex": 2,
-              "vocabulary": [
-                {"text": "School", "emoji": "🏫", "orderIndex": 0},
-                {"text": "Storm", "emoji": "🌩️", "orderIndex": 1},
-                {"text": "Coin", "emoji": "🪙", "orderIndex": 2},
-                {"text": "Crown", "emoji": "👑", "orderIndex": 3},
-                {"text": "Book", "emoji": "📖", "orderIndex": 4}
+              "words": [
+                {
+                  "word": "famous",
+                  "emoji": "⭐"
+                },
+                {
+                  "word": "dangerous",
+                  "emoji": "☢️"
+                },
+                {
+                  "word": "beautiful",
+                  "emoji": "🌸"
+                },
+                {
+                  "word": "helpful",
+                  "emoji": "🙋"
+                }
               ]
             }
           ]

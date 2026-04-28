@@ -13,15 +13,11 @@ internal class StepNavigatorViewModel(
     unitRepository: UnitRepository,
 ) : ViewModel() {
 
-    val totalWords: StateFlow<Int> = unitRepository.observeWords(unitId)
+    val totalLessons: StateFlow<Int> = unitRepository.observeLessons(unitId)
         .map { it.size }
         .stateIn(
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(SUBSCRIPTION_TIMEOUT_MS),
+            started = SharingStarted.Eagerly,
             initialValue = 0,
         )
-
-    private companion object {
-        const val SUBSCRIPTION_TIMEOUT_MS = 5_000L
-    }
 }

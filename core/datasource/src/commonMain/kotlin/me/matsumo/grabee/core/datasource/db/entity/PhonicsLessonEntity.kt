@@ -1,13 +1,12 @@
 package me.matsumo.grabee.core.datasource.db.entity
 
-import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 
 @Entity(
-    tableName = "word",
+    tableName = "phonics_lesson",
     foreignKeys = [
         ForeignKey(
             entity = UnitEntity::class,
@@ -18,16 +17,14 @@ import androidx.room.PrimaryKey
     ],
     indices = [Index("unitId")],
 )
-data class WordEntity(
+data class PhonicsLessonEntity(
     @PrimaryKey val id: String,
     val unitId: String,
-    val text: String,
-    val phoneme: String,
-    val emoji: String?,
-    val imageAsset: String?,
-    val wordAudioAsset: String?,
-    val sentenceAudioAsset: String?,
+    val letter: String,
+    val displayLetter: String,
+    val soundSpelling: String,
+    val sentence: String,
+    val stretchedWord: String,
     val orderIndex: Int,
-    @ColumnInfo(defaultValue = "'[]'")
-    val vocabularyJson: String = "[]",
+    val wordsJson: String,
 )

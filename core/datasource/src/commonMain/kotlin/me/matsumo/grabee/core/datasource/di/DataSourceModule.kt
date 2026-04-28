@@ -12,7 +12,7 @@ val dataSourceModule = module {
 
     single { get<GrabeeDatabase>().levelDao() }
     single { get<GrabeeDatabase>().unitDao() }
-    single { get<GrabeeDatabase>().wordDao() }
+    single { get<GrabeeDatabase>().phonicsLessonDao() }
     single { get<GrabeeDatabase>().learningProgressDao() }
     single { get<GrabeeDatabase>().userProgressDao() }
     single { DatabaseSeeder(get()) }

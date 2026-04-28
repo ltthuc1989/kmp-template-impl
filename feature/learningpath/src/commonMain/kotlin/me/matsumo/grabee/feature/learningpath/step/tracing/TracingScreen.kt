@@ -56,7 +56,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.launch
-import me.matsumo.grabee.core.model.Word
+import me.matsumo.grabee.core.model.PhonicsLesson
 import me.matsumo.grabee.core.resource.Res
 import me.matsumo.grabee.core.resource.chant_next
 import me.matsumo.grabee.core.resource.chant_previous
@@ -82,15 +82,18 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
+private const val STEP_INDEX = 6
+
 @Composable
 internal fun TracingScreen(
     unitId: String,
-    wordIndex: Int,
+    lessonIndex: Int,
     onClose: () -> Unit,
     onPrevious: () -> Unit,
     onNext: () -> Unit,
+    onStepJump: (Int) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: TracingViewModel = koinViewModel { parametersOf(unitId) },
+    viewModel: TracingViewModel = koinViewModel(key = unitId) { parametersOf(unitId) },
 ) {
     val screenState by viewModel.screenState.collectAsStateWithLifecycle()
 
@@ -98,40 +101,40 @@ internal fun TracingScreen(
         modifier = modifier.fillMaxSize(),
         screenState = screenState,
     ) { uiState ->
-        val safeIndex = wordIndex.coerceIn(0, uiState.words.lastIndex)
+        val safeIndex = lessonIndex.coerceIn(0, uiState.lessons.lastIndex)
         TracingContent(
-            currentWord = uiState.words[safeIndex],
-            words = uiState.words,
+            currentLesson = uiState.lessons[safeIndex],
+            lessons = uiState.lessons,
             currentIndex = safeIndex,
-            totalWords = uiState.words.size,
             onClose = onClose,
             onPrevious = onPrevious,
             onNext = onNext,
+            onStepJump = onStepJump,
         )
     }
 }
 
 @Composable
 private fun TracingContent(
-    currentWord: Word,
-    words: ImmutableList<Word>,
+    currentLesson: PhonicsLesson,
+    lessons: ImmutableList<PhonicsLesson>,
     currentIndex: Int,
-    totalWords: Int,
     onClose: () -> Unit,
     onPrevious: () -> Unit,
     onNext: () -> Unit,
+    onStepJump: (Int) -> Unit,
 ) {
-    val letterChar = currentWord.text.firstOrNull() ?: 'A'
-    var isUppercase by remember(currentWord.id) { mutableStateOf(true) }
+    val letterChar = currentLesson.displayLetter.firstOrNull() ?: 'A'
+    var isUppercase by remember(currentLesson.id) { mutableStateOf(true) }
     val guide = remember(letterChar, isUppercase) { LetterPaths.get(letterChar, isUppercase) }
-    var result by remember(currentWord.id) { mutableStateOf<TracingResult?>(null) }
+    var result by remember(currentLesson.id) { mutableStateOf<TracingResult?>(null) }
 
     // State owned here so Next can read current strokes for scoring.
-    val userStrokes = remember(currentWord.id, isUppercase) {
+    val userStrokes = remember(currentLesson.id, isUppercase) {
         mutableStateListOf<SnapshotStateList<Offset>>()
     }
     var practiceCanvasSize by remember { mutableStateOf(Size.Zero) }
-    val resetKey = remember(currentWord.id, isUppercase) { mutableStateOf(0) }
+    val resetKey = remember(currentLesson.id, isUppercase) { mutableStateOf(0) }
 
     fun resetCanvas() {
         userStrokes.clear()
@@ -156,14 +159,14 @@ private fun TracingContent(
             topBar = {
                 StepHeader(
                     title = stringResource(Res.string.tracing_title),
-                    currentIndex = currentIndex,
-                    totalWords = totalWords,
+                    currentStepIndex = STEP_INDEX,
                     onClose = onClose,
+                    onStepJump = onStepJump,
                 )
             },
             bottomBar = {
                 LetterStepperBar(
-                    words = words,
+                    lessons = lessons,
                     currentIndex = currentIndex,
                 )
             },

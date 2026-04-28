@@ -22,5 +22,6 @@ data class UnitEntity(
     val levelId: String,
     val number: Int,
     val title: String,
+    val themeChip: String?,
     val orderIndex: Int,
 )

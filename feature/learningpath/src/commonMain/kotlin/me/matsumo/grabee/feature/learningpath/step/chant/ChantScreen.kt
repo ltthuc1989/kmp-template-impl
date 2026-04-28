@@ -45,7 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.collections.immutable.ImmutableList
-import me.matsumo.grabee.core.model.Word
+import me.matsumo.grabee.core.model.PhonicsLesson
 import me.matsumo.grabee.core.resource.Res
 import me.matsumo.grabee.core.resource.chant_instruction
 import me.matsumo.grabee.core.resource.chant_next
@@ -56,21 +56,25 @@ import me.matsumo.grabee.feature.learningpath.step.common.LetterStepperBar
 import me.matsumo.grabee.feature.learningpath.step.common.PuffySurface
 import me.matsumo.grabee.feature.learningpath.step.common.StepHeader
 import me.matsumo.grabee.feature.learningpath.step.common.StepNavRow
+import me.matsumo.grabee.feature.learningpath.step.common.StoryStyleCard
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 import kotlin.math.abs
 import kotlin.math.min
 
+private const val STEP_INDEX = 1
+
 @Composable
 internal fun ChantScreen(
     unitId: String,
-    wordIndex: Int,
+    lessonIndex: Int,
     onClose: () -> Unit,
     onPrevious: () -> Unit,
     onNext: () -> Unit,
+    onStepJump: (Int) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: ChantViewModel = koinViewModel { parametersOf(unitId) },
+    viewModel: ChantViewModel = koinViewModel(key = unitId) { parametersOf(unitId) },
 ) {
     val screenState by viewModel.screenState.collectAsStateWithLifecycle()
 
@@ -78,44 +82,44 @@ internal fun ChantScreen(
         modifier = modifier.fillMaxSize(),
         screenState = screenState,
     ) { uiState ->
-        val safeIndex = wordIndex.coerceIn(0, uiState.words.lastIndex)
+        val safeIndex = lessonIndex.coerceIn(0, uiState.lessons.lastIndex)
         ChantContent(
-            currentWord = uiState.words[safeIndex],
-            words = uiState.words,
+            currentLesson = uiState.lessons[safeIndex],
+            lessons = uiState.lessons,
             currentIndex = safeIndex,
-            totalWords = uiState.words.size,
             onClose = onClose,
             onPrevious = onPrevious,
             onNext = onNext,
+            onStepJump = onStepJump,
         )
     }
 }
 
 @Composable
 private fun ChantContent(
-    currentWord: Word,
-    words: ImmutableList<Word>,
+    currentLesson: PhonicsLesson,
+    lessons: ImmutableList<PhonicsLesson>,
     currentIndex: Int,
-    totalWords: Int,
     onClose: () -> Unit,
     onPrevious: () -> Unit,
     onNext: () -> Unit,
+    onStepJump: (Int) -> Unit,
 ) {
-    var isChanting by remember(currentWord.id) { mutableStateOf(false) }
+    var isChanting by remember(currentLesson.id) { mutableStateOf(false) }
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             StepHeader(
                 title = stringResource(Res.string.chant_title),
-                currentIndex = currentIndex,
-                totalWords = totalWords,
+                currentStepIndex = STEP_INDEX,
                 onClose = onClose,
+                onStepJump = onStepJump,
             )
         },
         bottomBar = {
             LetterStepperBar(
-                words = words,
+                lessons = lessons,
                 currentIndex = currentIndex,
             )
         },
@@ -128,7 +132,7 @@ private fun ChantContent(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Spacer(Modifier.height(8.dp))
-            ChantHeroCard(word = currentWord, isChanting = isChanting)
+            ChantHeroCard(lesson = currentLesson, isChanting = isChanting)
             Spacer(Modifier.weight(1f, fill = true))
             PlayStopButton(
                 isChanting = isChanting,
@@ -150,28 +154,17 @@ private fun ChantContent(
 }
 
 @Composable
-private fun ChantHeroCard(word: Word, isChanting: Boolean) {
-    PuffySurface(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(56.dp),
-        containerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
-        shadowElevation = 28.dp,
-        shadowTint = MaterialTheme.colorScheme.primary,
-        shadowAlpha = 0.30f,
-        topHighlightHeight = 20.dp,
-        topHighlightAlpha = 0.9f,
-        bottomShadeHeight = 20.dp,
-        bottomShadeAlpha = 0.15f,
-    ) {
+private fun ChantHeroCard(lesson: PhonicsLesson, isChanting: Boolean) {
+    StoryStyleCard(aspectRatio = null) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(28.dp),
+                .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            CharacterArtwork(word = word)
+            CharacterArtwork(emoji = lesson.words.firstOrNull()?.emoji.orEmpty())
             Spacer(Modifier.height(20.dp))
-            ChantText(chant = word.chantString(), isChanting = isChanting)
+            ChantText(chant = lesson.stretchedWord, isChanting = isChanting)
             Spacer(Modifier.height(12.dp))
             Text(
                 text = stringResource(Res.string.chant_instruction),
@@ -185,7 +178,7 @@ private fun ChantHeroCard(word: Word, isChanting: Boolean) {
 }
 
 @Composable
-private fun CharacterArtwork(word: Word) {
+private fun CharacterArtwork(emoji: String) {
     Box(
         modifier = Modifier
             .size(120.dp)
@@ -198,7 +191,7 @@ private fun CharacterArtwork(word: Word) {
         contentAlignment = Alignment.Center,
     ) {
         Text(
-            text = word.emoji.orEmpty().ifEmpty { "🎨" },
+            text = emoji.ifEmpty { "🎨" },
             fontSize = 96.sp,
         )
     }
@@ -295,11 +288,6 @@ private fun PlayStopButton(
             )
         }
     }
-}
-
-private fun Word.chantString(): String {
-    val letter = text.firstOrNull() ?: return text
-    return "${letter.uppercaseChar()}-${letter.lowercaseChar()}-${text.lowercase()}..."
 }
 
 private fun String.tokenize(): List<String> {

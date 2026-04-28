@@ -54,8 +54,8 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import me.matsumo.grabee.core.model.VocabularyItem
-import me.matsumo.grabee.core.model.Word
+import me.matsumo.grabee.core.model.LessonWord
+import me.matsumo.grabee.core.model.PhonicsLesson
 import me.matsumo.grabee.core.resource.Res
 import me.matsumo.grabee.core.resource.chant_next
 import me.matsumo.grabee.core.resource.chant_previous
@@ -77,15 +77,18 @@ import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 import kotlin.random.Random
 
+private const val STEP_INDEX = 5
+
 @Composable
 internal fun MatchingScreen(
     unitId: String,
-    wordIndex: Int,
+    lessonIndex: Int,
     onClose: () -> Unit,
     onPrevious: () -> Unit,
     onNext: () -> Unit,
+    onStepJump: (Int) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: MatchingViewModel = koinViewModel { parametersOf(unitId) },
+    viewModel: MatchingViewModel = koinViewModel(key = unitId) { parametersOf(unitId) },
 ) {
     val screenState by viewModel.screenState.collectAsStateWithLifecycle()
 
@@ -93,46 +96,46 @@ internal fun MatchingScreen(
         modifier = modifier.fillMaxSize(),
         screenState = screenState,
     ) { uiState ->
-        val safeIndex = wordIndex.coerceIn(0, uiState.words.lastIndex)
+        val safeIndex = lessonIndex.coerceIn(0, uiState.lessons.lastIndex)
         MatchingContent(
-            currentWord = uiState.words[safeIndex],
-            words = uiState.words,
+            currentLesson = uiState.lessons[safeIndex],
+            lessons = uiState.lessons,
             currentIndex = safeIndex,
-            totalWords = uiState.words.size,
             onClose = onClose,
             onPrevious = onPrevious,
             onNext = onNext,
+            onStepJump = onStepJump,
         )
     }
 }
 
 @Composable
 private fun MatchingContent(
-    currentWord: Word,
-    words: ImmutableList<Word>,
+    currentLesson: PhonicsLesson,
+    lessons: ImmutableList<PhonicsLesson>,
     currentIndex: Int,
-    totalWords: Int,
     onClose: () -> Unit,
     onPrevious: () -> Unit,
     onNext: () -> Unit,
+    onStepJump: (Int) -> Unit,
 ) {
-    val vocab = remember(currentWord.id) {
-        currentWord.vocabulary.ifEmpty { listOf(currentWord.toVocabItem()) }.toImmutableList()
+    val vocab = remember(currentLesson.id) {
+        currentLesson.words.toImmutableList()
     }
-    val rightOrder = remember(currentWord.id) {
-        vocab.shuffled(Random(currentWord.id.hashCode())).toImmutableList()
+    val rightOrder = remember(currentLesson.id) {
+        vocab.shuffled(Random(currentLesson.id.hashCode())).toImmutableList()
     }
     val totalPairs = vocab.size
 
     // Dot positions captured from child composables (local to matching Box).
-    val leftDotPositions = remember(currentWord.id) { mutableStateMapOf<String, Offset>() }
-    val rightDotPositions = remember(currentWord.id) { mutableStateMapOf<String, Offset>() }
+    val leftDotPositions = remember(currentLesson.id) { mutableStateMapOf<String, Offset>() }
+    val rightDotPositions = remember(currentLesson.id) { mutableStateMapOf<String, Offset>() }
     // Draft pairings (may be wrong; not locked).
-    val pendingMatches = remember(currentWord.id) { mutableStateMapOf<String, String>() }
+    val pendingMatches = remember(currentLesson.id) { mutableStateMapOf<String, String>() }
     // Validated correct pairings (locked, can't redo).
-    val validatedMatches = remember(currentWord.id) { mutableStateMapOf<String, String>() }
-    var wrongFlashTexts by remember(currentWord.id) { mutableStateOf(emptySet<String>()) }
-    var finalOverlay by remember(currentWord.id) { mutableStateOf<ScoreFeedback?>(null) }
+    val validatedMatches = remember(currentLesson.id) { mutableStateMapOf<String, String>() }
+    var wrongFlashTexts by remember(currentLesson.id) { mutableStateOf(emptySet<String>()) }
+    var finalOverlay by remember(currentLesson.id) { mutableStateOf<ScoreFeedback?>(null) }
 
     val allDoneTitle = stringResource(Res.string.identify_all_done_title)
     val allDoneSubtitle = stringResource(Res.string.identify_all_done_subtitle, totalPairs)
@@ -182,14 +185,14 @@ private fun MatchingContent(
             topBar = {
                 StepHeader(
                     title = stringResource(Res.string.matching_title),
-                    currentIndex = currentIndex,
-                    totalWords = totalWords,
+                    currentStepIndex = STEP_INDEX,
                     onClose = onClose,
+                    onStepJump = onStepJump,
                 )
             },
             bottomBar = {
                 LetterStepperBar(
-                    words = words,
+                    lessons = lessons,
                     currentIndex = currentIndex,
                 )
             },
@@ -205,7 +208,7 @@ private fun MatchingContent(
                 HintPill()
                 Spacer(Modifier.height(16.dp))
                 MatchingArea(
-                    wordKey = currentWord.id,
+                    wordKey = currentLesson.id,
                     leftItems = vocab,
                     rightItems = rightOrder,
                     pendingMatches = pendingMatches,
@@ -285,8 +288,8 @@ private fun HintPill() {
 @Composable
 private fun MatchingArea(
     wordKey: String,
-    leftItems: ImmutableList<VocabularyItem>,
-    rightItems: ImmutableList<VocabularyItem>,
+    leftItems: ImmutableList<LessonWord>,
+    rightItems: ImmutableList<LessonWord>,
     pendingMatches: Map<String, String>,
     validatedMatches: Map<String, String>,
     wrongFlashTexts: Set<String>,
@@ -402,8 +405,8 @@ private fun MatchingArea(
 @Suppress("LongParameterList", "MutableParams", "UnstableCollections")
 @Composable
 private fun MatchingRows(
-    leftItems: ImmutableList<VocabularyItem>,
-    rightItems: ImmutableList<VocabularyItem>,
+    leftItems: ImmutableList<LessonWord>,
+    rightItems: ImmutableList<LessonWord>,
     pendingMatches: Map<String, String>,
     validatedMatches: Map<String, String>,
     wrongFlashTexts: Set<String>,
@@ -552,7 +555,7 @@ private fun WordPill(
 
 @Composable
 private fun ImageCard(
-    item: VocabularyItem,
+    item: LessonWord,
     state: SlotState,
     wrongKey: Int,
     onDotPositioned: (Offset) -> Unit,
@@ -710,13 +713,6 @@ private data class DragLine(
 )
 
 private fun Offset.distance(): Float = kotlin.math.sqrt(x * x + y * y)
-
-private fun Word.toVocabItem(): VocabularyItem = VocabularyItem(
-    text = text.replaceFirstChar { it.uppercase() },
-    emoji = emoji,
-    imageAsset = imageAsset,
-    orderIndex = 0,
-)
 
 // -------- Constants --------
 

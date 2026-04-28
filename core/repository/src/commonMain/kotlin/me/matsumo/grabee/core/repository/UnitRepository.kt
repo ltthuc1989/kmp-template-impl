@@ -7,17 +7,17 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import me.matsumo.grabee.core.datasource.db.dao.LearningProgressDao
+import me.matsumo.grabee.core.datasource.db.dao.PhonicsLessonDao
 import me.matsumo.grabee.core.datasource.db.dao.UnitDao
 import me.matsumo.grabee.core.datasource.db.dao.UserProgressDao
-import me.matsumo.grabee.core.datasource.db.dao.WordDao
+import me.matsumo.grabee.core.model.PhonicsLesson
 import me.matsumo.grabee.core.model.PhonicsUnit
 import me.matsumo.grabee.core.model.UnitCard
 import me.matsumo.grabee.core.model.UnitStatus
-import me.matsumo.grabee.core.model.Word
 
 class UnitRepository(
     private val unitDao: UnitDao,
-    private val wordDao: WordDao,
+    private val phonicsLessonDao: PhonicsLessonDao,
     private val userProgressDao: UserProgressDao,
     private val learningProgressDao: LearningProgressDao,
 ) {
@@ -29,9 +29,8 @@ class UnitRepository(
         all.firstOrNull { it.id == unitId }?.toModel()
     }
 
-    fun observeWords(unitId: String): Flow<List<Word>> = wordDao.observeByUnit(unitId).map { words ->
-        words.map { it.toModel() }
-    }
+    fun observeLessons(unitId: String): Flow<List<PhonicsLesson>> =
+        phonicsLessonDao.observeByUnit(unitId).map { lessons -> lessons.map { it.toModel() } }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     fun observeUnitCards(levelId: String): Flow<List<UnitCard>> = observeUnits(levelId).flatMapLatest { units ->
@@ -49,12 +48,12 @@ class UnitRepository(
 
     private fun unitSignal(unit: PhonicsUnit): Flow<UnitSignal> = combine(
         userProgressDao.observeUnitStars(unit.id),
-        wordDao.observeByUnit(unit.id),
-    ) { stars, words ->
+        observeLessons(unit.id),
+    ) { stars, lessons ->
         UnitSignal(
             unit = unit,
             totalStars = stars,
-            previewEmojis = words.mapNotNull { it.emoji },
+            previewEmojis = lessons.flatMap { lesson -> lesson.words.mapNotNull { it.emoji } }.take(MAX_PREVIEW_EMOJIS),
         )
     }
 
@@ -86,4 +85,8 @@ class UnitRepository(
         val totalStars: Int,
         val previewEmojis: List<String>,
     )
+
+    private companion object {
+        const val MAX_PREVIEW_EMOJIS = 4
+    }
 }

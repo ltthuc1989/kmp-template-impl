@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import me.matsumo.grabee.core.model.Word
+import me.matsumo.grabee.core.model.PhonicsLesson
 import me.matsumo.grabee.core.repository.UnitRepository
 import me.matsumo.grabee.core.resource.Res
 import me.matsumo.grabee.core.resource.error_network
@@ -24,16 +24,16 @@ internal class VocabularyViewModel(
 ) : ViewModel() {
 
     val screenState: StateFlow<ScreenState<VocabularyUiState>> =
-        unitRepository.observeWords(unitId)
-            .map { words ->
-                if (words.isEmpty()) {
+        unitRepository.observeLessons(unitId)
+            .map { lessons ->
+                if (lessons.isEmpty()) {
                     ScreenState.Error(message = Res.string.error_no_data)
                 } else {
-                    ScreenState.Idle(VocabularyUiState(words = words.toImmutableList()))
+                    ScreenState.Idle(VocabularyUiState(lessons = lessons.toImmutableList()))
                 }
             }
             .catch { throwable ->
-                Napier.e(tag = TAG, throwable = throwable) { "Failed to load words for $unitId" }
+                Napier.e(tag = TAG, throwable = throwable) { "Failed to load lessons for $unitId" }
                 emit(ScreenState.Error(message = Res.string.error_network))
             }
             .stateIn(
@@ -50,5 +50,5 @@ internal class VocabularyViewModel(
 
 @Immutable
 internal data class VocabularyUiState(
-    val words: ImmutableList<Word>,
+    val lessons: ImmutableList<PhonicsLesson>,
 )
