@@ -50,19 +50,19 @@ ProgressRepository.upsertAttempt(wordId, score)
 
 | File | Purpose |
 |---|---|
-| `core/datasource/src/commonMain/kotlin/me/matsumo/grabee/core/datasource/audio/AudioRecorder.kt` | `expect class` |
-| `core/datasource/src/androidMain/kotlin/me/matsumo/grabee/core/datasource/audio/AudioRecorder.android.kt` | Android `actual` (MediaRecorder) |
-| `core/datasource/src/iosMain/kotlin/me/matsumo/grabee/core/datasource/audio/AudioRecorder.ios.kt` | iOS `actual` (AVAudioRecorder) |
-| `core/datasource/src/commonMain/kotlin/me/matsumo/grabee/core/datasource/speech/GeminiSpeechDataSource.kt` | Ktor STT client |
-| `core/datasource/src/commonMain/kotlin/me/matsumo/grabee/core/datasource/speech/Score.kt` | DTO |
-| `core/repository/src/commonMain/kotlin/me/matsumo/grabee/core/repository/voice/VoiceRepository.kt` | Wrap recorder + STT |
+| `core/datasource/src/commonMain/kotlin/me/ltthuc/kmp/core/datasource/audio/AudioRecorder.kt` | `expect class` |
+| `core/datasource/src/androidMain/kotlin/me/ltthuc/kmp/core/datasource/audio/AudioRecorder.android.kt` | Android `actual` (MediaRecorder) |
+| `core/datasource/src/iosMain/kotlin/me/ltthuc/kmp/core/datasource/audio/AudioRecorder.ios.kt` | iOS `actual` (AVAudioRecorder) |
+| `core/datasource/src/commonMain/kotlin/me/ltthuc/kmp/core/datasource/speech/GeminiSpeechDataSource.kt` | Ktor STT client |
+| `core/datasource/src/commonMain/kotlin/me/ltthuc/kmp/core/datasource/speech/Score.kt` | DTO |
+| `core/repository/src/commonMain/kotlin/me/ltthuc/kmp/core/repository/voice/VoiceRepository.kt` | Wrap recorder + STT |
 
 ---
 
 ## AudioRecorder — `expect class` (commonMain)
 
 ```kotlin
-package me.matsumo.grabee.core.datasource.audio
+package me.ltthuc.kmp.core.datasource.audio
 
 class AudioRecorderException(message: String, cause: Throwable? = null) : Exception(message, cause)
 
@@ -89,7 +89,7 @@ expect class AudioRecorder() {
 ## Android `actual` (MediaRecorder pattern)
 
 ```kotlin
-package me.matsumo.grabee.core.datasource.audio
+package me.ltthuc.kmp.core.datasource.audio
 
 import android.media.MediaRecorder
 import android.os.Build
@@ -165,7 +165,7 @@ actual class AudioRecorder actual constructor() {
 ## iOS `actual` (AVAudioRecorder pattern)
 
 ```kotlin
-package me.matsumo.grabee.core.datasource.audio
+package me.ltthuc.kmp.core.datasource.audio
 
 import io.github.aakira.napier.Napier
 import kotlinx.cinterop.ExperimentalForeignApi
@@ -234,7 +234,7 @@ actual class AudioRecorder actual constructor() {
 ## GeminiSpeechDataSource — Ktor client
 
 ```kotlin
-package me.matsumo.grabee.core.datasource.speech
+package me.ltthuc.kmp.core.datasource.speech
 
 import io.ktor.client.*
 import io.ktor.client.call.*
@@ -244,7 +244,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
-import me.matsumo.grabee.BuildKonfig
+import me.ltthuc.kmp.BuildKonfig
 
 class GeminiSpeechDataSource(
     private val httpClient: HttpClient,
@@ -318,7 +318,7 @@ data class Score(
 **BuildKonfig setup** (composeApp/build.gradle.kts):
 ```kotlin
 buildKonfig {
-    packageName = "me.matsumo.grabee"
+    packageName = "me.ltthuc.kmp"
     defaultConfigs {
         buildConfigField(STRING, "GEMINI_API_KEY", localProperties.getProperty("GEMINI_API_KEY") ?: "")
     }
@@ -330,13 +330,13 @@ buildKonfig {
 ## VoiceRepository
 
 ```kotlin
-package me.matsumo.grabee.core.repository.voice
+package me.ltthuc.kmp.core.repository.voice
 
 import io.github.aakira.napier.Napier
-import me.matsumo.grabee.core.common.suspendRunCatching
-import me.matsumo.grabee.core.datasource.audio.AudioRecorder
-import me.matsumo.grabee.core.datasource.speech.GeminiSpeechDataSource
-import me.matsumo.grabee.core.datasource.speech.Score
+import me.ltthuc.kmp.core.common.suspendRunCatching
+import me.ltthuc.kmp.core.datasource.audio.AudioRecorder
+import me.ltthuc.kmp.core.datasource.speech.GeminiSpeechDataSource
+import me.ltthuc.kmp.core.datasource.speech.Score
 
 interface VoiceRepository {
     suspend fun recordAndScore(targetWord: String, ipa: String): Score

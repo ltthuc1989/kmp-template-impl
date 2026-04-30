@@ -1,6 +1,6 @@
 package primitive
 
-import me.matsumo.grabee.android
+import me.ltthuc.kmp.android
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget

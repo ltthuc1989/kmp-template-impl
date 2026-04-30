@@ -1,7 +1,7 @@
 package primitive
 
-import me.matsumo.grabee.library
-import me.matsumo.grabee.libs
+import me.ltthuc.kmp.library
+import me.ltthuc.kmp.libs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure

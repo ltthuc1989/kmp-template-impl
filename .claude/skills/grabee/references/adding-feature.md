@@ -12,7 +12,7 @@ feature/
     └── src/
         └── commonMain/
             └── kotlin/
-                └── me/matsumo/grabee/feature/xyz/
+                └── me/ltthuc/kmp/feature/xyz/
 ```
 
 ---
@@ -23,16 +23,16 @@ Feature modules always use this plugin combo (verified from `feature/home/build.
 
 ```kotlin
 plugins {
-    id("matsumo.primitive.kmp.common")
-    id("matsumo.primitive.android.library")
-    id("matsumo.primitive.kmp.compose")
-    id("matsumo.primitive.kmp.android")
-    id("matsumo.primitive.kmp.ios")
-    id("matsumo.primitive.detekt")
+    id("ltthuc.primitive.kmp.common")
+    id("ltthuc.primitive.android.library")
+    id("ltthuc.primitive.kmp.compose")
+    id("ltthuc.primitive.kmp.android")
+    id("ltthuc.primitive.kmp.ios")
+    id("ltthuc.primitive.detekt")
 }
 
 android {
-    namespace = "me.matsumo.grabee.feature.xyz"
+    namespace = "me.ltthuc.kmp.feature.xyz"
 }
 
 kotlin {

@@ -39,7 +39,7 @@
 
 | Task | Cách làm | Reference |
 |---|---|---|
-| Audit `feature/learningpath/` chi tiết | Đọc [LearningPathViewModel.kt](../../feature/learningpath/src/commonMain/kotlin/me/matsumo/grabee/feature/learningpath/LearningPathViewModel.kt) + Screen + Navigation. Quyết định: extend vs viết lại. (Audit ban đầu: skeleton placeholder, có ViewModel/Nav/DI structure đúng nhưng zero phonics content) | — |
+| Audit `feature/learningpath/` chi tiết | Đọc [LearningPathViewModel.kt](../../feature/learningpath/src/commonMain/kotlin/me/ltthuc/kmp/feature/learningpath/LearningPathViewModel.kt) + Screen + Navigation. Quyết định: extend vs viết lại. (Audit ban đầu: skeleton placeholder, có ViewModel/Nav/DI structure đúng nhưng zero phonics content) | — |
 | Room schema setup | Tạo `core/datasource/.../db/PhonicsDatabase.kt` + 6 entities + DAOs theo [02-TECH_SPEC.md §4](02-TECH_SPEC.md). | `/grabee Add Room database PhonicsDatabase với 6 entities (Level, Unit, Word, UserProgress, PronunciationAttempt, Profile) trong core:datasource. KSP đã wired sẵn cho 4 targets.` |
 | Repositories skeleton | Tạo interface + impl: `ContentRepository`, `ProfileRepository`, `ProgressRepository`, `BackupRepository` trong `core:repository`. | — |
 | Firestore client wrap | `core/datasource/.../firestore/FirestoreClient.kt` — Ktor wrap REST API hoặc Firebase Android/iOS SDK qua expect/actual. | — |

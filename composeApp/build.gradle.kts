@@ -5,12 +5,12 @@ import com.codingfeline.buildkonfig.compiler.FieldSpec
 import org.jetbrains.kotlin.konan.properties.Properties
 
 plugins {
-    id("matsumo.primitive.kmp.common")
-    id("matsumo.primitive.android.application")
-    id("matsumo.primitive.kmp.compose")
-    id("matsumo.primitive.kmp.android")
-    id("matsumo.primitive.kmp.ios")
-    id("matsumo.primitive.detekt")
+    id("ltthuc.primitive.kmp.common")
+    id("ltthuc.primitive.android.application")
+    id("ltthuc.primitive.kmp.compose")
+    id("ltthuc.primitive.kmp.android")
+    id("ltthuc.primitive.kmp.ios")
+    id("ltthuc.primitive.detekt")
 }
 
 val localProperties = Properties().apply {
@@ -25,7 +25,7 @@ val nativeAdTestId = "ca-app-pub-3940256099942544/2247696110"
 val rewardAdTestId = "ca-app-pub-3940256099942544/5224354917"
 
 android {
-    namespace = "me.matsumo.grabee"
+    namespace = "me.ltthuc.kmp"
 
     signingConfigs {
         getByName("debug") {
@@ -119,7 +119,7 @@ kotlin {
 }
 
 buildkonfig {
-    packageName = "me.matsumo.grabee"
+    packageName = "me.ltthuc.kmp"
 
     defaultConfigs {
         fun setField(name: String, defaultValue: String = "") {

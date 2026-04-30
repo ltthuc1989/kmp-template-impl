@@ -56,7 +56,7 @@ Append entry vào array `units` (hoặc tạo file nếu chưa có):
 Asset paths convention: xem [phonics-domain.md](../skills/grabee/references/phonics-domain.md) section "Asset Path Convention".
 
 ### Bước 3: Scaffold 8 step screens
-Trong `feature/learningpath/src/commonMain/kotlin/me/matsumo/grabee/feature/learningpath/step/`:
+Trong `feature/learningpath/src/commonMain/kotlin/me/ltthuc/kmp/feature/learningpath/step/`:
 
 8 step types (mỗi cái có ViewModel + Screen + Composable):
 1. `step01_soundintro/SoundIntroScreen.kt` + ViewModel — animation chữ + audio
@@ -68,7 +68,7 @@ Trong `feature/learningpath/src/commonMain/kotlin/me/matsumo/grabee/feature/lear
 7. `step07_tracing/TracingScreen.kt` + VM — letter tracing canvas
 8. `step08_story/StoryScreen.kt` + VM — phonics reader
 
-Pattern: tất cả **Pattern B** (`ScreenState<UiState>` + `actionState` cho voice/tap actions). Reference: [PaywallViewModel.kt](../../feature/billing/src/commonMain/kotlin/me/matsumo/grabee/feature/billing/PaywallViewModel.kt).
+Pattern: tất cả **Pattern B** (`ScreenState<UiState>` + `actionState` cho voice/tap actions). Reference: [PaywallViewModel.kt](../../feature/billing/src/commonMain/kotlin/me/ltthuc/kmp/feature/billing/PaywallViewModel.kt).
 
 **Nếu user attach UI mockup**:
 - Load [ui-from-screenshot.md](../skills/grabee/references/ui-from-screenshot.md) reference.

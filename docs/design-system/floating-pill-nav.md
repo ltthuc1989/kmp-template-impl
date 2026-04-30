@@ -218,7 +218,7 @@ Scaffold(
 
 ## 11. Porting to another KMP project
 
-The reference file [core/ui/src/commonMain/.../screen/view/FloatingPillNavBar.kt](../../core/ui/src/commonMain/kotlin/me/matsumo/grabee/core/ui/screen/view/FloatingPillNavBar.kt) is pure Compose commonMain code. To port:
+The reference file [core/ui/src/commonMain/.../screen/view/FloatingPillNavBar.kt](../../core/ui/src/commonMain/kotlin/me/ltthuc/kmp/core/ui/screen/view/FloatingPillNavBar.kt) is pure Compose commonMain code. To port:
 
 1. Copy the file into your target module's `commonMain`. Rename the package.
 2. Ensure the target module has these dependencies:

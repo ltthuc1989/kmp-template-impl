@@ -95,7 +95,7 @@ composeApp
 
 ## 3. Destination Tree
 
-File: [core/ui/src/commonMain/kotlin/me/matsumo/grabee/core/ui/screen/Destination.kt](../../core/ui/src/commonMain/kotlin/me/matsumo/grabee/core/ui/screen/Destination.kt)
+File: [core/ui/src/commonMain/kotlin/me/ltthuc/kmp/core/ui/screen/Destination.kt](../../core/ui/src/commonMain/kotlin/me/ltthuc/kmp/core/ui/screen/Destination.kt)
 
 ```kotlin
 @Immutable
@@ -149,7 +149,7 @@ sealed interface Destination : NavKey {
 
 ## 4. Room Schema
 
-File: `core/datasource/src/commonMain/kotlin/me/matsumo/grabee/core/datasource/db/`
+File: `core/datasource/src/commonMain/kotlin/me/ltthuc/kmp/core/datasource/db/`
 
 ### Entities
 
@@ -373,8 +373,8 @@ service firebase.storage {
 
 ### Setup steps (W0)
 1. Tạo Firebase project (đặt name "abc-phonics-kids" trên console).
-2. Add Android app: package `me.matsumo.grabee` (giữ namespace).
-3. Add iOS app: bundle `me.matsumo.grabee`.
+2. Add Android app: package `me.ltthuc.kmp`.
+3. Add iOS app: bundle `me.ltthuc.kmp`.
 4. Download `google-services.json` → `composeApp/`.
 5. Download `GoogleService-Info.plist` → `composeApp/iosMain/.../`.
 6. Enable Firestore (Native mode) + Cloud Storage.
@@ -469,8 +469,8 @@ Chi tiết template code: [skill ref voice-recognition.md](../../.claude/skills/
 | `LearningStepScreen` (8 step) | B | Load step content, action: voice record + score (action state) |
 | `UnitCompleteScreen` | A | Hiển thị stars + tap "Next" |
 | `ParentDashboardScreen` | B | Load aggregated analytics từ Room |
-| `PaywallScreen` | B (đã có) | Reference: [PaywallViewModel.kt](../../feature/billing/src/commonMain/kotlin/me/matsumo/grabee/feature/billing/PaywallViewModel.kt) |
-| `SettingScreen` | A (đã có) | Reference: [SettingViewModel.kt](../../feature/setting/src/commonMain/kotlin/me/matsumo/grabee/feature/setting/SettingViewModel.kt) |
+| `PaywallScreen` | B (đã có) | Reference: [PaywallViewModel.kt](../../feature/billing/src/commonMain/kotlin/me/ltthuc/kmp/feature/billing/PaywallViewModel.kt) |
+| `SettingScreen` | A (đã có) | Reference: [SettingViewModel.kt](../../feature/setting/src/commonMain/kotlin/me/ltthuc/kmp/feature/setting/SettingViewModel.kt) |
 
 ---
 
@@ -559,7 +559,7 @@ Reference devices: Pixel 6 (Android 13), iPhone 12 (iOS 17).
 
 ## 11. Display-name Rebrand Checklist (W7)
 
-**KHÔNG đổi code namespace** `me.matsumo.grabee` — lý do: 100+ file, ROI thấp, app store treat như app mới nếu đổi `applicationId`.
+**Code namespace**: `me.ltthuc.kmp` (đã rename từ template gốc — applicationId cũng đã đổi sang `me.ltthuc.kmp`).
 
 | File | Đổi |
 |---|---|
@@ -567,7 +567,7 @@ Reference devices: Pixel 6 (Android 13), iPhone 12 (iOS 17).
 | `core/resource/src/commonMain/composeResources/values-ja/strings.xml` | `<string name="app_name">ABCフォニックス キッズ</string>` |
 | `composeApp/src/androidMain/AndroidManifest.xml` | Verify `android:label="@string/app_name"` |
 | `composeApp/.../Info.plist` (iOS) | `CFBundleDisplayName` = "ABC Phonics Kids" |
-| `composeApp/build.gradle.kts` | **GIỮ** `applicationId = "me.matsumo.grabee"` |
+| `composeApp/build.gradle.kts` | **GIỮ** `applicationId = "me.ltthuc.kmp"` |
 | Privacy policy + store metadata | Viết với "ABC Phonics Kids" |
 
 Tradeoff: dev internal vẫn thấy "Grabee" trong code/Gradle output. Bình thường — pattern legal name vs trade name.
@@ -705,9 +705,9 @@ unzip -l composeApp/build/outputs/apk/debug/composeApp-debug.apk | grep -E "(com
 
 ### Existing (đọc để hiểu pattern)
 - [.claude/skills/grabee/SKILL.md](../../.claude/skills/grabee/SKILL.md) — patterns
-- [feature/billing/.../PaywallViewModel.kt](../../feature/billing/src/commonMain/kotlin/me/matsumo/grabee/feature/billing/PaywallViewModel.kt) — Pattern B reference
-- [feature/setting/.../SettingViewModel.kt](../../feature/setting/src/commonMain/kotlin/me/matsumo/grabee/feature/setting/SettingViewModel.kt) — Pattern A reference
-- [core/ui/src/commonMain/kotlin/me/matsumo/grabee/core/ui/screen/](../../core/ui/src/commonMain/kotlin/me/matsumo/grabee/core/ui/screen/) — ScreenState, Destination, AsyncLoadContents
+- [feature/billing/.../PaywallViewModel.kt](../../feature/billing/src/commonMain/kotlin/me/ltthuc/kmp/feature/billing/PaywallViewModel.kt) — Pattern B reference
+- [feature/setting/.../SettingViewModel.kt](../../feature/setting/src/commonMain/kotlin/me/ltthuc/kmp/feature/setting/SettingViewModel.kt) — Pattern A reference
+- [core/ui/src/commonMain/kotlin/me/ltthuc/kmp/core/ui/screen/](../../core/ui/src/commonMain/kotlin/me/ltthuc/kmp/core/ui/screen/) — ScreenState, Destination, AsyncLoadContents
 - [core/billing/](../../core/billing/) — RevenueCat KMP wrapper
 
 ### To create

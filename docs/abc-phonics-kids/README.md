@@ -3,7 +3,7 @@
 App học phonics tiếng Anh cho trẻ 3-8 tuổi, build trên template `kmp-template-impl` (KMP + Compose Multiplatform).
 
 **Status**: Planning → Mốc 1 (Code-Complete v0.1, 1 level end-to-end, ~8 tuần).
-**App display name**: ABC Phonics Kids. **Code namespace giữ nguyên** `me.matsumo.grabee` (không rebrand sâu).
+**App display name**: ABC Phonics Kids. **Code namespace giữ nguyên** `me.ltthuc.kmp` (không rebrand sâu).
 
 ---
 
@@ -39,7 +39,7 @@ App học phonics tiếng Anh cho trẻ 3-8 tuổi, build trên template `kmp-te
 
 | # | Quyết định |
 |---|---|
-| 1 | Display name "ABC Phonics Kids" qua `app_name` string, **giữ namespace** `me.matsumo.grabee`. |
+| 1 | Display name "ABC Phonics Kids" qua `app_name` string, **giữ namespace** `me.ltthuc.kmp`. |
 | 2 | Asset production qua **AI tools** (ElevenLabs + Midjourney + Claude/Gemini), tổng < $100. |
 | 3 | STT: **Gemini 2.5 Flash multimodal** (audio + target word → score trong 1 call) + Whisper fallback. KHÔNG Google STT legacy. |
 | 4 | COPPA: **Anonymous-first**, Profile opt-in (nickname + avatar + syncCode), KHÔNG Firebase Auth, KHÔNG VPC. |

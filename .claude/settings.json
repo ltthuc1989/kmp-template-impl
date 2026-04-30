@@ -22,7 +22,7 @@
       "Bash(./gradlew :composeApp:compileDebugKotlinAndroid -q)",
       "Bash(./gradlew :composeApp:compileKotlinIosSimulatorArm64)",
       "Bash(./gradlew :core:datasource:compileKotlinIosSimulatorArm64 :feature:learningpath:compileKotlinIosSimulatorArm64)",
-      "Bash(grep -n \"^import.*VocabularyItem\\\\|^import.*\\\\.Word$\" feature/learningpath/src/commonMain/kotlin/me/matsumo/grabee/feature/learningpath/step/blending/BlendingScreen.kt)",
+      "Bash(grep -n \"^import.*VocabularyItem\\\\|^import.*\\\\.Word$\" feature/learningpath/src/commonMain/kotlin/me/ltthuc/kmp/feature/learningpath/step/blending/BlendingScreen.kt)",
       "Bash(python3 -c ' *)"
     ],
     "additionalDirectories": [

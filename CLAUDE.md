@@ -8,7 +8,7 @@ App học phonics tiếng Anh cho trẻ 3-8 tuổi, build trên template KMP + C
 
 **Product docs**: [docs/abc-phonics-kids/README.md](docs/abc-phonics-kids/README.md) — đọc trước khi code.
 
-**App display name**: "ABC Phonics Kids" (qua `app_name` string). **Code namespace giữ nguyên** `me.matsumo.grabee` để tránh rebrand 100+ file.
+**App display name**: "ABC Phonics Kids" (qua `app_name` string). **Code namespace**: `me.ltthuc.kmp` (đã rename từ template gốc `me.matsumo.grabee`).
 
 ## Grabee Skill
 
@@ -66,7 +66,7 @@ Git-ignored. Keys read from here or environment variables:
 | `PURCHASE_ANDROID_API_KEY`, `PURCHASE_IOS_API_KEY` | RevenueCat |
 | `APPLOVIN_SDK_KEY` | AppLovin |
 
-All injected at compile time via **BuildKonfig** → `me.matsumo.grabee.BuildKonfig`.
+All injected at compile time via **BuildKonfig** → `me.ltthuc.kmp.BuildKonfig`.
 
 ---
 

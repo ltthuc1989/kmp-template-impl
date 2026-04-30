@@ -30,31 +30,31 @@ dependencies {
 gradlePlugin {
     plugins {
         register("AndroidApplicationPlugin") {
-            id = "matsumo.primitive.android.application"
+            id = "ltthuc.primitive.android.application"
             implementationClass = "primitive.AndroidApplicationPlugin"
         }
         register("AndroidLibraryPlugin") {
-            id = "matsumo.primitive.android.library"
+            id = "ltthuc.primitive.android.library"
             implementationClass = "primitive.AndroidLibraryPlugin"
         }
         register("KmpPlugin") {
-            id = "matsumo.primitive.kmp.common"
+            id = "ltthuc.primitive.kmp.common"
             implementationClass = "primitive.KmpCommonPlugin"
         }
         register("KmpAndroidPlugin") {
-            id = "matsumo.primitive.kmp.android"
+            id = "ltthuc.primitive.kmp.android"
             implementationClass = "primitive.KmpAndroidPlugin"
         }
         register("KmpAndroidCompose") {
-            id = "matsumo.primitive.kmp.compose"
+            id = "ltthuc.primitive.kmp.compose"
             implementationClass = "primitive.KmpComposePlugin"
         }
         register("KmpIosPlugin") {
-            id = "matsumo.primitive.kmp.ios"
+            id = "ltthuc.primitive.kmp.ios"
             implementationClass = "primitive.KmpIosPlugin"
         }
         register("DetektPlugin") {
-            id = "matsumo.primitive.detekt"
+            id = "ltthuc.primitive.detekt"
             implementationClass = "primitive.DetektPlugin"
         }
     }

@@ -1,0 +1,93 @@
+package me.ltthuc.kmp.feature.setting
+
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalUriHandler
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import me.ltthuc.kmp.core.ui.screen.Destination
+import me.ltthuc.kmp.core.ui.theme.LocalNavBackStack
+import me.ltthuc.kmp.feature.setting.components.SettingTopAppBar
+import me.ltthuc.kmp.feature.setting.components.section.SettingInfoSection
+import me.ltthuc.kmp.feature.setting.components.section.SettingOthersSection
+import me.ltthuc.kmp.feature.setting.components.section.SettingPaywallSection
+import me.ltthuc.kmp.feature.setting.components.section.SettingThemeSection
+import org.koin.compose.viewmodel.koinViewModel
+
+@Composable
+internal fun SettingScreen(
+    modifier: Modifier = Modifier,
+    viewModel: SettingViewModel = koinViewModel(),
+) {
+    val navBackStack = LocalNavBackStack.current
+    val uriHandler = LocalUriHandler.current
+    val setting by viewModel.setting.collectAsStateWithLifecycle()
+
+    val isRootTab = navBackStack.size <= 1
+
+    Scaffold(
+        modifier = modifier,
+        topBar = {
+            SettingTopAppBar(
+                onBackClicked = { navBackStack.removeAt(navBackStack.size - 1) },
+                modifier = Modifier,
+                showBackButton = !isRootTab,
+            )
+        },
+    ) {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = it,
+        ) {
+            if (!setting.plusMode || setting.developerMode) {
+                item {
+                    SettingPaywallSection(
+                        modifier = Modifier.fillMaxWidth(),
+                        onUpgradeClicked = { navBackStack.add(Destination.Paywall("setting")) },
+                    )
+                }
+            }
+
+            item {
+                SettingThemeSection(
+                    modifier = Modifier.fillMaxWidth(),
+                    setting = setting,
+                    onThemeChanged = viewModel::setTheme,
+                    onPaletteChanged = viewModel::setAppThemePalette,
+                )
+            }
+
+            item {
+                SettingInfoSection(
+                    modifier = Modifier.fillMaxWidth(),
+                    setting = setting,
+                )
+            }
+
+            item {
+                SettingOthersSection(
+                    modifier = Modifier.fillMaxWidth(),
+                    setting = setting,
+                    onTeamsOfServiceClicked = {
+                        uriHandler.openUri("https://www.matsumo.me/application/all/team_of_service")
+                    },
+                    onPrivacyPolicyClicked = {
+                        uriHandler.openUri("https://www.matsumo.me/application/all/privacy_policy")
+                    },
+                    onOpenSourceLicenseClicked = {
+                        navBackStack.add(Destination.Setting.License)
+                    },
+                    onDeveloperModeChanged = viewModel::setDeveloperMode,
+                    onShowSpeakButtonChanged = viewModel::setShowSpeakButton,
+                    onLetterGuideDebugClicked = {
+                        navBackStack.add(Destination.Learning.TracingGuideDebug)
+                    },
+                )
+            }
+        }
+    }
+}

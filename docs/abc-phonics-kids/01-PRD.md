@@ -280,7 +280,7 @@ Stories L5: "Dawn's Hiccups", "I Love the City", "The Painter Is in Town".
 
 ### Wire-up
 - RevenueCat KMP (đã có ở `core:billing`).
-- Reference ViewModel: [feature/billing/.../PaywallViewModel.kt](../../feature/billing/src/commonMain/kotlin/me/matsumo/grabee/feature/billing/PaywallViewModel.kt).
+- Reference ViewModel: [feature/billing/.../PaywallViewModel.kt](../../feature/billing/src/commonMain/kotlin/me/ltthuc/kmp/feature/billing/PaywallViewModel.kt).
 - Trigger paywall: tap level locked, sau hoàn thành Level 1, từ Settings.
 
 ### Revenue Projection

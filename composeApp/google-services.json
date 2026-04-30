@@ -9,7 +9,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:641570800809:android:2714f74ff59ce9a39a95b8",
         "android_client_info": {
-          "package_name": "me.matsumo.grabee"
+          "package_name": "me.ltthuc.kmp"
         }
       },
       "oauth_client": [],
@@ -28,7 +28,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:641570800809:android:2714f74ff59ce9a39a95b8",
         "android_client_info": {
-          "package_name": "me.matsumo.grabee.debug"
+          "package_name": "me.ltthuc.kmp.debug"
         }
       },
       "oauth_client": [],

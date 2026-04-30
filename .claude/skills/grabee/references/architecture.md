@@ -40,7 +40,7 @@ composeApp       ← all feature:* + all core:*
 
 ## ScreenState Sealed Class
 
-Location: `core/ui/src/commonMain/kotlin/me/matsumo/grabee/core/ui/screen/ScreenState.kt`
+Location: `core/ui/src/commonMain/kotlin/me/ltthuc/kmp/core/ui/screen/ScreenState.kt`
 
 ```kotlin
 @Stable

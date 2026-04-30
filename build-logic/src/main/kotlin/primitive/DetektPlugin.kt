@@ -1,9 +1,9 @@
 package primitive
 
-import me.matsumo.grabee.configureDetekt
-import me.matsumo.grabee.library
-import me.matsumo.grabee.libs
-import me.matsumo.grabee.plugin
+import me.ltthuc.kmp.configureDetekt
+import me.ltthuc.kmp.library
+import me.ltthuc.kmp.libs
+import me.ltthuc.kmp.plugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.dependencies

@@ -1,9 +1,9 @@
 package primitive
 
-import me.matsumo.grabee.androidApplication
-import me.matsumo.grabee.libs
-import me.matsumo.grabee.setupAndroid
-import me.matsumo.grabee.version
+import me.ltthuc.kmp.androidApplication
+import me.ltthuc.kmp.libs
+import me.ltthuc.kmp.setupAndroid
+import me.ltthuc.kmp.version
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -30,7 +30,7 @@ class AndroidApplicationPlugin : Plugin<Project> {
                 buildFeatures.viewBinding = true
 
                 defaultConfig {
-                    applicationId = "me.matsumo.grabee"
+                    applicationId = "me.ltthuc.kmp"
 
                     versionName = libs.version("versionName")
                     versionCode = libs.version("versionCode").toInt()

@@ -1,13 +1,13 @@
 plugins {
-    id("matsumo.primitive.kmp.common")
-    id("matsumo.primitive.android.library")
-    id("matsumo.primitive.kmp.android")
-    id("matsumo.primitive.kmp.ios")
-    id("matsumo.primitive.detekt")
+    id("ltthuc.primitive.kmp.common")
+    id("ltthuc.primitive.android.library")
+    id("ltthuc.primitive.kmp.android")
+    id("ltthuc.primitive.kmp.ios")
+    id("ltthuc.primitive.detekt")
 }
 
 android {
-    namespace = "me.matsumo.grabee.core.common"
+    namespace = "me.ltthuc.kmp.core.common"
 }
 
 kotlin {

@@ -157,8 +157,8 @@ All user-facing strings are in `core:resource`. Access in composables:
 
 ```kotlin
 import org.jetbrains.compose.resources.stringResource
-import me.matsumo.grabee.core.resource.Res
-import me.matsumo.grabee.core.resource.common_close
+import me.ltthuc.kmp.core.resource.Res
+import me.ltthuc.kmp.core.resource.common_close
 
 Text(text = stringResource(Res.string.common_close))
 ```
@@ -211,10 +211,10 @@ Row(
 ```
 
 Tham chiếu file đã áp dụng đúng:
-- [HomeTopBar (HomeScreen.kt:108-140)](../../../feature/home/src/commonMain/kotlin/me/matsumo/grabee/feature/home/HomeScreen.kt#L108-L140) — M3 `CenterAlignedTopAppBar`.
-- [SettingTopAppBar](../../../feature/setting/src/commonMain/kotlin/me/matsumo/grabee/feature/setting/components/SettingTopAppBar.kt) — M3 `CenterAlignedTopAppBar`.
-- [UnitTopBar (UnitSelectionScreen.kt)](../../../feature/learningpath/src/commonMain/kotlin/me/matsumo/grabee/feature/learningpath/UnitSelectionScreen.kt) — M3 `CenterAlignedTopAppBar` (sau khi sửa từ custom Row gây lỗi status bar overlay).
-- [OnboardingTopBar](../../../feature/onboarding/src/commonMain/kotlin/me/matsumo/grabee/feature/onboarding/components/OnboardingPage.kt) — custom `Box` + `.statusBarsPadding()`.
+- [HomeTopBar (HomeScreen.kt:108-140)](../../../feature/home/src/commonMain/kotlin/me/ltthuc/kmp/feature/home/HomeScreen.kt#L108-L140) — M3 `CenterAlignedTopAppBar`.
+- [SettingTopAppBar](../../../feature/setting/src/commonMain/kotlin/me/ltthuc/kmp/feature/setting/components/SettingTopAppBar.kt) — M3 `CenterAlignedTopAppBar`.
+- [UnitTopBar (UnitSelectionScreen.kt)](../../../feature/learningpath/src/commonMain/kotlin/me/ltthuc/kmp/feature/learningpath/UnitSelectionScreen.kt) — M3 `CenterAlignedTopAppBar` (sau khi sửa từ custom Row gây lỗi status bar overlay).
+- [OnboardingTopBar](../../../feature/onboarding/src/commonMain/kotlin/me/ltthuc/kmp/feature/onboarding/components/OnboardingPage.kt) — custom `Box` + `.statusBarsPadding()`.
 
 ### Khi nào an toàn (tự động handle)
 

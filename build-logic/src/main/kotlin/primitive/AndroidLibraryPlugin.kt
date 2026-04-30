@@ -1,10 +1,10 @@
 package primitive
 
 import com.android.build.gradle.LibraryExtension
-import me.matsumo.grabee.androidLibrary
-import me.matsumo.grabee.libs
-import me.matsumo.grabee.setupAndroid
-import me.matsumo.grabee.version
+import me.ltthuc.kmp.androidLibrary
+import me.ltthuc.kmp.libs
+import me.ltthuc.kmp.setupAndroid
+import me.ltthuc.kmp.version
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure

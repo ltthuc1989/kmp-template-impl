@@ -6,41 +6,41 @@ Every module applies a specific set of plugins from `build-logic/`. Use these ex
 
 ### feature:* (has UI/Compose)
 ```kotlin
-id("matsumo.primitive.kmp.common")
-id("matsumo.primitive.android.library")
-id("matsumo.primitive.kmp.compose")
-id("matsumo.primitive.kmp.android")
-id("matsumo.primitive.kmp.ios")
-id("matsumo.primitive.detekt")
+id("ltthuc.primitive.kmp.common")
+id("ltthuc.primitive.android.library")
+id("ltthuc.primitive.kmp.compose")
+id("ltthuc.primitive.kmp.android")
+id("ltthuc.primitive.kmp.ios")
+id("ltthuc.primitive.detekt")
 ```
 
 ### core:ui, core:resource (Compose, no KSP)
 ```kotlin
-id("matsumo.primitive.kmp.common")
-id("matsumo.primitive.android.library")
-id("matsumo.primitive.kmp.compose")
-id("matsumo.primitive.kmp.android")
-id("matsumo.primitive.kmp.ios")
-id("matsumo.primitive.detekt")
+id("ltthuc.primitive.kmp.common")
+id("ltthuc.primitive.android.library")
+id("ltthuc.primitive.kmp.compose")
+id("ltthuc.primitive.kmp.android")
+id("ltthuc.primitive.kmp.ios")
+id("ltthuc.primitive.detekt")
 ```
 
 ### core:datasource (no Compose, has KSP for Room)
 ```kotlin
-id("matsumo.primitive.kmp.common")
-id("matsumo.primitive.android.library")
-id("matsumo.primitive.kmp.android")
-id("matsumo.primitive.kmp.ios")
-id("matsumo.primitive.detekt")
+id("ltthuc.primitive.kmp.common")
+id("ltthuc.primitive.android.library")
+id("ltthuc.primitive.kmp.android")
+id("ltthuc.primitive.kmp.ios")
+id("ltthuc.primitive.detekt")
 alias(libs.plugins.ksp)
 ```
 
 ### core:repository, core:model, core:billing, core:common (no Compose, no KSP)
 ```kotlin
-id("matsumo.primitive.kmp.common")
-id("matsumo.primitive.android.library")
-id("matsumo.primitive.kmp.android")
-id("matsumo.primitive.kmp.ios")
-id("matsumo.primitive.detekt")
+id("ltthuc.primitive.kmp.common")
+id("ltthuc.primitive.android.library")
+id("ltthuc.primitive.kmp.android")
+id("ltthuc.primitive.kmp.ios")
+id("ltthuc.primitive.detekt")
 ```
 
 ---
@@ -68,7 +68,7 @@ Never add KSP or Room compiler to feature modules or other core modules.
 3. Set the Android namespace:
    ```kotlin
    android {
-       namespace = "me.matsumo.grabee.feature.xyz"
+       namespace = "me.ltthuc.kmp.feature.xyz"
    }
    ```
 4. Add dependencies under `kotlin { sourceSets { commonMain.dependencies { ... } } }`
@@ -87,7 +87,7 @@ Never add KSP or Room compiler to feature modules or other core modules.
 
 ## BuildKonfig — Compile-time Config
 
-All API keys and config are injected via BuildKonfig into `me.matsumo.grabee.BuildKonfig`.
+All API keys and config are injected via BuildKonfig into `me.ltthuc.kmp.BuildKonfig`.
 
 **Flow:** `local.properties` (or env var) → `buildkonfig { }` in `composeApp/build.gradle.kts` → `BuildKonfig.FIELD_NAME`
 
