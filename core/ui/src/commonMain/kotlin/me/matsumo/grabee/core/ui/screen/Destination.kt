@@ -43,6 +43,12 @@ sealed interface Destination : NavKey {
         ) : Learning
 
         @Serializable
+        data class UnitStory(
+            val levelId: String,
+            val unitId: String,
+        ) : Learning
+
+        @Serializable
         data object TracingGuideDebug : Learning
     }
 
@@ -69,6 +75,7 @@ sealed interface Destination : NavKey {
                     subclass(Learning.UnitSelection::class, Learning.UnitSelection.serializer())
                     subclass(Learning.Step::class, Learning.Step.serializer())
                     subclass(Learning.UnitComplete::class, Learning.UnitComplete.serializer())
+                    subclass(Learning.UnitStory::class, Learning.UnitStory.serializer())
                     subclass(Learning.TracingGuideDebug::class, Learning.TracingGuideDebug.serializer())
                     subclass(Review::class, Review.serializer())
                     subclass(Setting.Root::class, Setting.Root.serializer())

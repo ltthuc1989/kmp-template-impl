@@ -30,6 +30,7 @@ internal fun SettingOthersSection(
     onPrivacyPolicyClicked: () -> Unit,
     onOpenSourceLicenseClicked: () -> Unit,
     onDeveloperModeChanged: (Boolean) -> Unit,
+    onShowSpeakButtonChanged: (Boolean) -> Unit,
     onLetterGuideDebugClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -75,6 +76,13 @@ internal fun SettingOthersSection(
         )
 
         if (setting.developerMode) {
+            SettingSwitchItem(
+                modifier = Modifier.fillMaxWidth(),
+                title = "Show speak button",
+                description = "Dev: hide mic button when speak feature is not ready",
+                value = setting.showSpeakButton,
+                onValueChanged = onShowSpeakButtonChanged,
+            )
             SettingTextItem(
                 modifier = Modifier.fillMaxWidth(),
                 title = "Letter guide QA",

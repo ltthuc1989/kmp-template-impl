@@ -7,6 +7,7 @@ import androidx.navigation3.runtime.NavKey
 import me.matsumo.grabee.core.ui.screen.Destination
 import me.matsumo.grabee.core.ui.theme.LocalNavBackStack
 import me.matsumo.grabee.feature.learningpath.step.StepScreen
+import me.matsumo.grabee.feature.learningpath.step.story.StoryScreen
 import me.matsumo.grabee.feature.learningpath.step.tracing.LetterGuideDebugScreen
 
 fun EntryProviderScope<NavKey>.learningEntry() {
@@ -30,6 +31,13 @@ fun EntryProviderScope<NavKey>.learningEntry() {
             levelId = dest.levelId,
             unitId = dest.unitId,
             starsEarned = dest.starsEarned,
+            modifier = Modifier.fillMaxSize(),
+        )
+    }
+    entry<Destination.Learning.UnitStory> { dest ->
+        StoryScreen(
+            levelId = dest.levelId,
+            unitId = dest.unitId,
             modifier = Modifier.fillMaxSize(),
         )
     }

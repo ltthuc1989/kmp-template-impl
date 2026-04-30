@@ -23,7 +23,7 @@ import me.matsumo.grabee.core.datasource.db.entity.UserProgressEntity
         LearningProgressEntity::class,
         UserProgressEntity::class,
     ],
-    version = 6,
+    version = 8,
     exportSchema = false,
 )
 @ConstructedBy(GrabeeDatabaseConstructor::class)

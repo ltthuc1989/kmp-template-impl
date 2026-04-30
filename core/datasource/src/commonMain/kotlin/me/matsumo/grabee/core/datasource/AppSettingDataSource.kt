@@ -92,4 +92,12 @@ class AppSettingDataSource(
             it[booleanPreferencesKey(AppSetting::hasSeenOnboarding.name)] = hasSeenOnboarding
         }
     }
+
+    suspend fun setShowSpeakButton(value: Boolean) = withContext(ioDispatcher) {
+        if (setting.first().showSpeakButton == value) return@withContext
+
+        preference.edit {
+            it[booleanPreferencesKey(AppSetting::showSpeakButton.name)] = value
+        }
+    }
 }

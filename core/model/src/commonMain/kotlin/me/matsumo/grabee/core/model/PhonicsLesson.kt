@@ -10,6 +10,8 @@ data class PhonicsLesson(
     val stretchedWord: String,
     val orderIndex: Int,
     val words: List<LessonWord>,
+    val chantTexts: List<String>,
+    val chantOrder: List<Int>,
 )
 
 data class LessonWord(

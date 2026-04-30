@@ -92,6 +92,9 @@ internal fun VocabularyScreen(
     onNext: () -> Unit,
     onStepJump: (Int) -> Unit,
     modifier: Modifier = Modifier,
+    showSpeakButton: Boolean = true,
+    totalSteps: Int = 7,
+    onLessonsLoaded: (Int) -> Unit = {},
     viewModel: VocabularyViewModel = koinViewModel(key = unitId) { parametersOf(unitId) },
 ) {
     val screenState by viewModel.screenState.collectAsStateWithLifecycle()
@@ -100,6 +103,7 @@ internal fun VocabularyScreen(
         modifier = modifier.fillMaxSize(),
         screenState = screenState,
     ) { uiState ->
+        LaunchedEffect(uiState.lessons.size) { onLessonsLoaded(uiState.lessons.size) }
         val safeIndex = lessonIndex.coerceIn(0, uiState.lessons.lastIndex)
         VocabularyContent(
             currentLesson = uiState.lessons[safeIndex],
@@ -109,6 +113,8 @@ internal fun VocabularyScreen(
             onPrevious = onPrevious,
             onNext = onNext,
             onStepJump = onStepJump,
+            showSpeakButton = showSpeakButton,
+            totalSteps = totalSteps,
         )
     }
 }
@@ -122,6 +128,8 @@ private fun VocabularyContent(
     onPrevious: () -> Unit,
     onNext: () -> Unit,
     onStepJump: (Int) -> Unit,
+    showSpeakButton: Boolean = true,
+    totalSteps: Int = 7,
 ) {
     val vocabItems = remember(currentLesson.id) {
         currentLesson.words.takeIf { it.isNotEmpty() }
@@ -182,6 +190,7 @@ private fun VocabularyContent(
                     currentStepIndex = STEP_INDEX,
                     onClose = onClose,
                     onStepJump = onStepJump,
+                    totalSteps = totalSteps,
                 )
             },
             bottomBar = {
@@ -205,6 +214,7 @@ private fun VocabularyContent(
                     vocabTotal = vocabItems.size,
                     listenPlaying = listenPlaying,
                     micRecording = micRecording,
+                    showSpeakButton = showSpeakButton,
                     onVocabPrevious = { if (safeVocabIndex > 0) vocabIndex = safeVocabIndex - 1 },
                     onVocabNext = { if (safeVocabIndex < vocabItems.lastIndex) vocabIndex = safeVocabIndex + 1 },
                     onListenToggle = { listenPlaying = !listenPlaying },
@@ -244,6 +254,7 @@ private fun VocabularyHeroCard(
     onVocabNext: () -> Unit,
     onListenToggle: () -> Unit,
     onMicToggle: () -> Unit,
+    showSpeakButton: Boolean = true,
 ) {
     StoryStyleCard(aspectRatio = null) {
         Column(
@@ -288,7 +299,9 @@ private fun VocabularyHeroCard(
                 horizontalArrangement = Arrangement.spacedBy(20.dp),
             ) {
                 AnimatedListenButton(isPlaying = listenPlaying, onClick = onListenToggle)
-                AnimatedMicButton(isRecording = micRecording, onClick = onMicToggle)
+                if (showSpeakButton) {
+                    AnimatedMicButton(isRecording = micRecording, onClick = onMicToggle)
+                }
             }
         }
     }

@@ -31,6 +31,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -93,6 +94,8 @@ internal fun TracingScreen(
     onNext: () -> Unit,
     onStepJump: (Int) -> Unit,
     modifier: Modifier = Modifier,
+    totalSteps: Int = 7,
+    onLessonsLoaded: (Int) -> Unit = {},
     viewModel: TracingViewModel = koinViewModel(key = unitId) { parametersOf(unitId) },
 ) {
     val screenState by viewModel.screenState.collectAsStateWithLifecycle()
@@ -101,6 +104,7 @@ internal fun TracingScreen(
         modifier = modifier.fillMaxSize(),
         screenState = screenState,
     ) { uiState ->
+        LaunchedEffect(uiState.lessons.size) { onLessonsLoaded(uiState.lessons.size) }
         val safeIndex = lessonIndex.coerceIn(0, uiState.lessons.lastIndex)
         TracingContent(
             currentLesson = uiState.lessons[safeIndex],
@@ -110,6 +114,7 @@ internal fun TracingScreen(
             onPrevious = onPrevious,
             onNext = onNext,
             onStepJump = onStepJump,
+            totalSteps = totalSteps,
         )
     }
 }
@@ -123,6 +128,7 @@ private fun TracingContent(
     onPrevious: () -> Unit,
     onNext: () -> Unit,
     onStepJump: (Int) -> Unit,
+    totalSteps: Int,
 ) {
     val letterChar = currentLesson.displayLetter.firstOrNull() ?: 'A'
     var isUppercase by remember(currentLesson.id) { mutableStateOf(true) }
@@ -162,6 +168,7 @@ private fun TracingContent(
                     currentStepIndex = STEP_INDEX,
                     onClose = onClose,
                     onStepJump = onStepJump,
+                    totalSteps = totalSteps,
                 )
             },
             bottomBar = {
@@ -455,25 +462,26 @@ private fun PracticeCanvas(
                 strokeWidthPx = ghostStrokeWidthPx,
             )
 
-            // Layer 3: User strokes (foreground)
+            // Layer 3: User strokes — one combined path so overlapping strokes merge cleanly.
+            val combinedPath = Path()
             userStrokes.forEach { stroke ->
                 if (stroke.size >= 2) {
-                    val path = Path().apply {
-                        moveTo(stroke[0].x, stroke[0].y)
-                        for (i in 1 until stroke.size) {
-                            lineTo(stroke[i].x, stroke[i].y)
-                        }
+                    combinedPath.moveTo(stroke[0].x, stroke[0].y)
+                    for (i in 1 until stroke.size) {
+                        combinedPath.lineTo(stroke[i].x, stroke[i].y)
                     }
-                    drawPath(
-                        path = path,
-                        color = primary,
-                        style = Stroke(
-                            width = PRACTICE_INK_WIDTH_PX,
-                            cap = StrokeCap.Round,
-                            join = StrokeJoin.Round,
-                        ),
-                    )
                 }
+            }
+            if (!combinedPath.isEmpty) {
+                drawPath(
+                    path = combinedPath,
+                    color = primary,
+                    style = Stroke(
+                        width = PRACTICE_INK_WIDTH_PX,
+                        cap = StrokeCap.Round,
+                        join = StrokeJoin.Round,
+                    ),
+                )
             }
         }
 

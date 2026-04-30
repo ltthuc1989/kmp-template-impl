@@ -40,6 +40,18 @@
                   "word": "alligator",
                   "emoji": "🐊"
                 }
+              ],
+              "chantTexts": [
+                "AAA-Apple",
+                "AAA-Ax",
+                "AAA-Ant",
+                "AAA-Alligator"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
@@ -67,6 +79,18 @@
                   "word": "banana",
                   "emoji": "🍌"
                 }
+              ],
+              "chantTexts": [
+                "B-B-Bear",
+                "B-B-Bird",
+                "B-B-Bed",
+                "B-B-Banana"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
@@ -94,6 +118,18 @@
                   "word": "computer",
                   "emoji": "💻"
                 }
+              ],
+              "chantTexts": [
+                "K-K-Cat",
+                "K-K-Cup",
+                "K-K-Car",
+                "K-K-Computer"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             }
           ]
@@ -130,6 +166,18 @@
                   "word": "duck",
                   "emoji": "🦆"
                 }
+              ],
+              "chantTexts": [
+                "D-D-Dog",
+                "D-D-Desk",
+                "D-D-Doll",
+                "D-D-Duck"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
@@ -157,6 +205,18 @@
                   "word": "elephant",
                   "emoji": "🐘"
                 }
+              ],
+              "chantTexts": [
+                "EHH-Egg",
+                "EHH-Elbow",
+                "EHH-Envelope",
+                "EHH-Elephant"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
@@ -174,7 +234,7 @@
                 },
                 {
                   "word": "fan",
-                  "emoji": "🪭"
+                  "emoji": "🌀"
                 },
                 {
                   "word": "farm",
@@ -184,6 +244,18 @@
                   "word": "fork",
                   "emoji": "🍴"
                 }
+              ],
+              "chantTexts": [
+                "F-F-Fish",
+                "F-F-Fan",
+                "F-F-Farm",
+                "F-F-Fork"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             }
           ]
@@ -220,6 +292,18 @@
                   "word": "girl",
                   "emoji": "👧"
                 }
+              ],
+              "chantTexts": [
+                "G-G-Gorilla",
+                "G-G-Goat",
+                "G-G-Gift",
+                "G-G-Girl"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
@@ -237,7 +321,7 @@
                 },
                 {
                   "word": "hat",
-                  "emoji": "🎩"
+                  "emoji": "👒"
                 },
                 {
                   "word": "house",
@@ -247,6 +331,18 @@
                   "word": "hot dog",
                   "emoji": "🌭"
                 }
+              ],
+              "chantTexts": [
+                "H-H-Horse",
+                "H-H-Hat",
+                "H-H-House",
+                "H-H-Hot dog"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
@@ -274,6 +370,18 @@
                   "word": "iguana",
                   "emoji": "🦎"
                 }
+              ],
+              "chantTexts": [
+                "IHH-Insect",
+                "IHH-Ink",
+                "IHH-Igloo",
+                "IHH-Iguana"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             }
           ]
@@ -310,6 +418,18 @@
                   "word": "jacket",
                   "emoji": "🧥"
                 }
+              ],
+              "chantTexts": [
+                "J-J-Jet",
+                "J-J-Jam",
+                "J-J-Juice",
+                "J-J-Jacket"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
@@ -331,12 +451,24 @@
                 },
                 {
                   "word": "king",
-                  "emoji": "🤴"
+                  "emoji": "👑"
                 },
                 {
                   "word": "kite",
                   "emoji": "🪁"
                 }
+              ],
+              "chantTexts": [
+                "K-K-Kangaroo",
+                "K-K-Key",
+                "K-K-King",
+                "K-K-Kite"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
@@ -364,6 +496,18 @@
                   "word": "lemon",
                   "emoji": "🍋"
                 }
+              ],
+              "chantTexts": [
+                "L-L-Lion",
+                "L-L-Lamp",
+                "L-L-Leaf",
+                "L-L-Lemon"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             }
           ]
@@ -400,6 +544,18 @@
                   "word": "mouse",
                   "emoji": "🐭"
                 }
+              ],
+              "chantTexts": [
+                "M-M-Monkey",
+                "M-M-Milk",
+                "M-M-Money",
+                "M-M-Mouse"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
@@ -413,7 +569,7 @@
               "words": [
                 {
                   "word": "nut",
-                  "emoji": "🌰"
+                  "emoji": "🥜"
                 },
                 {
                   "word": "net",
@@ -427,6 +583,18 @@
                   "word": "nose",
                   "emoji": "👃"
                 }
+              ],
+              "chantTexts": [
+                "N-N-Nut",
+                "N-N-Net",
+                "N-N-Nest",
+                "N-N-Nose"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
@@ -452,8 +620,20 @@
                 },
                 {
                   "word": "ostrich",
-                  "emoji": "🦢"
+                  "emoji": "🦤"
                 }
+              ],
+              "chantTexts": [
+                "OHH-Octopus",
+                "OHH-Ox",
+                "OHH-Olive",
+                "OHH-Ostrich"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             }
           ]
@@ -490,6 +670,18 @@
                   "word": "pineapple",
                   "emoji": "🍍"
                 }
+              ],
+              "chantTexts": [
+                "P-P-Peach",
+                "P-P-Pen",
+                "P-P-Panda",
+                "P-P-Pineapple"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
@@ -517,6 +709,18 @@
                   "word": "question",
                   "emoji": "❓"
                 }
+              ],
+              "chantTexts": [
+                "KW-Queen",
+                "KW-Quiz",
+                "KW-Quilt",
+                "KW-Question"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
@@ -544,6 +748,18 @@
                   "word": "robot",
                   "emoji": "🤖"
                 }
+              ],
+              "chantTexts": [
+                "R-R-Rabbit",
+                "R-R-Rose",
+                "R-R-Rice",
+                "R-R-Robot"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             }
           ]
@@ -580,6 +796,18 @@
                   "word": "socks",
                   "emoji": "🧦"
                 }
+              ],
+              "chantTexts": [
+                "S-S-Seal",
+                "S-S-Sun",
+                "S-S-Soap",
+                "S-S-Socks"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
@@ -607,6 +835,18 @@
                   "word": "teacher",
                   "emoji": "👩‍🏫"
                 }
+              ],
+              "chantTexts": [
+                "T-T-Turtle",
+                "T-T-Tent",
+                "T-T-Tiger",
+                "T-T-Teacher"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
@@ -634,6 +874,18 @@
                   "word": "umpire",
                   "emoji": "🧑‍⚖️"
                 }
+              ],
+              "chantTexts": [
+                "UHH-Umbrella",
+                "UHH-Up",
+                "UHH-Uncle",
+                "UHH-Umpire"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
@@ -651,7 +903,7 @@
                 },
                 {
                   "word": "vet",
-                  "emoji": "👨‍⚕️"
+                  "emoji": "🩺"
                 },
                 {
                   "word": "vest",
@@ -661,6 +913,18 @@
                   "word": "violin",
                   "emoji": "🎻"
                 }
+              ],
+              "chantTexts": [
+                "V-V-Van",
+                "V-V-Vet",
+                "V-V-Vest",
+                "V-V-Violin"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             }
           ]
@@ -697,6 +961,18 @@
                   "word": "watch",
                   "emoji": "⌚"
                 }
+              ],
+              "chantTexts": [
+                "W-W-Wolf",
+                "W-W-Web",
+                "W-W-Water",
+                "W-W-Watch"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
@@ -724,6 +1000,18 @@
                   "word": "wax",
                   "emoji": "🕯️"
                 }
+              ],
+              "chantTexts": [
+                "B-O-Fox",
+                "B-O-Box",
+                "B-O-Six",
+                "B-O-Wax"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
@@ -745,12 +1033,24 @@
                 },
                 {
                   "word": "yogurt",
-                  "emoji": "🥛"
+                  "emoji": "🍦"
                 },
                 {
                   "word": "yacht",
                   "emoji": "⛵"
                 }
+              ],
+              "chantTexts": [
+                "Y-Y-Yo-yo",
+                "Y-Y-Yak",
+                "Y-Y-Yogurt",
+                "Y-Y-Yacht"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
@@ -772,12 +1072,24 @@
                 },
                 {
                   "word": "zoo",
-                  "emoji": "🐘"
+                  "emoji": "🦁"
                 },
                 {
                   "word": "zebra",
                   "emoji": "🦓"
                 }
+              ],
+              "chantTexts": [
+                "Z-Z-Zipper",
+                "Z-Z-Zero",
+                "Z-Z-Zoo",
+                "Z-Z-Zebra"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             }
           ]
@@ -795,7 +1107,7 @@
         {
           "id": "L2U1",
           "number": 1,
-          "title": "a a am a an",
+          "title": "a am an",
           "themeChip": "short a",
           "orderIndex": 0,
           "lessons": [
@@ -824,12 +1136,24 @@
                   "word": "ax",
                   "emoji": "🪓"
                 }
+              ],
+              "chantTexts": [
+                "C-A-T",
+                "A-N-T",
+                "Y-A-K",
+                "A-X"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
               "id": "L2U1_am",
               "letter": "SHORT-A-AM",
-              "displayLetter": "a am",
+              "displayLetter": "am",
               "soundSpelling": "ahh",
               "sentence": "A ram and some jam.",
               "stretchedWord": "R-A-M",
@@ -849,14 +1173,26 @@
                 },
                 {
                   "word": "dam",
-                  "emoji": "🌊"
+                  "emoji": "🏞️"
                 }
+              ],
+              "chantTexts": [
+                "R-A-M",
+                "J-A-M",
+                "Y-A-M",
+                "D-A-M"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
               "id": "L2U1_an",
               "letter": "SHORT-A-AN",
-              "displayLetter": "a an",
+              "displayLetter": "an",
               "soundSpelling": "ahh",
               "sentence": "A man and a fan.",
               "stretchedWord": "F-A-N",
@@ -864,11 +1200,11 @@
               "words": [
                 {
                   "word": "fan",
-                  "emoji": "🪭"
+                  "emoji": "🌀"
                 },
                 {
                   "word": "man",
-                  "emoji": "👨"
+                  "emoji": "🧑"
                 },
                 {
                   "word": "pan",
@@ -878,6 +1214,18 @@
                   "word": "can",
                   "emoji": "🥫"
                 }
+              ],
+              "chantTexts": [
+                "F-A-N",
+                "M-A-N",
+                "P-A-N",
+                "C-A-N"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             }
           ]
@@ -885,14 +1233,14 @@
         {
           "id": "L2U2",
           "number": 2,
-          "title": "a ad ag a ap a at",
+          "title": "ad ag ap at",
           "themeChip": "short a",
           "orderIndex": 1,
           "lessons": [
             {
               "id": "L2U2_ad_ag",
               "letter": "SHORT-A-AD-AG",
-              "displayLetter": "a ad ag",
+              "displayLetter": "ad ag",
               "soundSpelling": "ahh",
               "sentence": "Dad has a bag.",
               "stretchedWord": "D-A-D",
@@ -914,12 +1262,24 @@
                   "word": "rag",
                   "emoji": "🧹"
                 }
+              ],
+              "chantTexts": [
+                "D-A-D",
+                "P-A-D",
+                "B-A-G",
+                "R-A-G"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
               "id": "L2U2_ap",
               "letter": "SHORT-A-AP",
-              "displayLetter": "a ap",
+              "displayLetter": "ap",
               "soundSpelling": "ahh",
               "sentence": "A cap on a map.",
               "stretchedWord": "K-A-P",
@@ -941,12 +1301,24 @@
                   "word": "tap",
                   "emoji": "🚰"
                 }
+              ],
+              "chantTexts": [
+                "C-A-P",
+                "M-A-P",
+                "N-A-P",
+                "T-A-P"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
               "id": "L2U2_at",
               "letter": "SHORT-A-AT",
-              "displayLetter": "a at",
+              "displayLetter": "at",
               "soundSpelling": "ahh",
               "sentence": "A bat on a mat.",
               "stretchedWord": "B-A-T",
@@ -962,12 +1334,24 @@
                 },
                 {
                   "word": "hat",
-                  "emoji": "🎩"
+                  "emoji": "👒"
                 },
                 {
                   "word": "mat",
                   "emoji": "🟫"
                 }
+              ],
+              "chantTexts": [
+                "B-A-T",
+                "R-A-T",
+                "H-A-T",
+                "M-A-T"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             }
           ]
@@ -975,7 +1359,7 @@
         {
           "id": "L2U3",
           "number": 3,
-          "title": "e e et e en ed",
+          "title": "e et en ed",
           "themeChip": "short e",
           "orderIndex": 2,
           "lessons": [
@@ -998,18 +1382,30 @@
                 },
                 {
                   "word": "vet",
-                  "emoji": "👨‍⚕️"
+                  "emoji": "🩺"
                 },
                 {
                   "word": "ten",
                   "emoji": "🔟"
                 }
+              ],
+              "chantTexts": [
+                "W-E-B",
+                "E-G-G",
+                "V-E-T",
+                "T-E-N"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
               "id": "L2U3_et",
               "letter": "SHORT-E-ET",
-              "displayLetter": "e et",
+              "displayLetter": "et",
               "soundSpelling": "ehh",
               "sentence": "A wet pet jet.",
               "stretchedWord": "J-E-T",
@@ -1025,18 +1421,30 @@
                 },
                 {
                   "word": "wet",
-                  "emoji": "💧"
+                  "emoji": "💦"
                 },
                 {
                   "word": "pet",
-                  "emoji": "🐾"
+                  "emoji": "🐶"
                 }
+              ],
+              "chantTexts": [
+                "J-E-T",
+                "N-E-T",
+                "W-E-T",
+                "P-E-T"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
               "id": "L2U3_en_ed",
               "letter": "SHORT-E-EN-ED",
-              "displayLetter": "e en ed",
+              "displayLetter": "en ed",
               "soundSpelling": "ehh",
               "sentence": "A red hen on a bed.",
               "stretchedWord": "H-E-N",
@@ -1058,6 +1466,18 @@
                   "word": "bed",
                   "emoji": "🛏️"
                 }
+              ],
+              "chantTexts": [
+                "H-E-N",
+                "P-E-N",
+                "R-E-D",
+                "B-E-D"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             }
           ]
@@ -1065,7 +1485,7 @@
         {
           "id": "L2U4",
           "number": 4,
-          "title": "i i ip i ib id",
+          "title": "i ip ib id",
           "themeChip": "short i",
           "orderIndex": 3,
           "lessons": [
@@ -1094,12 +1514,24 @@
                   "word": "in",
                   "emoji": "📥"
                 }
+              ],
+              "chantTexts": [
+                "H-I-P",
+                "I-N-K",
+                "Z-I-P",
+                "I-N"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
               "id": "L2U4_ip",
               "letter": "SHORT-I-IP",
-              "displayLetter": "i ip",
+              "displayLetter": "ip",
               "soundSpelling": "ihh",
               "sentence": "A sip on the lip.",
               "stretchedWord": "L-I-P",
@@ -1121,12 +1553,24 @@
                   "word": "rip",
                   "emoji": "✂️"
                 }
+              ],
+              "chantTexts": [
+                "L-I-P",
+                "T-I-P",
+                "S-I-P",
+                "R-I-P"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
               "id": "L2U4_ib_id",
               "letter": "SHORT-I-IB-ID",
-              "displayLetter": "i ib id",
+              "displayLetter": "ib id",
               "soundSpelling": "ihh",
               "sentence": "A kid with a lid.",
               "stretchedWord": "B-I-B",
@@ -1148,6 +1592,18 @@
                   "word": "lid",
                   "emoji": "🥫"
                 }
+              ],
+              "chantTexts": [
+                "B-I-B",
+                "R-I-B",
+                "K-I-D",
+                "L-I-D"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             }
           ]
@@ -1155,14 +1611,14 @@
         {
           "id": "L2U5",
           "number": 5,
-          "title": "i in i ig i it ix",
+          "title": "in ig it ix",
           "themeChip": "short i",
           "orderIndex": 4,
           "lessons": [
             {
               "id": "L2U5_in",
               "letter": "SHORT-I-IN",
-              "displayLetter": "i in",
+              "displayLetter": "in",
               "soundSpelling": "ihh",
               "sentence": "A pin in the bin.",
               "stretchedWord": "P-I-N",
@@ -1184,12 +1640,24 @@
                   "word": "win",
                   "emoji": "🏆"
                 }
+              ],
+              "chantTexts": [
+                "P-I-N",
+                "F-I-N",
+                "B-I-N",
+                "W-I-N"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
               "id": "L2U5_ig",
               "letter": "SHORT-I-IG",
-              "displayLetter": "i ig",
+              "displayLetter": "ig",
               "soundSpelling": "ihh",
               "sentence": "A big fig.",
               "stretchedWord": "F-I-G",
@@ -1197,7 +1665,7 @@
               "words": [
                 {
                   "word": "fig",
-                  "emoji": "🌿"
+                  "emoji": "🍐"
                 },
                 {
                   "word": "wig",
@@ -1205,18 +1673,30 @@
                 },
                 {
                   "word": "big",
-                  "emoji": "🦏"
+                  "emoji": "📏"
                 },
                 {
                   "word": "dig",
                   "emoji": "⛏️"
                 }
+              ],
+              "chantTexts": [
+                "F-I-G",
+                "W-I-G",
+                "B-I-G",
+                "D-I-G"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
               "id": "L2U5_it_ix",
               "letter": "SHORT-I-IT-IX",
-              "displayLetter": "i it ix",
+              "displayLetter": "it ix",
               "soundSpelling": "ihh",
               "sentence": "Six hit the pit.",
               "stretchedWord": "P-I-T",
@@ -1236,8 +1716,20 @@
                 },
                 {
                   "word": "mix",
-                  "emoji": "🥣"
+                  "emoji": "🌀"
                 }
+              ],
+              "chantTexts": [
+                "P-I-T",
+                "H-I-T",
+                "S-I-X",
+                "M-I-X"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             }
           ]
@@ -1245,7 +1737,7 @@
         {
           "id": "L2U6",
           "number": 6,
-          "title": "o o ot o op",
+          "title": "o ot op",
           "themeChip": "short o",
           "orderIndex": 5,
           "lessons": [
@@ -1274,12 +1766,24 @@
                   "word": "rod",
                   "emoji": "🎣"
                 }
+              ],
+              "chantTexts": [
+                "F-O-X",
+                "L-O-G",
+                "O-X",
+                "R-O-D"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
               "id": "L2U6_ot",
               "letter": "SHORT-O-OT",
-              "displayLetter": "o ot",
+              "displayLetter": "ot",
               "soundSpelling": "ohh",
               "sentence": "A hot pot.",
               "stretchedWord": "P-O-T",
@@ -1301,12 +1805,24 @@
                   "word": "dot",
                   "emoji": "🔵"
                 }
+              ],
+              "chantTexts": [
+                "P-O-T",
+                "H-O-T",
+                "C-O-T",
+                "D-O-T"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
               "id": "L2U6_op",
               "letter": "SHORT-O-OP",
-              "displayLetter": "o op",
+              "displayLetter": "op",
               "soundSpelling": "ohh",
               "sentence": "A top hops.",
               "stretchedWord": "T-O-P",
@@ -1314,7 +1830,7 @@
               "words": [
                 {
                   "word": "top",
-                  "emoji": "🔝"
+                  "emoji": "🎩"
                 },
                 {
                   "word": "mop",
@@ -1322,12 +1838,24 @@
                 },
                 {
                   "word": "hop",
-                  "emoji": "🐇"
+                  "emoji": "🐰"
                 },
                 {
                   "word": "pop",
-                  "emoji": "🍿"
+                  "emoji": "💥"
                 }
+              ],
+              "chantTexts": [
+                "T-O-P",
+                "M-O-P",
+                "H-O-P",
+                "P-O-P"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             }
           ]
@@ -1335,7 +1863,7 @@
         {
           "id": "L2U7",
           "number": 7,
-          "title": "u u ug u ud up",
+          "title": "u ug ud up",
           "themeChip": "short u",
           "orderIndex": 6,
           "lessons": [
@@ -1358,18 +1886,30 @@
                 },
                 {
                   "word": "jug",
-                  "emoji": "🫗"
+                  "emoji": "🫙"
                 },
                 {
                   "word": "hug",
                   "emoji": "🤗"
                 }
+              ],
+              "chantTexts": [
+                "S-U-N",
+                "U-P",
+                "J-U-G",
+                "H-U-G"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
               "id": "L2U7_ug",
               "letter": "SHORT-U-UG",
-              "displayLetter": "u ug",
+              "displayLetter": "ug",
               "soundSpelling": "uhh",
               "sentence": "A bug on the rug.",
               "stretchedWord": "B-U-G",
@@ -1389,14 +1929,26 @@
                 },
                 {
                   "word": "jug",
-                  "emoji": "🫗"
+                  "emoji": "🫙"
                 }
+              ],
+              "chantTexts": [
+                "B-U-G",
+                "R-U-G",
+                "M-U-G",
+                "J-U-G"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
               "id": "L2U7_ud_up",
               "letter": "SHORT-U-UD-UP",
-              "displayLetter": "u ud up",
+              "displayLetter": "ud up",
               "soundSpelling": "uhh",
               "sentence": "A pup in the mud.",
               "stretchedWord": "B-U-D",
@@ -1418,6 +1970,18 @@
                   "word": "cup",
                   "emoji": "☕"
                 }
+              ],
+              "chantTexts": [
+                "B-U-D",
+                "M-U-D",
+                "P-U-P",
+                "C-U-P"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             }
           ]
@@ -1425,14 +1989,14 @@
         {
           "id": "L2U8",
           "number": 8,
-          "title": "u ut u ub um u un",
+          "title": "ut ub um un",
           "themeChip": "short u",
           "orderIndex": 7,
           "lessons": [
             {
               "id": "L2U8_ut",
               "letter": "SHORT-U-UT",
-              "displayLetter": "u ut",
+              "displayLetter": "ut",
               "soundSpelling": "uhh",
               "sentence": "A nut in a hut.",
               "stretchedWord": "N-U-T",
@@ -1440,7 +2004,7 @@
               "words": [
                 {
                   "word": "nut",
-                  "emoji": "🌰"
+                  "emoji": "🥜"
                 },
                 {
                   "word": "hut",
@@ -1454,12 +2018,24 @@
                   "word": "but",
                   "emoji": "❗"
                 }
+              ],
+              "chantTexts": [
+                "N-U-T",
+                "H-U-T",
+                "C-U-T",
+                "B-U-T"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
               "id": "L2U8_ub_um",
               "letter": "SHORT-U-UB-UM",
-              "displayLetter": "u ub um",
+              "displayLetter": "ub um",
               "soundSpelling": "uhh",
               "sentence": "A cub in a tub.",
               "stretchedWord": "K-U-B",
@@ -1481,12 +2057,24 @@
                   "word": "hum",
                   "emoji": "🎵"
                 }
+              ],
+              "chantTexts": [
+                "C-U-B",
+                "T-U-B",
+                "G-U-M",
+                "H-U-M"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
               "id": "L2U8_un",
               "letter": "SHORT-U-UN",
-              "displayLetter": "u un",
+              "displayLetter": "un",
               "soundSpelling": "uhh",
               "sentence": "Run in the sun.",
               "stretchedWord": "B-U-N",
@@ -1508,6 +2096,18 @@
                   "word": "sun",
                   "emoji": "☀️"
                 }
+              ],
+              "chantTexts": [
+                "B-U-N",
+                "R-U-N",
+                "F-U-N",
+                "S-U-N"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             }
           ]
@@ -1525,7 +2125,7 @@
         {
           "id": "L3U1",
           "number": 1,
-          "title": "a_e a_e ame ake a_e ate ave",
+          "title": "a_e ame ake ate ave",
           "themeChip": "long a",
           "orderIndex": 0,
           "lessons": [
@@ -1554,12 +2154,24 @@
                   "word": "mane",
                   "emoji": "🦁"
                 }
+              ],
+              "chantTexts": [
+                "T-A-P-E",
+                "C-A-P-E",
+                "C-A-N-E",
+                "M-A-N-E"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
               "id": "L3U1_ame_ake",
               "letter": "A_E-AME-AKE",
-              "displayLetter": "a_e ame ake",
+              "displayLetter": "ame ake",
               "soundSpelling": "aaay",
               "sentence": "My name is on the cake.",
               "stretchedWord": "G-AY-M",
@@ -1581,12 +2193,24 @@
                   "word": "lake",
                   "emoji": "🏞️"
                 }
+              ],
+              "chantTexts": [
+                "G-A-M-E",
+                "C-A-K-E",
+                "N-A-M-E",
+                "L-A-K-E"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
               "id": "L3U1_ate_ave",
               "letter": "A_E-ATE-AVE",
-              "displayLetter": "a_e ate ave",
+              "displayLetter": "ate ave",
               "soundSpelling": "aaay",
               "sentence": "A wave by the gate.",
               "stretchedWord": "G-AY-T",
@@ -1608,6 +2232,18 @@
                   "word": "cave",
                   "emoji": "🕳️"
                 }
+              ],
+              "chantTexts": [
+                "G-A-T-E",
+                "W-A-V-E",
+                "S-K-A-T-E",
+                "C-A-V-E"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             }
           ]
@@ -1615,7 +2251,7 @@
         {
           "id": "L3U2",
           "number": 2,
-          "title": "i_e i_e ime ike i_e ive ine",
+          "title": "i_e ime ike ive ine",
           "themeChip": "long i",
           "orderIndex": 1,
           "lessons": [
@@ -1644,12 +2280,24 @@
                   "word": "fine",
                   "emoji": "👌"
                 }
+              ],
+              "chantTexts": [
+                "K-I-T-E",
+                "P-I-N-E",
+                "R-I-P-E",
+                "F-I-N-E"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
               "id": "L3U2_ime_ike",
               "letter": "I_E-IME-IKE",
-              "displayLetter": "i_e ime ike",
+              "displayLetter": "ime ike",
               "soundSpelling": "eye",
               "sentence": "Time for a bike hike.",
               "stretchedWord": "L-EYE-M",
@@ -1671,12 +2319,24 @@
                   "word": "hike",
                   "emoji": "🥾"
                 }
+              ],
+              "chantTexts": [
+                "L-I-M-E",
+                "B-I-K-E",
+                "T-I-M-E",
+                "H-I-K-E"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
               "id": "L3U2_ive_ine",
               "letter": "I_E-IVE-INE",
-              "displayLetter": "i_e ive ine",
+              "displayLetter": "ive ine",
               "soundSpelling": "eye",
               "sentence": "Five and nine in a line.",
               "stretchedWord": "F-EYE-V",
@@ -1698,6 +2358,18 @@
                   "word": "line",
                   "emoji": "📏"
                 }
+              ],
+              "chantTexts": [
+                "F-I-V-E",
+                "N-I-N-E",
+                "D-I-V-E",
+                "L-I-N-E"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             }
           ]
@@ -1734,6 +2406,18 @@
                   "word": "rope",
                   "emoji": "🪢"
                 }
+              ],
+              "chantTexts": [
+                "H-O-M-E",
+                "B-O-N-E",
+                "C-O-N-E",
+                "R-O-P-E"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
@@ -1761,6 +2445,18 @@
                   "word": "mule",
                   "emoji": "🫏"
                 }
+              ],
+              "chantTexts": [
+                "C-U-B-E",
+                "M-U-T-E",
+                "C-U-T-E",
+                "M-U-L-E"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
@@ -1788,6 +2484,18 @@
                   "word": "rule",
                   "emoji": "📜"
                 }
+              ],
+              "chantTexts": [
+                "T-U-B-E",
+                "J-U-N-E",
+                "T-U-N-E",
+                "R-U-L-E"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             }
           ]
@@ -1814,7 +2522,7 @@
                 },
                 {
                   "word": "nail",
-                  "emoji": "💅"
+                  "emoji": "🔨"
                 },
                 {
                   "word": "tail",
@@ -1824,6 +2532,18 @@
                   "word": "wait",
                   "emoji": "⏳"
                 }
+              ],
+              "chantTexts": [
+                "R-A-I-N",
+                "N-A-I-L",
+                "T-A-I-L",
+                "W-A-I-T"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
@@ -1851,6 +2571,18 @@
                   "word": "pay",
                   "emoji": "💵"
                 }
+              ],
+              "chantTexts": [
+                "B-A-Y",
+                "D-A-Y",
+                "S-A-Y",
+                "P-A-Y"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
@@ -1878,6 +2610,18 @@
                   "word": "May",
                   "emoji": "🌼"
                 }
+              ],
+              "chantTexts": [
+                "S-A-I-L",
+                "M-A-I-L",
+                "H-A-Y",
+                "M-A-Y"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             }
           ]
@@ -1914,6 +2658,18 @@
                   "word": "jeep",
                   "emoji": "🚙"
                 }
+              ],
+              "chantTexts": [
+                "B-E-E",
+                "F-E-E-T",
+                "S-E-E-D",
+                "J-E-E-P"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
@@ -1939,8 +2695,20 @@
                 },
                 {
                   "word": "meat",
-                  "emoji": "🥩"
+                  "emoji": "🍖"
                 }
+              ],
+              "chantTexts": [
+                "L-E-A-F",
+                "E-A-T",
+                "S-E-A",
+                "M-E-A-T"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
@@ -1968,6 +2736,18 @@
                   "word": "money",
                   "emoji": "💰"
                 }
+              ],
+              "chantTexts": [
+                "C-A-N-D-Y",
+                "K-E-Y",
+                "H-A-P-P-Y",
+                "M-O-N-E-Y"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             }
           ]
@@ -1975,7 +2755,7 @@
         {
           "id": "L3U6",
           "number": 6,
-          "title": "igh ie Yy",
+          "title": "igh ie y",
           "themeChip": "long i",
           "orderIndex": 5,
           "lessons": [
@@ -1994,16 +2774,28 @@
                 },
                 {
                   "word": "night",
-                  "emoji": "🌃"
+                  "emoji": "🌙"
                 },
                 {
                   "word": "high",
-                  "emoji": "⬆️"
+                  "emoji": "📈"
                 },
                 {
                   "word": "right",
                   "emoji": "✅"
                 }
+              ],
+              "chantTexts": [
+                "L-I-G-H-T",
+                "N-I-G-H-T",
+                "H-I-G-H",
+                "R-I-G-H-T"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
@@ -2031,12 +2823,24 @@
                   "word": "die",
                   "emoji": "🎲"
                 }
+              ],
+              "chantTexts": [
+                "P-I-E",
+                "T-I-E",
+                "L-I-E",
+                "D-I-E"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
               "id": "L3U6_y",
               "letter": "Y",
-              "displayLetter": "Yy",
+              "displayLetter": "y",
               "soundSpelling": "eye",
               "sentence": "My spy in the sky.",
               "stretchedWord": "SK-EYE",
@@ -2052,12 +2856,24 @@
                 },
                 {
                   "word": "cry",
-                  "emoji": "😭"
+                  "emoji": "😢"
                 },
                 {
                   "word": "my",
                   "emoji": "👇"
                 }
+              ],
+              "chantTexts": [
+                "S-P-Y",
+                "S-K-Y",
+                "C-R-Y",
+                "M-Y"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             }
           ]
@@ -2094,6 +2910,18 @@
                   "word": "road",
                   "emoji": "🛣️"
                 }
+              ],
+              "chantTexts": [
+                "B-O-A-T",
+                "C-O-A-T",
+                "S-O-A-P",
+                "R-O-A-D"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
@@ -2115,12 +2943,24 @@
                 },
                 {
                   "word": "yellow",
-                  "emoji": "🟡"
+                  "emoji": "💛"
                 },
                 {
                   "word": "pillow",
                   "emoji": "🛏️"
                 }
+              ],
+              "chantTexts": [
+                "B-O-W",
+                "R-O-W",
+                "Y-E-L-L-O-W",
+                "P-I-L-L-O-W"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
@@ -2148,6 +2988,18 @@
                   "word": "window",
                   "emoji": "🪟"
                 }
+              ],
+              "chantTexts": [
+                "G-O-A-T",
+                "T-O-A-D",
+                "E-L-B-O-W",
+                "W-I-N-D-O-W"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             }
           ]
@@ -2170,7 +3022,7 @@
               "words": [
                 {
                   "word": "blue",
-                  "emoji": "🟦"
+                  "emoji": "🔵"
                 },
                 {
                   "word": "glue",
@@ -2184,6 +3036,18 @@
                   "word": "Tuesday",
                   "emoji": "📅"
                 }
+              ],
+              "chantTexts": [
+                "B-L-U-E",
+                "G-L-U-E",
+                "C-L-U-E",
+                "T-U-E-S-D-A-Y"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
@@ -2211,6 +3075,18 @@
                   "word": "dew",
                   "emoji": "💧"
                 }
+              ],
+              "chantTexts": [
+                "F-R-U-I-T",
+                "S-U-I-T",
+                "N-E-W",
+                "D-E-W"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
@@ -2228,7 +3104,7 @@
                 },
                 {
                   "word": "zoo",
-                  "emoji": "🐘"
+                  "emoji": "🦁"
                 },
                 {
                   "word": "food",
@@ -2236,8 +3112,20 @@
                 },
                 {
                   "word": "boot",
-                  "emoji": "👢"
+                  "emoji": "🥾"
                 }
+              ],
+              "chantTexts": [
+                "M-O-O-N",
+                "Z-O-O",
+                "F-O-O-D",
+                "B-O-O-T"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             }
           ]
@@ -2278,12 +3166,24 @@
                 },
                 {
                   "word": "clock",
-                  "emoji": "🕰️"
+                  "emoji": "🕐"
                 },
                 {
                   "word": "club",
                   "emoji": "🃏"
                 }
+              ],
+              "chantTexts": [
+                "B-L-A-C-K",
+                "B-L-A-N-K-E-T",
+                "C-L-O-C-K",
+                "C-L-U-B"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
@@ -2311,6 +3211,18 @@
                   "word": "crocodile",
                   "emoji": "🐊"
                 }
+              ],
+              "chantTexts": [
+                "B-R-O-O-M",
+                "B-R-I-D-E",
+                "C-R-A-B",
+                "C-R-O-C-O-D-I-L-E"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
@@ -2328,7 +3240,7 @@
                 },
                 {
                   "word": "flag",
-                  "emoji": "🏁"
+                  "emoji": "🚩"
                 },
                 {
                   "word": "globe",
@@ -2338,6 +3250,18 @@
                   "word": "glass",
                   "emoji": "🥃"
                 }
+              ],
+              "chantTexts": [
+                "F-L-Y",
+                "F-L-A-G",
+                "G-L-O-B-E",
+                "G-L-A-S-S"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             }
           ]
@@ -2372,8 +3296,20 @@
                 },
                 {
                   "word": "grass",
-                  "emoji": "🌱"
+                  "emoji": "🌿"
                 }
+              ],
+              "chantTexts": [
+                "F-R-O-G",
+                "F-R-I-D-A-Y",
+                "G-R-E-E-N",
+                "G-R-A-S-S"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
@@ -2401,6 +3337,18 @@
                   "word": "sleep",
                   "emoji": "😴"
                 }
+              ],
+              "chantTexts": [
+                "P-L-A-T-E",
+                "P-L-A-Y",
+                "S-L-I-D-E",
+                "S-L-E-E-P"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
@@ -2428,6 +3376,18 @@
                   "word": "tree",
                   "emoji": "🌳"
                 }
+              ],
+              "chantTexts": [
+                "D-R-U-M",
+                "D-R-E-S-S",
+                "T-R-U-C-K",
+                "T-R-E-E"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             }
           ]
@@ -2464,6 +3424,18 @@
                   "word": "snow",
                   "emoji": "❄️"
                 }
+              ],
+              "chantTexts": [
+                "S-M-I-L-E",
+                "S-M-O-K-E",
+                "S-N-A-K-E",
+                "S-N-O-W"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
@@ -2491,6 +3463,18 @@
                   "word": "swim",
                   "emoji": "🏊"
                 }
+              ],
+              "chantTexts": [
+                "S-P-O-O-N",
+                "S-P-O-T",
+                "S-W-I-N-G",
+                "S-W-I-M"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
@@ -2518,6 +3502,18 @@
                   "word": "fast",
                   "emoji": "💨"
                 }
+              ],
+              "chantTexts": [
+                "S-T-O-P",
+                "T-E-S-T",
+                "S-T-A-M-P",
+                "F-A-S-T"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             }
           ]
@@ -2554,6 +3550,18 @@
                   "word": "brush",
                   "emoji": "🪥"
                 }
+              ],
+              "chantTexts": [
+                "S-H-E-L-L",
+                "F-I-S-H",
+                "S-H-I-P",
+                "B-R-U-S-H"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
@@ -2581,6 +3589,18 @@
                   "word": "catch",
                   "emoji": "🤲"
                 }
+              ],
+              "chantTexts": [
+                "C-H-I-C-K",
+                "L-U-N-C-H",
+                "W-A-T-C-H",
+                "C-A-T-C-H"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
@@ -2594,7 +3614,7 @@
               "words": [
                 {
                   "word": "phone",
-                  "emoji": "📞"
+                  "emoji": "📱"
                 },
                 {
                   "word": "dolphin",
@@ -2602,12 +3622,24 @@
                 },
                 {
                   "word": "whale",
-                  "emoji": "🐳"
+                  "emoji": "🐋"
                 },
                 {
                   "word": "white",
                   "emoji": "⬜"
                 }
+              ],
+              "chantTexts": [
+                "P-H-O-N-E",
+                "D-O-L-P-H-I-N",
+                "W-H-A-L-E",
+                "W-H-I-T-E"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             }
           ]
@@ -2644,6 +3676,18 @@
                   "word": "father",
                   "emoji": "👨"
                 }
+              ],
+              "chantTexts": [
+                "T-H-I-S",
+                "T-H-A-T",
+                "M-O-T-H-E-R",
+                "F-A-T-H-E-R"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
@@ -2665,12 +3709,24 @@
                 },
                 {
                   "word": "think",
-                  "emoji": "🤔"
+                  "emoji": "💭"
                 },
                 {
                   "word": "bath",
                   "emoji": "🛁"
                 }
+              ],
+              "chantTexts": [
+                "T-H-R-E-E",
+                "T-E-E-T-H",
+                "T-H-I-N-K",
+                "B-A-T-H"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
@@ -2698,6 +3754,18 @@
                   "word": "quilt",
                   "emoji": "🛏️"
                 }
+              ],
+              "chantTexts": [
+                "D-U-C-K",
+                "R-O-C-K-E-T",
+                "Q-U-E-E-N",
+                "Q-U-I-L-T"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             }
           ]
@@ -2720,7 +3788,7 @@
               "words": [
                 {
                   "word": "king",
-                  "emoji": "🤴"
+                  "emoji": "👑"
                 },
                 {
                   "word": "long",
@@ -2734,6 +3802,18 @@
                   "word": "pink",
                   "emoji": "🩷"
                 }
+              ],
+              "chantTexts": [
+                "K-I-N-G",
+                "L-O-N-G",
+                "B-A-N-K",
+                "P-I-N-K"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
@@ -2761,6 +3841,18 @@
                   "word": "paint",
                   "emoji": "🎨"
                 }
+              ],
+              "chantTexts": [
+                "W-I-N-D",
+                "H-A-N-D",
+                "T-E-N-T",
+                "P-A-I-N-T"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
@@ -2788,6 +3880,18 @@
                   "word": "camp",
                   "emoji": "🏕️"
                 }
+              ],
+              "chantTexts": [
+                "B-E-L-T",
+                "A-D-U-L-T",
+                "L-A-M-P",
+                "C-A-M-P"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             }
           ]
@@ -2824,6 +3928,18 @@
                   "word": "school",
                   "emoji": "🏫"
                 }
+              ],
+              "chantTexts": [
+                "S-K-U-N-K",
+                "D-E-S-K",
+                "S-C-A-L-E",
+                "S-C-H-O-O-L"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
@@ -2837,7 +3953,7 @@
               "words": [
                 {
                   "word": "spray",
-                  "emoji": "💦"
+                  "emoji": "🚿"
                 },
                 {
                   "word": "spring",
@@ -2851,6 +3967,18 @@
                   "word": "strong",
                   "emoji": "💪"
                 }
+              ],
+              "chantTexts": [
+                "S-P-R-A-Y",
+                "S-P-R-I-N-G",
+                "S-T-R-I-N-G",
+                "S-T-R-O-N-G"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
@@ -2878,6 +4006,18 @@
                   "word": "square",
                   "emoji": "🟦"
                 }
+              ],
+              "chantTexts": [
+                "S-P-L-A-S-H",
+                "S-P-L-I-N-T",
+                "S-Q-U-I-D",
+                "S-Q-U-A-R-E"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             }
           ]
@@ -2914,6 +4054,18 @@
                   "word": "cell phone",
                   "emoji": "📱"
                 }
+              ],
+              "chantTexts": [
+                "R-I-C-E",
+                "C-I-T-Y",
+                "I-C-E-C-R-E-A-M",
+                "C-E-L-L-P-H-O-N-E"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
@@ -2941,6 +4093,18 @@
                   "word": "cage",
                   "emoji": "🪺"
                 }
+              ],
+              "chantTexts": [
+                "G-I-R-A-F-F-E",
+                "O-R-A-N-G-E",
+                "G-I-A-N-T",
+                "C-A-G-E"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
@@ -2968,6 +4132,18 @@
                   "word": "legs",
                   "emoji": "🦵"
                 }
+              ],
+              "chantTexts": [
+                "R-O-S-E",
+                "J-E-A-N-S",
+                "C-H-E-E-S-E",
+                "L-E-G-S"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             }
           ]
@@ -3014,6 +4190,18 @@
                   "word": "star",
                   "emoji": "⭐"
                 }
+              ],
+              "chantTexts": [
+                "C-A-R",
+                "F-A-R-M",
+                "P-A-R-K",
+                "S-T-A-R"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
@@ -3041,6 +4229,18 @@
                   "word": "purple",
                   "emoji": "🟣"
                 }
+              ],
+              "chantTexts": [
+                "B-I-R-D",
+                "G-I-R-L",
+                "N-U-R-S-E",
+                "P-U-R-P-L-E"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
@@ -3068,6 +4268,18 @@
                   "word": "tractor",
                   "emoji": "🚜"
                 }
+              ],
+              "chantTexts": [
+                "T-E-A-C-H-E-R",
+                "S-I-S-T-E-R",
+                "D-O-C-T-O-R",
+                "T-R-A-C-T-O-R"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             }
           ]
@@ -3104,6 +4316,18 @@
                   "word": "brown",
                   "emoji": "🟫"
                 }
+              ],
+              "chantTexts": [
+                "M-O-U-S-E",
+                "H-O-U-S-E",
+                "C-O-W",
+                "B-R-O-W-N"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
@@ -3121,7 +4345,7 @@
                 },
                 {
                   "word": "soil",
-                  "emoji": "🟫"
+                  "emoji": "🪴"
                 },
                 {
                   "word": "toy",
@@ -3131,6 +4355,18 @@
                   "word": "boy",
                   "emoji": "👦"
                 }
+              ],
+              "chantTexts": [
+                "C-O-I-N",
+                "S-O-I-L",
+                "T-O-Y",
+                "B-O-Y"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
@@ -3144,7 +4380,7 @@
               "words": [
                 {
                   "word": "book",
-                  "emoji": "📖"
+                  "emoji": "📚"
                 },
                 {
                   "word": "foot",
@@ -3158,6 +4394,18 @@
                   "word": "pull",
                   "emoji": "🤜"
                 }
+              ],
+              "chantTexts": [
+                "B-O-O-K",
+                "F-O-O-T",
+                "B-U-S-H",
+                "P-U-L-L"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             }
           ]
@@ -3194,6 +4442,18 @@
                   "word": "draw",
                   "emoji": "✏️"
                 }
+              ],
+              "chantTexts": [
+                "S-A-U-C-E",
+                "A-U-G-U-S-T",
+                "P-R-A-W-N",
+                "D-R-A-W"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
@@ -3221,6 +4481,18 @@
                   "word": "walk",
                   "emoji": "🚶"
                 }
+              ],
+              "chantTexts": [
+                "B-A-L-L",
+                "T-A-L-L",
+                "W-A-T-E-R",
+                "W-A-L-K"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
@@ -3248,6 +4520,18 @@
                   "word": "board",
                   "emoji": "🪵"
                 }
+              ],
+              "chantTexts": [
+                "H-O-R-S-E",
+                "F-O-R-K",
+                "R-O-A-R",
+                "B-O-A-R-D"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             }
           ]
@@ -3284,6 +4568,18 @@
                   "word": "hair",
                   "emoji": "💇"
                 }
+              ],
+              "chantTexts": [
+                "S-Q-U-A-R-E",
+                "S-H-A-R-E",
+                "C-H-A-I-R",
+                "H-A-I-R"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
@@ -3311,6 +4607,18 @@
                   "word": "pear",
                   "emoji": "🍐"
                 }
+              ],
+              "chantTexts": [
+                "B-R-E-A-D",
+                "H-E-A-D",
+                "B-E-A-R",
+                "P-E-A-R"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
@@ -3338,6 +4646,18 @@
                   "word": "cheer",
                   "emoji": "📣"
                 }
+              ],
+              "chantTexts": [
+                "E-A-R",
+                "C-L-E-A-R",
+                "D-E-E-R",
+                "C-H-E-E-R"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             }
           ]
@@ -3374,6 +4694,18 @@
                   "word": "lady",
                   "emoji": "👩"
                 }
+              ],
+              "chantTexts": [
+                "A-C-O-R-N",
+                "B-A-B-Y",
+                "E-L-E-V-A-T-O-R",
+                "L-A-D-Y"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
@@ -3401,6 +4733,18 @@
                   "word": "child",
                   "emoji": "🧒"
                 }
+              ],
+              "chantTexts": [
+                "H-E",
+                "S-H-E",
+                "T-I-G-E-R",
+                "C-H-I-L-D"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
@@ -3428,6 +4772,18 @@
                   "word": "music",
                   "emoji": "🎵"
                 }
+              ],
+              "chantTexts": [
+                "C-O-L-D",
+                "H-O-T-E-L",
+                "U-N-I-F-O-R-M",
+                "M-U-S-I-C"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             }
           ]
@@ -3464,6 +4820,18 @@
                   "word": "umbrella",
                   "emoji": "☂️"
                 }
+              ],
+              "chantTexts": [
+                "P-A-N-D-A",
+                "G-O-R-I-L-L-A",
+                "B-A-N-A-N-A",
+                "U-M-B-R-E-L-L-A"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
@@ -3491,6 +4859,18 @@
                   "word": "surprise",
                   "emoji": "🎁"
                 }
+              ],
+              "chantTexts": [
+                "C-H-I-C-K-E-N",
+                "P-E-N-C-I-L",
+                "L-E-M-O-N",
+                "S-U-R-P-R-I-S-E"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
@@ -3518,6 +4898,18 @@
                   "word": "honey",
                   "emoji": "🍯"
                 }
+              ],
+              "chantTexts": [
+                "M-O-N-K-E-Y",
+                "L-O-V-E",
+                "S-O-N",
+                "H-O-N-E-Y"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             }
           ]
@@ -3554,6 +4946,18 @@
                   "word": "wrong",
                   "emoji": "❌"
                 }
+              ],
+              "chantTexts": [
+                "K-N-I-F-E",
+                "K-N-E-E",
+                "W-R-I-T-E",
+                "W-R-O-N-G"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
@@ -3581,6 +4985,18 @@
                   "word": "live",
                   "emoji": "🎙️"
                 }
+              ],
+              "chantTexts": [
+                "L-A-M-B",
+                "C-O-M-B",
+                "G-L-O-V-E",
+                "L-I-V-E"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
@@ -3602,12 +5018,24 @@
                 },
                 {
                   "word": "whistle",
-                  "emoji": "😗"
+                  "emoji": "🎽"
                 },
                 {
                   "word": "castle",
                   "emoji": "🏰"
                 }
+              ],
+              "chantTexts": [
+                "R-H-I-N-O",
+                "R-H-U-B-A-R-B",
+                "W-H-I-S-T-L-E",
+                "C-A-S-T-L-E"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             }
           ]
@@ -3644,6 +5072,18 @@
                   "word": "measure",
                   "emoji": "📏"
                 }
+              ],
+              "chantTexts": [
+                "P-I-C-T-U-R-E",
+                "N-A-T-U-R-E",
+                "T-R-E-A-S-U-R-E",
+                "M-E-A-S-U-R-E"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
@@ -3671,6 +5111,18 @@
                   "word": "excursion",
                   "emoji": "🗺️"
                 }
+              ],
+              "chantTexts": [
+                "S-T-A-T-I-O-N",
+                "C-O-M-P-E-T-I-T-I-O-N",
+                "T-E-L-E-V-I-S-I-O-N",
+                "E-X-C-U-R-S-I-O-N"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             },
             {
@@ -3698,6 +5150,18 @@
                   "word": "helpful",
                   "emoji": "🙋"
                 }
+              ],
+              "chantTexts": [
+                "F-A-M-O-U-S",
+                "D-A-N-G-E-R-O-U-S",
+                "B-E-A-U-T-I-F-U-L",
+                "H-E-L-P-F-U-L"
+              ],
+              "chantOrder": [
+                0,
+                1,
+                2,
+                3
               ]
             }
           ]

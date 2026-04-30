@@ -27,4 +27,6 @@ data class PhonicsLessonEntity(
     val stretchedWord: String,
     val orderIndex: Int,
     val wordsJson: String,
+    val chantTextsJson: String,
+    val chantOrderJson: String,
 )

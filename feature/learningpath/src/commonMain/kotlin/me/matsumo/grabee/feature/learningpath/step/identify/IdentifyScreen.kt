@@ -94,6 +94,8 @@ internal fun IdentifyScreen(
     onNext: () -> Unit,
     onStepJump: (Int) -> Unit,
     modifier: Modifier = Modifier,
+    totalSteps: Int = 7,
+    onLessonsLoaded: (Int) -> Unit = {},
     viewModel: IdentifyViewModel = koinViewModel(key = unitId) { parametersOf(unitId) },
 ) {
     val screenState by viewModel.screenState.collectAsStateWithLifecycle()
@@ -102,6 +104,7 @@ internal fun IdentifyScreen(
         modifier = modifier.fillMaxSize(),
         screenState = screenState,
     ) { uiState ->
+        LaunchedEffect(uiState.lessons.size) { onLessonsLoaded(uiState.lessons.size) }
         val safeIndex = lessonIndex.coerceIn(0, uiState.lessons.lastIndex)
         IdentifyContent(
             currentLesson = uiState.lessons[safeIndex],
@@ -111,6 +114,7 @@ internal fun IdentifyScreen(
             onPrevious = onPrevious,
             onNext = onNext,
             onStepJump = onStepJump,
+            totalSteps = totalSteps,
         )
     }
 }
@@ -124,6 +128,7 @@ private fun IdentifyContent(
     onPrevious: () -> Unit,
     onNext: () -> Unit,
     onStepJump: (Int) -> Unit,
+    totalSteps: Int,
 ) {
     val vocab = remember(currentLesson.id) {
         currentLesson.words
@@ -234,6 +239,7 @@ private fun IdentifyContent(
                     currentStepIndex = STEP_INDEX,
                     onClose = onClose,
                     onStepJump = onStepJump,
+                    totalSteps = totalSteps,
                 )
             },
             bottomBar = {

@@ -43,6 +43,12 @@ internal fun PhonicsLessonEntity.toModel(): PhonicsLesson {
         jsonParser.decodeFromString<List<LessonWordJson>>(wordsJson)
             .map { LessonWord(word = it.word, emoji = it.emoji) }
     }.getOrElse { emptyList() }
+    val chantTexts = runCatching {
+        jsonParser.decodeFromString<List<String>>(chantTextsJson)
+    }.getOrElse { emptyList() }
+    val chantOrder = runCatching {
+        jsonParser.decodeFromString<List<Int>>(chantOrderJson)
+    }.getOrElse { listOf(0, 1, 2, 3) }
     return PhonicsLesson(
         id = id,
         unitId = unitId,
@@ -53,6 +59,8 @@ internal fun PhonicsLessonEntity.toModel(): PhonicsLesson {
         stretchedWord = stretchedWord,
         orderIndex = orderIndex,
         words = words,
+        chantTexts = chantTexts,
+        chantOrder = chantOrder,
     )
 }
 

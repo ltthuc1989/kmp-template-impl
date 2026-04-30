@@ -20,6 +20,73 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun SettingSwitchItem(
+    title: String,
+    description: String?,
+    value: Boolean,
+    onValueChanged: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
+    isEnabled: Boolean = true,
+) {
+    val titleColor: Color
+    val descriptionColor: Color
+
+    if (isEnabled) {
+        titleColor = MaterialTheme.colorScheme.onSurface
+        descriptionColor = MaterialTheme.colorScheme.onSurfaceVariant
+    } else {
+        MaterialTheme.colorScheme.onSurface
+            .copy(alpha = 0.38f)
+            .compositeOver(MaterialTheme.colorScheme.surface)
+            .also {
+                titleColor = it
+                descriptionColor = it
+            }
+    }
+
+    Row(
+        modifier = modifier
+            .clickable(
+                enabled = isEnabled,
+                onClick = { onValueChanged.invoke(!value) },
+            )
+            .padding(horizontal = 24.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+    ) {
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(
+                space = 4.dp,
+                alignment = Alignment.CenterVertically,
+            ),
+        ) {
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = title,
+                style = MaterialTheme.typography.bodyLarge,
+                color = titleColor,
+            )
+
+            if (description != null) {
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = description,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = descriptionColor,
+                )
+            }
+        }
+
+        Switch(
+            enabled = isEnabled,
+            checked = value,
+            onCheckedChange = { onValueChanged.invoke(it) },
+        )
+    }
+}
+
+@Composable
+fun SettingSwitchItem(
     title: StringResource,
     description: StringResource?,
     value: Boolean,

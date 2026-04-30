@@ -1,11 +1,16 @@
 package me.matsumo.grabee.feature.learningpath.step.chant
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.SizeTransform
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -27,7 +32,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -45,6 +52,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.coroutines.delay
 import me.matsumo.grabee.core.model.PhonicsLesson
 import me.matsumo.grabee.core.resource.Res
 import me.matsumo.grabee.core.resource.chant_instruction
@@ -53,6 +61,7 @@ import me.matsumo.grabee.core.resource.chant_previous
 import me.matsumo.grabee.core.resource.chant_title
 import me.matsumo.grabee.core.ui.screen.AsyncLoadContents
 import me.matsumo.grabee.feature.learningpath.step.common.LetterStepperBar
+import me.matsumo.grabee.feature.learningpath.step.common.PageDotsRow
 import me.matsumo.grabee.feature.learningpath.step.common.PuffySurface
 import me.matsumo.grabee.feature.learningpath.step.common.StepHeader
 import me.matsumo.grabee.feature.learningpath.step.common.StepNavRow
@@ -64,6 +73,9 @@ import kotlin.math.abs
 import kotlin.math.min
 
 private const val STEP_INDEX = 1
+private const val TOTAL_SLIDES = 5
+private const val CELEBRATION_SLIDE_INDEX = 4
+private const val SLIDE_DURATION_MS = 2_500L
 
 @Composable
 internal fun ChantScreen(
@@ -74,6 +86,8 @@ internal fun ChantScreen(
     onNext: () -> Unit,
     onStepJump: (Int) -> Unit,
     modifier: Modifier = Modifier,
+    totalSteps: Int = 7,
+    onLessonsLoaded: (Int) -> Unit = {},
     viewModel: ChantViewModel = koinViewModel(key = unitId) { parametersOf(unitId) },
 ) {
     val screenState by viewModel.screenState.collectAsStateWithLifecycle()
@@ -82,6 +96,7 @@ internal fun ChantScreen(
         modifier = modifier.fillMaxSize(),
         screenState = screenState,
     ) { uiState ->
+        LaunchedEffect(uiState.lessons.size) { onLessonsLoaded(uiState.lessons.size) }
         val safeIndex = lessonIndex.coerceIn(0, uiState.lessons.lastIndex)
         ChantContent(
             currentLesson = uiState.lessons[safeIndex],
@@ -91,6 +106,7 @@ internal fun ChantScreen(
             onPrevious = onPrevious,
             onNext = onNext,
             onStepJump = onStepJump,
+            totalSteps = totalSteps,
         )
     }
 }
@@ -104,8 +120,18 @@ private fun ChantContent(
     onPrevious: () -> Unit,
     onNext: () -> Unit,
     onStepJump: (Int) -> Unit,
+    totalSteps: Int,
 ) {
+    var slideIndex by remember(currentLesson.id) { mutableIntStateOf(0) }
     var isChanting by remember(currentLesson.id) { mutableStateOf(false) }
+
+    // Auto-advance slides 0..3 while chanting; final celebration slide stays put.
+    LaunchedEffect(currentLesson.id, slideIndex, isChanting) {
+        if (isChanting && slideIndex < CELEBRATION_SLIDE_INDEX) {
+            delay(SLIDE_DURATION_MS)
+            slideIndex = (slideIndex + 1).coerceAtMost(CELEBRATION_SLIDE_INDEX)
+        }
+    }
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -115,6 +141,7 @@ private fun ChantContent(
                 currentStepIndex = STEP_INDEX,
                 onClose = onClose,
                 onStepJump = onStepJump,
+                totalSteps = totalSteps,
             )
         },
         bottomBar = {
@@ -132,13 +159,37 @@ private fun ChantContent(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Spacer(Modifier.height(8.dp))
-            ChantHeroCard(lesson = currentLesson, isChanting = isChanting)
+            AnimatedContent(
+                targetState = slideIndex,
+                transitionSpec = {
+                    (fadeIn(tween(300)) togetherWith fadeOut(tween(300)))
+                        .using(SizeTransform(clip = false))
+                },
+                label = "chant-slide",
+            ) { idx ->
+                if (idx < CELEBRATION_SLIDE_INDEX) {
+                    ChantHeroCard(
+                        lesson = currentLesson,
+                        wordIndex = idx,
+                        isChanting = isChanting,
+                    )
+                } else {
+                    ChantCelebrationCard(
+                        lesson = currentLesson,
+                        isPlaying = isChanting,
+                    )
+                }
+            }
+            Spacer(Modifier.height(12.dp))
+            PageDotsRow(currentPage = slideIndex, total = TOTAL_SLIDES)
             Spacer(Modifier.weight(1f, fill = true))
             PlayStopButton(
                 isChanting = isChanting,
                 onToggle = {
                     isChanting = !isChanting
-                    // TODO: when audio ready — start/stop audio playback here
+                    if (isChanting && slideIndex == CELEBRATION_SLIDE_INDEX) {
+                        slideIndex = 0
+                    }
                 },
             )
             Spacer(Modifier.height(16.dp))
@@ -154,7 +205,10 @@ private fun ChantContent(
 }
 
 @Composable
-private fun ChantHeroCard(lesson: PhonicsLesson, isChanting: Boolean) {
+private fun ChantHeroCard(lesson: PhonicsLesson, wordIndex: Int, isChanting: Boolean) {
+    val word = lesson.words.getOrNull(wordIndex)
+    val chant = lesson.chantTexts.getOrNull(wordIndex)
+        ?: lesson.stretchedWord
     StoryStyleCard(aspectRatio = null) {
         Column(
             modifier = Modifier
@@ -162,9 +216,9 @@ private fun ChantHeroCard(lesson: PhonicsLesson, isChanting: Boolean) {
                 .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            CharacterArtwork(emoji = lesson.words.firstOrNull()?.emoji.orEmpty())
+            CharacterArtwork(emoji = word?.emoji.orEmpty())
             Spacer(Modifier.height(20.dp))
-            ChantText(chant = lesson.stretchedWord, isChanting = isChanting)
+            ChantText(chant = chant, isChanting = isChanting)
             Spacer(Modifier.height(12.dp))
             Text(
                 text = stringResource(Res.string.chant_instruction),
@@ -197,15 +251,6 @@ private fun CharacterArtwork(emoji: String) {
     }
 }
 
-/**
- * Karaoke-style chant animation: splits the chant string into syllable tokens,
- * then cycles a phase float through the tokens so each syllable briefly enlarges
- * and brightens as its "turn" comes. Animation only runs when [isChanting] is true;
- * otherwise shows static text with all tokens at `primary` color, base font size.
- *
- * When audio is wired later, drive [isChanting] from audio playback state and
- * replace the InfiniteTransition with an audio-position driven Float.
- */
 @Composable
 private fun ChantText(chant: String, isChanting: Boolean) {
     val tokens = remember(chant) { chant.tokenize() }
@@ -232,7 +277,6 @@ private fun ChantText(chant: String, isChanting: Boolean) {
                 val wrappedDist = min(rawDist, tokens.size - rawDist)
                 (1f - wrappedDist).coerceIn(0f, 1f)
             } else {
-                // Static view: all tokens at full active style (no animation).
                 1f
             }
             val fontSize = (BASE_FONT_SP + FONT_BUMP_SP * proximity).sp

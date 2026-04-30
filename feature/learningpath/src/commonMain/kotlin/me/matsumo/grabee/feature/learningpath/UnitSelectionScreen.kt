@@ -459,16 +459,19 @@ private fun UnitCardItem(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                card.unit.themeChip?.takeIf { !isLocked }?.let { theme ->
-                    ThemeChip(label = theme)
-                    Spacer(Modifier.height(4.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = card.unit.title,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = if (isLocked) LockedTextGray else MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.weight(1f),
+                    )
+                    card.unit.themeChip?.takeIf { !isLocked }?.let { theme ->
+                        Spacer(Modifier.width(8.dp))
+                        ThemeChip(label = theme)
+                    }
                 }
-                Text(
-                    text = card.unit.title,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = if (isLocked) LockedTextGray else MaterialTheme.colorScheme.onSurface,
-                )
                 if (!isLocked && card.previewEmojis.isNotEmpty()) {
                     Spacer(Modifier.height(4.dp))
                     Text(

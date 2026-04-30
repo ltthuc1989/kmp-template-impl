@@ -24,4 +24,6 @@ class AppSettingRepository(
     suspend fun setDeveloperMode(developerMode: Boolean) = dataSource.setDeveloperMode(developerMode)
 
     suspend fun setHasSeenOnboarding(hasSeenOnboarding: Boolean) = dataSource.setHasSeenOnboarding(hasSeenOnboarding)
+
+    suspend fun setShowSpeakButton(value: Boolean) = dataSource.setShowSpeakButton(value)
 }

@@ -34,6 +34,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -84,6 +85,8 @@ internal fun BlendingScreen(
     onNext: () -> Unit,
     onStepJump: (Int) -> Unit,
     modifier: Modifier = Modifier,
+    totalSteps: Int = 7,
+    onLessonsLoaded: (Int) -> Unit = {},
     viewModel: BlendingViewModel = koinViewModel(key = unitId) { parametersOf(unitId) },
 ) {
     val screenState by viewModel.screenState.collectAsStateWithLifecycle()
@@ -92,6 +95,7 @@ internal fun BlendingScreen(
         modifier = modifier.fillMaxSize(),
         screenState = screenState,
     ) { uiState ->
+        LaunchedEffect(uiState.lessons.size) { onLessonsLoaded(uiState.lessons.size) }
         val safeIndex = lessonIndex.coerceIn(0, uiState.lessons.lastIndex)
         BlendingContent(
             currentLesson = uiState.lessons[safeIndex],
@@ -101,6 +105,7 @@ internal fun BlendingScreen(
             onPrevious = onPrevious,
             onNext = onNext,
             onStepJump = onStepJump,
+            totalSteps = totalSteps,
         )
     }
 }
@@ -116,6 +121,7 @@ private fun BlendingContent(
     onPrevious: () -> Unit,
     onNext: () -> Unit,
     onStepJump: (Int) -> Unit,
+    totalSteps: Int,
 ) {
     val vocab = remember(currentLesson.id) {
         currentLesson.words
@@ -182,6 +188,7 @@ private fun BlendingContent(
                     currentStepIndex = STEP_INDEX,
                     onClose = onClose,
                     onStepJump = onStepJump,
+                    totalSteps = totalSteps,
                 )
             },
             bottomBar = {

@@ -49,6 +49,8 @@ internal data class PhonicsLessonDto(
     val stretchedWord: String,
     val orderIndex: Int,
     val words: List<LessonWordDto>,
+    val chantTexts: List<String> = emptyList(),
+    val chantOrder: List<Int> = listOf(0, 1, 2, 3),
 )
 
 @Serializable
@@ -98,6 +100,8 @@ private fun UnitDto.toEntity(levelId: String) = UnitEntity(
 
 private fun PhonicsLessonDto.toEntity(unitId: String): PhonicsLessonEntity {
     val wordsJsonStr = curriculumJson.encodeToString(words)
+    val chantTextsJsonStr = curriculumJson.encodeToString(chantTexts)
+    val chantOrderJsonStr = curriculumJson.encodeToString(chantOrder)
     return PhonicsLessonEntity(
         id = id,
         unitId = unitId,
@@ -108,5 +112,7 @@ private fun PhonicsLessonDto.toEntity(unitId: String): PhonicsLessonEntity {
         stretchedWord = stretchedWord,
         orderIndex = orderIndex,
         wordsJson = wordsJsonStr,
+        chantTextsJson = chantTextsJsonStr,
+        chantOrderJson = chantOrderJsonStr,
     )
 }

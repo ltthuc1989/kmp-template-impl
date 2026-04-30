@@ -1,9 +1,5 @@
 package me.matsumo.grabee.feature.learningpath.step.soundintro
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -28,7 +24,6 @@ import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -40,7 +35,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.coroutines.delay
 import me.matsumo.grabee.core.model.LessonWord
 import me.matsumo.grabee.core.model.PhonicsLesson
 import me.matsumo.grabee.core.resource.Res
@@ -50,7 +44,6 @@ import me.matsumo.grabee.core.resource.sound_intro_title
 import me.matsumo.grabee.core.ui.screen.AsyncLoadContents
 import me.matsumo.grabee.feature.learningpath.step.common.CircularAudioButton
 import me.matsumo.grabee.feature.learningpath.step.common.LetterStepperBar
-import me.matsumo.grabee.feature.learningpath.step.common.PageDotsRow
 import me.matsumo.grabee.feature.learningpath.step.common.PuffySurface
 import me.matsumo.grabee.feature.learningpath.step.common.StepHeader
 import me.matsumo.grabee.feature.learningpath.step.common.StoryStyleCard
@@ -69,6 +62,8 @@ internal fun SoundIntroScreen(
     onNext: () -> Unit,
     onStepJump: (Int) -> Unit,
     modifier: Modifier = Modifier,
+    totalSteps: Int = 7,
+    onLessonsLoaded: (Int) -> Unit = {},
     viewModel: SoundIntroViewModel = koinViewModel(key = unitId) { parametersOf(unitId) },
 ) {
     val screenState by viewModel.screenState.collectAsStateWithLifecycle()
@@ -77,6 +72,7 @@ internal fun SoundIntroScreen(
         modifier = modifier.fillMaxSize(),
         screenState = screenState,
     ) { uiState ->
+        LaunchedEffect(uiState.lessons.size) { onLessonsLoaded(uiState.lessons.size) }
         val safeIndex = lessonIndex.coerceIn(0, uiState.lessons.lastIndex)
         SoundIntroContent(
             currentLesson = uiState.lessons[safeIndex],
@@ -85,6 +81,7 @@ internal fun SoundIntroScreen(
             onClose = onClose,
             onNext = onNext,
             onStepJump = onStepJump,
+            totalSteps = totalSteps,
         )
     }
 }
@@ -97,21 +94,10 @@ private fun SoundIntroContent(
     onClose: () -> Unit,
     onNext: () -> Unit,
     onStepJump: (Int) -> Unit,
+    totalSteps: Int,
 ) {
-    val frames = remember(currentLesson.id) { currentLesson.cyclingFrames() }
-    val frameCount = frames.size
-    var currentFrame by remember(currentLesson.id) { mutableIntStateOf(0) }
+    val featuredWord = currentLesson.words.firstOrNull()
     var isPlaying by remember(currentLesson.id) { mutableStateOf(false) }
-
-    // TODO replace with audio.durationMs / frameCount once audio player is wired.
-    LaunchedEffect(currentLesson.id, isPlaying, currentFrame) {
-        if (isPlaying && frameCount > 1) {
-            delay(SOUND_INTRO_IMAGE_INTERVAL_MS)
-            val next = (currentFrame + 1) % frameCount
-            currentFrame = next
-            if (next == 0) isPlaying = false
-        }
-    }
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -121,6 +107,7 @@ private fun SoundIntroContent(
                 currentStepIndex = STEP_INDEX,
                 onClose = onClose,
                 onStepJump = onStepJump,
+                totalSteps = totalSteps,
             )
         },
         bottomBar = {
@@ -147,16 +134,8 @@ private fun SoundIntroContent(
             )
             Spacer(Modifier.height(12.dp))
             StoryStyleCard {
-                AnimatedContent(
-                    targetState = currentFrame,
-                    transitionSpec = { fadeIn() togetherWith fadeOut() },
-                    label = "sound-intro-frames",
-                ) { frameIndex ->
-                    FrameContent(item = frames[frameIndex.coerceIn(0, frames.lastIndex)])
-                }
+                FrameContent(item = featuredWord)
             }
-            Spacer(Modifier.height(16.dp))
-            PageDotsRow(currentPage = currentFrame, total = frameCount)
             Spacer(Modifier.height(16.dp))
             CircularAudioButton(
                 isPlaying = isPlaying,
@@ -171,7 +150,8 @@ private fun SoundIntroContent(
 }
 
 @Composable
-private fun FrameContent(item: LessonWord) {
+private fun FrameContent(item: LessonWord?) {
+    if (item == null) return
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center,
@@ -228,8 +208,3 @@ private fun NextLessonButton(onClick: () -> Unit) {
         }
     }
 }
-
-private fun PhonicsLesson.cyclingFrames(): List<LessonWord> =
-    words.ifEmpty { listOf(LessonWord(word = displayLetter, emoji = null)) }
-
-private const val SOUND_INTRO_IMAGE_INTERVAL_MS = 1_800L

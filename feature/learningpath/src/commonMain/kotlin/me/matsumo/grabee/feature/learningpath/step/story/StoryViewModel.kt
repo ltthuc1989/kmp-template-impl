@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import me.matsumo.grabee.core.model.LessonWord
 import me.matsumo.grabee.core.model.PhonicsLesson
 import me.matsumo.grabee.core.repository.UnitRepository
 import me.matsumo.grabee.core.resource.Res
@@ -29,7 +30,19 @@ internal class StoryViewModel(
                 if (lessons.isEmpty()) {
                     ScreenState.Error(message = Res.string.error_no_data)
                 } else {
-                    ScreenState.Idle(StoryUiState(lessons = lessons.toImmutableList()))
+                    val pages = lessons
+                        .sortedBy { it.orderIndex }
+                        .flatMap { lesson ->
+                            lesson.words.map { word ->
+                                StoryPage(letter = lesson.displayLetter.firstOrNull() ?: '?', word = word)
+                            }
+                        }
+                    ScreenState.Idle(
+                        StoryUiState(
+                            lessons = lessons.toImmutableList(),
+                            pages = pages.toImmutableList(),
+                        ),
+                    )
                 }
             }
             .catch { throwable ->
@@ -51,4 +64,11 @@ internal class StoryViewModel(
 @Immutable
 internal data class StoryUiState(
     val lessons: ImmutableList<PhonicsLesson>,
+    val pages: ImmutableList<StoryPage>,
+)
+
+@Immutable
+internal data class StoryPage(
+    val letter: Char,
+    val word: LessonWord,
 )

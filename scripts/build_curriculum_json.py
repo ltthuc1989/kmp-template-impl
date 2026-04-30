@@ -48,26 +48,68 @@ THEME_CHIP = {
     "L5U7": "silent letters",
 }
 
-# Hand-curated overrides for letter codes whose default lowercasing isn't right.
-DISPLAY_LETTER_OVERRIDE = {
-    "TH-voiced": "th",
-    "TH-unvoiced": "th",
-    "SOFT-C": "c",
-    "SOFT-G": "g",
-    "VOICED-S": "s",
-    "U_E-1": "u_e",
-    "U_E-2": "u_e",
-    "A-OPEN": "a",
-    "E-I-OPEN": "e i",
-    "O-U-OPEN": "o u",
-    "SCHWA-A": "a",
-    "SCHWA-EIOU": "e i o u",
-    "SCHWA-O": "o",
-    "MB-E": "mb e",
+# Hardcoded displayLetter per CSV `id`, derived 100% từ TOC sách OPW (screenshots).
+# Key = CSV id (column 1). Value = displayLetter shown in app.
+# Unit title = " ".join(displayLetter for lessons in unit) → match book TOC.
+LESSON_DISPLAY_LETTER = {
+    # L1 — The Alphabet (26)
+    "L1U1_A": "Aa", "L1U1_B": "Bb", "L1U1_C": "Cc",
+    "L1U2_D": "Dd", "L1U2_E": "Ee", "L1U2_F": "Ff",
+    "L1U3_G": "Gg", "L1U3_H": "Hh", "L1U3_I": "Ii",
+    "L1U4_J": "Jj", "L1U4_K": "Kk", "L1U4_L": "Ll",
+    "L1U5_M": "Mm", "L1U5_N": "Nn", "L1U5_O": "Oo",
+    "L1U6_P": "Pp", "L1U6_Q": "Qq", "L1U6_R": "Rr",
+    "L1U7_S": "Ss", "L1U7_T": "Tt", "L1U7_U": "Uu", "L1U7_V": "Vv",
+    "L1U8_W": "Ww", "L1U8_X": "Xx", "L1U8_Y": "Yy", "L1U8_Z": "Zz",
+    # L2 — Short Vowels (24)
+    "L2U1_a": "a", "L2U1_am": "am", "L2U1_an": "an",
+    "L2U2_ad_ag": "ad ag", "L2U2_ap": "ap", "L2U2_at": "at",
+    "L2U3_e": "e", "L2U3_et": "et", "L2U3_en_ed": "en ed",
+    "L2U4_i": "i", "L2U4_ip": "ip", "L2U4_ib_id": "ib id",
+    "L2U5_in": "in", "L2U5_ig": "ig", "L2U5_it_ix": "it ix",
+    "L2U6_o": "o", "L2U6_ot": "ot", "L2U6_op": "op",
+    "L2U7_u": "u", "L2U7_ug": "ug", "L2U7_ud_up": "ud up",
+    "L2U8_ut": "ut", "L2U8_ub_um": "ub um", "L2U8_un": "un",
+    # L3 — Long Vowels (24)
+    "L3U1_a_e": "a_e", "L3U1_ame_ake": "ame ake", "L3U1_ate_ave": "ate ave",
+    "L3U2_i_e": "i_e", "L3U2_ime_ike": "ime ike", "L3U2_ive_ine": "ive ine",
+    "L3U3_o_e": "o_e", "L3U3_u_e_1": "u_e", "L3U3_u_e_2": "u_e",
+    "L3U4_ai": "ai", "L3U4_ay": "ay", "L3U4_ai_ay": "ai ay",
+    "L3U5_ee": "ee", "L3U5_ea": "ea", "L3U5_y_ey": "y ey",
+    "L3U6_igh": "igh", "L3U6_ie": "ie", "L3U6_y": "y",
+    "L3U7_oa": "oa", "L3U7_ow": "ow", "L3U7_oa_ow": "oa ow",
+    "L3U8_ue": "ue", "L3U8_ui_ew": "ui ew", "L3U8_oo": "oo",
+    # L4 — Blends & Digraphs (24)
+    "L4U1_bl_cl": "bl cl", "L4U1_br_cr": "br cr", "L4U1_fl_gl": "fl gl",
+    "L4U2_fr_gr": "fr gr", "L4U2_pl_sl": "pl sl", "L4U2_dr_tr": "dr tr",
+    "L4U3_sm_sn": "sm sn", "L4U3_sp_sw": "sp sw", "L4U3_st": "st",
+    "L4U4_sh": "sh", "L4U4_ch_tch": "ch tch", "L4U4_ph_wh": "ph wh",
+    "L4U5_th_voiced": "th", "L4U5_th_unvoiced": "th", "L4U5_ck_qu": "ck qu",
+    "L4U6_ng_nk": "ng nk", "L4U6_nd_nt": "nd nt", "L4U6_lt_mp": "lt mp",
+    "L4U7_sk_sc": "sk sc", "L4U7_spr_str": "spr str", "L4U7_spl_squ": "spl squ",
+    "L4U8_soft_c": "c", "L4U8_soft_g": "g", "L4U8_voiced_s": "s",
+    # L5 — Letter Combinations (24)
+    "L5U1_ar": "ar", "L5U1_ir_ur": "ir ur", "L5U1_er_or": "er or",
+    "L5U2_ou_ow": "ou ow", "L5U2_oi_oy": "oi oy", "L5U2_oo_u": "oo u",
+    "L5U3_au_aw": "au aw", "L5U3_all_wa": "all wa", "L5U3_or_oar": "or oar",
+    "L5U4_are_air": "are air", "L5U4_ea_ear": "ea ear", "L5U4_ear_eer": "ear eer",
+    "L5U5_a_open": "a", "L5U5_e_i_open": "e i", "L5U5_o_u_open": "o u",
+    "L5U6_schwa_a": "a", "L5U6_schwa_eiou": "e i o u", "L5U6_schwa_o": "o",
+    "L5U7_kn_wr": "kn wr", "L5U7_mb_e": "mb e", "L5U7_rh_st": "rh st",
+    "L5U8_ture_sure": "ture sure", "L5U8_tion_sion": "tion sion", "L5U8_ous_ful": "ous ful",
 }
 
 # Words that don't appear anywhere in the old curriculum.json. Filled after first pass.
 EMOJI_FALLBACK = {
+    "apple": "🍎",
+    "ant": "🐜",
+    "cat": "🐱",
+    "dog": "🐶",
+    "doll": "🪆",
+    "egg": "🥚",
+    "elephant": "🐘",
+    "fish": "🐟",
+    "lion": "🦁",
     "ax": "🪓",
     "alligator": "🐊",
     "computer": "💻",
@@ -249,34 +291,59 @@ EMOJI_FALLBACK = {
     "famous": "⭐", "dangerous": "☢️", "beautiful": "🌸", "helpful": "🙋",
 }
 
-LETTER_RE = re.compile(r"[A-Z]")
+def generate_chant_texts(level: int, stretched_word: str, words: list) -> list:
+    """Pre-generate 4 chant texts per lesson. User can hand-tune in JSON later.
 
-def display_letter(raw: str) -> str:
-    if raw in DISPLAY_LETTER_OVERRIDE:
-        return DISPLAY_LETTER_OVERRIDE[raw]
-    if re.fullmatch(r"[A-Z]", raw):
-        return f"{raw}{raw.lower()}"
-    s = raw
-    for prefix in ("SHORT-", "LONG-"):
-        if s.startswith(prefix):
-            s = s[len(prefix):]
-            break
-    return s.lower().replace("-", " ")
+    L1: prefix-style — split stretched_word at last "-" → prefix; output [prefix-{Word}] x 4.
+        e.g. "AAA-pple" + [apple,ax,ant,alligator]
+          → ["AAA-Apple","AAA-Ax","AAA-Ant","AAA-Alligator"]
+
+    L2-L5: blending-style — each word → uppercase letters joined by "-".
+        e.g. "cat" → "C-A-T", "tape" → "T-A-P-E", "black" → "B-L-A-C-K"
+    """
+    if level == 1:
+        if "-" in stretched_word:
+            prefix = stretched_word.rsplit("-", 1)[0]
+        else:
+            prefix = stretched_word
+        return [f"{prefix}-{w['word'].capitalize()}" for w in words]
+    return ["-".join(ch.upper() for ch in w["word"] if ch != " ") for w in words]
+
+
+def display_letter(csv_id: str) -> str:
+    """Lookup hardcoded displayLetter by CSV id. Hard-fails on unknown id —
+    prevents silent drift if CSV adds new rows the script hasn't been updated for."""
+    try:
+        return LESSON_DISPLAY_LETTER[csv_id]
+    except KeyError:
+        raise SystemExit(
+            f"Missing LESSON_DISPLAY_LETTER for {csv_id!r}. "
+            f"Add it (derived from book TOC) before running."
+        )
 
 
 def load_emoji_from_old_curriculum() -> dict[str, str]:
+    """Read emoji map from existing curriculum.json. Handles both shapes:
+    - Old shape: unit.words[].{text,emoji} + word.vocabulary[].{text,emoji}
+    - New shape: unit.lessons[].words[].{word,emoji}"""
     if not CURRICULUM_JSON.exists():
         return {}
     data = json.loads(CURRICULUM_JSON.read_text(encoding="utf-8"))
     mp: dict[str, str] = {}
     for level in data.get("levels", []):
         for unit in level.get("units", []):
+            # Old shape
             for word in unit.get("words", []):
                 if word.get("emoji"):
                     mp[word["text"].lower()] = word["emoji"]
                 for v in word.get("vocabulary", []):
                     if v.get("emoji"):
                         mp[v["text"].lower()] = v["emoji"]
+            # New shape
+            for lesson in unit.get("lessons", []):
+                for w in lesson.get("words", []):
+                    if w.get("emoji"):
+                        mp[w["word"].lower()] = w["emoji"]
     return mp
 
 
@@ -319,15 +386,18 @@ def main() -> int:
                     if e is not None:
                         entry["emoji"] = e
                     words.append(entry)
+                chant_texts = generate_chant_texts(lvl, row["stretched_word"], words)
                 lessons.append({
                     "id": row["id"],
                     "letter": row["letter"],
-                    "displayLetter": display_letter(row["letter"]),
+                    "displayLetter": display_letter(row["id"]),
                     "soundSpelling": row["sound_spelling"],
                     "sentence": row["sentence"],
                     "stretchedWord": row["stretched_word"],
                     "orderIndex": idx,
                     "words": words,
+                    "chantTexts": chant_texts,
+                    "chantOrder": [0, 1, 2, 3],
                 })
             unit_title = " ".join(le["displayLetter"] for le in lessons)
             units.append({

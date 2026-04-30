@@ -29,4 +29,10 @@ class SettingViewModel(
             repository.setDeveloperMode(developerMode)
         }
     }
+
+    fun setShowSpeakButton(value: Boolean) {
+        viewModelScope.launch {
+            repository.setShowSpeakButton(value)
+        }
+    }
 }

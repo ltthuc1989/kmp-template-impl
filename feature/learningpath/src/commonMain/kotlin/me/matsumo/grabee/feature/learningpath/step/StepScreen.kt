@@ -18,11 +18,15 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.aakira.napier.Napier
+import me.matsumo.grabee.core.repository.AppSettingRepository
 import me.matsumo.grabee.core.repository.LearningProgressRepository
 import me.matsumo.grabee.core.ui.screen.Destination
 import me.matsumo.grabee.core.ui.theme.LocalNavBackStack
@@ -31,14 +35,15 @@ import me.matsumo.grabee.feature.learningpath.step.chant.ChantScreen
 import me.matsumo.grabee.feature.learningpath.step.identify.IdentifyScreen
 import me.matsumo.grabee.feature.learningpath.step.matching.MatchingScreen
 import me.matsumo.grabee.feature.learningpath.step.soundintro.SoundIntroScreen
-import me.matsumo.grabee.feature.learningpath.step.story.StoryScreen
 import me.matsumo.grabee.feature.learningpath.step.tracing.TracingScreen
 import me.matsumo.grabee.feature.learningpath.step.vocabulary.VocabularyScreen
 import org.koin.compose.koinInject
-import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.parameter.parametersOf
 
-private const val TOTAL_STEPS = 8
+// Each lesson has 7 step screens (0..6). Story (segment 7) lives at unit-level only — appears as
+// the 8th segment on the last lesson and as a standalone destination after the last Tracing.
+private const val PER_LESSON_STEPS = 7
+private const val LAST_STEP_INDEX = PER_LESSON_STEPS - 1
+private const val UNIT_STORY_SEGMENT_INDEX = PER_LESSON_STEPS    // = 7
 private const val TAG = "StepScreen"
 
 @Composable
@@ -50,19 +55,27 @@ internal fun StepScreen(
     modifier: Modifier = Modifier,
 ) {
     val navBackStack = LocalNavBackStack.current
-    val navigator: StepNavigatorViewModel = koinViewModel(key = unitId) { parametersOf(unitId) }
-    val totalLessons by navigator.totalLessons.collectAsStateWithLifecycle()
     val progressRepository: LearningProgressRepository = koinInject()
+    val settingRepository: AppSettingRepository = koinInject()
+    val setting by settingRepository.setting.collectAsStateWithLifecycle()
+
+    // totalLessons is reported back from each step screen's loaded data (its own VM already
+    // has lessons by the time AsyncLoadContents renders the content block). This avoids the
+    // race where a separate StepNavigatorViewModel might still have totalLessons=0.
+    var totalLessons by remember(unitId) { mutableStateOf(0) }
+    val onLessonsLoaded: (Int) -> Unit = { count ->
+        if (count > 0 && count != totalLessons) totalLessons = count
+    }
+
+    val isLastLesson = totalLessons > 0 && lessonIndex == totalLessons - 1
+    // Last lesson shows 8 segments (the extra one routes to UnitStory); other lessons show 7.
+    val totalStepsForBar = if (isLastLesson) PER_LESSON_STEPS + 1 else PER_LESSON_STEPS
 
     LaunchedEffect(levelId, unitId, lessonIndex, stepIndex, totalLessons) {
         if (totalLessons > 0) {
-            val unitStepsTotal = totalLessons * TOTAL_STEPS
-            val completedSteps = lessonIndex * TOTAL_STEPS + stepIndex
-            val progressPercent = if (unitStepsTotal > 0) {
-                (completedSteps * 100) / unitStepsTotal
-            } else {
-                0
-            }
+            val unitStepsTotal = totalLessons * PER_LESSON_STEPS + 1
+            val completedSteps = lessonIndex * PER_LESSON_STEPS + stepIndex
+            val progressPercent = (completedSteps * 100) / unitStepsTotal
             progressRepository.setActivePosition(
                 levelId = levelId,
                 unitId = unitId,
@@ -74,36 +87,49 @@ internal fun StepScreen(
     }
 
     val onNext: () -> Unit = {
-        val next: Destination? = when {
-            stepIndex < TOTAL_STEPS - 1 ->
-                Destination.Learning.Step(levelId, unitId, lessonIndex, stepIndex + 1)
-            totalLessons <= 0 -> {
-                Napier.w(tag = TAG) {
-                    "onNext at last step but totalLessons=$totalLessons — waiting for flow " +
-                        "(unit=$unitId, lesson=$lessonIndex)"
-                }
-                null
-            }
-            lessonIndex < totalLessons - 1 ->
-                Destination.Learning.Step(levelId, unitId, lessonIndex + 1, stepIndex = 0)
-            else ->
-                Destination.Learning.UnitComplete(levelId, unitId, starsEarned = 24)
+        Napier.d(tag = TAG) {
+            "onNext invoked: $levelId/$unitId lesson=$lessonIndex step=$stepIndex " +
+                "totalLessons=$totalLessons isLastLesson=$isLastLesson"
         }
-        if (next != null) {
-            Napier.d(tag = TAG) {
-                "onNext advance: $levelId/$unitId lesson=$lessonIndex step=$stepIndex -> $next"
-            }
-            navBackStack.add(next)
+        val next: Destination = when {
+            stepIndex < LAST_STEP_INDEX ->
+                Destination.Learning.Step(levelId, unitId, lessonIndex, stepIndex + 1)
+            // We're on Tracing (last per-lesson step). Decide based on whether this is the last lesson.
+            // If totalLessons hasn't loaded yet, optimistically advance the lesson — the next StepScreen
+            // will coerce/clamp on its own data.
+            isLastLesson ->
+                Destination.Learning.UnitStory(levelId, unitId)
+            else ->
+                Destination.Learning.Step(levelId, unitId, lessonIndex + 1, stepIndex = 0)
+        }
+        Napier.d(tag = TAG) {
+            "onNext advance: $levelId/$unitId lesson=$lessonIndex step=$stepIndex -> $next " +
+                "(navBackStack size=${navBackStack.size})"
+        }
+        navBackStack.add(next)
+    }
+    val onClose: () -> Unit = {
+        val bookIdx = navBackStack.indexOfLast { it is Destination.Learning.UnitSelection }
+        if (bookIdx >= 0) {
+            while (navBackStack.size > bookIdx + 1) navBackStack.removeAt(navBackStack.lastIndex)
+        } else {
+            navBackStack.removeAt(navBackStack.lastIndex)
         }
     }
-    val onClose: () -> Unit = { navBackStack.removeAt(navBackStack.size - 1) }
     val onPrevious: () -> Unit = {
         if (navBackStack.size > 1) navBackStack.removeAt(navBackStack.size - 1)
     }
     val onStepJump: (Int) -> Unit = { targetStep ->
-        if (targetStep in 0 until TOTAL_STEPS && targetStep != stepIndex) {
-            if (navBackStack.isNotEmpty()) navBackStack.removeAt(navBackStack.size - 1)
-            navBackStack.add(Destination.Learning.Step(levelId, unitId, lessonIndex, targetStep))
+        when {
+            targetStep == stepIndex -> Unit
+            targetStep == UNIT_STORY_SEGMENT_INDEX && isLastLesson -> {
+                if (navBackStack.isNotEmpty()) navBackStack.removeAt(navBackStack.lastIndex)
+                navBackStack.add(Destination.Learning.UnitStory(levelId, unitId))
+            }
+            targetStep in 0 until PER_LESSON_STEPS -> {
+                if (navBackStack.isNotEmpty()) navBackStack.removeAt(navBackStack.lastIndex)
+                navBackStack.add(Destination.Learning.Step(levelId, unitId, lessonIndex, targetStep))
+            }
         }
     }
 
@@ -114,6 +140,8 @@ internal fun StepScreen(
             onClose = onClose,
             onNext = onNext,
             onStepJump = onStepJump,
+            totalSteps = totalStepsForBar,
+            onLessonsLoaded = onLessonsLoaded,
             modifier = modifier,
         )
         1 -> ChantScreen(
@@ -123,6 +151,8 @@ internal fun StepScreen(
             onPrevious = onPrevious,
             onNext = onNext,
             onStepJump = onStepJump,
+            totalSteps = totalStepsForBar,
+            onLessonsLoaded = onLessonsLoaded,
             modifier = modifier,
         )
         2 -> VocabularyScreen(
@@ -133,6 +163,9 @@ internal fun StepScreen(
             onNext = onNext,
             onStepJump = onStepJump,
             modifier = modifier,
+            showSpeakButton = setting.showSpeakButton,
+            totalSteps = totalStepsForBar,
+            onLessonsLoaded = onLessonsLoaded,
         )
         3 -> IdentifyScreen(
             unitId = unitId,
@@ -141,6 +174,8 @@ internal fun StepScreen(
             onPrevious = onPrevious,
             onNext = onNext,
             onStepJump = onStepJump,
+            totalSteps = totalStepsForBar,
+            onLessonsLoaded = onLessonsLoaded,
             modifier = modifier,
         )
         4 -> BlendingScreen(
@@ -150,6 +185,8 @@ internal fun StepScreen(
             onPrevious = onPrevious,
             onNext = onNext,
             onStepJump = onStepJump,
+            totalSteps = totalStepsForBar,
+            onLessonsLoaded = onLessonsLoaded,
             modifier = modifier,
         )
         5 -> MatchingScreen(
@@ -159,6 +196,8 @@ internal fun StepScreen(
             onPrevious = onPrevious,
             onNext = onNext,
             onStepJump = onStepJump,
+            totalSteps = totalStepsForBar,
+            onLessonsLoaded = onLessonsLoaded,
             modifier = modifier,
         )
         6 -> TracingScreen(
@@ -168,15 +207,8 @@ internal fun StepScreen(
             onPrevious = onPrevious,
             onNext = onNext,
             onStepJump = onStepJump,
-            modifier = modifier,
-        )
-        7 -> StoryScreen(
-            unitId = unitId,
-            lessonIndex = lessonIndex,
-            onClose = onClose,
-            onPrevious = onPrevious,
-            onNext = onNext,
-            onStepJump = onStepJump,
+            totalSteps = totalStepsForBar,
+            onLessonsLoaded = onLessonsLoaded,
             modifier = modifier,
         )
         else -> StepStubScreen(
@@ -204,7 +236,7 @@ private fun StepStubScreen(
         modifier = modifier,
         topBar = {
             TopAppBar(
-                title = { Text("Lesson ${lessonIndex + 1} · Step ${stepIndex + 1}/$TOTAL_STEPS — $stepName") },
+                title = { Text("Lesson ${lessonIndex + 1} · Step ${stepIndex + 1}/$PER_LESSON_STEPS — $stepName") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
@@ -235,6 +267,5 @@ private fun stepName(stepIndex: Int): String = when (stepIndex) {
     4 -> "Blending"
     5 -> "Matching"
     6 -> "Tracing"
-    7 -> "Story"
     else -> "Unknown Step $stepIndex"
 }

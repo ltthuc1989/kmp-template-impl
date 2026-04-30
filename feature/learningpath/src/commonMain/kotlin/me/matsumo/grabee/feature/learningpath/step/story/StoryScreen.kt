@@ -42,11 +42,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import io.github.aakira.napier.Napier
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import me.matsumo.grabee.core.model.LessonWord
 import me.matsumo.grabee.core.model.PhonicsLesson
+import me.matsumo.grabee.core.repository.LearningProgressRepository
 import me.matsumo.grabee.core.resource.Res
 import me.matsumo.grabee.core.resource.chant_next
 import me.matsumo.grabee.core.resource.chant_previous
@@ -57,6 +58,8 @@ import me.matsumo.grabee.core.resource.story_page_sentence
 import me.matsumo.grabee.core.resource.story_previous_page_cd
 import me.matsumo.grabee.core.resource.story_title
 import me.matsumo.grabee.core.ui.screen.AsyncLoadContents
+import me.matsumo.grabee.core.ui.screen.Destination
+import me.matsumo.grabee.core.ui.theme.LocalNavBackStack
 import me.matsumo.grabee.feature.learningpath.step.common.CircularAudioButton
 import me.matsumo.grabee.feature.learningpath.step.common.KaraokeText
 import me.matsumo.grabee.feature.learningpath.step.common.LetterStepperBar
@@ -65,33 +68,80 @@ import me.matsumo.grabee.feature.learningpath.step.common.StepHeader
 import me.matsumo.grabee.feature.learningpath.step.common.StepNavRow
 import me.matsumo.grabee.feature.learningpath.step.common.StoryStyleCard
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
-private const val STEP_INDEX = 7
+private const val UNIT_STORY_STEP_INDEX = 7
+private const val UNIT_STORY_TOTAL_STEPS = 8
+private const val PER_LESSON_STEPS = 7
+private const val UNIT_COMPLETE_STARS = 24
+private const val TAG = "StoryScreen"
 
 @Composable
 internal fun StoryScreen(
+    levelId: String,
     unitId: String,
-    lessonIndex: Int,
-    onClose: () -> Unit,
-    onPrevious: () -> Unit,
-    onNext: () -> Unit,
-    onStepJump: (Int) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: StoryViewModel = koinViewModel(key = unitId) { parametersOf(unitId) },
 ) {
+    val navBackStack = LocalNavBackStack.current
+    val progressRepository: LearningProgressRepository = koinInject()
     val screenState by viewModel.screenState.collectAsStateWithLifecycle()
 
     AsyncLoadContents(
         modifier = modifier.fillMaxSize(),
         screenState = screenState,
     ) { uiState ->
-        val safeIndex = lessonIndex.coerceIn(0, uiState.lessons.lastIndex)
+        val totalLessons = uiState.lessons.size
+        val lastLessonIndex = (totalLessons - 1).coerceAtLeast(0)
+
+        LaunchedEffect(levelId, unitId, totalLessons) {
+            if (totalLessons > 0) {
+                val unitStepsTotal = totalLessons * PER_LESSON_STEPS + 1
+                val completedSteps = totalLessons * PER_LESSON_STEPS
+                val progressPercent = (completedSteps * 100) / unitStepsTotal
+                progressRepository.setActivePosition(
+                    levelId = levelId,
+                    unitId = unitId,
+                    lessonIndex = lastLessonIndex,
+                    stepIndex = UNIT_STORY_STEP_INDEX,
+                    progressPercent = progressPercent,
+                )
+            }
+        }
+
+        val onClose: () -> Unit = {
+            val bookIdx = navBackStack.indexOfLast { it is Destination.Learning.UnitSelection }
+            if (bookIdx >= 0) {
+                while (navBackStack.size > bookIdx + 1) navBackStack.removeAt(navBackStack.lastIndex)
+            } else {
+                navBackStack.removeAt(navBackStack.lastIndex)
+            }
+        }
+        val onPrevious: () -> Unit = {
+            if (navBackStack.size > 1) navBackStack.removeAt(navBackStack.lastIndex)
+        }
+        val onNext: () -> Unit = {
+            navBackStack.add(
+                Destination.Learning.UnitComplete(levelId, unitId, starsEarned = UNIT_COMPLETE_STARS),
+            )
+        }
+        val onStepJump: (Int) -> Unit = { targetStep ->
+            if (targetStep in 0 until UNIT_STORY_STEP_INDEX) {
+                Napier.d(tag = TAG) {
+                    "Jump from UnitStory to Step($lastLessonIndex,$targetStep)"
+                }
+                if (navBackStack.isNotEmpty()) navBackStack.removeAt(navBackStack.lastIndex)
+                navBackStack.add(
+                    Destination.Learning.Step(levelId, unitId, lastLessonIndex, targetStep),
+                )
+            }
+        }
+
         StoryContent(
-            currentLesson = uiState.lessons[safeIndex],
             lessons = uiState.lessons,
-            currentIndex = safeIndex,
+            pages = uiState.pages,
             onClose = onClose,
             onPrevious = onPrevious,
             onNext = onNext,
@@ -102,33 +152,30 @@ internal fun StoryScreen(
 
 @Composable
 private fun StoryContent(
-    currentLesson: PhonicsLesson,
     lessons: ImmutableList<PhonicsLesson>,
-    currentIndex: Int,
+    pages: ImmutableList<StoryPage>,
     onClose: () -> Unit,
     onPrevious: () -> Unit,
     onNext: () -> Unit,
     onStepJump: (Int) -> Unit,
 ) {
-    val letterChar = currentLesson.displayLetter.firstOrNull() ?: '?'
-    val letterUpper = letterChar.uppercaseChar().toString()
-    val letterLower = letterChar.lowercaseChar().toString()
+    if (pages.isEmpty()) return
 
-    val pages: List<LessonWord> = remember(currentLesson.id) {
-        currentLesson.words
-    }
     val pageCount = pages.size
-
     val pagerState = rememberPagerState(pageCount = { pageCount })
     val currentPage by remember { derivedStateOf { pagerState.currentPage.coerceIn(0, pages.lastIndex) } }
     val scope = rememberCoroutineScope()
 
-    LaunchedEffect(currentLesson.id) {
-        pagerState.scrollToPage(0)
+    val currentStoryPage = pages[currentPage]
+    val letterChar = currentStoryPage.letter
+    val letterUpper = letterChar.uppercaseChar().toString()
+    val letterLower = letterChar.lowercaseChar().toString()
+    val currentLessonIndex = remember(letterChar, lessons) {
+        lessons.indexOfFirst { it.displayLetter.firstOrNull() == letterChar }.coerceAtLeast(0)
     }
 
-    var isNarrating by remember(currentLesson.id, currentPage) { mutableStateOf(false) }
-    LaunchedEffect(currentLesson.id, currentPage, isNarrating) {
+    var isNarrating by remember(currentPage) { mutableStateOf(false) }
+    LaunchedEffect(currentPage, isNarrating) {
         if (isNarrating) {
             delay(NARRATION_STUB_MS)
             isNarrating = false
@@ -141,15 +188,16 @@ private fun StoryContent(
         topBar = {
             StepHeader(
                 title = stringResource(Res.string.story_title),
-                currentStepIndex = STEP_INDEX,
+                currentStepIndex = UNIT_STORY_STEP_INDEX,
                 onClose = onClose,
                 onStepJump = onStepJump,
+                totalSteps = UNIT_STORY_TOTAL_STEPS,
             )
         },
         bottomBar = {
             LetterStepperBar(
                 lessons = lessons,
-                currentIndex = currentIndex,
+                currentIndex = currentLessonIndex,
             )
         },
     ) { innerPadding ->
@@ -194,7 +242,7 @@ private fun StoryContent(
                 text = stringResource(
                     Res.string.story_page_sentence,
                     letterUpper,
-                    pages[currentPage].text,
+                    currentStoryPage.word.text,
                 ),
                 isPlaying = isNarrating,
                 modifier = Modifier
@@ -222,7 +270,7 @@ private fun StoryContent(
 @Composable
 @Suppress("UnstableCollections")
 private fun StoryImagePager(
-    pages: List<LessonWord>,
+    pages: List<StoryPage>,
     pagerState: androidx.compose.foundation.pager.PagerState,
     onPreviousPage: () -> Unit,
     onNextPage: () -> Unit,
@@ -262,13 +310,13 @@ private fun StoryImagePager(
 }
 
 @Composable
-private fun StoryPageCard(item: LessonWord) {
+private fun StoryPageCard(item: StoryPage) {
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center,
     ) {
         Text(
-            text = item.emoji.orEmpty().ifEmpty { "📖" },
+            text = item.word.emoji.orEmpty().ifEmpty { "📖" },
             fontSize = 120.sp,
             textAlign = TextAlign.Center,
         )
