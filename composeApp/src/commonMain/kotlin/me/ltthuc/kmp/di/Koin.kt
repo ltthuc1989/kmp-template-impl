@@ -1,5 +1,6 @@
 package me.ltthuc.kmp.di
 
+import me.ltthuc.kmp.core.audio.di.audioModule
 import me.ltthuc.kmp.core.billing.di.billingModule
 import me.ltthuc.kmp.core.common.di.commonModule
 import me.ltthuc.kmp.core.datasource.di.dataSourceModule
@@ -17,6 +18,7 @@ fun KoinApplication.applyModules() {
 
     modules(commonModule)
     modules(billingModule)
+    modules(audioModule)
     modules(dataSourceModule)
     modules(repositoryModule)
 

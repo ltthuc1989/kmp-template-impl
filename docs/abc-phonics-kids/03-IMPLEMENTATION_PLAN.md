@@ -1,7 +1,10 @@
 # ABC Phonics Kids — Implementation Plan
 
+**Version**: 1.1
+**Status**: Mốc 1 = listener-only Level 1 (no voice scoring). Voice integration moved to v1.x.
 **Audience**: Tech Lead + Devs.
 **Prerequisite**: [01-PRD.md](01-PRD.md), [02-TECH_SPEC.md](02-TECH_SPEC.md), [.claude/skills/grabee/](../../.claude/skills/grabee/).
+**Last revised**: 2026-05-01 (scope reduction: voice pipeline → v1.x roadmap; W4 reallocated to asset/polish).
 
 ---
 
@@ -9,10 +12,11 @@
 
 | Mốc | Phạm vi | Thời gian | Output |
 |---|---|---|---|
-| **Mốc 1** | Code-Complete v0.1 — 1 level (9 units) end-to-end production-quality, 1 platform store-submitted | **8 tuần** (W0-W8) | TestFlight / Internal Track APK |
+| **Mốc 1** | Code-Complete v0.1 — 1 level (9 units) end-to-end **listener-only** (tap-based gameplay, no voice scoring), 1 platform store-submitted | **8 tuần** (W0-W8) | TestFlight / Internal Track APK |
 | **Mốc 2** | Production v1.0 — 5 levels (45 units), cả 2 platforms | thêm **8-12 tuần** (tổng 16-20 tuần) | Public release |
+| **v1.x** | Voice scoring re-introduction (Step 4 + 5 Gemini multimodal STT) | TBD post-Mốc 1 | Re-spike + ship |
 
-**Lý do 2 mốc**: 8-tuần MVP với 5 levels + Firebase + voice + COPPA là fantasy cho solo/pair. Cắt nhỏ — Mốc 1 chứng minh kiến trúc + UX + STT làm việc với 1 level. Mốc 2 mở rộng content sau khi pipeline ổn định.
+**Lý do 2 mốc**: 8-tuần MVP với 5 levels + Firebase + voice + COPPA là fantasy cho solo/pair. **Mốc 1 đã giảm scope thêm**: bỏ voice scoring khỏi MVP để giảm risk + tăng buffer cho asset/polish. 8 tuần dành cho 1 level listener-only end-to-end + cross-device sync + parent dashboard. Voice scoring quay lại ở v1.x với re-spike + Plan B.
 
 ---
 
@@ -20,18 +24,18 @@
 
 ### W0 — Spike & Setup (1 tuần)
 
-**Mục tiêu**: validate kiến trúc + risk lớn nhất (kids STT) trước khi commit.
+**Mục tiêu**: validate kiến trúc + asset pipeline end-to-end trên 1 unit thật trước khi commit toàn bộ Level 1.
 
 | Task | Cách làm |
 |---|---|
-| **STT spike** trên 3-5 sample giọng trẻ thật | Record giọng trẻ (con/cháu) đọc 5 từ vocab L1. POST vào Gemini 2.5 Flash multimodal. Đánh giá: score + feedback có hợp lý? Nếu kém → pivot SoapBox Labs. |
+| **Asset pipeline spike** trên Level 1 Unit 1 | TTS gen 4 word audio + 4 sentence audio (apple/bear/cat/dog). Midjourney gen 4 vocab images. Drop vào `core/resource/.../files/` đúng asset path. Verify Step 1-8 (listener-only) hoạt động end-to-end. _Voice scoring spike → defer v1.x._ |
 | Setup Firebase project | Console → tạo "abc-phonics-kids" → enable Firestore + Storage. Apply security rules từ [02-TECH_SPEC.md §5](02-TECH_SPEC.md). |
 | Download config files | `google-services.json` → `composeApp/`. `GoogleService-Info.plist` → `composeApp/iosMain/.../`. |
 | **Configure AdMob/AppLovin kids-safe** | KHÔNG remove. Tạo `composeApp/.../ads/AdsInitializer.kt` với TFCD + TFUA + non-personalized + ageRestricted theo [02-TECH_SPEC.md §12](02-TECH_SPEC.md). Verify config qua Charles Proxy. |
-| Add Gemini API key | Tạo trong Google AI Studio. Add vào `local.properties` `GEMINI_API_KEY=...`. Add BuildKonfig field. |
-| Verify base build | `./gradlew :composeApp:assembleDebug` pass. |
+| ~~Add Gemini API key~~ | _v1.x_ — không cần Mốc 1. |
+| Verify base build | `./gradlew :composeApp:assembleDebug` pass. Verify KHÔNG có RECORD_AUDIO permission trong APK manifest. |
 
-**Acceptance**: STT score quality acceptable (recommend) hoặc plan B chốt; build pass; no ads class trong APK.
+**Acceptance**: Asset pipeline e2e pass trên Unit 1; build pass; no RECORD_AUDIO trong manifest; AdMob/AppLovin config verified.
 
 ---
 
@@ -39,9 +43,9 @@
 
 | Task | Cách làm | Reference |
 |---|---|---|
-| Audit `feature/learningpath/` chi tiết | Đọc [LearningPathViewModel.kt](../../feature/learningpath/src/commonMain/kotlin/me/ltthuc/kmp/feature/learningpath/LearningPathViewModel.kt) + Screen + Navigation. Quyết định: extend vs viết lại. (Audit ban đầu: skeleton placeholder, có ViewModel/Nav/DI structure đúng nhưng zero phonics content) | — |
-| Room schema setup | Tạo `core/datasource/.../db/PhonicsDatabase.kt` + 6 entities + DAOs theo [02-TECH_SPEC.md §4](02-TECH_SPEC.md). | `/grabee Add Room database PhonicsDatabase với 6 entities (Level, Unit, Word, UserProgress, PronunciationAttempt, Profile) trong core:datasource. KSP đã wired sẵn cho 4 targets.` |
-| Repositories skeleton | Tạo interface + impl: `ContentRepository`, `ProfileRepository`, `ProgressRepository`, `BackupRepository` trong `core:repository`. | — |
+| Audit `feature/learningpath/` chi tiết | Đọc [LearningPathViewModel.kt](../../feature/learningpath/src/commonMain/kotlin/me/ltthuc/kmp/feature/learningpath/LearningPathViewModel.kt) + Screen + Navigation. Audit hiện tại: 8 step screens đã build listener-only (Identify + Blending tap-based, no mic). Quyết định: extend wire-up data layer + polish. | — |
+| Room schema setup | Tạo `core/datasource/.../db/PhonicsDatabase.kt` + 5 entities + DAOs theo [02-TECH_SPEC.md §4](02-TECH_SPEC.md). _PronunciationAttemptEntity → v1.x._ | `/grabee Add Room database PhonicsDatabase với 5 entities (Level, Unit, Word, UserProgress, Profile) trong core:datasource. KSP đã wired sẵn cho 4 targets.` |
+| Repositories skeleton | Tạo interface + impl: `ContentRepository`, `ProfileRepository`, `ProgressRepository`, `BackupRepository` trong `core:repository`. _VoiceRepository → v1.x._ | — |
 | Firestore client wrap | `core/datasource/.../firestore/FirestoreClient.kt` — Ktor wrap REST API hoặc Firebase Android/iOS SDK qua expect/actual. | — |
 | Bash | `./gradlew :core:datasource:assembleDebug` pass. `./gradlew detekt --auto-correct --continue`. | — |
 
@@ -51,7 +55,7 @@
 
 | Task | Prompt | Acceptance |
 |---|---|---|
-| `feature:onboarding` | `/grabee Add feature:onboarding với 1 screen, HorizontalPager 3 trang intro features ("5 Levels", "Voice Recognition", "Offline Mode"), Pattern A. Destination.Onboarding. Lưu hasSeenOnboarding=true vào DataStore qua AppSettingRepository khi tap "Get Started". Complete all 11 steps.` | Mở app lần đầu → onboarding. Tap "Get Started" → vào Home. Mở lần 2 → vào thẳng Home. |
+| `feature:onboarding` | `/grabee Add feature:onboarding với 1 screen, HorizontalPager 3 trang intro features ("5 Levels", "Tap-based Phonics Gameplay", "Offline Mode"), Pattern A. Destination.Onboarding. Lưu hasSeenOnboarding=true vào DataStore qua AppSettingRepository khi tap "Get Started". Complete all 11 steps.` | Mở app lần đầu → onboarding. Tap "Get Started" → vào Home. Mở lần 2 → vào thẳng Home. |
 | `feature:profile` | `/grabee Add feature:profile với 1 screen, Pattern B. Destination.Profile. Hiển thị avatar + nickname hiện tại + 4 button (Set Nickname, Pick Avatar, Show My SyncCode, Restore From SyncCode). Mỗi action mở dialog/bottom sheet inline (không tạo Destination riêng). Complete all 11 steps.` | 4 dialog hoạt động. Nickname/Avatar lưu Room. |
 | `feature:home` extend | Thêm avatar IconButton góc trên-phải. Tap → `LocalNavBackStack.current.add(Destination.Profile)`. | Avatar tap → Profile screen. |
 | Start destination logic | `composeApp/.../AppNavHost.kt` đọc `appSettingRepository.hasSeenOnboarding` (Flow). Init backstack tương ứng. | Manual smoke test. |
@@ -65,7 +69,7 @@
 | Extend `Destination.Learning` | Thêm sealed interface với 4 sub: `LevelSelection`, `UnitSelection(levelId)`, `Step(levelId, unitId, stepIndex)`, `UnitComplete(...)` theo [02-TECH_SPEC.md §3](02-TECH_SPEC.md). |
 | LevelSelection screen | Extend `feature:learningpath`. Pattern B. Load `LevelEntity` từ Room qua `ContentRepository`. Hiển thị 5 levels carousel với progress %. |
 | UnitSelection screen | Pattern B. Load 9 `UnitEntity` cho levelId. Hiển thị 3×3 grid với star count + lock state. |
-| Step screens (8 step types) | Pattern B mỗi step. Tạo trong `feature:learningpath/.../step/`. Reusable composables cho `WordCard`, `AudioPlayButton`, `RecordButton`. |
+| Step screens wire-up | 8 step screens đã build sẵn listener-only (xem `feature/learningpath/.../step/`). Wire data từ Room qua ViewModels. KHÔNG tạo `RecordButton` (defer v1.x). |
 | Seed L1 content | Generate `core/resource/.../files/seed/level-1.json` với 9 units, ~100 words. Insert qua `RoomDatabase.Callback.onCreate()`. **Asset assets từ AI tools (W4 parallel với asset production)**. |
 | 3 units L1 hoàn chỉnh | Units 1, 2, 3 với asset thật để test end-to-end flow. Units 4-9 placeholder data, polish ở W5. |
 
@@ -73,19 +77,21 @@
 
 ---
 
-### W4 — Voice Pipeline (1 tuần) — TUẦN KHÓ NHẤT
+### W4 — Asset Production + Tap UX Polish (1 tuần) — buffer reallocated
 
-| Task | Cách làm | Reference |
-|---|---|---|
-| `expect class AudioRecorder` | `core/datasource/.../audio/AudioRecorder.kt` (commonMain). Methods: `start()`, `stop(): ByteArray`, `release()`. Memory-only buffer. | [voice-recognition.md](../../.claude/skills/grabee/references/voice-recognition.md) |
-| `actual` Android | androidMain. Dùng `MediaRecorder` với `setOutputFile(...)` → `ByteArrayOutputStream` adapter, hoặc `AudioRecord` (low-level). AAC mono 16kHz. | — |
-| `actual` iOS | iosMain. Dùng `AVAudioRecorder` với `URL` tạm trong `tmpDirectory()` → đọc Bytes → delete file ngay. | — |
-| `GeminiSpeechDataSource` | `core/datasource/.../speech/`. Ktor POST đến Gemini 2.5 Flash. Body multimodal (inline audio base64 + text prompt). Parse JSON response. | [voice-recognition.md](../../.claude/skills/grabee/references/voice-recognition.md) |
-| `VoiceRepository` | `core:repository`. Wrap recorder + STT. Method `recordAndScore(targetWord, ipa): Result<Score>`. | — |
-| Step 4 (Identify) integration | Wire `RecordButton` → `VoiceRepository.recordAndScore` → ScreenState update + stars animation. | — |
-| Test với giọng thật | Record con/cháu đọc 10 từ. Score quality acceptable? | Nếu fail → fallback Whisper/SoapBox per W0 spike result. |
+> Trước đây tuần này dành cho voice pipeline; sau khi defer voice → v1.x, dồn buffer cho asset production + tap UX hardening (engagement metric chính của listener-only release).
 
-**Acceptance**: tap mic → record → stop → score xuất hiện < 3s. Audio không lưu file (verify filesystem). COPPA-safe.
+| Task | Cách làm |
+|---|---|
+| TTS audio batch — Level 1 Unit 1-9 | Gen 100+ word audio + 100+ sentence audio qua TTS pipeline (xem memory `project_gemini-tts-config.md`). QA review batch 50 — re-gen file thiếu prosody. |
+| Vocab images batch | Midjourney `--sref` lock style, gen ~100 vocab images cho L1. Batch QA 50 → re-prompt nếu lệch style. |
+| Story illustrations L1 | 3 story sets × ~10 panels = 30 illustrations. Lock character designs. |
+| Step 4 (Identify) tap UX hardening | Edge cases: same-letter familiar slot logic, decoy diversity, hint timing. Smoke test 9 units. |
+| Step 5 (Blending) tap UX hardening | Letter sweep speed scaling (`INITIAL_LETTER_MS - roundIndex * SPEED_STEP_MS`) — verify đúng range cho từ 3-7 chữ. |
+| Step 7 (Tracing) canvas polish | Touch target ≥ 64dp, line-on-template feedback, success animation. |
+| Audio asset wiring | Replace stub `LISTEN_DURATION_MS` delay bằng real audio playback duration trong Identify/Blending/Vocabulary/Sound Intro/Chant/Story screens. |
+
+**Acceptance**: 9 units có asset thật (audio + image); 8 step screens chạy end-to-end với asset thật trên Unit 1; no mock delay still in place.
 
 ---
 
@@ -96,7 +102,7 @@
 | `ProgressRepository` | Insert `UserProgressEntity` mỗi lần hoàn thành step. Background coroutine sync `pendingSync()` → Firestore qua syncCode. |
 | `BackupRepository` | `generateSyncCode()`: gọi Firestore generate unique 6-digit. `pushProgress()`: upload toàn bộ progress. `restoreFromCode(code)`: download + merge vào Room. |
 | ProfileScreen integration | "Show My SyncCode" → lazy generate + push. "Restore From SyncCode" → fetch + merge. |
-| `feature:parent` | `/grabee Add feature:parent với ParentDashboardScreen, Pattern B. Destination.ParentDashboard. Load aggregated progress (per-level completion %, total time, weak sounds < 70%). Math gate ("What is 5+7?") trước khi vào.` |
+| `feature:parent` | `/grabee Add feature:parent với ParentDashboardScreen, Pattern B. Destination.ParentDashboard. Load aggregated progress (per-level completion %, total time, weak units < 70% completion — KHÔNG có pronunciation score, defer v1.x). Math gate ("What is 5+7?") trước khi vào.` |
 | Multi-device handoff test | Device 1: complete units → show syncCode. Device 2: enter code → progress xuất hiện. |
 
 **Acceptance**: cross-device restore hoạt động. Parent dashboard hiển thị đúng analytics.
@@ -120,10 +126,10 @@
 | Task | Cách làm |
 |---|---|
 | Recruit 3-5 trẻ thật + parents | Friends/family. Cài app qua TestFlight/Internal Track. |
-| Beta test scenarios | (a) Onboarding flow. (b) Hoàn thành Unit 1. (c) Voice scoring với từ khó. (d) Restore syncCode trên device khác. |
+| Beta test scenarios | (a) Onboarding flow. (b) Hoàn thành Unit 1 listener-only (tap-based Identify + Blending). (c) Story step 8 narrated read-along. (d) Restore syncCode trên device khác. |
 | Bug fix priority list | Crash > UX confusion > polish. |
 | **Display name rebrand** | 3 dòng strings + iOS Info.plist theo [02-TECH_SPEC.md §11](02-TECH_SPEC.md). ~5 phút. |
-| Privacy policy draft | Template từ TermsFeed/Iubenda. Customize: "no PII collected, voice memory-only, syncCode optional". |
+| Privacy policy draft | Template từ TermsFeed/Iubenda. Customize: "no PII collected, no microphone access, syncCode optional". _Note: voice section sẽ thêm khi v1.x ship._ |
 
 ---
 
@@ -134,12 +140,12 @@
 | Release build | `./gradlew :composeApp:assembleRelease` (Android) + Xcode Archive (iOS). Verify ProGuard/R8 không break Compose. |
 | Verify ads kids-safe | Test với AdMob "Designed for Families" mode bật trong console. AppLovin "Coppa" mode trong MAX dashboard. Verify TFCD + TFUA flags trong network request (Charles Proxy). Verify `npa=1` (non-personalized). |
 | Store metadata draft | App name "ABC Phonics Kids", description, screenshots, age rating "4+", category "Education > Kids". |
-| Privacy Nutrition Label (iOS) | Data collected: optional nickname, optional Firestore sync (not linked to user). Voice: not collected (transient). |
+| Privacy Nutrition Label (iOS) | Data collected: optional nickname, optional Firestore sync (not linked to user). Voice: not collected (no microphone access in Mốc 1). |
 | Google Play Data Safety form | Same disclosures. |
 | **Apple "Made for Kids" / Google "Designated for Families" enrollment** | Apple: bật trong App Information. Google: enroll Designated for Families program. |
 | Submit | Internal Track / TestFlight first. External review sau 1 tuần internal stable. |
 
-**Mốc 1 Deliverable**: 1 platform internal beta with 1 level (9 units, real assets, voice scoring, sync, parent dashboard).
+**Mốc 1 Deliverable**: 1 platform internal beta with 1 level (9 units, real assets, **listener-only** tap-based gameplay, cross-device sync, parent dashboard). _Voice scoring là v1.x roadmap._
 
 ---
 
@@ -159,7 +165,7 @@
 |---|---|
 | W9-W12 | **Multi-agent scaffolding 36 units còn lại**. Xem section "Multi-Agent" dưới. |
 | W13-W14 | Premium gating UI. Firestore sync ở scale. Offline mode L2-5 (download on-demand). |
-| W15-W16 | External beta 50-100 users. Iterate STT scoring threshold + UX based on feedback. |
+| W15-W16 | External beta 50-100 users. Iterate tap UX + engagement based on feedback. _STT threshold tuning quay lại v1.x._ |
 | W17-W18 | COPPA legal review (lawyer $500-2K). Privacy policy finalize. Both-platform store submission. |
 
 ---
@@ -225,15 +231,16 @@ Báo cáo: list file đã tạo + verify build pass.
 
 | Risk | Probability | Impact | Mitigation | Owner |
 |---|---|---|---|---|
-| Gemini STT scoring kém với giọng kids | Medium | High | W0 spike test thật. Pivot SoapBox Labs ($500/mo) hoặc Whisper on-device nếu fail. | Tech Lead |
+| ~~Gemini STT scoring kém~~ | _v1.x_ | _v1.x_ | Re-spike khi v1.x. Plan B: SoapBox Labs ($500/mo) hoặc Whisper on-device. | _v1.x Tech Lead_ |
 | Asset consistency (Midjourney style drift) | Medium | Medium | Lock `--sref` + character designs ngày đầu. Human review batch 50. | Designer/Curator |
-| COPPA legal exposure | Low | Critical | Anonymous-first. No voice storage. Lawyer review trước launch ($500-2K). Privacy policy template từ trusted vendor. | Legal + Tech |
+| COPPA legal exposure | Low | Critical | Anonymous-first. **Mốc 1 không record voice → giảm đáng kể compliance surface.** Lawyer review trước launch ($500-2K). Privacy policy template từ trusted vendor. | Legal + Tech |
 | Apple Kids review reject vì ads misconfig | Medium | High | W0 config AdMob TFCD/TFUA + AppLovin ageRestricted. Test với "Designed for Families" mode bật. Parental gate trước ad click. Verify network log không gửi IDFA. | Tech Lead |
-| Solo dev burnout | High | High | 8w Mốc 1 realistic. 16-20w Mốc 2 chỉ khi asset production parallel + AI assist tốt. Buffer 20%. | Project Manager |
+| Solo dev burnout | High | High | 8w Mốc 1 realistic (đã giảm scope: bỏ voice → buffer cho asset/polish). 16-20w Mốc 2 chỉ khi asset production parallel + AI assist tốt. Buffer 20%. | Project Manager |
 | Firebase quota | Low | Medium | Free tier đủ < 50K users. Alert at 80% quota. Optimize: cache aggressively, batch writes. | Tech Lead |
-| iOS audio recording permission flow buggy | Medium | Medium | Test sớm W4. iOS yêu cầu `NSMicrophoneUsageDescription` trong Info.plist. | Tech Lead |
+| ~~iOS audio recording permission flow buggy~~ | _v1.x_ | _v1.x_ | Khi v1.x, test sớm. iOS yêu cầu `NSMicrophoneUsageDescription` trong Info.plist. | _v1.x Tech Lead_ |
 | SyncCode collision | Very Low | Low | 1M combos đủ < 100K users. Server check + retry. v1.1 nâng 8-digit. | Backend |
 | AI-generated content reject (illustrator style violates Apple guidelines) | Low | Medium | Pre-submission review. Có style guide rõ ràng (no realistic faces, no scary content). | Designer |
+| Tap UX không hấp dẫn bằng voice scoring | Medium | Medium | Engagement metric: target completion rate ≥ 85% Step 4/5 + retention day-7 ≥ 30%. Nếu fail → ưu tiên ship voice scoring v1.x sớm. | Tech Lead + Product |
 
 ---
 
@@ -274,7 +281,8 @@ Báo cáo: list file đã tạo + verify build pass.
 - [ ] Profile 4 action hoạt động (nickname, avatar, show/enter syncCode).
 - [ ] Cross-device restore qua syncCode test pass với 2 emulator.
 - [ ] Level 1 complete 9 units, 100+ words, asset thật.
-- [ ] Voice scoring < 3s p95, audio không lưu file.
+- [ ] **NO RECORD_AUDIO permission trong APK + NO NSMicrophoneUsageDescription trong Info.plist** (verify Mốc 1 listener-only).
+- [ ] 8 step screens (incl. tap-based Identify + Blending) chạy end-to-end với asset thật.
 - [ ] Parent dashboard math gate + analytics.
 - [ ] EN + JA localization.
 - [ ] Touch targets ≥ 64dp, font ≥ 20sp, contrast WCAG AAA.

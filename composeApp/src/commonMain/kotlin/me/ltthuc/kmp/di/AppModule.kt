@@ -6,6 +6,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.SupervisorJob
 import me.ltthuc.kmp.BuildKonfig
+import me.ltthuc.kmp.core.audio.di.AudioConfig
 import me.ltthuc.kmp.core.model.AppConfig
 import me.ltthuc.kmp.core.model.Platform
 import me.ltthuc.kmp.core.model.currentPlatform
@@ -55,6 +56,10 @@ val appModule = module {
             adMobRewardedAdUnitId = adMobRewardedAdUnitId,
         )
     }
+
+    // TODO: replace hardcoded bucket with BuildKonfig.FIREBASE_STORAGE_BUCKET once
+    // the Firebase project is provisioned (Mốc 1 W1).
+    single { AudioConfig(storageBucket = "abc-phonics-kids.appspot.com") }
 
     includes(appModulePlatform)
 }

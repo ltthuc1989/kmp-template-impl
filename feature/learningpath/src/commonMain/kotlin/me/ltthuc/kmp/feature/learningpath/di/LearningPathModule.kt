@@ -14,12 +14,12 @@ import org.koin.dsl.module
 
 val learningPathModule = module {
     viewModel { params -> UnitSelectionViewModel(levelId = params.get(), get(), get()) }
-    viewModel { params -> SoundIntroViewModel(unitId = params.get(), get()) }
-    viewModel { params -> ChantViewModel(unitId = params.get(), get()) }
-    viewModel { params -> VocabularyViewModel(unitId = params.get(), get()) }
-    viewModel { params -> IdentifyViewModel(unitId = params.get(), get()) }
-    viewModel { params -> BlendingViewModel(unitId = params.get(), get()) }
-    viewModel { params -> MatchingViewModel(unitId = params.get(), get()) }
+    viewModel { params -> SoundIntroViewModel(unitId = params.get(), get(), get()) }
+    viewModel { params -> ChantViewModel(unitId = params.get(), get(), get()) }
+    viewModel { params -> VocabularyViewModel(unitId = params.get(), get(), get()) }
+    viewModel { params -> IdentifyViewModel(unitId = params.get(), get(), get()) }
+    viewModel { params -> BlendingViewModel(unitId = params.get(), get(), get()) }
+    viewModel { params -> MatchingViewModel(unitId = params.get(), get(), get()) }
     viewModel { params -> TracingViewModel(unitId = params.get(), get()) }
-    viewModel { params -> StoryViewModel(unitId = params.get(), get()) }
+    viewModel { params -> StoryViewModel(unitId = params.get(), get(), get()) }
 }

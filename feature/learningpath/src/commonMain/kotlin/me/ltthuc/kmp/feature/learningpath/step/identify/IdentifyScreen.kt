@@ -36,6 +36,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -57,6 +58,8 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import me.ltthuc.kmp.core.audio.AudioState
+import me.ltthuc.kmp.core.audio.isActiveFor
 import me.ltthuc.kmp.core.model.LessonWord
 import me.ltthuc.kmp.core.model.PhonicsLesson
 import me.ltthuc.kmp.core.resource.Res
@@ -78,6 +81,7 @@ import me.ltthuc.kmp.feature.learningpath.step.common.ScoreFeedback
 import me.ltthuc.kmp.feature.learningpath.step.common.ScoreFeedbackOverlay
 import me.ltthuc.kmp.feature.learningpath.step.common.StepHeader
 import me.ltthuc.kmp.feature.learningpath.step.common.StepNavRow
+import me.ltthuc.kmp.feature.learningpath.step.common.wordRef
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -99,6 +103,11 @@ internal fun IdentifyScreen(
     viewModel: IdentifyViewModel = koinViewModel(key = unitId) { parametersOf(unitId) },
 ) {
     val screenState by viewModel.screenState.collectAsStateWithLifecycle()
+    val audioState by viewModel.audioState.collectAsStateWithLifecycle()
+
+    DisposableEffect(viewModel) {
+        onDispose { viewModel.onLeaveScreen() }
+    }
 
     AsyncLoadContents(
         modifier = modifier.fillMaxSize(),
@@ -106,10 +115,13 @@ internal fun IdentifyScreen(
     ) { uiState ->
         LaunchedEffect(uiState.lessons.size) { onLessonsLoaded(uiState.lessons.size) }
         val safeIndex = lessonIndex.coerceIn(0, uiState.lessons.lastIndex)
+        val currentLesson = uiState.lessons[safeIndex]
         IdentifyContent(
-            currentLesson = uiState.lessons[safeIndex],
+            currentLesson = currentLesson,
             lessons = uiState.lessons,
             currentIndex = safeIndex,
+            audioState = audioState,
+            onPlayWord = { word -> viewModel.playTargetWord(currentLesson, word) },
             onClose = onClose,
             onPrevious = onPrevious,
             onNext = onNext,
@@ -124,6 +136,8 @@ private fun IdentifyContent(
     currentLesson: PhonicsLesson,
     lessons: ImmutableList<PhonicsLesson>,
     currentIndex: Int,
+    audioState: AudioState,
+    onPlayWord: (word: String) -> Unit,
     onClose: () -> Unit,
     onPrevious: () -> Unit,
     onNext: () -> Unit,
@@ -145,7 +159,6 @@ private fun IdentifyContent(
     var wiggleKey by remember(currentLesson.id, roundIndex) { mutableStateOf(0) }
     var showHint by remember(currentLesson.id, roundIndex) { mutableStateOf(false) }
     var autoRevealed by remember(currentLesson.id, roundIndex) { mutableStateOf(false) }
-    var listenPlaying by remember(currentLesson.id, roundIndex) { mutableStateOf(true) }
     var finalOverlay by remember(currentLesson.id) { mutableStateOf<ScoreFeedback?>(null) }
     var anyRoundFailed by remember(currentLesson.id) { mutableStateOf(false) }
 
@@ -159,6 +172,9 @@ private fun IdentifyContent(
         )
     }
 
+    val targetRef = remember(currentLesson.id, target.text) { currentLesson.wordRef(target.text) }
+    val listenPlaying = targetRef != null && audioState.isActiveFor(targetRef)
+
     val successPrimary = stringResource(Res.string.score_success_primary)
     val allDoneTitle = stringResource(Res.string.identify_all_done_title)
     val allDoneSubtitle = stringResource(Res.string.identify_all_done_subtitle, totalRounds)
@@ -166,11 +182,9 @@ private fun IdentifyContent(
 
     val scope = rememberCoroutineScope()
 
-    // Audio autoplay stub: hide grid, listenPlaying → true → delay 1s → reveal grid
+    // Auto-play target word on round change. Grid alpha follows audio state.
     LaunchedEffect(currentLesson.id, roundIndex) {
-        listenPlaying = true
-        delay(LISTEN_DURATION_MS)
-        listenPlaying = false
+        onPlayWord(target.text)
     }
 
     val onCardTap: (String) -> Unit = { tappedText ->
@@ -260,13 +274,7 @@ private fun IdentifyContent(
                 TargetWordHeader(
                     targetText = target.text,
                     listenPlaying = listenPlaying,
-                    onListen = {
-                        scope.launch {
-                            listenPlaying = true
-                            delay(LISTEN_DURATION_MS)
-                            listenPlaying = false
-                        }
-                    },
+                    onListen = { onPlayWord(target.text) },
                 )
                 Spacer(Modifier.height(4.dp))
                 Text(
@@ -589,7 +597,6 @@ private fun buildRoundGrid(
 private const val COLUMNS = 2
 private val CARD_HEIGHT = 120.dp
 private const val OPTIONS_COUNT = 6
-private const val LISTEN_DURATION_MS = 1000L
 private const val CORRECT_CELEBRATION_MS = 800L
 private const val AUTO_REVEAL_DELAY_MS = 1500L
 private const val HINT_AFTER_WRONGS = 2

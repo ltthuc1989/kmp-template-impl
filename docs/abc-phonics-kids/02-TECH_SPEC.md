@@ -1,10 +1,14 @@
 # ABC Phonics Kids — Technical Specification
 
-**Version**: 1.0
+**Version**: 1.1
+**Status**: Mốc 1 = listener-only Level 1. Voice scoring → "v1.x Roadmap: Voice Scoring" section cuối doc.
 **Audience**: Tech Lead + Senior Devs.
 **Prerequisite**: đã đọc [01-PRD.md](01-PRD.md) + [.claude/skills/grabee/SKILL.md](../../.claude/skills/grabee/SKILL.md).
+**Last revised**: 2026-05-01 (scope reduction: voice pipeline moved out of MVP).
 
 Doc này map từng requirement của PRD vào module thực + file path cụ thể trong template `kmp-template-impl`.
+
+> ⚠️ **Mốc 1 scope override**: KHÔNG ship voice recording, KHÔNG yêu cầu RECORD_AUDIO / NSMicrophoneUsageDescription, KHÔNG tạo `AudioRecorder` / `GeminiSpeechDataSource` / `VoiceRepository`. Step 4 (Identify) + Step 5 (Blending) ship tap-based gameplay đã build sẵn trong [feature/learningpath/](../../feature/learningpath/). Voice section + Room `PronunciationAttemptEntity` lưu lại ở section "v1.x Roadmap" cuối doc.
 
 ---
 
@@ -47,8 +51,8 @@ Chi tiết patterns: [.claude/skills/grabee/SKILL.md](../../.claude/skills/grabe
 | `core:common` | Giữ | suspendRunCatching, Koin, Napier |
 | `core:model` | Extend | Thêm phonics models (Level, Unit, Step, Word, etc. — xem mục 4) |
 | `core:resource` | Extend | Thêm strings phonics (EN + JA), seed JSON cho L1, audio/image asset paths |
-| `core:datasource` | **Extend lớn** | Thêm Room schema phonics + AudioRecorder + GeminiSpeechDataSource + SyncCodeDataSource + Firestore client |
-| `core:repository` | **Extend lớn** | Thêm ContentRepository, ProfileRepository, ProgressRepository, BackupRepository, VoiceRepository |
+| `core:datasource` | **Extend** | Thêm Room schema phonics + SyncCodeDataSource + Firestore client. _AudioRecorder + GeminiSpeechDataSource defer v1.x._ |
+| `core:repository` | **Extend** | Thêm ContentRepository, ProfileRepository, ProgressRepository, BackupRepository. _VoiceRepository defer v1.x._ |
 | `core:billing` | Giữ | RevenueCat KMP đã wired |
 | `core:ui` | Extend | Thêm `Destination.*` cho Onboarding/Profile/Learning/ParentDashboard |
 | `feature:home` | **Extend** | Thêm avatar góc trên-phải tap → navigate Profile, hiển thị 5 levels carousel |
@@ -76,8 +80,8 @@ composeApp
   └── feature:billing      (giữ)
         ↓
   core:ui          ← +Destination cho 4 screen mới
-  core:repository  ← +ContentRepo, +ProfileRepo, +ProgressRepo, +BackupRepo, +VoiceRepo
-  core:datasource  ← +Room phonics schema, +AudioRecorder (expect/actual), +Gemini STT, +SyncCode/Firestore
+  core:repository  ← +ContentRepo, +ProfileRepo, +ProgressRepo, +BackupRepo  (VoiceRepo → v1.x)
+  core:datasource  ← +Room phonics schema, +SyncCode/Firestore  (AudioRecorder + Gemini STT → v1.x)
   core:billing     ← (không đổi)
   core:model       ← +Level, +Unit, +Step, +Word, +Profile, +Progress models
   core:common      ← (không đổi)
@@ -219,15 +223,19 @@ data class UserProgressEntity(
     val updatedAt: Long,
 )
 
-@Entity(tableName = "pronunciation_attempt")
-data class PronunciationAttemptEntity(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    val wordId: String,
-    val score: Int,                     // 0..100
-    val feedback: String,               // kid-friendly text từ Gemini
-    val attemptedAt: Long,
-    // KHÔNG lưu audio buffer — COPPA-safe
-)
+// PronunciationAttemptEntity → DEFERRED to v1.x (voice scoring).
+// Mốc 1 chỉ track tap-based step accuracy qua UserProgressEntity.averageScore.
+// Khi v1.x ship voice scoring, add lại entity:
+//
+// @Entity(tableName = "pronunciation_attempt")
+// data class PronunciationAttemptEntity(
+//     @PrimaryKey(autoGenerate = true) val id: Long = 0,
+//     val wordId: String,
+//     val score: Int,                     // 0..100
+//     val feedback: String,               // kid-friendly text từ Gemini
+//     val attemptedAt: Long,
+//     // KHÔNG lưu audio buffer — COPPA-safe
+// )
 // Auto-purge attempts > 7 ngày qua background task.
 
 @Entity(tableName = "profile")
@@ -271,7 +279,8 @@ interface UserProgressDao {
 @Database(
     entities = [
         LevelEntity::class, UnitEntity::class, WordEntity::class,
-        UserProgressEntity::class, PronunciationAttemptEntity::class,
+        UserProgressEntity::class,
+        // PronunciationAttemptEntity::class,  // ← v1.x voice scoring
         ProfileEntity::class,
     ],
     version = 1,
@@ -282,7 +291,7 @@ abstract class PhonicsDatabase : RoomDatabase() {
     abstract fun unitDao(): UnitDao
     abstract fun wordDao(): WordDao
     abstract fun progressDao(): UserProgressDao
-    abstract fun attemptDao(): PronunciationAttemptDao
+    // abstract fun attemptDao(): PronunciationAttemptDao  // ← v1.x
     abstract fun profileDao(): ProfileDao
 }
 ```
@@ -383,78 +392,22 @@ service firebase.storage {
 
 ---
 
-## 6. Voice Pipeline (COPPA-safe)
+## 6. Voice Pipeline — DEFERRED to v1.x
 
-### Architecture
+**Mốc 1 không ship voice recording.** Toàn bộ kiến trúc voice pipeline (AudioRecorder, GeminiSpeechDataSource, COPPA audio handling, error states) đã được lưu lại ở section "v1.x Roadmap: Voice Scoring" cuối doc này.
 
-```
-[User taps mic]
-        │
-        ▼
-AudioRecorder.start()        ← expect class trong core:datasource/commonMain
-        │                       actual: Android MediaRecorder, iOS AVAudioRecorder
-        ▼
-[Memory buffer fill]         ← KHÔNG ghi file, chỉ ByteArray trong RAM
-        │
-        ▼
-[User taps stop]
-        │
-        ▼
-encodeAac16kHz(buffer): ByteArray
-        │
-        ▼
-GeminiSpeechDataSource.score(audio, targetWord, ipa)   ← Ktor POST
-        │
-        ▼
-Gemini 2.5 Flash Multimodal API
-  Body: {
-    "contents": [{
-      "parts": [
-        { "inline_data": { "mime_type": "audio/aac", "data": <base64> } },
-        { "text": "Score this child's pronunciation of '<word>' (IPA: /<ipa>/).
-                   Return JSON: { score: 0-100, accuracy: low|medium|high,
-                   feedback_short: <kid-friendly string max 50 chars> }" }
-      ]
-    }],
-    "generationConfig": { "responseMimeType": "application/json" }
-  }
-        │
-        ▼
-{ score, accuracy, feedback_short }
-        │
-        ▼
-Update ScreenState.Idle(uiState.copy(score = ..., feedback = ...))
-        │
-        ▼
-audioBuffer = null   ← discard ngay (COPPA)
-```
+**Step 4 (Identify) + Step 5 (Blending) Mốc 1**: ship tap-based gameplay đã build trong [feature/learningpath/.../identify/IdentifyScreen.kt](../../feature/learningpath/src/commonMain/kotlin/me/ltthuc/kmp/feature/learningpath/step/identify/IdentifyScreen.kt) và [feature/learningpath/.../blending/BlendingScreen.kt](../../feature/learningpath/src/commonMain/kotlin/me/ltthuc/kmp/feature/learningpath/step/blending/BlendingScreen.kt). Không cần thêm code voice cho MVP.
 
-### COPPA guarantees
-1. Voice **không bao giờ rời memory** — không ghi file local, không upload Cloud Storage.
-2. Gemini call là **transient** — Google không train từ user data nếu API key cấu hình standard tier (verify trong dashboard).
-3. **Không lưu audio attempt** — chỉ lưu score + feedback trong `PronunciationAttemptEntity`.
-4. `PronunciationAttemptEntity` auto-purge sau 7 ngày qua background coroutine.
+**Mic UI dead-code preserved**: [feature/learningpath/.../vocabulary/VocabularyScreen.kt](../../feature/learningpath/src/commonMain/kotlin/me/ltthuc/kmp/feature/learningpath/step/vocabulary/VocabularyScreen.kt) giữ `AnimatedMicButton` + `showSpeakButton` flag (default `false` qua [AppSetting](../../core/model/src/commonMain/kotlin/me/ltthuc/kmp/core/model/AppSetting.kt#L14)). Khi v1.x kích hoạt, chỉ cần wire data layer + flip default.
 
-### Files to create
-- [core/datasource/.../audio/AudioRecorder.kt](../../core/datasource/) — `expect class`.
-- [core/datasource/.../audio/AudioRecorder.android.kt](../../core/datasource/) — `actual` Android (MediaRecorder).
-- [core/datasource/.../audio/AudioRecorder.ios.kt](../../core/datasource/) — `actual` iOS (AVAudioRecorder).
-- [core/datasource/.../speech/GeminiSpeechDataSource.kt](../../core/datasource/) — Ktor client.
-- `core:repository:VoiceRepository` — wrap recorder + STT + scoring.
-
-API key: BuildKonfig field `GEMINI_API_KEY`, đọc từ `local.properties` `GEMINI_API_KEY=...` hoặc env `GEMINI_API_KEY`.
-
-Chi tiết template code: [skill ref voice-recognition.md](../../.claude/skills/grabee/references/voice-recognition.md).
-
-### Error handling
-| State | UX |
-|---|---|
-| Mic permission denied | Show dialog "Cần microphone để chấm điểm. Mở Settings → Privacy → Microphone." |
-| Recording timeout (> 10s) | Auto-stop + score luôn |
-| Network error → Gemini API | "Không có mạng. Thử lại?" + retry button |
-| API timeout (> 8s) | "Hơi chậm. Thử lại?" + retry |
-| Low confidence score < 30 | Friendly "Try again!" thay vì "Wrong" |
-| Gemini response parse fail | Fallback score = 0, log Napier.e, retry 1 lần |
+**KHÔNG cần Mốc 1**:
+- ❌ `AudioRecorder` expect/actual.
+- ❌ `GeminiSpeechDataSource`.
+- ❌ `VoiceRepository`.
+- ❌ `PronunciationAttemptEntity` + DAO + auto-purge job.
+- ❌ `RECORD_AUDIO` permission (Android).
+- ❌ `NSMicrophoneUsageDescription` (iOS Info.plist).
+- ❌ `GEMINI_API_KEY` BuildKonfig (chỉ cần khi v1.x).
 
 ---
 
@@ -466,7 +419,7 @@ Chi tiết template code: [skill ref voice-recognition.md](../../.claude/skills/
 | `HomeScreen` (LevelSelection) | B | Load levels từ Room (Flow), thêm avatar tap action |
 | `ProfileScreen` | A | StateFlow từ ProfileRepository pass-through, dialogs là local state |
 | `LevelDetailScreen` (UnitSelection) | B | Load units + progress, action: tap unit → navigate |
-| `LearningStepScreen` (8 step) | B | Load step content, action: voice record + score (action state) |
+| `LearningStepScreen` (8 step) | B | Load step content, action: tap select / drag / animate / next (action state). _Voice record action defer v1.x._ |
 | `UnitCompleteScreen` | A | Hiển thị stars + tap "Next" |
 | `ParentDashboardScreen` | B | Load aggregated analytics từ Room |
 | `PaywallScreen` | B (đã có) | Reference: [PaywallViewModel.kt](../../feature/billing/src/commonMain/kotlin/me/ltthuc/kmp/feature/billing/PaywallViewModel.kt) |
@@ -501,14 +454,14 @@ val repositoryModule = module {
     singleOf(::ProfileRepositoryImpl) bind ProfileRepository::class
     singleOf(::ProgressRepositoryImpl) bind ProgressRepository::class
     singleOf(::BackupRepositoryImpl) bind BackupRepository::class
-    singleOf(::VoiceRepositoryImpl) bind VoiceRepository::class
+    // singleOf(::VoiceRepositoryImpl) bind VoiceRepository::class  // ← v1.x voice scoring
 }
 
 // core/datasource/.../di/DataSourceModule.kt — extend
 val dataSourceModule = module {
     // existing: Room db, Ktor client, DataStore
-    singleOf(::AudioRecorder)
-    singleOf(::GeminiSpeechDataSource)
+    // singleOf(::AudioRecorder)             // ← v1.x voice scoring
+    // singleOf(::GeminiSpeechDataSource)    // ← v1.x voice scoring
     singleOf(::SyncCodeDataSource)
     singleOf(::FirestoreClient)
 }
@@ -533,7 +486,7 @@ fun KoinApplication.applyModules() {
 | Cold start | < 2s | Android Studio Profiler / Xcode Instruments |
 | Frame rate | 60fps | Layout Inspector |
 | Room query | < 100ms p95 | DAO benchmark test |
-| Gemini STT roundtrip | < 3s p95 | Network log |
+| ~~Gemini STT roundtrip~~ | _v1.x_ — defer voice scoring | _v1.x_ |
 | App size (Android) | < 60MB | `./gradlew :composeApp:assembleRelease` |
 | Memory (steady state) | < 200MB | Profiler |
 
@@ -549,8 +502,9 @@ Reference devices: Pixel 6 (Android 13), iPhone 12 (iOS 17).
 | Anonymous Home | Mở app (lần 2+) → Home hiển thị 5 levels + avatar default. Không có login screen. |
 | Profile opt-in | Tap avatar → ProfileScreen. 4 button hoạt động. SyncCode lazy generate khi tap "Show My SyncCode" lần đầu. |
 | Cross-device restore | Device 2: nhập syncCode → fetch Firestore → progress xuất hiện. Test thủ công với 2 emulator. |
-| 8-step flow | Tap Level 1 → Unit 1 → Step 1. Hoàn thành 8 steps → UnitComplete với stars. |
-| Voice scoring | Tap mic → record → stop → score xuất hiện trong < 3s. Audio không lưu file (verify qua filesystem inspector). |
+| 8-step flow | Tap Level 1 → Unit 1 → Step 1. Hoàn thành 8 steps (tap-based, no voice) → UnitComplete với stars. |
+| ~~Voice scoring~~ | _v1.x_ — không trong Mốc 1. Step 4/5 ship tap-based gameplay. |
+| No mic permission | Verify Android `assembleDebug` không xin RECORD_AUDIO; iOS Info.plist không có NSMicrophoneUsageDescription. |
 | Premium gating | Free user tap Level 2 → Paywall mở. Mua → Level 2-5 unlock. Test với RevenueCat sandbox. |
 | Localization | Đổi device language sang JA → UI dịch. Vocabulary giữ EN. |
 | Ads kids-compliant | AdMob TFCD + TFUA + non-personalized verify qua Charles Proxy network log. AppLovin `setIsAgeRestrictedUser=true`. Premium user không thấy ads. Ads KHÔNG hiển thị giữa learning step (chỉ home + UnitComplete). |
@@ -710,17 +664,114 @@ unzip -l composeApp/build/outputs/apk/debug/composeApp-debug.apk | grep -E "(com
 - [core/ui/src/commonMain/kotlin/me/ltthuc/kmp/core/ui/screen/](../../core/ui/src/commonMain/kotlin/me/ltthuc/kmp/core/ui/screen/) — ScreenState, Destination, AsyncLoadContents
 - [core/billing/](../../core/billing/) — RevenueCat KMP wrapper
 
-### To create
+### To create (Mốc 1)
 - `feature/onboarding/` — module mới
 - `feature/profile/` — module mới
 - `feature/parent/` — module mới
+- `core/datasource/.../sync/SyncCodeDataSource.kt`
+- `core/datasource/.../db/PhonicsDatabase.kt` + 5 entities + DAOs (no PronunciationAttemptEntity)
+- `core/repository/.../{Profile,Progress,Backup,Content}Repository.kt`
+- `core/resource/.../files/seed/level-1.json`
+
+### Defer to v1.x (voice scoring)
 - `core/datasource/.../audio/AudioRecorder.kt` (+ android/ios actuals)
 - `core/datasource/.../speech/GeminiSpeechDataSource.kt`
-- `core/datasource/.../sync/SyncCodeDataSource.kt`
-- `core/datasource/.../db/PhonicsDatabase.kt` + 6 entities + DAOs
-- `core/repository/.../{Profile,Progress,Backup,Voice,Content}Repository.kt`
-- `core/resource/.../files/seed/level-1.json`
+- `core/repository/.../VoiceRepository.kt`
+- `PronunciationAttemptEntity` + DAO + auto-purge background job
+- Android `RECORD_AUDIO` permission, iOS `NSMicrophoneUsageDescription`
+- BuildKonfig `GEMINI_API_KEY`
 
 ---
 
 **Next**: timeline tuần-by-tuần trong [03-IMPLEMENTATION_PLAN.md](03-IMPLEMENTATION_PLAN.md).
+
+---
+
+## 14. v1.x Roadmap: Voice Scoring
+
+> **Status**: Deferred. Không trong Mốc 1. Tài liệu này lưu lại design cũ để khi v1.x quay lại có context.
+
+### Khi nào re-introduce
+- Sau khi Mốc 1 (listener-only Level 1) đã ship + có user feedback.
+- Khi metrics tap-based gameplay đã stable (engagement, completion rate).
+- Khi đã re-spike Gemini STT trên giọng trẻ thật (xem Risk #3 trong [01-PRD.md](01-PRD.md)) — confidence threshold ≥ 0.7 cho 80% mẫu trẻ 3-5 tuổi.
+
+### Architecture (giữ nguyên design cũ)
+
+```
+[User taps mic]
+        │
+        ▼
+AudioRecorder.start()        ← expect class trong core:datasource/commonMain
+        │                       actual: Android MediaRecorder, iOS AVAudioRecorder
+        ▼
+[Memory buffer fill]         ← KHÔNG ghi file, chỉ ByteArray trong RAM
+        │
+        ▼
+[User taps stop]
+        │
+        ▼
+encodeAac16kHz(buffer): ByteArray
+        │
+        ▼
+GeminiSpeechDataSource.score(audio, targetWord, ipa)   ← Ktor POST
+        │
+        ▼
+Gemini 2.5 Flash Multimodal API
+  Body: {
+    "contents": [{
+      "parts": [
+        { "inline_data": { "mime_type": "audio/aac", "data": <base64> } },
+        { "text": "Score this child's pronunciation of '<word>' (IPA: /<ipa>/).
+                   Return JSON: { score: 0-100, accuracy: low|medium|high,
+                   feedback_short: <kid-friendly string max 50 chars> }" }
+      ]
+    }],
+    "generationConfig": { "responseMimeType": "application/json" }
+  }
+        │
+        ▼
+{ score, accuracy, feedback_short }
+        │
+        ▼
+Update ScreenState.Idle(uiState.copy(score = ..., feedback = ...))
+        │
+        ▼
+audioBuffer = null   ← discard ngay (COPPA)
+```
+
+### COPPA guarantees (khi v1.x ship)
+1. Voice **không bao giờ rời memory** — không ghi file local, không upload Cloud Storage.
+2. Gemini call là **transient** — Google không train từ user data nếu API key cấu hình standard tier (verify trong dashboard).
+3. **Không lưu audio attempt** — chỉ lưu score + feedback trong `PronunciationAttemptEntity`.
+4. `PronunciationAttemptEntity` auto-purge sau 7 ngày qua background coroutine.
+
+### Files cần tạo (khi v1.x)
+- `core/datasource/.../audio/AudioRecorder.kt` — `expect class`.
+- `core/datasource/.../audio/AudioRecorder.android.kt` — `actual` Android (MediaRecorder).
+- `core/datasource/.../audio/AudioRecorder.ios.kt` — `actual` iOS (AVAudioRecorder).
+- `core/datasource/.../speech/GeminiSpeechDataSource.kt` — Ktor client.
+- `core:repository:VoiceRepository` — wrap recorder + STT + scoring.
+- Re-add `PronunciationAttemptEntity` + DAO + auto-purge job vào Room schema (bump database version).
+
+### Permission updates (khi v1.x)
+- Android: `<uses-permission android:name="android.permission.RECORD_AUDIO" />` trong `AndroidManifest.xml`.
+- iOS: `NSMicrophoneUsageDescription` trong `Info.plist`.
+- BuildKonfig: thêm `GEMINI_API_KEY` field, đọc từ `local.properties` `GEMINI_API_KEY=...` hoặc env `GEMINI_API_KEY`.
+
+Chi tiết template code: [skill ref voice-recognition.md](../../.claude/skills/grabee/references/voice-recognition.md).
+
+### Error handling (khi v1.x ship)
+| State | UX |
+|---|---|
+| Mic permission denied | Show dialog "Cần microphone để chấm điểm. Mở Settings → Privacy → Microphone." |
+| Recording timeout (> 10s) | Auto-stop + score luôn |
+| Network error → Gemini API | "Không có mạng. Thử lại?" + retry button |
+| API timeout (> 8s) | "Hơi chậm. Thử lại?" + retry |
+| Low confidence score < 30 | Friendly "Try again!" thay vì "Wrong" |
+| Gemini response parse fail | Fallback score = 0, log Napier.e, retry 1 lần |
+
+### Activation hooks đã preserve trong code
+- `AppSetting.showSpeakButton` flag — flip sang `true` để show mic UI.
+- `AnimatedMicButton` composable trong [VocabularyScreen.kt](../../feature/learningpath/src/commonMain/kotlin/me/ltthuc/kmp/feature/learningpath/step/vocabulary/VocabularyScreen.kt) — đã sẵn UI, chỉ cần wire `onMicToggle` vào `VoiceRepository`.
+- Setting screen toggle "Show speak button" trong [SettingOthersSection.kt](../../feature/setting/src/commonMain/kotlin/me/ltthuc/kmp/feature/setting/components/section/SettingOthersSection.kt) — đã sẵn UI để user enable.

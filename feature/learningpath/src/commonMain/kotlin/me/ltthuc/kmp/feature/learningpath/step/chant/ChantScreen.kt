@@ -32,10 +32,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -53,6 +53,8 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.delay
+import me.ltthuc.kmp.core.audio.AudioState
+import me.ltthuc.kmp.core.audio.isActiveFor
 import me.ltthuc.kmp.core.model.PhonicsLesson
 import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.chant_instruction
@@ -66,6 +68,7 @@ import me.ltthuc.kmp.feature.learningpath.step.common.PuffySurface
 import me.ltthuc.kmp.feature.learningpath.step.common.StepHeader
 import me.ltthuc.kmp.feature.learningpath.step.common.StepNavRow
 import me.ltthuc.kmp.feature.learningpath.step.common.StoryStyleCard
+import me.ltthuc.kmp.feature.learningpath.step.common.chantRef
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -92,16 +95,25 @@ internal fun ChantScreen(
 ) {
     val screenState by viewModel.screenState.collectAsStateWithLifecycle()
 
+    val audioState by viewModel.audioState.collectAsStateWithLifecycle()
+
+    DisposableEffect(viewModel) {
+        onDispose { viewModel.onLeaveScreen() }
+    }
+
     AsyncLoadContents(
         modifier = modifier.fillMaxSize(),
         screenState = screenState,
     ) { uiState ->
         LaunchedEffect(uiState.lessons.size) { onLessonsLoaded(uiState.lessons.size) }
         val safeIndex = lessonIndex.coerceIn(0, uiState.lessons.lastIndex)
+        val currentLesson = uiState.lessons[safeIndex]
         ChantContent(
-            currentLesson = uiState.lessons[safeIndex],
+            currentLesson = currentLesson,
             lessons = uiState.lessons,
             currentIndex = safeIndex,
+            audioState = audioState,
+            onChantToggle = { viewModel.onChantToggle(currentLesson) },
             onClose = onClose,
             onPrevious = onPrevious,
             onNext = onNext,
@@ -116,6 +128,8 @@ private fun ChantContent(
     currentLesson: PhonicsLesson,
     lessons: ImmutableList<PhonicsLesson>,
     currentIndex: Int,
+    audioState: AudioState,
+    onChantToggle: () -> Unit,
     onClose: () -> Unit,
     onPrevious: () -> Unit,
     onNext: () -> Unit,
@@ -123,7 +137,13 @@ private fun ChantContent(
     totalSteps: Int,
 ) {
     var slideIndex by remember(currentLesson.id) { mutableIntStateOf(0) }
-    var isChanting by remember(currentLesson.id) { mutableStateOf(false) }
+    val chantRef = remember(currentLesson.id) { currentLesson.chantRef() }
+    val isChanting = chantRef != null && audioState.isActiveFor(chantRef)
+
+    // Reset slide to 0 when chant starts fresh (i.e. transitions to playing while at celebration).
+    LaunchedEffect(isChanting) {
+        if (isChanting && slideIndex == CELEBRATION_SLIDE_INDEX) slideIndex = 0
+    }
 
     // Auto-advance slides 0..3 while chanting; final celebration slide stays put.
     LaunchedEffect(currentLesson.id, slideIndex, isChanting) {
@@ -185,12 +205,7 @@ private fun ChantContent(
             Spacer(Modifier.weight(1f, fill = true))
             PlayStopButton(
                 isChanting = isChanting,
-                onToggle = {
-                    isChanting = !isChanting
-                    if (isChanting && slideIndex == CELEBRATION_SLIDE_INDEX) {
-                        slideIndex = 0
-                    }
-                },
+                onToggle = onChantToggle,
             )
             Spacer(Modifier.height(16.dp))
             StepNavRow(

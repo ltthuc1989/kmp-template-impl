@@ -30,6 +30,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
@@ -94,16 +95,22 @@ internal fun MatchingScreen(
 ) {
     val screenState by viewModel.screenState.collectAsStateWithLifecycle()
 
+    DisposableEffect(viewModel) {
+        onDispose { viewModel.onLeaveScreen() }
+    }
+
     AsyncLoadContents(
         modifier = modifier.fillMaxSize(),
         screenState = screenState,
     ) { uiState ->
         LaunchedEffect(uiState.lessons.size) { onLessonsLoaded(uiState.lessons.size) }
         val safeIndex = lessonIndex.coerceIn(0, uiState.lessons.lastIndex)
+        val currentLesson = uiState.lessons[safeIndex]
         MatchingContent(
-            currentLesson = uiState.lessons[safeIndex],
+            currentLesson = currentLesson,
             lessons = uiState.lessons,
             currentIndex = safeIndex,
+            onPlayWord = { word -> viewModel.onListenWord(currentLesson, word) },
             onClose = onClose,
             onPrevious = onPrevious,
             onNext = onNext,
@@ -118,6 +125,7 @@ private fun MatchingContent(
     currentLesson: PhonicsLesson,
     lessons: ImmutableList<PhonicsLesson>,
     currentIndex: Int,
+    onPlayWord: (word: String) -> Unit,
     onClose: () -> Unit,
     onPrevious: () -> Unit,
     onNext: () -> Unit,
@@ -126,6 +134,11 @@ private fun MatchingContent(
 ) {
     val vocab = remember(currentLesson.id) {
         currentLesson.words.toImmutableList()
+    }
+    // Auto-play first vocab word on enter to teach kid the "tap to listen" affordance.
+    LaunchedEffect(currentLesson.id) {
+        kotlinx.coroutines.delay(AUTO_PLAY_DELAY_MS)
+        vocab.firstOrNull()?.let { onPlayWord(it.text) }
     }
     val rightOrder = remember(currentLesson.id) {
         vocab.shuffled(Random(currentLesson.id.hashCode())).toImmutableList()
@@ -225,6 +238,7 @@ private fun MatchingContent(
                     onPendingMatch = { leftText, rightText ->
                         pendingMatches[leftText] = rightText
                     },
+                    onPlayWord = onPlayWord,
                     isLocked = { leftText -> validatedMatches.containsKey(leftText) },
                     modifier = Modifier.weight(1f, fill = true),
                 )
@@ -302,6 +316,7 @@ private fun MatchingArea(
     leftDotPositions: MutableMap<String, Offset>,
     rightDotPositions: MutableMap<String, Offset>,
     onPendingMatch: (String, String) -> Unit,
+    onPlayWord: (String) -> Unit,
     isLocked: (String) -> Boolean,
     modifier: Modifier = Modifier,
 ) {
@@ -359,6 +374,7 @@ private fun MatchingArea(
             boxWindowOrigin = boxWindowOrigin,
             leftDotPositions = leftDotPositions,
             rightDotPositions = rightDotPositions,
+            onPlayWord = onPlayWord,
         )
         Canvas(modifier = Modifier.fillMaxSize()) {
             // Validated correct — solid primary
@@ -419,6 +435,7 @@ private fun MatchingRows(
     boxWindowOrigin: Offset,
     leftDotPositions: MutableMap<String, Offset>,
     rightDotPositions: MutableMap<String, Offset>,
+    onPlayWord: (String) -> Unit,
 ) {
     val rowCount = maxOf(leftItems.size, rightItems.size)
     Column(
@@ -444,6 +461,7 @@ private fun MatchingRows(
                             text = leftItem.text,
                             state = pillState(validated, pending, wrongFlash),
                             wrongKey = if (wrongFlash) wrongFlashTexts.hashCode() else 0,
+                            onClick = { onPlayWord(leftItem.text) },
                             onDotPositioned = { absolute ->
                                 leftDotPositions[leftItem.text] = absolute - boxWindowOrigin
                             },
@@ -490,6 +508,7 @@ private fun WordPill(
     text: String,
     state: SlotState,
     wrongKey: Int,
+    onClick: () -> Unit,
     onDotPositioned: (Offset) -> Unit,
 ) {
     val rotation = remember { Animatable(0f) }
@@ -520,10 +539,16 @@ private fun WordPill(
         SlotState.Idle -> 6.dp
     }
     val shape = CircleShape
+    val interaction = remember { MutableInteractionSource() }
     PuffySurface(
         modifier = Modifier
             .fillMaxWidth()
-            .border(borderWidth, borderColor, shape),
+            .border(borderWidth, borderColor, shape)
+            .clickable(
+                interactionSource = interaction,
+                indication = ripple(color = MaterialTheme.colorScheme.primary),
+                onClick = onClick,
+            ),
         shape = shape,
         containerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
         shadowElevation = elevation,
@@ -726,3 +751,4 @@ private val DOT_SIZE = 14.dp
 private val ART_SIZE = 56.dp
 private const val DOT_HIT_RADIUS_PX = 70f
 private const val WRONG_FLASH_MS = 700L
+private const val AUTO_PLAY_DELAY_MS = 500L

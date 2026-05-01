@@ -33,6 +33,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -51,6 +52,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.delay
+import me.ltthuc.kmp.core.audio.AudioState
+import me.ltthuc.kmp.core.audio.isActiveFor
 import me.ltthuc.kmp.core.model.LessonWord
 import me.ltthuc.kmp.core.model.PhonicsLesson
 import me.ltthuc.kmp.core.resource.Res
@@ -76,6 +79,7 @@ import me.ltthuc.kmp.feature.learningpath.step.common.ScoreFeedbackOverlay
 import me.ltthuc.kmp.feature.learningpath.step.common.StepHeader
 import me.ltthuc.kmp.feature.learningpath.step.common.StepNavRow
 import me.ltthuc.kmp.feature.learningpath.step.common.StoryStyleCard
+import me.ltthuc.kmp.feature.learningpath.step.common.wordRef
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -92,12 +96,17 @@ internal fun VocabularyScreen(
     onNext: () -> Unit,
     onStepJump: (Int) -> Unit,
     modifier: Modifier = Modifier,
-    showSpeakButton: Boolean = true,
+    showSpeakButton: Boolean = false,
     totalSteps: Int = 7,
     onLessonsLoaded: (Int) -> Unit = {},
     viewModel: VocabularyViewModel = koinViewModel(key = unitId) { parametersOf(unitId) },
 ) {
     val screenState by viewModel.screenState.collectAsStateWithLifecycle()
+    val audioState by viewModel.audioState.collectAsStateWithLifecycle()
+
+    DisposableEffect(viewModel) {
+        onDispose { viewModel.onLeaveScreen() }
+    }
 
     AsyncLoadContents(
         modifier = modifier.fillMaxSize(),
@@ -105,10 +114,13 @@ internal fun VocabularyScreen(
     ) { uiState ->
         LaunchedEffect(uiState.lessons.size) { onLessonsLoaded(uiState.lessons.size) }
         val safeIndex = lessonIndex.coerceIn(0, uiState.lessons.lastIndex)
+        val currentLesson = uiState.lessons[safeIndex]
         VocabularyContent(
-            currentLesson = uiState.lessons[safeIndex],
+            currentLesson = currentLesson,
             lessons = uiState.lessons,
             currentIndex = safeIndex,
+            audioState = audioState,
+            onListenWord = { word -> viewModel.onListenWordToggle(currentLesson, word) },
             onClose = onClose,
             onPrevious = onPrevious,
             onNext = onNext,
@@ -124,11 +136,13 @@ private fun VocabularyContent(
     currentLesson: PhonicsLesson,
     lessons: ImmutableList<PhonicsLesson>,
     currentIndex: Int,
+    audioState: AudioState,
+    onListenWord: (word: String) -> Unit,
     onClose: () -> Unit,
     onPrevious: () -> Unit,
     onNext: () -> Unit,
     onStepJump: (Int) -> Unit,
-    showSpeakButton: Boolean = true,
+    showSpeakButton: Boolean = false,
     totalSteps: Int = 7,
 ) {
     val vocabItems = remember(currentLesson.id) {
@@ -137,20 +151,15 @@ private fun VocabularyContent(
     }.toImmutableList()
 
     var vocabIndex by remember(currentLesson.id) { mutableStateOf(0) }
-    var listenPlaying by remember(currentLesson.id) { mutableStateOf(false) }
     var micRecording by remember(currentLesson.id) { mutableStateOf(false) }
     var scoreFeedback by remember { mutableStateOf<ScoreFeedback?>(null) }
 
     val safeVocabIndex = vocabIndex.coerceIn(0, vocabItems.lastIndex)
     val currentVocab = vocabItems[safeVocabIndex]
-
-    // Listen stub: auto-stop after 2s (replace with real audio position in voice pipeline)
-    LaunchedEffect(listenPlaying) {
-        if (listenPlaying) {
-            delay(LISTEN_DURATION_MS)
-            listenPlaying = false
-        }
+    val currentWordRef = remember(currentLesson.id, currentVocab.word) {
+        currentLesson.wordRef(currentVocab.word)
     }
+    val listenPlaying = currentWordRef != null && audioState.isActiveFor(currentWordRef)
 
     // Mic stub: auto-stop after 2s + random score result (replace with Gemini STT later)
     val successTitle = stringResource(Res.string.score_success_title)
@@ -217,7 +226,7 @@ private fun VocabularyContent(
                     showSpeakButton = showSpeakButton,
                     onVocabPrevious = { if (safeVocabIndex > 0) vocabIndex = safeVocabIndex - 1 },
                     onVocabNext = { if (safeVocabIndex < vocabItems.lastIndex) vocabIndex = safeVocabIndex + 1 },
-                    onListenToggle = { listenPlaying = !listenPlaying },
+                    onListenToggle = { onListenWord(currentVocab.word) },
                     onMicToggle = { micRecording = !micRecording },
                 )
                 Spacer(Modifier.weight(1f, fill = true))
@@ -254,7 +263,7 @@ private fun VocabularyHeroCard(
     onVocabNext: () -> Unit,
     onListenToggle: () -> Unit,
     onMicToggle: () -> Unit,
-    showSpeakButton: Boolean = true,
+    showSpeakButton: Boolean = false,
 ) {
     StoryStyleCard(aspectRatio = null) {
         Column(
@@ -472,5 +481,4 @@ private fun AnimatedMicButton(isRecording: Boolean, onClick: () -> Unit) {
     }
 }
 
-private const val LISTEN_DURATION_MS = 2000L
 private const val MIC_DURATION_MS = 2000L

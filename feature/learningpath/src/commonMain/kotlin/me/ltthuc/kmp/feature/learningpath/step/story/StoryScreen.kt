@@ -24,13 +24,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,8 +43,9 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.aakira.napier.Napier
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import me.ltthuc.kmp.core.audio.AudioState
+import me.ltthuc.kmp.core.audio.isActive
 import me.ltthuc.kmp.core.model.PhonicsLesson
 import me.ltthuc.kmp.core.repository.LearningProgressRepository
 import me.ltthuc.kmp.core.resource.Res
@@ -88,6 +88,11 @@ internal fun StoryScreen(
     val navBackStack = LocalNavBackStack.current
     val progressRepository: LearningProgressRepository = koinInject()
     val screenState by viewModel.screenState.collectAsStateWithLifecycle()
+    val audioState by viewModel.audioState.collectAsStateWithLifecycle()
+
+    DisposableEffect(viewModel) {
+        onDispose { viewModel.onLeaveScreen() }
+    }
 
     AsyncLoadContents(
         modifier = modifier.fillMaxSize(),
@@ -142,6 +147,8 @@ internal fun StoryScreen(
         StoryContent(
             lessons = uiState.lessons,
             pages = uiState.pages,
+            audioState = audioState,
+            onListen = viewModel::onListenToggle,
             onClose = onClose,
             onPrevious = onPrevious,
             onNext = onNext,
@@ -154,6 +161,8 @@ internal fun StoryScreen(
 private fun StoryContent(
     lessons: ImmutableList<PhonicsLesson>,
     pages: ImmutableList<StoryPage>,
+    audioState: AudioState,
+    onListen: () -> Unit,
     onClose: () -> Unit,
     onPrevious: () -> Unit,
     onNext: () -> Unit,
@@ -174,13 +183,7 @@ private fun StoryContent(
         lessons.indexOfFirst { it.displayLetter.firstOrNull() == letterChar }.coerceAtLeast(0)
     }
 
-    var isNarrating by remember(currentPage) { mutableStateOf(false) }
-    LaunchedEffect(currentPage, isNarrating) {
-        if (isNarrating) {
-            delay(NARRATION_STUB_MS)
-            isNarrating = false
-        }
-    }
+    val isNarrating = audioState.isActive()
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -252,7 +255,7 @@ private fun StoryContent(
             Spacer(Modifier.height(24.dp))
             CircularAudioButton(
                 isPlaying = isNarrating,
-                onClick = { isNarrating = !isNarrating },
+                onClick = onListen,
                 contentDescription = stringResource(Res.string.story_audio_cd),
             )
             Spacer(Modifier.weight(1f, fill = true))
@@ -362,5 +365,4 @@ private fun ChevronButton(
     }
 }
 
-private const val NARRATION_STUB_MS = 2_400L
 private const val CHEVRON_SIZE_DP = 48

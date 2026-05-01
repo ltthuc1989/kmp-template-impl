@@ -39,6 +39,7 @@ androidxDataStore = "1.2.0"
 androidxAnnotation = "1.9.1"
 androidxRoom = "2.7.1"
 androidxSqlite = "2.5.1"
+androidxMedia3 = "1.5.1"
 
 # Google
 playReview = "2.0.2"
@@ -126,6 +127,8 @@ androidx-datastore-preferences = { module = "androidx.datastore:datastore-prefer
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "androidxRoom" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "androidxRoom" }
 androidx-sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "androidxSqlite" }
+androidx-media3-exoplayer = { module = "androidx.media3:media3-exoplayer", version.ref = "androidxMedia3" }
+androidx-media3-common = { module = "androidx.media3:media3-common", version.ref = "androidxMedia3" }
 
 # KMP
 kmp-lifecycle-runtime-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "kmpLifecycle" }

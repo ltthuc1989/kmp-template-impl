@@ -22,11 +22,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -35,6 +34,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.collections.immutable.ImmutableList
+import me.ltthuc.kmp.core.audio.AudioState
+import me.ltthuc.kmp.core.audio.isActiveFor
 import me.ltthuc.kmp.core.model.LessonWord
 import me.ltthuc.kmp.core.model.PhonicsLesson
 import me.ltthuc.kmp.core.resource.Res
@@ -48,6 +49,7 @@ import me.ltthuc.kmp.feature.learningpath.step.common.PuffySurface
 import me.ltthuc.kmp.feature.learningpath.step.common.StepHeader
 import me.ltthuc.kmp.feature.learningpath.step.common.StoryStyleCard
 import me.ltthuc.kmp.feature.learningpath.step.common.letterPair
+import me.ltthuc.kmp.feature.learningpath.step.common.soundIntroRef
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -67,6 +69,11 @@ internal fun SoundIntroScreen(
     viewModel: SoundIntroViewModel = koinViewModel(key = unitId) { parametersOf(unitId) },
 ) {
     val screenState by viewModel.screenState.collectAsStateWithLifecycle()
+    val audioState by viewModel.audioState.collectAsStateWithLifecycle()
+
+    DisposableEffect(viewModel) {
+        onDispose { viewModel.onLeaveScreen() }
+    }
 
     AsyncLoadContents(
         modifier = modifier.fillMaxSize(),
@@ -74,10 +81,13 @@ internal fun SoundIntroScreen(
     ) { uiState ->
         LaunchedEffect(uiState.lessons.size) { onLessonsLoaded(uiState.lessons.size) }
         val safeIndex = lessonIndex.coerceIn(0, uiState.lessons.lastIndex)
+        val currentLesson = uiState.lessons[safeIndex]
         SoundIntroContent(
-            currentLesson = uiState.lessons[safeIndex],
+            currentLesson = currentLesson,
             lessons = uiState.lessons,
             currentIndex = safeIndex,
+            audioState = audioState,
+            onListen = { viewModel.onListenToggle(currentLesson) },
             onClose = onClose,
             onNext = onNext,
             onStepJump = onStepJump,
@@ -91,13 +101,16 @@ private fun SoundIntroContent(
     currentLesson: PhonicsLesson,
     lessons: ImmutableList<PhonicsLesson>,
     currentIndex: Int,
+    audioState: AudioState,
+    onListen: () -> Unit,
     onClose: () -> Unit,
     onNext: () -> Unit,
     onStepJump: (Int) -> Unit,
     totalSteps: Int,
 ) {
     val featuredWord = currentLesson.words.firstOrNull()
-    var isPlaying by remember(currentLesson.id) { mutableStateOf(false) }
+    val ref = remember(currentLesson.id) { currentLesson.soundIntroRef() }
+    val isPlaying = ref != null && audioState.isActiveFor(ref)
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -139,7 +152,7 @@ private fun SoundIntroContent(
             Spacer(Modifier.height(16.dp))
             CircularAudioButton(
                 isPlaying = isPlaying,
-                onClick = { isPlaying = !isPlaying },
+                onClick = onListen,
                 contentDescription = stringResource(Res.string.sound_intro_listen),
             )
             Spacer(Modifier.weight(1f, fill = true))

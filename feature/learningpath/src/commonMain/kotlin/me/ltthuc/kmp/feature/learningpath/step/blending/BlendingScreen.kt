@@ -34,6 +34,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -91,16 +92,22 @@ internal fun BlendingScreen(
 ) {
     val screenState by viewModel.screenState.collectAsStateWithLifecycle()
 
+    DisposableEffect(viewModel) {
+        onDispose { viewModel.onLeaveScreen() }
+    }
+
     AsyncLoadContents(
         modifier = modifier.fillMaxSize(),
         screenState = screenState,
     ) { uiState ->
         LaunchedEffect(uiState.lessons.size) { onLessonsLoaded(uiState.lessons.size) }
         val safeIndex = lessonIndex.coerceIn(0, uiState.lessons.lastIndex)
+        val currentLesson = uiState.lessons[safeIndex]
         BlendingContent(
-            currentLesson = uiState.lessons[safeIndex],
+            currentLesson = currentLesson,
             lessons = uiState.lessons,
             currentIndex = safeIndex,
+            onPlayBlendedWord = { word -> viewModel.playBlendedWord(currentLesson, word) },
             onClose = onClose,
             onPrevious = onPrevious,
             onNext = onNext,
@@ -117,6 +124,7 @@ private fun BlendingContent(
     currentLesson: PhonicsLesson,
     lessons: ImmutableList<PhonicsLesson>,
     currentIndex: Int,
+    onPlayBlendedWord: (word: String) -> Unit,
     onClose: () -> Unit,
     onPrevious: () -> Unit,
     onNext: () -> Unit,
@@ -159,6 +167,7 @@ private fun BlendingContent(
             activeLetterIndex = letters.lastIndex
             delay(WORD_PAUSE_MS)
             activeLetterIndex = -1
+            onPlayBlendedWord(currentVocab.text)
             blendState = BlendState.Complete
             mascotBouncing = true
             delay(MASCOT_BOUNCE_MS)

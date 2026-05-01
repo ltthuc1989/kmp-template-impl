@@ -1,8 +1,9 @@
 # ABC Phonics Kids — Product Requirements Document (PRD)
 
-**Version**: 1.0
-**Status**: Approved for Mốc 1 (Code-Complete v0.1).
+**Version**: 1.1
+**Status**: Approved for Mốc 1 (Code-Complete v0.1) — **listener-only Level 1**, voice scoring deferred to v1.x.
 **Owner**: Product (TBD) + Tech Lead (TBD).
+**Last revised**: 2026-05-01 (scope reduction: voice recognition moved to v1.x roadmap).
 
 ---
 
@@ -11,8 +12,8 @@
 | # | Risk / Constraint | Mitigation |
 |---|---|---|
 | 1 | **Trademark "Phonics"** — không có chủ sở hữu (generic), nhưng "Oxford Phonics", "Hooked on Phonics", "Jolly Phonics" là trademark đã đăng ký. App phải là "ABC Phonics Kids" — KHÔNG dùng "Oxford" trong store listing, icon, screenshot. | Legal review trước store submission. Privacy policy + terms phải dùng tên này. |
-| 2 | **COPPA mandatory** — luật liên bang Mỹ, mọi app target trẻ < 13 phải tuân. Phạt $50K/child/violation (TikTok $5.7M, Epic $275M). Apple/Google Kids Category từ chối app không compliant. | **Anonymous-first model**: không user account, không thu PII. Voice memory-only. Privacy policy đầy đủ. Chi tiết [02-TECH_SPEC.md](02-TECH_SPEC.md) + [skill ref](../../.claude/skills/grabee/references/coppa.md). |
-| 3 | **Voice recognition trên giọng trẻ kém** — Google STT legacy adult-tuned, confidence < 0.5 với kids 3-5. Ảnh hưởng core gameplay. | **W0 spike**: test Gemini 2.5 Flash multimodal trên 3-5 sample giọng trẻ thật trước khi commit kiến trúc. Fallback Whisper on-device. Plan B: SoapBox Labs ($500/mo). |
+| 2 | **COPPA mandatory** — luật liên bang Mỹ, mọi app target trẻ < 13 phải tuân. Phạt $50K/child/violation (TikTok $5.7M, Epic $275M). Apple/Google Kids Category từ chối app không compliant. | **Anonymous-first model**: không user account, không thu PII. **Mốc 1 không record voice** (tap-only gameplay) → giảm đáng kể compliance surface. Privacy policy đầy đủ. Chi tiết [02-TECH_SPEC.md](02-TECH_SPEC.md) + [skill ref](../../.claude/skills/grabee/references/coppa.md). |
+| 3 | ~~**Voice recognition trên giọng trẻ kém**~~ — **DEFERRED to v1.x**. Mốc 1 ship listener-only (no microphone), Step 4/5 dùng tap-based gameplay. Khi v1.x re-introduce voice scoring, cần re-validate Gemini 2.5 Flash multimodal trên giọng trẻ thật + Plan B (SoapBox Labs). Xem section "v1.x Roadmap: Voice Scoring" cuối [02-TECH_SPEC.md](02-TECH_SPEC.md). | — |
 | 4 | **Asset production** — 670+ word audio + 1340 sentence audio + 670 illustrations + 15 stories + 26 character designs. Studio voiceover trẻ em: $5-13K. | **AI tools**: ElevenLabs ($10) + Midjourney/Imagen 3 ($30) + Claude/Gemini cho IPA/JA translation (free). Total < $100. Tradeoff: 1-2 tuần curate + QA. |
 | 5 | **Kids Category compliance** — Apple "Made for Kids" + Google "Designated for Families" cho phép ads NHƯNG yêu cầu compliant config (no behavioral targeting, no IDFA/GAID, age-appropriate). AdMob + AppLovin đều có kids-compliant mode (TFCD + TFUA + non-personalized). | **GIỮ AdMob + AppLovin** với cấu hình kids-safe: `tag_for_child_directed_treatment=TRUE`, `tag_for_under_age_of_consent=TRUE`, non-personalized only, không hiển thị giữa learning step. Premium subscription tắt ads. Chi tiết [02-TECH_SPEC.md §12](02-TECH_SPEC.md). |
 | 6 | **8-tuần MVP fantasy** — docs gốc giả định 8 tuần cho 5 levels + 45 units + Firebase + voice + COPPA. Solo/pair dev không khả thi. | **2 mốc realistic**: Mốc 1 (8 tuần — 1 level v0.1), Mốc 2 (16-20 tuần tổng — 5 levels production). |
@@ -22,7 +23,7 @@
 ## 2. Vision & Goals
 
 ### Vision
-Giúp trẻ 3-8 tuổi học phát âm tiếng Anh qua phonics, với feedback voice tức thì, không cần giáo viên kèm.
+Giúp trẻ 3-8 tuổi học phát âm tiếng Anh qua phonics, với gameplay tap-based + audio feedback tức thì, không cần giáo viên kèm. Voice scoring (chấm điểm phát âm tự động) là roadmap v1.x — ưu tiên ship listener-only Mốc 1 trước.
 
 ### Mission
 - Methodology proven (5-level phonics curriculum giống Oxford Phonics World, nhưng tự sản xuất content).
@@ -34,7 +35,7 @@ Giúp trẻ 3-8 tuổi học phát âm tiếng Anh qua phonics, với feedback v
 - DAU/MAU ≥ 0.4 (sticky learning).
 - Free → Paid conversion 6-10%.
 - Day-30 retention 25%+.
-- Pronunciation score average 80%+ (improve 15%+ từ unit đầu đến cuối).
+- Tap-based step completion rate ≥ 85% (Step 4 Identify, Step 5 Blending). _Pronunciation score metric quay lại khi voice scoring v1.x ship._
 - App store rating ≥ 4.5 trên cả 2 platforms.
 
 ---
@@ -62,7 +63,7 @@ Giúp trẻ 3-8 tuổi học phát âm tiếng Anh qua phonics, với feedback v
 ## 4. Core Features
 
 ### 4.1 Onboarding (1-time intro carousel)
-- 3 trang giới thiệu tính năng app (5 levels, voice recognition, offline mode).
+- 3 trang giới thiệu tính năng app (5 levels, tap-based phonics gameplay, offline mode). _Voice recognition không quảng cáo ở Mốc 1._
 - Hiển thị 1 lần đầu mở app, lưu DataStore flag `hasSeenOnboarding=true`. Lần sau bỏ qua thẳng Home.
 - KHÔNG yêu cầu nickname/email/syncCode ở đây.
 
@@ -75,28 +76,34 @@ Giúp trẻ 3-8 tuổi học phát âm tiếng Anh qua phonics, với feedback v
   - **Show My SyncCode**: lazy generate 6-digit code lần đầu, lưu local + push Firestore. Hiển thị to + có nút "Copy".
   - **Restore From SyncCode**: text input 6-digit → fetch Firestore → merge vào Room local.
 
-### 4.3 Learning Flow (5 levels × 9 units × 8 steps)
-Mỗi unit là 1 sequence 8 step:
-1. **Sound Intro** — animation chữ + audio sound (vd: "A says /æ/").
-2. **Chant** — rhythmic repetition with music.
-3. **Vocabulary** — 4+ words featuring sound (apple, ant, ax, alligator).
-4. **Identify** — recognition game (chọn ảnh đúng với sound).
-5. **Blending** — sound combination (c-a-t → cat).
-6. **Matching** — visual-audio matching.
-7. **Tracing** — letter formation (finger tracing on canvas).
-8. **Story** — narrated read-along (listen + follow along with word highlights, no voice scoring).
+### 4.3 Learning Flow (5 levels × 9 units × 8 steps) — Mốc 1 listener-only
+Mỗi unit là 1 sequence 8 step. **Mốc 1 (v0.1) ship listener-only — không record voice ở step nào.** Voice scoring di chuyển vào v1.x roadmap (xem §4.4).
 
-Mỗi step kiếm được 0-3 stars dựa trên performance.
+1. **Sound Intro** — animation chữ + audio sound (vd: "A says /æ/"). Listen-only.
+2. **Chant** — rhythmic repetition with music. Listen-only.
+3. **Vocabulary** — 4+ words featuring sound (apple, ant, ax, alligator). Listen + tap navigation. _Mic UI có hidden flag `showSpeakButton` (default OFF) để v1.x kích hoạt._
+4. **Identify** — child listens, sau đó tap đúng emoji trong grid 6 ô để recognize sound. _v1.x: thay tap-grid bằng record + Gemini score._
+5. **Blending** — child tap nút play → app animate letter-by-letter sweep + mascot bounce. _v1.x: thay animation bằng child speak + Gemini score._
+6. **Matching** — visual-audio matching (drag/tap). Listen-only.
+7. **Tracing** — letter formation (finger tracing on canvas). Touch-only.
+8. **Story** — narrated read-along (listen + follow along with word highlights). Passive listening, không có voice scoring.
+
+Mỗi step kiếm được 0-3 stars dựa trên performance (tap accuracy + completion).
 Mỗi unit cần ≥ 6 stars để mở unit kế tiếp (configurable).
 
-### 4.4 Voice Recognition (COPPA-safe)
-**Scope**: Voice recording/scoring chỉ áp dụng cho step 4 Identify + step 5 Blending (word-level recognition). Step 8 Story là passive narration, không record giọng trẻ.
+### 4.4 Voice Scoring — DEFERRED to v1.x Roadmap
+**Trạng thái Mốc 1**: KHÔNG record voice, KHÔNG yêu cầu RECORD_AUDIO permission, KHÔNG NSMicrophoneUsageDescription. Architecture (`AppSetting.showSpeakButton`, `AnimatedMicButton`) preserved trong code để v1.x kích hoạt nhanh.
 
+**v1.x Roadmap (khi quay lại)**:
+- Áp dụng cho Step 4 Identify + Step 5 Blending (word-level recognition). Step 8 Story vẫn passive.
 - Tap microphone → record (memory-only, AAC mono 16kHz).
 - Stop → POST audio + target word vào Gemini 2.5 Flash multimodal.
 - Receive: `{ score: 0-100, accuracy: low|medium|high, feedback_short: "Great try!" }`.
 - Show feedback + stars + animation.
 - **Discard audio buffer immediately** (no Cloud Storage, no local file).
+- Trước khi ship, re-spike Gemini STT quality trên giọng trẻ 3-5 (xem Risk #3) + Plan B fallback.
+
+Chi tiết kỹ thuật cũ vẫn lưu ở [02-TECH_SPEC.md](02-TECH_SPEC.md) section "v1.x Roadmap: Voice Scoring" + [skill reference](../../.claude/skills/grabee/references/voice-recognition.md).
 
 ### 4.5 Progress Tracking
 - Local: Room DB (`UserProgressEntity`).
@@ -104,8 +111,8 @@ Mỗi unit cần ≥ 6 stars để mở unit kế tiếp (configurable).
 - Parent Dashboard (ẩn sau math gate "What is 5+7?" để chống trẻ vô tình mở):
   - Per-level completion %.
   - Time spent per session.
-  - Pronunciation score trends.
-  - Weak areas (sounds < 70% average).
+  - Step accuracy trends (tap-based: Identify hit-rate, Blending completion).
+  - Weak areas (units < 70% completion). _Pronunciation trends quay lại khi voice scoring v1.x ship._
 
 ### 4.6 Subscription (Premium)
 - **Free**: Level 1 complete (9 units, 100+ words, 3 stories).
@@ -126,7 +133,8 @@ Mỗi unit cần ≥ 6 stars để mở unit kế tiếp (configurable).
 ### 4.8 Offline Mode
 - Level 1: bundled trong app (~10MB).
 - Levels 2-5: download on-demand sau khi mua premium, cache Room local.
-- Voice recognition: cần network (Gemini API). Whisper on-device fallback v1.1.
+- **Mốc 1**: app chạy hoàn toàn offline (không có voice scoring → không cần network cho gameplay).
+- v1.x voice scoring: cần network (Gemini API). Whisper on-device fallback đánh giá riêng khi v1.x.
 
 ---
 
@@ -135,11 +143,12 @@ Mỗi unit cần ≥ 6 stars để mở unit kế tiếp (configurable).
 - ❌ Multi-child profiles trên 1 device (parent có nhiều con).
 - ❌ Social features (leaderboard với bạn, share progress).
 - ❌ Cloud Functions cho server-side aggregation — client-side đủ cho MVP.
-- ❌ Custom voice acoustic model (dùng Gemini default).
+- ❌ **Voice recognition / pronunciation scoring** (defer v1.x — see §4.4). Mốc 1 ship listener-only Level 1.
+- ❌ Custom voice acoustic model (dùng Gemini default — quay lại khi voice scoring v1.x).
 - ❌ Web version (chỉ Android + iOS).
 - ❌ Tablet-specific UI (responsive trong kích cỡ phone là đủ MVP).
 - ❌ Lifetime tier (chỉ Monthly + Annual cho v1.0).
-- ❌ Whisper on-device (defer v1.1).
+- ❌ Whisper on-device (defer v1.x cùng với voice scoring).
 
 ---
 
@@ -225,13 +234,14 @@ Stories L5: "Dawn's Hiccups", "I Love the City", "The Painter Is in Town".
 
 ## 7. Asset Production (AI Tools)
 
-### Audio (Voice)
-- **Tool**: ElevenLabs.
+### Audio (TTS for prompts/narration — passive listening only, NOT voice scoring)
+- **Tool**: ElevenLabs (hoặc Gemini Flash TTS — xem memory `project_gemini-tts-config.md`).
 - **Volume**: 670 word audio + 670 sentence audio + 15 story narrations = ~1,400 audio files.
 - **Voice profile**: 1-2 child-friendly voices (vd: female teacher voice + child voice for stories). Voice cloning lock cho consistency.
 - **Format**: MP3 mono 22kHz, ≤ 50KB/file.
 - **Cost**: ~$10 (Starter tier 30K characters đủ).
 - **QA**: human review batch 50 files, re-generate nếu thiếu emotion/prosody.
+- **Note**: TTS audio dùng cho child LISTEN, không phải voice scoring. Voice scoring (Gemini multimodal STT) deferred v1.x.
 
 ### Images (Vocab + Characters)
 - **Tool**: Midjourney (chính, dùng `--sref` lock style) hoặc Imagen 3 (Google AI Studio).
@@ -261,9 +271,9 @@ Stories L5: "Dawn's Hiccups", "I Love the City", "The Painter Is in Town".
 
 ### Free Tier
 - Level 1 complete (9 units, 100+ words, 3 stories).
-- Voice recognition + scoring.
+- Tap-based gameplay (Identify, Blending, Matching, Tracing) + audio prompts. _Voice recognition + scoring sẽ thêm ở v1.x._
 - Profile + cross-device sync (syncCode).
-- Basic progress tracking.
+- Basic progress tracking (tap-based step accuracy).
 - **Kids-safe ads**: AdMob + AppLovin với TFCD/TFUA config, non-personalized, age-appropriate. Hiển thị **giữa learning sessions** (sau khi hoàn thành unit) hoặc trên home screen — KHÔNG bao giờ giữa learning step.
 
 ### Premium ($9.99/mo, $69.99/yr)

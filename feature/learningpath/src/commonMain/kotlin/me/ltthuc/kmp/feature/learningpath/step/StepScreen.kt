@@ -43,7 +43,7 @@ import org.koin.compose.koinInject
 // the 8th segment on the last lesson and as a standalone destination after the last Tracing.
 private const val PER_LESSON_STEPS = 7
 private const val LAST_STEP_INDEX = PER_LESSON_STEPS - 1
-private const val UNIT_STORY_SEGMENT_INDEX = PER_LESSON_STEPS    // = 7
+private const val UNIT_STORY_SEGMENT_INDEX = PER_LESSON_STEPS // = 7
 private const val TAG = "StepScreen"
 
 @Composable

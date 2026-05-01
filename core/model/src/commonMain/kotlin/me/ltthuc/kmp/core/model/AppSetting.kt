@@ -11,7 +11,7 @@ data class AppSetting(
     val developerMode: Boolean,
     val hasSeenOnboarding: Boolean,
     val practiceRoundMultiplier: Float = 1f,
-    val showSpeakButton: Boolean = true,
+    val showSpeakButton: Boolean = false,
 ) {
     val hasPrivilege get() = plusMode || developerMode
 

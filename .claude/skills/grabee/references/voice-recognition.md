@@ -1,8 +1,14 @@
 # Voice Recognition Pipeline — ABC Phonics Kids
 
+> ⚠️ **STATUS (2026-05-01): DEFERRED to v1.x**. Mốc 1 ship listener-only Level 1 — KHÔNG record voice, KHÔNG yêu cầu RECORD_AUDIO/NSMicrophoneUsageDescription, KHÔNG có `AudioRecorder`/`GeminiSpeechDataSource`/`VoiceRepository` trong codebase. Step 4 (Identify) + Step 5 (Blending) Mốc 1 ship tap-based gameplay.
+>
+> Khi v1.x re-introduce voice scoring: re-spike Gemini STT trên giọng trẻ thật (Risk #3 trong [01-PRD.md](../../../../docs/abc-phonics-kids/01-PRD.md)) + chốt Plan B (SoapBox Labs $500/mo hoặc Whisper on-device) trước khi commit kiến trúc.
+>
+> Reference này lưu lại design pattern khi v1.x quay lại — _không áp dụng cho Mốc 1_.
+
 Reference cho `/grabee` khi sinh code voice capture, STT, hoặc pronunciation scoring.
 
-**Khi nào load**: user prompt nhắc đến audio recording, microphone, voice scoring, pronunciation, STT, Gemini speech, MediaRecorder, AVAudioRecorder.
+**Khi nào load**: user prompt nhắc đến audio recording, microphone, voice scoring, pronunciation, STT, Gemini speech, MediaRecorder, AVAudioRecorder. _Trong Mốc 1 thường không cần load — `/grabee` skill nên flag "voice scoring deferred to v1.x" thay vì sinh code._
 
 **Prerequisite**: đọc [coppa.md](coppa.md) trước (memory-only voice rule).
 
