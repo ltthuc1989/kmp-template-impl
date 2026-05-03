@@ -93,8 +93,8 @@ internal fun TracingScreen(
     onPrevious: () -> Unit,
     onNext: () -> Unit,
     onStepJump: (Int) -> Unit,
+    stepSegments: ImmutableList<Int>,
     modifier: Modifier = Modifier,
-    totalSteps: Int = 7,
     onLessonsLoaded: (Int) -> Unit = {},
     viewModel: TracingViewModel = koinViewModel(key = unitId) { parametersOf(unitId) },
 ) {
@@ -114,7 +114,7 @@ internal fun TracingScreen(
             onPrevious = onPrevious,
             onNext = onNext,
             onStepJump = onStepJump,
-            totalSteps = totalSteps,
+            stepSegments = stepSegments,
         )
     }
 }
@@ -128,7 +128,7 @@ private fun TracingContent(
     onPrevious: () -> Unit,
     onNext: () -> Unit,
     onStepJump: (Int) -> Unit,
-    totalSteps: Int,
+    stepSegments: ImmutableList<Int>,
 ) {
     val letterChar = currentLesson.displayLetter.firstOrNull() ?: 'A'
     var isUppercase by remember(currentLesson.id) { mutableStateOf(true) }
@@ -168,7 +168,7 @@ private fun TracingContent(
                     currentStepIndex = STEP_INDEX,
                     onClose = onClose,
                     onStepJump = onStepJump,
-                    totalSteps = totalSteps,
+                    stepSegments = stepSegments,
                 )
             },
             bottomBar = {

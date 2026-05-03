@@ -3,6 +3,7 @@ package me.ltthuc.kmp.core.repository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onStart
+import kotlinx.serialization.json.Json
 import me.ltthuc.kmp.core.datasource.db.DatabaseSeeder
 import me.ltthuc.kmp.core.datasource.db.dao.LearningProgressDao
 import me.ltthuc.kmp.core.datasource.db.dao.LevelDao
@@ -13,12 +14,25 @@ import me.ltthuc.kmp.core.datasource.db.entity.UnitEntity
 import me.ltthuc.kmp.core.model.LevelCard
 import me.ltthuc.kmp.core.model.LevelStatus
 
+private val visibleStepsJson = Json { ignoreUnknownKeys = true }
+private val DEFAULT_VISIBLE_STEPS = (0..6).toList()
+
 class LevelRepository(
     private val levelDao: LevelDao,
     private val unitDao: UnitDao,
     private val learningProgressDao: LearningProgressDao,
     private val seeder: DatabaseSeeder,
 ) {
+    suspend fun getVisibleSteps(levelId: String): List<Int> {
+        seeder.seedIfEmpty()
+        val raw = levelDao.findById(levelId)?.visibleStepsJson ?: return DEFAULT_VISIBLE_STEPS
+        return runCatching {
+            visibleStepsJson.decodeFromString<List<Int>>(raw)
+                .filter { it in 0..6 }
+                .ifEmpty { DEFAULT_VISIBLE_STEPS }
+        }.getOrDefault(DEFAULT_VISIBLE_STEPS)
+    }
+
     fun observeLevelCards(): Flow<List<LevelCard>> = combine(
         levelDao.observeAll(),
         unitDao.observeAll(),

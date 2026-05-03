@@ -30,18 +30,29 @@ class AudioAssetResolver(
      * any L1 Unit 1 lesson audio (sound_intro / chant / word / sentence / phoneme).
      */
     fun bundledResourcePath(ref: AudioRef): String? = when (ref) {
-        is AudioRef.Story -> null
-        else -> "files/audio/${storagePath(ref)}".takeIf { ref.lessonFolder.startsWith(L1_U1_PREFIX) }
+        is AudioRef.Story -> "files/audio/${storagePath(ref)}".takeIf { ref.storyId.startsWith(L1_STORY_PREFIX) }
+        else -> "files/audio/${storagePath(ref)}".takeIf { ref.lessonFolder.startsWith(L1_BUNDLE_PREFIX) }
     }
 
     private fun storagePath(ref: AudioRef): String = when (ref) {
         is AudioRef.SoundIntro -> "${ref.lessonFolder.toUnitPath()}/${ref.lessonFolder}/$FILE_SOUND_INTRO"
         is AudioRef.Chant -> "${ref.lessonFolder.toUnitPath()}/${ref.lessonFolder}/$FILE_CHANT"
-        is AudioRef.Word -> "${ref.lessonFolder.toUnitPath()}/${ref.lessonFolder}/02_word_${ref.word.lowercase()}.mp3"
-        is AudioRef.Sentence -> "${ref.lessonFolder.toUnitPath()}/${ref.lessonFolder}/03_sentence_${ref.word.lowercase()}.mp3"
+        is AudioRef.Word ->
+            "${ref.lessonFolder.toUnitPath()}/${ref.lessonFolder}/vocab/${(ref.index + 1).pad2()}_${ref.word.lowercase()}.mp3"
+        is AudioRef.Sentence ->
+            "${ref.lessonFolder.toUnitPath()}/${ref.lessonFolder}/sentences/${(ref.index + 1).pad2()}_${ref.word.lowercase()}.mp3"
         is AudioRef.Phoneme -> "${ref.lessonFolder.toUnitPath()}/${ref.lessonFolder}/$FILE_PHONEME"
-        is AudioRef.Story -> "stories/${ref.storyId}.mp3"
+        is AudioRef.Story -> "${ref.storyId.toStoryLevelPath()}/stories/${ref.storyId}/scene_${ref.sceneNumber}.mp3"
     }
+
+    /** "L1_S01" -> "level_1" */
+    private fun String.toStoryLevelPath(): String {
+        val match = STORY_LEVEL_REGEX.find(this)
+        val level = match?.groupValues?.get(1)?.toIntOrNull() ?: DEFAULT_LEVEL
+        return "level_$level"
+    }
+
+    private fun Int.pad2(): String = toString().padStart(2, '0')
 
     /** "L1U01_A_apple" -> "level_1/unit_01" */
     private fun String.toUnitPath(): String {
@@ -62,10 +73,13 @@ class AudioAssetResolver(
 
     private companion object {
         const val FILE_SOUND_INTRO = "00_sound_intro.mp3"
-        const val FILE_CHANT = "01_chant.mp3"
+        const val FILE_CHANT = "02_chant.mp3"
         const val FILE_PHONEME = "04_phoneme.mp3"
         const val UNRESERVED = "-._~"
-        const val L1_U1_PREFIX = "L1U01_"
+        const val L1_BUNDLE_PREFIX = "L1U"
+        const val L1_STORY_PREFIX = "L1_S"
+        const val DEFAULT_LEVEL = 1
         val LESSON_FOLDER_REGEX = Regex("""L(\d+)U(\d+)_[A-Z]_[a-z_]+""")
+        val STORY_LEVEL_REGEX = Regex("""L(\d+)_""")
     }
 }

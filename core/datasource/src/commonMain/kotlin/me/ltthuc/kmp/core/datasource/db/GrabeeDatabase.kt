@@ -23,7 +23,7 @@ import me.ltthuc.kmp.core.datasource.db.entity.UserProgressEntity
         LearningProgressEntity::class,
         UserProgressEntity::class,
     ],
-    version = 8,
+    version = 9,
     exportSchema = false,
 )
 @ConstructedBy(GrabeeDatabaseConstructor::class)

@@ -25,11 +25,19 @@ internal fun PhonicsLesson.soundIntroRef(): AudioRef.SoundIntro? =
 internal fun PhonicsLesson.chantRef(): AudioRef.Chant? =
     audioFolderName()?.let(AudioRef::Chant)
 
-internal fun PhonicsLesson.wordRef(word: String): AudioRef.Word? =
-    audioFolderName()?.let { AudioRef.Word(it, word) }
+internal fun PhonicsLesson.wordRef(word: String): AudioRef.Word? {
+    val folder = audioFolderName() ?: return null
+    val idx = words.indexOfFirst { it.word == word }
+    if (idx < 0) return null
+    return AudioRef.Word(folder, word, idx)
+}
 
-internal fun PhonicsLesson.sentenceRef(word: String): AudioRef.Sentence? =
-    audioFolderName()?.let { AudioRef.Sentence(it, word) }
+internal fun PhonicsLesson.sentenceRef(word: String): AudioRef.Sentence? {
+    val folder = audioFolderName() ?: return null
+    val idx = words.indexOfFirst { it.word == word }
+    if (idx < 0) return null
+    return AudioRef.Sentence(folder, word, idx)
+}
 
 internal fun PhonicsLesson.phonemeRef(): AudioRef.Phoneme? =
     audioFolderName()?.let(AudioRef::Phoneme)

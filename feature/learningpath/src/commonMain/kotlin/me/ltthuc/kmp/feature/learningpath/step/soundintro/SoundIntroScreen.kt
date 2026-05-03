@@ -63,8 +63,8 @@ internal fun SoundIntroScreen(
     onClose: () -> Unit,
     onNext: () -> Unit,
     onStepJump: (Int) -> Unit,
+    stepSegments: ImmutableList<Int>,
     modifier: Modifier = Modifier,
-    totalSteps: Int = 7,
     onLessonsLoaded: (Int) -> Unit = {},
     viewModel: SoundIntroViewModel = koinViewModel(key = unitId) { parametersOf(unitId) },
 ) {
@@ -91,7 +91,7 @@ internal fun SoundIntroScreen(
             onClose = onClose,
             onNext = onNext,
             onStepJump = onStepJump,
-            totalSteps = totalSteps,
+            stepSegments = stepSegments,
         )
     }
 }
@@ -106,7 +106,7 @@ private fun SoundIntroContent(
     onClose: () -> Unit,
     onNext: () -> Unit,
     onStepJump: (Int) -> Unit,
-    totalSteps: Int,
+    stepSegments: ImmutableList<Int>,
 ) {
     val featuredWord = currentLesson.words.firstOrNull()
     val ref = remember(currentLesson.id) { currentLesson.soundIntroRef() }
@@ -120,7 +120,7 @@ private fun SoundIntroContent(
                 currentStepIndex = STEP_INDEX,
                 onClose = onClose,
                 onStepJump = onStepJump,
-                totalSteps = totalSteps,
+                stepSegments = stepSegments,
             )
         },
         bottomBar = {

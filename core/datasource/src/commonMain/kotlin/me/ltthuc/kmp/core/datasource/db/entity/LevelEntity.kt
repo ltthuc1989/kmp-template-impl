@@ -11,4 +11,5 @@ data class LevelEntity(
     val totalUnits: Int,
     val isPremium: Boolean,
     val orderIndex: Int,
+    val visibleStepsJson: String? = null,
 )

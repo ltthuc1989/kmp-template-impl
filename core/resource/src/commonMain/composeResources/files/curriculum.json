@@ -7,6 +7,7 @@
       "isPremium": false,
       "ageRange": "3-5",
       "orderIndex": 0,
+      "visibleSteps": [0, 1, 2, 3, 5, 6],
       "units": [
         {
           "id": "L1U1",

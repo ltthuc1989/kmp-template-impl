@@ -31,6 +31,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -65,6 +66,7 @@ import kotlinx.coroutines.launch
 import me.ltthuc.kmp.core.model.UnitCard
 import me.ltthuc.kmp.core.model.UnitStatus
 import me.ltthuc.kmp.core.repository.LearningProgressRepository
+import me.ltthuc.kmp.core.repository.LevelRepository
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
 import me.ltthuc.kmp.core.ui.screen.Destination
 import me.ltthuc.kmp.core.ui.screen.ScreenState
@@ -90,8 +92,10 @@ internal fun UnitSelectionScreen(
     val screenState by viewModel.screenState.collectAsStateWithLifecycle()
     val navBackStack = LocalNavBackStack.current
     val progressRepository: LearningProgressRepository = koinInject()
+    val levelRepository: LevelRepository = koinInject()
     val scope = rememberCoroutineScope()
 
+    val isStartDestination = navBackStack.size == 1
     Scaffold(
         modifier = modifier,
         containerColor = ScreenBg,
@@ -101,7 +105,9 @@ internal fun UnitSelectionScreen(
                 title = uiState?.let { "Book ${it.level.number}: ${it.level.title}" }.orEmpty(),
                 startedCount = uiState?.startedCount ?: 0,
                 totalUnits = uiState?.units?.size ?: 0,
-                onBack = { navBackStack.removeAt(navBackStack.size - 1) },
+                showBackButton = !isStartDestination,
+                onBack = { if (navBackStack.size > 1) navBackStack.removeAt(navBackStack.size - 1) },
+                onSettings = { navBackStack.add(Destination.Setting.Root) },
             )
         },
     ) { innerPadding ->
@@ -116,17 +122,25 @@ internal fun UnitSelectionScreen(
                     if (card.status != UnitStatus.Locked) {
                         scope.launch {
                             // Resume from saved position if the user last left this unit, else
-                            // start fresh at word 0 / step 0.
+                            // start fresh. Clamp to a visible step in case the saved position
+                            // landed on a step that is hidden for this level.
                             val active = progressRepository.current()
+                            val visibleSteps = levelRepository.getVisibleSteps(levelId)
+                            val firstVisible = visibleSteps.firstOrNull() ?: 0
                             val startLesson = if (active?.activeUnitId == card.unit.id) {
                                 active.activeLessonIndex
                             } else {
                                 0
                             }
                             val startStep = if (active?.activeUnitId == card.unit.id) {
-                                active.activeStepIndex
+                                val saved = active.activeStepIndex
+                                if (saved in visibleSteps) {
+                                    saved
+                                } else {
+                                    visibleSteps.firstOrNull { it >= saved } ?: firstVisible
+                                }
                             } else {
-                                0
+                                firstVisible
                             }
                             navBackStack.add(
                                 Destination.Learning.Step(
@@ -179,7 +193,9 @@ private fun UnitTopBar(
     title: String,
     startedCount: Int,
     totalUnits: Int,
+    showBackButton: Boolean,
     onBack: () -> Unit,
+    onSettings: () -> Unit,
 ) {
     CenterAlignedTopAppBar(
         title = {
@@ -193,18 +209,27 @@ private fun UnitTopBar(
             )
         },
         navigationIcon = {
-            IconButton(onClick = onBack) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Back",
-                    tint = MaterialTheme.colorScheme.onSurface,
-                )
+            if (showBackButton) {
+                IconButton(onClick = onBack) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Back",
+                        tint = MaterialTheme.colorScheme.onSurface,
+                    )
+                }
             }
         },
         actions = {
             if (totalUnits > 0) {
                 StarBadge(count = startedCount, total = totalUnits)
                 Spacer(Modifier.width(8.dp))
+            }
+            IconButton(onClick = onSettings) {
+                Icon(
+                    imageVector = Icons.Filled.Settings,
+                    contentDescription = "Settings",
+                    tint = MaterialTheme.colorScheme.onSurface,
+                )
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(

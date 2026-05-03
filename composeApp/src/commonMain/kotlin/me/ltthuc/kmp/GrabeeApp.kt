@@ -22,8 +22,14 @@ internal fun GrabeeApp(
     SetupCoil()
     BasicAds.Initialize()
 
+    // V1 ships Level 1 only — skip the level-selection Home screen and drop the
+    // user directly into the alphabet unit list. When L2-L5 ship, restore Home.
     val startDestination: Destination =
-        if (setting.hasSeenOnboarding) Destination.Home else Destination.Onboarding
+        if (setting.hasSeenOnboarding) {
+            Destination.Learning.UnitSelection(levelId = LEVEL_1_ID)
+        } else {
+            Destination.Onboarding
+        }
 
     GrabeeTheme(setting) {
         AppNavHost(
@@ -32,6 +38,8 @@ internal fun GrabeeApp(
         )
     }
 }
+
+private const val LEVEL_1_ID = "L1"
 
 @Composable
 private fun SetupCoil() {

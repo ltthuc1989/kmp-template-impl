@@ -26,6 +26,7 @@ internal data class LevelDto(
     val isPremium: Boolean,
     val ageRange: String,
     val orderIndex: Int,
+    val visibleSteps: List<Int>? = null,
     val units: List<UnitDto>,
 )
 
@@ -87,6 +88,7 @@ private fun LevelDto.toEntity() = LevelEntity(
     totalUnits = units.size,
     isPremium = isPremium,
     orderIndex = orderIndex,
+    visibleStepsJson = visibleSteps?.let { curriculumJson.encodeToString(it) },
 )
 
 private fun UnitDto.toEntity(levelId: String) = UnitEntity(

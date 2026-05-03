@@ -13,12 +13,22 @@ sealed interface AudioRef {
 
     data class SoundIntro(override val lessonFolder: String) : AudioRef
     data class Chant(override val lessonFolder: String) : AudioRef
-    data class Word(override val lessonFolder: String, val word: String) : AudioRef
-    data class Sentence(override val lessonFolder: String, val word: String) : AudioRef
+
+    /**
+     * [index] is the 0-based position of [word] inside the lesson's vocab list.
+     * Resolver uses (index + 1).pad2() as filename prefix to match opw_audio_project
+     * output layout `vocab/<NN>_<word>.mp3`.
+     */
+    data class Word(override val lessonFolder: String, val word: String, val index: Int) : AudioRef
+    data class Sentence(override val lessonFolder: String, val word: String, val index: Int) : AudioRef
     data class Phoneme(override val lessonFolder: String) : AudioRef
 
-    /** Story narration lives outside lesson folders (one file per story). */
-    data class Story(val storyId: String) : AudioRef {
+    /**
+     * Story narration is split into 4 scenes (intro / problem / solution / ending),
+     * one mp3 per scene at `stories/<storyId>/scene_<sceneNumber>.mp3`. [sceneNumber]
+     * is 1-based to match opw_audio_project filenames.
+     */
+    data class Story(val storyId: String, val sceneNumber: Int) : AudioRef {
         override val lessonFolder: String get() = "stories"
     }
 }

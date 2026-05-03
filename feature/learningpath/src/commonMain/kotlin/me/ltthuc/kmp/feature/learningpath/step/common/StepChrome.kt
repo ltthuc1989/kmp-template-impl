@@ -55,17 +55,18 @@ import org.jetbrains.compose.resources.stringResource
 
 /**
  * Shared top header for step screens (Sound Intro, Chant, Vocabulary, ...).
- * Fixed across all 8 steps of a letter — `title` + step segments update per step.
- * Tap a segment → `onStepJump(targetIndex)` to jump to that step within the same letter.
+ * `stepSegments` lists the canonical step indices to render (e.g. [0,1,2,3,5,6,7] when
+ * step 4 is hidden for this level + last lesson). `currentStepIndex` is canonical too —
+ * highlighting matches by canonical equality, and `onStepJump` receives the canonical idx.
  */
 @Composable
 internal fun StepHeader(
     title: String,
     currentStepIndex: Int,
+    stepSegments: ImmutableList<Int>,
     onClose: () -> Unit,
     onStepJump: (Int) -> Unit,
     modifier: Modifier = Modifier,
-    totalSteps: Int = 8,
     onAnalyticsClick: () -> Unit = {},
 ) {
     Row(
@@ -101,7 +102,7 @@ internal fun StepHeader(
             )
             StepSegmentRow(
                 currentStepIndex = currentStepIndex,
-                totalSteps = totalSteps,
+                stepSegments = stepSegments,
                 onStepJump = onStepJump,
             )
         }
@@ -121,7 +122,7 @@ internal fun StepHeader(
 @Composable
 private fun StepSegmentRow(
     currentStepIndex: Int,
-    totalSteps: Int,
+    stepSegments: ImmutableList<Int>,
     onStepJump: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -132,11 +133,11 @@ private fun StepSegmentRow(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        repeat(totalSteps) { idx ->
+        stepSegments.forEach { canonicalIdx ->
             StepSegment(
-                isCurrent = idx == currentStepIndex,
-                isPast = idx < currentStepIndex,
-                onClick = { if (idx != currentStepIndex) onStepJump(idx) },
+                isCurrent = canonicalIdx == currentStepIndex,
+                isPast = canonicalIdx < currentStepIndex,
+                onClick = { if (canonicalIdx != currentStepIndex) onStepJump(canonicalIdx) },
                 modifier = Modifier.weight(1f),
             )
         }

@@ -95,9 +95,9 @@ internal fun VocabularyScreen(
     onPrevious: () -> Unit,
     onNext: () -> Unit,
     onStepJump: (Int) -> Unit,
+    stepSegments: ImmutableList<Int>,
     modifier: Modifier = Modifier,
     showSpeakButton: Boolean = false,
-    totalSteps: Int = 7,
     onLessonsLoaded: (Int) -> Unit = {},
     viewModel: VocabularyViewModel = koinViewModel(key = unitId) { parametersOf(unitId) },
 ) {
@@ -126,7 +126,7 @@ internal fun VocabularyScreen(
             onNext = onNext,
             onStepJump = onStepJump,
             showSpeakButton = showSpeakButton,
-            totalSteps = totalSteps,
+            stepSegments = stepSegments,
         )
     }
 }
@@ -142,8 +142,8 @@ private fun VocabularyContent(
     onPrevious: () -> Unit,
     onNext: () -> Unit,
     onStepJump: (Int) -> Unit,
+    stepSegments: ImmutableList<Int>,
     showSpeakButton: Boolean = false,
-    totalSteps: Int = 7,
 ) {
     val vocabItems = remember(currentLesson.id) {
         currentLesson.words.takeIf { it.isNotEmpty() }
@@ -199,7 +199,7 @@ private fun VocabularyContent(
                     currentStepIndex = STEP_INDEX,
                     onClose = onClose,
                     onStepJump = onStepJump,
-                    totalSteps = totalSteps,
+                    stepSegments = stepSegments,
                 )
             },
             bottomBar = {

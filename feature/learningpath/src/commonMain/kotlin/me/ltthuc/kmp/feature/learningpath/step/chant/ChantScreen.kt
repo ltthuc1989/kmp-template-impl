@@ -88,8 +88,8 @@ internal fun ChantScreen(
     onPrevious: () -> Unit,
     onNext: () -> Unit,
     onStepJump: (Int) -> Unit,
+    stepSegments: ImmutableList<Int>,
     modifier: Modifier = Modifier,
-    totalSteps: Int = 7,
     onLessonsLoaded: (Int) -> Unit = {},
     viewModel: ChantViewModel = koinViewModel(key = unitId) { parametersOf(unitId) },
 ) {
@@ -118,7 +118,7 @@ internal fun ChantScreen(
             onPrevious = onPrevious,
             onNext = onNext,
             onStepJump = onStepJump,
-            totalSteps = totalSteps,
+            stepSegments = stepSegments,
         )
     }
 }
@@ -134,7 +134,7 @@ private fun ChantContent(
     onPrevious: () -> Unit,
     onNext: () -> Unit,
     onStepJump: (Int) -> Unit,
-    totalSteps: Int,
+    stepSegments: ImmutableList<Int>,
 ) {
     var slideIndex by remember(currentLesson.id) { mutableIntStateOf(0) }
     val chantRef = remember(currentLesson.id) { currentLesson.chantRef() }
@@ -161,7 +161,7 @@ private fun ChantContent(
                 currentStepIndex = STEP_INDEX,
                 onClose = onClose,
                 onStepJump = onStepJump,
-                totalSteps = totalSteps,
+                stepSegments = stepSegments,
             )
         },
         bottomBar = {

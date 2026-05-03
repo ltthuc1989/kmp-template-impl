@@ -69,7 +69,8 @@ internal fun OnboardingScreen(
     val completeAndGoHome: () -> Unit = {
         viewModel.completeOnboarding()
         navBackStack.clear()
-        navBackStack.add(Destination.Home)
+        // V1: skip Home, land on Level 1 unit list. Restore `Destination.Home` when L2-L5 ship.
+        navBackStack.add(Destination.Learning.UnitSelection(levelId = "L1"))
     }
 
     Scaffold(

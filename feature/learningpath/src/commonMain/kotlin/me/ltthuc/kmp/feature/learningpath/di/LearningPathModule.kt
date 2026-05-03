@@ -21,5 +21,5 @@ val learningPathModule = module {
     viewModel { params -> BlendingViewModel(unitId = params.get(), get(), get()) }
     viewModel { params -> MatchingViewModel(unitId = params.get(), get(), get()) }
     viewModel { params -> TracingViewModel(unitId = params.get(), get()) }
-    viewModel { params -> StoryViewModel(unitId = params.get(), get(), get()) }
+    viewModel { params -> StoryViewModel(unitId = params.get(), get(), get(), get()) }
 }

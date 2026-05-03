@@ -12,6 +12,9 @@ interface LevelDao {
     @Query("SELECT * FROM levels ORDER BY orderIndex ASC")
     fun observeAll(): Flow<List<LevelEntity>>
 
+    @Query("SELECT * FROM levels WHERE id = :levelId LIMIT 1")
+    suspend fun findById(levelId: String): LevelEntity?
+
     @Query("SELECT COUNT(*) FROM levels")
     suspend fun count(): Int
 

@@ -26,8 +26,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.aakira.napier.Napier
+import kotlinx.collections.immutable.toImmutableList
 import me.ltthuc.kmp.core.repository.AppSettingRepository
 import me.ltthuc.kmp.core.repository.LearningProgressRepository
+import me.ltthuc.kmp.core.repository.LevelRepository
 import me.ltthuc.kmp.core.ui.screen.Destination
 import me.ltthuc.kmp.core.ui.theme.LocalNavBackStack
 import me.ltthuc.kmp.feature.learningpath.step.blending.BlendingScreen
@@ -39,11 +41,13 @@ import me.ltthuc.kmp.feature.learningpath.step.tracing.TracingScreen
 import me.ltthuc.kmp.feature.learningpath.step.vocabulary.VocabularyScreen
 import org.koin.compose.koinInject
 
-// Each lesson has 7 step screens (0..6). Story (segment 7) lives at unit-level only — appears as
-// the 8th segment on the last lesson and as a standalone destination after the last Tracing.
-private const val PER_LESSON_STEPS = 7
-private const val LAST_STEP_INDEX = PER_LESSON_STEPS - 1
-private const val UNIT_STORY_SEGMENT_INDEX = PER_LESSON_STEPS // = 7
+// Canonical step screens (0..6); each level may hide some via LevelEntity.visibleStepsJson.
+// Story (the per-unit story screen) lives at unit-level only — appears as an extra trailing
+// segment on the last lesson and as a standalone destination after the last visible step.
+// STORY_SEGMENT_INDEX is a sentinel that comes after all canonical step indices.
+internal const val MAX_STEP_INDEX = 6
+internal const val STORY_SEGMENT_INDEX = MAX_STEP_INDEX + 1 // = 7
+internal val DEFAULT_VISIBLE_STEPS = (0..MAX_STEP_INDEX).toList()
 private const val TAG = "StepScreen"
 
 @Composable
@@ -56,8 +60,14 @@ internal fun StepScreen(
 ) {
     val navBackStack = LocalNavBackStack.current
     val progressRepository: LearningProgressRepository = koinInject()
+    val levelRepository: LevelRepository = koinInject()
     val settingRepository: AppSettingRepository = koinInject()
     val setting by settingRepository.setting.collectAsStateWithLifecycle()
+
+    var visibleSteps by remember(levelId) { mutableStateOf(DEFAULT_VISIBLE_STEPS) }
+    LaunchedEffect(levelId) {
+        visibleSteps = levelRepository.getVisibleSteps(levelId)
+    }
 
     // totalLessons is reported back from each step screen's loaded data (its own VM already
     // has lessons by the time AsyncLoadContents renders the content block). This avoids the
@@ -67,14 +77,34 @@ internal fun StepScreen(
         if (count > 0 && count != totalLessons) totalLessons = count
     }
 
+    val perLessonSteps = visibleSteps.size
+    val lastVisibleStepIndex = visibleSteps.last()
     val isLastLesson = totalLessons > 0 && lessonIndex == totalLessons - 1
-    // Last lesson shows 8 segments (the extra one routes to UnitStory); other lessons show 7.
-    val totalStepsForBar = if (isLastLesson) PER_LESSON_STEPS + 1 else PER_LESSON_STEPS
+    // Canonical step indices to render in the StepHeader segment row (e.g.
+    // [0,1,2,3,5,6] for L1 non-last lesson, [0,1,2,3,5,6,7] for L1 last lesson).
+    val stepSegments = remember(visibleSteps, isLastLesson) {
+        (if (isLastLesson) visibleSteps + STORY_SEGMENT_INDEX else visibleSteps).toImmutableList()
+    }
 
-    LaunchedEffect(levelId, unitId, lessonIndex, stepIndex, totalLessons) {
-        if (totalLessons > 0) {
-            val unitStepsTotal = totalLessons * PER_LESSON_STEPS + 1
-            val completedSteps = lessonIndex * PER_LESSON_STEPS + stepIndex
+    // Defensive: if user lands on a hidden step (e.g., resuming from old saved progress),
+    // redirect forward to the next visible step. visibleSteps loads with default = all 7 so
+    // this only fires after the actual config arrives.
+    LaunchedEffect(visibleSteps, stepIndex) {
+        if (stepIndex in 0..MAX_STEP_INDEX && stepIndex !in visibleSteps) {
+            val target = visibleSteps.firstOrNull { it > stepIndex } ?: visibleSteps.first()
+            Napier.d(tag = TAG) {
+                "Redirect hidden step $stepIndex -> $target (visible=$visibleSteps)"
+            }
+            if (navBackStack.isNotEmpty()) navBackStack.removeAt(navBackStack.lastIndex)
+            navBackStack.add(Destination.Learning.Step(levelId, unitId, lessonIndex, target))
+        }
+    }
+
+    LaunchedEffect(levelId, unitId, lessonIndex, stepIndex, totalLessons, perLessonSteps) {
+        if (totalLessons > 0 && perLessonSteps > 0) {
+            val unitStepsTotal = totalLessons * perLessonSteps + 1
+            val visiblePos = visibleSteps.indexOf(stepIndex).coerceAtLeast(0)
+            val completedSteps = lessonIndex * perLessonSteps + visiblePos
             val progressPercent = (completedSteps * 100) / unitStepsTotal
             progressRepository.setActivePosition(
                 levelId = levelId,
@@ -89,18 +119,20 @@ internal fun StepScreen(
     val onNext: () -> Unit = {
         Napier.d(tag = TAG) {
             "onNext invoked: $levelId/$unitId lesson=$lessonIndex step=$stepIndex " +
-                "totalLessons=$totalLessons isLastLesson=$isLastLesson"
+                "visible=$visibleSteps totalLessons=$totalLessons isLastLesson=$isLastLesson"
         }
         val next: Destination = when {
-            stepIndex < LAST_STEP_INDEX ->
-                Destination.Learning.Step(levelId, unitId, lessonIndex, stepIndex + 1)
-            // We're on Tracing (last per-lesson step). Decide based on whether this is the last lesson.
-            // If totalLessons hasn't loaded yet, optimistically advance the lesson — the next StepScreen
-            // will coerce/clamp on its own data.
+            stepIndex < lastVisibleStepIndex -> {
+                val nextStep = visibleSteps.firstOrNull { it > stepIndex } ?: lastVisibleStepIndex
+                Destination.Learning.Step(levelId, unitId, lessonIndex, nextStep)
+            }
+            // We're on the last visible step. Decide based on whether this is the last lesson.
+            // If totalLessons hasn't loaded yet, optimistically advance the lesson — the next
+            // StepScreen will coerce/clamp on its own data.
             isLastLesson ->
                 Destination.Learning.UnitStory(levelId, unitId)
             else ->
-                Destination.Learning.Step(levelId, unitId, lessonIndex + 1, stepIndex = 0)
+                Destination.Learning.Step(levelId, unitId, lessonIndex + 1, stepIndex = visibleSteps.first())
         }
         Napier.d(tag = TAG) {
             "onNext advance: $levelId/$unitId lesson=$lessonIndex step=$stepIndex -> $next " +
@@ -122,11 +154,11 @@ internal fun StepScreen(
     val onStepJump: (Int) -> Unit = { targetStep ->
         when {
             targetStep == stepIndex -> Unit
-            targetStep == UNIT_STORY_SEGMENT_INDEX && isLastLesson -> {
+            targetStep == STORY_SEGMENT_INDEX && isLastLesson -> {
                 if (navBackStack.isNotEmpty()) navBackStack.removeAt(navBackStack.lastIndex)
                 navBackStack.add(Destination.Learning.UnitStory(levelId, unitId))
             }
-            targetStep in 0 until PER_LESSON_STEPS -> {
+            targetStep in visibleSteps -> {
                 if (navBackStack.isNotEmpty()) navBackStack.removeAt(navBackStack.lastIndex)
                 navBackStack.add(Destination.Learning.Step(levelId, unitId, lessonIndex, targetStep))
             }
@@ -140,7 +172,7 @@ internal fun StepScreen(
             onClose = onClose,
             onNext = onNext,
             onStepJump = onStepJump,
-            totalSteps = totalStepsForBar,
+            stepSegments = stepSegments,
             onLessonsLoaded = onLessonsLoaded,
             modifier = modifier,
         )
@@ -151,7 +183,7 @@ internal fun StepScreen(
             onPrevious = onPrevious,
             onNext = onNext,
             onStepJump = onStepJump,
-            totalSteps = totalStepsForBar,
+            stepSegments = stepSegments,
             onLessonsLoaded = onLessonsLoaded,
             modifier = modifier,
         )
@@ -164,7 +196,7 @@ internal fun StepScreen(
             onStepJump = onStepJump,
             modifier = modifier,
             showSpeakButton = setting.showSpeakButton,
-            totalSteps = totalStepsForBar,
+            stepSegments = stepSegments,
             onLessonsLoaded = onLessonsLoaded,
         )
         3 -> IdentifyScreen(
@@ -174,7 +206,7 @@ internal fun StepScreen(
             onPrevious = onPrevious,
             onNext = onNext,
             onStepJump = onStepJump,
-            totalSteps = totalStepsForBar,
+            stepSegments = stepSegments,
             onLessonsLoaded = onLessonsLoaded,
             modifier = modifier,
         )
@@ -185,7 +217,7 @@ internal fun StepScreen(
             onPrevious = onPrevious,
             onNext = onNext,
             onStepJump = onStepJump,
-            totalSteps = totalStepsForBar,
+            stepSegments = stepSegments,
             onLessonsLoaded = onLessonsLoaded,
             modifier = modifier,
         )
@@ -196,7 +228,7 @@ internal fun StepScreen(
             onPrevious = onPrevious,
             onNext = onNext,
             onStepJump = onStepJump,
-            totalSteps = totalStepsForBar,
+            stepSegments = stepSegments,
             onLessonsLoaded = onLessonsLoaded,
             modifier = modifier,
         )
@@ -207,7 +239,7 @@ internal fun StepScreen(
             onPrevious = onPrevious,
             onNext = onNext,
             onStepJump = onStepJump,
-            totalSteps = totalStepsForBar,
+            stepSegments = stepSegments,
             onLessonsLoaded = onLessonsLoaded,
             modifier = modifier,
         )
@@ -236,7 +268,7 @@ private fun StepStubScreen(
         modifier = modifier,
         topBar = {
             TopAppBar(
-                title = { Text("Lesson ${lessonIndex + 1} · Step ${stepIndex + 1}/$PER_LESSON_STEPS — $stepName") },
+                title = { Text("Lesson ${lessonIndex + 1} · Step ${stepIndex + 1} — $stepName") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)

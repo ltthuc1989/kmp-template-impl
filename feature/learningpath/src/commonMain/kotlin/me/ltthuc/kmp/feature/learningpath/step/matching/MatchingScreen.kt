@@ -88,8 +88,8 @@ internal fun MatchingScreen(
     onPrevious: () -> Unit,
     onNext: () -> Unit,
     onStepJump: (Int) -> Unit,
+    stepSegments: ImmutableList<Int>,
     modifier: Modifier = Modifier,
-    totalSteps: Int = 7,
     onLessonsLoaded: (Int) -> Unit = {},
     viewModel: MatchingViewModel = koinViewModel(key = unitId) { parametersOf(unitId) },
 ) {
@@ -115,7 +115,7 @@ internal fun MatchingScreen(
             onPrevious = onPrevious,
             onNext = onNext,
             onStepJump = onStepJump,
-            totalSteps = totalSteps,
+            stepSegments = stepSegments,
         )
     }
 }
@@ -130,7 +130,7 @@ private fun MatchingContent(
     onPrevious: () -> Unit,
     onNext: () -> Unit,
     onStepJump: (Int) -> Unit,
-    totalSteps: Int,
+    stepSegments: ImmutableList<Int>,
 ) {
     val vocab = remember(currentLesson.id) {
         currentLesson.words.toImmutableList()
@@ -206,7 +206,7 @@ private fun MatchingContent(
                     currentStepIndex = STEP_INDEX,
                     onClose = onClose,
                     onStepJump = onStepJump,
-                    totalSteps = totalSteps,
+                    stepSegments = stepSegments,
                 )
             },
             bottomBar = {
