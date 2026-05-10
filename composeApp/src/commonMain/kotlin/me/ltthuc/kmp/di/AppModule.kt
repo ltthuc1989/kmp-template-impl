@@ -27,6 +27,7 @@ val appModule = module {
         val adMobBannerAdUnitId: String
         val adMobInterstitialAdUnitId: String
         val adMobRewardedAdUnitId: String
+        val adMobAppOpenAdUnitId: String
 
         when (currentPlatform) {
             Platform.Android -> {
@@ -34,6 +35,7 @@ val appModule = module {
                 adMobBannerAdUnitId = BuildKonfig.ADMOB_ANDROID_BANNER_AD_UNIT_ID
                 adMobInterstitialAdUnitId = BuildKonfig.ADMOB_ANDROID_INTERSTITIAL_AD_UNIT_ID
                 adMobRewardedAdUnitId = BuildKonfig.ADMOB_ANDROID_REWARDED_AD_UNIT_ID
+                adMobAppOpenAdUnitId = BuildKonfig.ADMOB_ANDROID_APP_OPEN_AD_UNIT_ID
             }
 
             Platform.IOS -> {
@@ -41,6 +43,7 @@ val appModule = module {
                 adMobBannerAdUnitId = BuildKonfig.ADMOB_IOS_BANNER_AD_UNIT_ID
                 adMobInterstitialAdUnitId = BuildKonfig.ADMOB_IOS_INTERSTITIAL_AD_UNIT_ID
                 adMobRewardedAdUnitId = BuildKonfig.ADMOB_IOS_REWARDED_AD_UNIT_ID
+                adMobAppOpenAdUnitId = BuildKonfig.ADMOB_IOS_APP_OPEN_AD_UNIT_ID
             }
         }
 
@@ -54,6 +57,7 @@ val appModule = module {
             adMobBannerAdUnitId = adMobBannerAdUnitId,
             adMobInterstitialAdUnitId = adMobInterstitialAdUnitId,
             adMobRewardedAdUnitId = adMobRewardedAdUnitId,
+            adMobAppOpenAdUnitId = adMobAppOpenAdUnitId,
         )
     }
 

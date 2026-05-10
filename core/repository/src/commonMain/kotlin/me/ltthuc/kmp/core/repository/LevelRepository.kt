@@ -2,6 +2,7 @@ package me.ltthuc.kmp.core.repository
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.serialization.json.Json
 import me.ltthuc.kmp.core.datasource.db.DatabaseSeeder
@@ -13,6 +14,7 @@ import me.ltthuc.kmp.core.datasource.db.entity.LevelEntity
 import me.ltthuc.kmp.core.datasource.db.entity.UnitEntity
 import me.ltthuc.kmp.core.model.LevelCard
 import me.ltthuc.kmp.core.model.LevelStatus
+import me.ltthuc.kmp.core.model.PhonicsUnit
 
 private val visibleStepsJson = Json { ignoreUnknownKeys = true }
 private val DEFAULT_VISIBLE_STEPS = (0..6).toList()
@@ -22,6 +24,7 @@ class LevelRepository(
     private val unitDao: UnitDao,
     private val learningProgressDao: LearningProgressDao,
     private val seeder: DatabaseSeeder,
+    private val appSettingRepository: AppSettingRepository,
 ) {
     suspend fun getVisibleSteps(levelId: String): List<Int> {
         seeder.seedIfEmpty()
@@ -37,16 +40,30 @@ class LevelRepository(
         levelDao.observeAll(),
         unitDao.observeAll(),
         learningProgressDao.observe(),
-    ) { levels, units, progress ->
-        buildLevelCards(levels, units, progress)
+        appSettingRepository.setting,
+    ) { levels, units, progress, setting ->
+        buildLevelCards(levels, units, progress, setting.developerMode)
     }.onStart {
         seeder.seedIfEmpty()
+    }
+
+    /**
+     * Returns the next sibling unit in the same level (orderIndex + 1), or `null` if
+     * [currentUnitId] is the last unit in its level.
+     */
+    fun observeNextUnit(currentUnitId: String): Flow<PhonicsUnit?> = unitDao.observeAll().map { all ->
+        val current = all.firstOrNull { it.id == currentUnitId } ?: return@map null
+        all.filter { it.levelId == current.levelId }
+            .sortedBy { it.orderIndex }
+            .firstOrNull { it.orderIndex == current.orderIndex + 1 }
+            ?.toModel()
     }
 
     private fun buildLevelCards(
         levels: List<LevelEntity>,
         units: List<UnitEntity>,
         progress: LearningProgressEntity?,
+        developerMode: Boolean,
     ): List<LevelCard> {
         val unitsByLevel = units.groupBy { it.levelId }
         val activeOrderIndex = progress?.let { active ->
@@ -64,6 +81,7 @@ class LevelRepository(
                 activeOrderIndex != null && entity.orderIndex == activeOrderIndex + 1 -> {
                     LevelStatus.ReadyToStart
                 }
+                developerMode -> LevelStatus.ReadyToStart
                 else -> LevelStatus.Locked(
                     prerequisiteLevel = levels.firstOrNull { it.orderIndex == entity.orderIndex - 1 }?.toModel(),
                 )

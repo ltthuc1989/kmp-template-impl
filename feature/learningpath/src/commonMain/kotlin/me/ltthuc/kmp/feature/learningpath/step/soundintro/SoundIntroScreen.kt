@@ -16,7 +16,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -42,12 +44,15 @@ import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.sound_intro_listen
 import me.ltthuc.kmp.core.resource.sound_intro_next_lesson
 import me.ltthuc.kmp.core.resource.sound_intro_title
+import me.ltthuc.kmp.core.resource.step_guide_sound_intro
+import me.ltthuc.kmp.core.ui.ads.BottomBannerAd
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
-import me.ltthuc.kmp.feature.learningpath.step.common.CircularAudioButton
+import me.ltthuc.kmp.feature.learningpath.step.common.PulseRings
 import me.ltthuc.kmp.feature.learningpath.step.common.LetterStepperBar
 import me.ltthuc.kmp.feature.learningpath.step.common.PuffySurface
 import me.ltthuc.kmp.feature.learningpath.step.common.StepHeader
 import me.ltthuc.kmp.feature.learningpath.step.common.StoryStyleCard
+import me.ltthuc.kmp.feature.learningpath.step.common.WordDisplayView
 import me.ltthuc.kmp.feature.learningpath.step.common.letterPair
 import me.ltthuc.kmp.feature.learningpath.step.common.soundIntroRef
 import org.jetbrains.compose.resources.stringResource
@@ -61,6 +66,7 @@ internal fun SoundIntroScreen(
     unitId: String,
     lessonIndex: Int,
     onClose: () -> Unit,
+    onHome: () -> Unit,
     onNext: () -> Unit,
     onStepJump: (Int) -> Unit,
     stepSegments: ImmutableList<Int>,
@@ -89,6 +95,7 @@ internal fun SoundIntroScreen(
             audioState = audioState,
             onListen = { viewModel.onListenToggle(currentLesson) },
             onClose = onClose,
+            onHome = onHome,
             onNext = onNext,
             onStepJump = onStepJump,
             stepSegments = stepSegments,
@@ -104,6 +111,7 @@ private fun SoundIntroContent(
     audioState: AudioState,
     onListen: () -> Unit,
     onClose: () -> Unit,
+    onHome: () -> Unit,
     onNext: () -> Unit,
     onStepJump: (Int) -> Unit,
     stepSegments: ImmutableList<Int>,
@@ -119,8 +127,10 @@ private fun SoundIntroContent(
                 title = stringResource(Res.string.sound_intro_title),
                 currentStepIndex = STEP_INDEX,
                 onClose = onClose,
+                onHomeClick = onHome,
                 onStepJump = onStepJump,
                 stepSegments = stepSegments,
+                guideText = stringResource(Res.string.step_guide_sound_intro),
             )
         },
         bottomBar = {
@@ -137,25 +147,45 @@ private fun SoundIntroContent(
                 .padding(horizontal = 20.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                Text(
+                    text = currentLesson.letterPair(),
+                    fontSize = 54.sp,
+                    lineHeight = 56.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = MaterialTheme.colorScheme.primary,
+                )
+                Box(
+                    modifier = Modifier.size(48.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    PulseRings(
+                        isActive = isPlaying,
+                        ringColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.4f),
+                    )
+                    IconButton(
+                        onClick = onListen,
+                        modifier = Modifier.size(40.dp),
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.VolumeUp,
+                            contentDescription = stringResource(Res.string.sound_intro_listen),
+                            tint = MaterialTheme.colorScheme.secondary,
+                            modifier = Modifier.size(26.dp),
+                        )
+                    }
+                }
+            }
             Spacer(Modifier.height(8.dp))
-            Text(
-                text = currentLesson.letterPair(),
-                fontSize = 76.sp,
-                lineHeight = 80.sp,
-                fontWeight = FontWeight.ExtraBold,
-                color = MaterialTheme.colorScheme.primary,
-            )
-            Spacer(Modifier.height(12.dp))
             StoryStyleCard {
                 FrameContent(item = featuredWord)
             }
-            Spacer(Modifier.height(16.dp))
-            CircularAudioButton(
-                isPlaying = isPlaying,
-                onClick = onListen,
-                contentDescription = stringResource(Res.string.sound_intro_listen),
-            )
             Spacer(Modifier.weight(1f, fill = true))
+            BottomBannerAd()
+            Spacer(Modifier.height(8.dp))
             NextLessonButton(onClick = onNext)
             Spacer(Modifier.height(8.dp))
         }
@@ -169,11 +199,9 @@ private fun FrameContent(item: LessonWord?) {
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center,
     ) {
-        // TODO render imageAsset when asset pipeline is online; emoji is the current placeholder.
-        Text(
-            text = item.emoji.orEmpty().ifEmpty { "🐝" },
+        WordDisplayView(
+            word = item,
             fontSize = 120.sp,
-            textAlign = TextAlign.Center,
         )
     }
 }

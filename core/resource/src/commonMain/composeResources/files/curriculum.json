@@ -27,7 +27,11 @@
               "words": [
                 {
                   "word": "apple",
-                  "emoji": "🍎"
+                  "emoji": "🍎",
+                  "displays": [
+                    {"type": "emoji", "char": "🍎"},
+                    {"type": "emoji", "char": "🍏"}
+                  ]
                 },
                 {
                   "word": "ax",
@@ -105,7 +109,11 @@
               "words": [
                 {
                   "word": "cat",
-                  "emoji": "🐱"
+                  "emoji": "🐱",
+                  "displays": [
+                    {"type": "emoji", "char": "🐱"},
+                    {"type": "emoji", "char": "🐈"}
+                  ]
                 },
                 {
                   "word": "cup",
@@ -113,11 +121,19 @@
                 },
                 {
                   "word": "car",
-                  "emoji": "🚗"
+                  "emoji": "🚗",
+                  "displays": [
+                    {"type": "emoji", "char": "🚗"},
+                    {"type": "emoji", "char": "🚙"}
+                  ]
                 },
                 {
                   "word": "computer",
-                  "emoji": "💻"
+                  "emoji": "💻",
+                  "displays": [
+                    {"type": "emoji", "char": "💻"},
+                    {"type": "emoji", "char": "🖥️"}
+                  ]
                 }
               ],
               "chantTexts": [

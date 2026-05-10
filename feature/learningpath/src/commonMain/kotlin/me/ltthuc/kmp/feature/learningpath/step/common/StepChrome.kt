@@ -26,7 +26,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.QueryStats
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -44,6 +44,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -51,6 +52,7 @@ import kotlinx.collections.immutable.ImmutableList
 import me.ltthuc.kmp.core.model.PhonicsLesson
 import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.common_close
+import me.ltthuc.kmp.core.resource.step_home_action
 import org.jetbrains.compose.resources.stringResource
 
 /**
@@ -67,54 +69,78 @@ internal fun StepHeader(
     onClose: () -> Unit,
     onStepJump: (Int) -> Unit,
     modifier: Modifier = Modifier,
-    onAnalyticsClick: () -> Unit = {},
+    guideText: String = "",
+    showGuideText: Boolean = true,
+    onHomeClick: () -> Unit = {},
+    guideTrailing: (@Composable () -> Unit)? = null,
 ) {
-    Row(
+    Column(
         modifier = modifier
             .fillMaxWidth()
-            .statusBarsPadding()
-            .padding(horizontal = 20.dp, vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically,
+            .statusBarsPadding(),
     ) {
-        IconButton(
-            onClick = onClose,
-            modifier = Modifier.size(40.dp),
-            colors = IconButtonDefaults.iconButtonColors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                contentColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-            ),
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 20.dp, end = 20.dp, top = 2.dp, bottom = 6.dp),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            Icon(
-                imageVector = Icons.Filled.Close,
-                contentDescription = stringResource(Res.string.common_close),
-            )
-        }
-        Column(
-            modifier = Modifier.weight(1f),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            Text(
-                text = title,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
-            StepSegmentRow(
-                currentStepIndex = currentStepIndex,
-                stepSegments = stepSegments,
-                onStepJump = onStepJump,
-            )
-        }
-        IconButton(
-            onClick = onAnalyticsClick,
-            modifier = Modifier.size(40.dp),
-        ) {
-            Icon(
-                imageVector = Icons.Filled.QueryStats,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
-            )
+            IconButton(
+                onClick = onClose,
+                modifier = Modifier.size(40.dp),
+                colors = IconButtonDefaults.iconButtonColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                ),
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Close,
+                    contentDescription = stringResource(Res.string.common_close),
+                )
+            }
+            Column(
+                modifier = Modifier.weight(1f),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+            ) {
+                Text(
+                    text = title,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+                StepSegmentRow(
+                    currentStepIndex = currentStepIndex,
+                    stepSegments = stepSegments,
+                    onStepJump = onStepJump,
+                )
+                if (showGuideText && guideText.isNotEmpty()) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    ) {
+                        Text(
+                            text = guideText,
+                            textAlign = TextAlign.Center,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            maxLines = 1,
+                        )
+                        guideTrailing?.invoke()
+                    }
+                }
+            }
+            IconButton(
+                onClick = onHomeClick,
+                modifier = Modifier.size(40.dp),
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Home,
+                    contentDescription = stringResource(Res.string.step_home_action),
+                    tint = MaterialTheme.colorScheme.primary,
+                )
+            }
         }
     }
 }
@@ -421,6 +447,7 @@ internal fun StepNavRow(
     onPrevious: () -> Unit,
     onNext: () -> Unit,
     modifier: Modifier = Modifier,
+    nextEnabled: Boolean = true,
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
@@ -434,6 +461,7 @@ internal fun StepNavRow(
         StepNextButton(
             label = nextLabel,
             onClick = onNext,
+            enabled = nextEnabled,
             modifier = Modifier.weight(1f),
         )
     }
@@ -491,25 +519,94 @@ private fun StepNextButton(
     label: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
 ) {
     val interaction = remember { MutableInteractionSource() }
+    val containerColor = if (enabled) {
+        MaterialTheme.colorScheme.primary
+    } else {
+        MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)
+    }
     PuffySurface(
         modifier = modifier
             .height(56.dp)
             .clickable(
                 interactionSource = interaction,
                 indication = ripple(color = MaterialTheme.colorScheme.onPrimary),
+                enabled = enabled,
                 onClick = onClick,
             ),
         shape = CircleShape,
-        containerColor = MaterialTheme.colorScheme.primary,
-        shadowElevation = 14.dp,
+        containerColor = containerColor,
+        shadowElevation = if (enabled) 14.dp else 6.dp,
         shadowTint = MaterialTheme.colorScheme.primary,
-        shadowAlpha = 0.55f,
+        shadowAlpha = if (enabled) 0.55f else 0.20f,
         topHighlightHeight = 10.dp,
-        topHighlightAlpha = 0.3f,
+        topHighlightAlpha = if (enabled) 0.3f else 0.15f,
         bottomShadeHeight = 10.dp,
-        bottomShadeAlpha = 0.30f,
+        bottomShadeAlpha = if (enabled) 0.30f else 0.15f,
+    ) {
+        Row(
+            modifier = Modifier.fillMaxSize(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center,
+        ) {
+            Text(
+                text = label,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onPrimary,
+            )
+            Spacer(Modifier.width(8.dp))
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onPrimary,
+                modifier = Modifier.size(20.dp),
+            )
+        }
+    }
+}
+
+/**
+ * Single contextual continue button for step screens — replaces StepNavRow's Previous+Next pair.
+ * Full width, primary red filled (puffy 3D). Disabled state shows reduced shadow + gray.
+ *
+ * For game screens (Matching/Identify/Blending), pass `enabled = activityComplete && overlay == null`
+ * to enforce: user must complete activity AND dismiss celebration overlay before tapping Continue.
+ */
+@Composable
+internal fun StepContinueButton(
+    label: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+) {
+    val interaction = remember { MutableInteractionSource() }
+    val containerColor = if (enabled) {
+        MaterialTheme.colorScheme.primary
+    } else {
+        MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)
+    }
+    PuffySurface(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(56.dp)
+            .clickable(
+                interactionSource = interaction,
+                indication = ripple(color = MaterialTheme.colorScheme.onPrimary),
+                enabled = enabled,
+                onClick = onClick,
+            ),
+        shape = CircleShape,
+        containerColor = containerColor,
+        shadowElevation = if (enabled) 14.dp else 6.dp,
+        shadowTint = MaterialTheme.colorScheme.primary,
+        shadowAlpha = if (enabled) 0.55f else 0.20f,
+        topHighlightHeight = 10.dp,
+        topHighlightAlpha = if (enabled) 0.3f else 0.15f,
+        bottomShadeHeight = 10.dp,
+        bottomShadeAlpha = if (enabled) 0.30f else 0.15f,
     ) {
         Row(
             modifier = Modifier.fillMaxSize(),

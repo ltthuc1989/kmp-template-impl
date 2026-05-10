@@ -3,14 +3,14 @@ package me.ltthuc.kmp.core.model
 data class UnitCard(
     val unit: PhonicsUnit,
     val status: UnitStatus,
-    val totalStars: Int,
-    val previewEmojis: List<String>,
-) {
-    companion object {
-        const val MAX_STARS_PER_UNIT = 24
-        const val UNLOCK_THRESHOLD_STARS = 6
-    }
-}
+    val completionCount: Int,
+    val previewLetters: List<UnitLetterPreview>,
+)
+
+data class UnitLetterPreview(
+    val letter: String,
+    val emoji: String?,
+)
 
 enum class UnitStatus {
     Completed,

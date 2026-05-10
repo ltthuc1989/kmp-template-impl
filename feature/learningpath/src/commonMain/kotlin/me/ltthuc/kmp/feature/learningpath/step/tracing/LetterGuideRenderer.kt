@@ -15,10 +15,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.geometry.isSpecified
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Matrix
+import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.PathMeasure
@@ -26,6 +28,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.vector.PathParser
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.PlatformTextStyle
@@ -351,18 +354,47 @@ internal fun DrawScope.drawGhostLetter(
     strokeWidthPx: Float,
 ) {
     val layout = GuideLayout.forCanvas(canvasSize)
-    guide.strokes.forEach { stroke ->
-        val raw = PathParser().parsePathString(stroke.svgPath).toPath()
-        val scaled = layout.transformPath(raw)
-        drawPath(
-            scaled,
-            color = color,
-            style = Stroke(
-                width = strokeWidthPx,
-                cap = StrokeCap.Round,
-                join = StrokeJoin.Round,
-            ),
-        )
+    val opaqueColor = color.copy(alpha = 1f)
+    val layerAlpha = color.alpha
+    val bounds = Rect(0f, 0f, canvasSize.width, canvasSize.height)
+    val layerPaint = Paint().apply { alpha = layerAlpha }
+    val capRadiusPx = strokeWidthPx / 2f
+
+    // Render strokes into an offscreen layer with FULL opacity, then composite the layer
+    // with the source color's alpha. This makes overlapping stroke geometry (D, B, P, R…)
+    // union into one solid shape instead of double-blending — eliminates the dark "hot spot"
+    // at shared endpoints. After each stroke, drop a full circle of radius = strokeWidth/2
+    // at both endpoints: at non-shared endpoints this just overlaps the round cap (no visual
+    // change); at shared endpoints it fills the quadrant gap two perpendicular round caps
+    // would otherwise leave, so corners read as smooth rounded blobs instead of split lobes.
+    drawIntoCanvas { canvas ->
+        canvas.saveLayer(bounds, layerPaint)
+        guide.strokes.forEach { stroke ->
+            val raw = PathParser().parsePathString(stroke.svgPath).toPath()
+            val scaled = layout.transformPath(raw)
+            drawPath(
+                scaled,
+                color = opaqueColor,
+                style = Stroke(
+                    width = strokeWidthPx,
+                    cap = StrokeCap.Round,
+                    join = StrokeJoin.Round,
+                ),
+            )
+            val measure = PathMeasure().apply { setPath(scaled, false) }
+            val len = measure.length
+            if (len > 0f) {
+                val startPos = measure.getPosition(0f)
+                val endPos = measure.getPosition(len)
+                if (startPos.isSpecified) {
+                    drawCircle(opaqueColor, capRadiusPx, startPos)
+                }
+                if (endPos.isSpecified) {
+                    drawCircle(opaqueColor, capRadiusPx, endPos)
+                }
+            }
+        }
+        canvas.restore()
     }
 }
 

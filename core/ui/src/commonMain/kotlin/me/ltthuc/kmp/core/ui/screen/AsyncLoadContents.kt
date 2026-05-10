@@ -3,6 +3,7 @@
 package me.ltthuc.kmp.core.ui.screen
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
@@ -33,7 +34,10 @@ fun <T> AsyncLoadContents(
             .clip(cornerShape)
             .background(containerColor),
         targetState = screenState,
-        transitionSpec = { fadeIn().togetherWith(fadeOut()) },
+        transitionSpec = {
+            fadeIn(animationSpec = tween(durationMillis = FADE_DURATION_MS))
+                .togetherWith(fadeOut(animationSpec = tween(durationMillis = FADE_DURATION_MS)))
+        },
         contentKey = { it::class.simpleName },
         label = "AsyncLoadContents",
     ) { state ->
@@ -62,3 +66,5 @@ fun <T> AsyncLoadContents(
         }
     }
 }
+
+private const val FADE_DURATION_MS = 50

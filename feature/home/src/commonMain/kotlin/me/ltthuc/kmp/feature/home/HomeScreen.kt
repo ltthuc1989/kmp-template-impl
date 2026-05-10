@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.collections.immutable.ImmutableList
 import me.ltthuc.kmp.core.model.LevelCard
+import me.ltthuc.kmp.core.ui.ads.BottomBannerAd
 import me.ltthuc.kmp.core.model.LevelStatus
 import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.home_badge_active
@@ -98,6 +99,7 @@ private fun HomeScreenContent(
         modifier = modifier,
         containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
         topBar = { HomeTopBar() },
+        bottomBar = { BottomBannerAd() },
     ) { innerPadding ->
         content(innerPadding)
     }

@@ -22,4 +22,7 @@ interface UserProgressDao {
 
     @Upsert
     suspend fun upsert(progress: UserProgressEntity)
+
+    @Query("DELETE FROM user_progress WHERE unitId = :unitId")
+    suspend fun deleteByUnit(unitId: String)
 }

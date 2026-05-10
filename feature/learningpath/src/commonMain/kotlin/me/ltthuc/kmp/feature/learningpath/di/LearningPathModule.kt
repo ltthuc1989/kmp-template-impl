@@ -1,5 +1,6 @@
 package me.ltthuc.kmp.feature.learningpath.di
 
+import me.ltthuc.kmp.feature.learningpath.UnitCompleteViewModel
 import me.ltthuc.kmp.feature.learningpath.UnitSelectionViewModel
 import me.ltthuc.kmp.feature.learningpath.step.blending.BlendingViewModel
 import me.ltthuc.kmp.feature.learningpath.step.chant.ChantViewModel
@@ -14,6 +15,7 @@ import org.koin.dsl.module
 
 val learningPathModule = module {
     viewModel { params -> UnitSelectionViewModel(levelId = params.get(), get(), get()) }
+    viewModel { params -> UnitCompleteViewModel(unitId = params.get(), get(), get(), get()) }
     viewModel { params -> SoundIntroViewModel(unitId = params.get(), get(), get()) }
     viewModel { params -> ChantViewModel(unitId = params.get(), get(), get()) }
     viewModel { params -> VocabularyViewModel(unitId = params.get(), get(), get()) }

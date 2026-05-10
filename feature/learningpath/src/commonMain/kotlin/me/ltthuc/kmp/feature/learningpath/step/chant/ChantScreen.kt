@@ -11,8 +11,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -21,16 +19,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Stop
+import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -57,16 +53,18 @@ import me.ltthuc.kmp.core.audio.AudioState
 import me.ltthuc.kmp.core.audio.isActiveFor
 import me.ltthuc.kmp.core.model.PhonicsLesson
 import me.ltthuc.kmp.core.resource.Res
-import me.ltthuc.kmp.core.resource.chant_instruction
 import me.ltthuc.kmp.core.resource.chant_next
 import me.ltthuc.kmp.core.resource.chant_previous
+import me.ltthuc.kmp.core.resource.chant_listen_cd
 import me.ltthuc.kmp.core.resource.chant_title
+import me.ltthuc.kmp.core.resource.step_guide_chant
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
 import me.ltthuc.kmp.feature.learningpath.step.common.LetterStepperBar
 import me.ltthuc.kmp.feature.learningpath.step.common.PageDotsRow
-import me.ltthuc.kmp.feature.learningpath.step.common.PuffySurface
+import me.ltthuc.kmp.feature.learningpath.step.common.PulseRings
 import me.ltthuc.kmp.feature.learningpath.step.common.StepHeader
-import me.ltthuc.kmp.feature.learningpath.step.common.StepNavRow
+import me.ltthuc.kmp.core.ui.ads.BottomBannerAd
+import me.ltthuc.kmp.feature.learningpath.step.common.StepContinueButton
 import me.ltthuc.kmp.feature.learningpath.step.common.StoryStyleCard
 import me.ltthuc.kmp.feature.learningpath.step.common.chantRef
 import org.jetbrains.compose.resources.stringResource
@@ -85,6 +83,7 @@ internal fun ChantScreen(
     unitId: String,
     lessonIndex: Int,
     onClose: () -> Unit,
+    onHome: () -> Unit,
     onPrevious: () -> Unit,
     onNext: () -> Unit,
     onStepJump: (Int) -> Unit,
@@ -115,6 +114,7 @@ internal fun ChantScreen(
             audioState = audioState,
             onChantToggle = { viewModel.onChantToggle(currentLesson) },
             onClose = onClose,
+            onHome = onHome,
             onPrevious = onPrevious,
             onNext = onNext,
             onStepJump = onStepJump,
@@ -131,6 +131,7 @@ private fun ChantContent(
     audioState: AudioState,
     onChantToggle: () -> Unit,
     onClose: () -> Unit,
+    onHome: () -> Unit,
     onPrevious: () -> Unit,
     onNext: () -> Unit,
     onStepJump: (Int) -> Unit,
@@ -160,8 +161,32 @@ private fun ChantContent(
                 title = stringResource(Res.string.chant_title),
                 currentStepIndex = STEP_INDEX,
                 onClose = onClose,
+                onHomeClick = onHome,
                 onStepJump = onStepJump,
                 stepSegments = stepSegments,
+                guideText = stringResource(Res.string.step_guide_chant),
+                guideTrailing = {
+                    Box(
+                        modifier = Modifier.size(36.dp),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        PulseRings(
+                            isActive = isChanting,
+                            ringColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.4f),
+                        )
+                        IconButton(
+                            onClick = onChantToggle,
+                            modifier = Modifier.size(32.dp),
+                        ) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.VolumeUp,
+                                contentDescription = stringResource(Res.string.chant_listen_cd),
+                                tint = MaterialTheme.colorScheme.secondary,
+                                modifier = Modifier.size(20.dp),
+                            )
+                        }
+                    }
+                },
             )
         },
         bottomBar = {
@@ -178,7 +203,6 @@ private fun ChantContent(
                 .padding(horizontal = 20.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Spacer(Modifier.height(8.dp))
             AnimatedContent(
                 targetState = slideIndex,
                 transitionSpec = {
@@ -203,16 +227,11 @@ private fun ChantContent(
             Spacer(Modifier.height(12.dp))
             PageDotsRow(currentPage = slideIndex, total = TOTAL_SLIDES)
             Spacer(Modifier.weight(1f, fill = true))
-            PlayStopButton(
-                isChanting = isChanting,
-                onToggle = onChantToggle,
-            )
-            Spacer(Modifier.height(16.dp))
-            StepNavRow(
-                previousLabel = stringResource(Res.string.chant_previous),
-                nextLabel = stringResource(Res.string.chant_next),
-                onPrevious = onPrevious,
-                onNext = onNext,
+            BottomBannerAd()
+            Spacer(Modifier.height(8.dp))
+            StepContinueButton(
+                label = stringResource(Res.string.chant_next),
+                onClick = onNext,
             )
             Spacer(Modifier.height(8.dp))
         }
@@ -234,14 +253,6 @@ private fun ChantHeroCard(lesson: PhonicsLesson, wordIndex: Int, isChanting: Boo
             CharacterArtwork(emoji = word?.emoji.orEmpty())
             Spacer(Modifier.height(20.dp))
             ChantText(chant = chant, isChanting = isChanting)
-            Spacer(Modifier.height(12.dp))
-            Text(
-                text = stringResource(Res.string.chant_instruction),
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Medium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center,
-            )
         }
     }
 }
@@ -309,44 +320,6 @@ private fun ChantText(chant: String, isChanting: Boolean) {
         textAlign = TextAlign.Center,
         lineHeight = LINE_HEIGHT_SP.sp,
     )
-}
-
-@Composable
-private fun PlayStopButton(
-    isChanting: Boolean,
-    onToggle: () -> Unit,
-) {
-    val interaction = remember { MutableInteractionSource() }
-    PuffySurface(
-        modifier = Modifier
-            .size(72.dp)
-            .clickable(
-                interactionSource = interaction,
-                indication = ripple(color = MaterialTheme.colorScheme.onPrimary, bounded = false),
-                onClick = onToggle,
-            ),
-        shape = CircleShape,
-        containerColor = MaterialTheme.colorScheme.primary,
-        shadowElevation = 14.dp,
-        shadowTint = MaterialTheme.colorScheme.primary,
-        shadowAlpha = 0.55f,
-        topHighlightHeight = 10.dp,
-        topHighlightAlpha = 0.3f,
-        bottomShadeHeight = 10.dp,
-        bottomShadeAlpha = 0.25f,
-    ) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(
-                imageVector = if (isChanting) Icons.Filled.Stop else Icons.Filled.PlayArrow,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onPrimary,
-                modifier = Modifier.size(36.dp),
-            )
-        }
-    }
 }
 
 private fun String.tokenize(): List<String> {

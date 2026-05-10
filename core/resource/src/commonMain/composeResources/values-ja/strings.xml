@@ -11,6 +11,7 @@
     <string name="common_reload">再読み込み</string>
     <string name="common_back">戻る</string>
     <string name="common_close">閉じる</string>
+    <string name="step_home_action">ユニットへ戻る</string>
     <string name="common_next">次へ</string>
     <string name="common_finish">完了</string>
     <string name="common_skip">スキップ</string>
@@ -182,12 +183,11 @@
     <string name="sound_intro_word_example">%1$s のように</string>
     <string name="sound_intro_listen">音を聞く</string>
     <string name="sound_intro_can_you_say">「%1$s」と言ってみよう！</string>
-    <string name="sound_intro_instruction">口を大きく開けて音を出してみよう！</string>
     <string name="sound_intro_next_lesson">次のレッスン</string>
 
     <!-- Learning Path: Chant step -->
     <string name="chant_title">チャント</string>
-    <string name="chant_instruction">音に合わせて繰り返そう！</string>
+    <string name="chant_listen_cd">チャントを聞く</string>
     <string name="chant_previous">戻る</string>
     <string name="chant_next">次へ</string>
 
@@ -200,7 +200,6 @@
 
     <!-- Learning Path: Identify step -->
     <string name="identify_title">見つけよう</string>
-    <string name="identify_instruction">合う絵を見つけよう！</string>
     <string name="identify_listen_cd">単語を聞く</string>
     <string name="identify_round_progress">ラウンド %1$d / %2$d</string>
     <string name="identify_all_done_title">素晴らしい！</string>
@@ -213,8 +212,6 @@
 
     <!-- Learning Path: Matching step -->
     <string name="matching_title">マッチング</string>
-    <string name="matching_hint">線を引いて合わせよう！</string>
-    <string name="matching_check_button">確認</string>
 
     <!-- Story (step 7) -->
     <string name="story_title">おはなし</string>
@@ -226,12 +223,41 @@
 
     <!-- Tracing (step 6) -->
     <string name="tracing_title">なぞる</string>
-    <string name="tracing_instruction">もじを なぞろう！</string>
     <string name="tracing_draw_here">ここに かこう</string>
     <string name="tracing_case_upper">ABC</string>
     <string name="tracing_case_lower">abc</string>
-    <string name="tracing_success_subtitle">%1$d%% できたよ！すごい！</string>
+    <string name="tracing_score_good">上手！</string>
+    <string name="tracing_score_very_good">とても上手！</string>
+    <string name="tracing_score_excellent">すばらしい！</string>
     <string name="tracing_fail_subtitle">もういちど せんを なぞってみよう！</string>
+    <string name="tracing_watch_ad_to_pass">広告を見てパス</string>
+
+    <!-- Step guide texts (shown below toolbar on each step screen) -->
+    <string name="step_guide_sound_intro">音をきいて まねしよう</string>
+    <string name="step_guide_chant">きいて いっしょに うたおう</string>
+    <string name="step_guide_vocabulary">えをタップして きいてみよう</string>
+    <string name="step_guide_identify">あう えを タップしよう</string>
+    <string name="step_guide_blending">音をのばして つなげよう</string>
+    <string name="step_guide_matching">ペアをみつけよう</string>
+    <string name="step_guide_tracing">もじを なぞろう</string>
+    <string name="step_guide_story">おはなしを きこう</string>
+
+    <!-- Unit selection: practice count + lesson selector sheet -->
+    <string name="unit_practice_count">%1$d 回 練習しました</string>
+    <string name="unit_practice_chip">%1$d 回</string>
+    <string name="lesson_sheet_lesson_label">レッスン %1$d: %2$s</string>
+    <string name="lesson_sheet_story_label">おはなし</string>
+    <string name="lesson_sheet_practice_count">%1$d 回 練習しました</string>
+    <string name="lesson_sheet_restart">このユニットをやり直す</string>
+
+    <!-- Unit complete celebration screen -->
+    <string name="unit_complete_title">やったね！</string>
+    <string name="unit_complete_subtitle">%1$s クリア！</string>
+    <string name="unit_complete_first_badge">✨ はじめてクリア！</string>
+    <string name="unit_complete_practice_badge">れんしゅう %1$d 回め</string>
+    <string name="unit_complete_next_button">つぎ：%1$s</string>
+    <string name="unit_complete_choose_letter">べつのもじをえらぶ</string>
+    <string name="unit_complete_level_done">🎓 レベルクリア！</string>
 
     <!-- Score feedback (reusable across step screens) -->
     <string name="score_success_title">素晴らしい！</string>

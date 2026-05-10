@@ -7,11 +7,13 @@ import androidx.room.RoomDatabaseConstructor
 import me.ltthuc.kmp.core.datasource.db.dao.LearningProgressDao
 import me.ltthuc.kmp.core.datasource.db.dao.LevelDao
 import me.ltthuc.kmp.core.datasource.db.dao.PhonicsLessonDao
+import me.ltthuc.kmp.core.datasource.db.dao.UnitCompletionDao
 import me.ltthuc.kmp.core.datasource.db.dao.UnitDao
 import me.ltthuc.kmp.core.datasource.db.dao.UserProgressDao
 import me.ltthuc.kmp.core.datasource.db.entity.LearningProgressEntity
 import me.ltthuc.kmp.core.datasource.db.entity.LevelEntity
 import me.ltthuc.kmp.core.datasource.db.entity.PhonicsLessonEntity
+import me.ltthuc.kmp.core.datasource.db.entity.UnitCompletionEntity
 import me.ltthuc.kmp.core.datasource.db.entity.UnitEntity
 import me.ltthuc.kmp.core.datasource.db.entity.UserProgressEntity
 
@@ -22,8 +24,9 @@ import me.ltthuc.kmp.core.datasource.db.entity.UserProgressEntity
         PhonicsLessonEntity::class,
         LearningProgressEntity::class,
         UserProgressEntity::class,
+        UnitCompletionEntity::class,
     ],
-    version = 9,
+    version = 12,
     exportSchema = false,
 )
 @ConstructedBy(GrabeeDatabaseConstructor::class)
@@ -33,6 +36,7 @@ abstract class GrabeeDatabase : RoomDatabase() {
     abstract fun phonicsLessonDao(): PhonicsLessonDao
     abstract fun learningProgressDao(): LearningProgressDao
     abstract fun userProgressDao(): UserProgressDao
+    abstract fun unitCompletionDao(): UnitCompletionDao
 }
 
 @Suppress("NO_ACTUAL_FOR_EXPECT", "KotlinNoActualForExpect")

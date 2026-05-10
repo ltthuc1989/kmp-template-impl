@@ -11,6 +11,7 @@
     <string name="common_reload">Reload</string>
     <string name="common_back">Back</string>
     <string name="common_close">Close</string>
+    <string name="step_home_action">Back to unit</string>
     <string name="common_next">Next</string>
     <string name="common_finish">Done</string>
     <string name="common_skip">Skip</string>
@@ -182,12 +183,11 @@
     <string name="sound_intro_word_example">as in %1$s</string>
     <string name="sound_intro_listen">Listen to Sound</string>
     <string name="sound_intro_can_you_say">Can you say \"%1$s\"?</string>
-    <string name="sound_intro_instruction">Open your mouth wide and make the sound!</string>
     <string name="sound_intro_next_lesson">Next Lesson</string>
 
     <!-- Learning Path: Chant step -->
     <string name="chant_title">Chant</string>
-    <string name="chant_instruction">Repeat after the sound!</string>
+    <string name="chant_listen_cd">Listen to chant</string>
     <string name="chant_previous">Previous</string>
     <string name="chant_next">Next</string>
 
@@ -200,7 +200,6 @@
 
     <!-- Learning Path: Identify step -->
     <string name="identify_title">Identify</string>
-    <string name="identify_instruction">Find the matching picture!</string>
     <string name="identify_listen_cd">Listen to word</string>
     <string name="identify_round_progress">Round %1$d of %2$d</string>
     <string name="identify_all_done_title">Great Job!</string>
@@ -213,8 +212,6 @@
 
     <!-- Learning Path: Matching step -->
     <string name="matching_title">Matching</string>
-    <string name="matching_hint">Drag the line to match!</string>
-    <string name="matching_check_button">Check</string>
 
     <!-- Story (step 7) -->
     <string name="story_title">Story</string>
@@ -226,12 +223,41 @@
 
     <!-- Tracing (step 6) -->
     <string name="tracing_title">Tracing</string>
-    <string name="tracing_instruction">Trace the letter!</string>
     <string name="tracing_draw_here">Draw here</string>
     <string name="tracing_case_upper">ABC</string>
     <string name="tracing_case_lower">abc</string>
-    <string name="tracing_success_subtitle">You got %1$d%% — great job!</string>
+    <string name="tracing_score_good">Good job!</string>
+    <string name="tracing_score_very_good">Very good!</string>
+    <string name="tracing_score_excellent">Excellent!</string>
     <string name="tracing_fail_subtitle">Not quite — try to follow the lines!</string>
+    <string name="tracing_watch_ad_to_pass">Watch ad to pass</string>
+
+    <!-- Step guide texts (shown below toolbar on each step screen) -->
+    <string name="step_guide_sound_intro">Listen and repeat the sound</string>
+    <string name="step_guide_chant">Listen and sing along</string>
+    <string name="step_guide_vocabulary">Tap each picture to listen</string>
+    <string name="step_guide_identify">Tap the matching picture</string>
+    <string name="step_guide_blending">Stretch and blend the sounds</string>
+    <string name="step_guide_matching">Match the pairs</string>
+    <string name="step_guide_tracing">Trace along the letter</string>
+    <string name="step_guide_story">Listen to the story</string>
+
+    <!-- Unit selection: practice count + lesson selector sheet -->
+    <string name="unit_practice_count">Practiced %1$d time(s)</string>
+    <string name="unit_practice_chip">Practiced %1$d</string>
+    <string name="lesson_sheet_lesson_label">Lesson %1$d: %2$s</string>
+    <string name="lesson_sheet_story_label">Story</string>
+    <string name="lesson_sheet_practice_count">Practiced %1$d time(s)</string>
+    <string name="lesson_sheet_restart">Restart entire unit</string>
+
+    <!-- Unit complete celebration screen -->
+    <string name="unit_complete_title">Great job!</string>
+    <string name="unit_complete_subtitle">%1$s Complete!</string>
+    <string name="unit_complete_first_badge">✨ First completion!</string>
+    <string name="unit_complete_practice_badge">Practice #%1$d</string>
+    <string name="unit_complete_next_button">Next: %1$s</string>
+    <string name="unit_complete_choose_letter">Pick another letter</string>
+    <string name="unit_complete_level_done">🎓 Level complete!</string>
 
     <!-- Score feedback (reusable across step screens) -->
     <string name="score_success_title">Great Job!</string>

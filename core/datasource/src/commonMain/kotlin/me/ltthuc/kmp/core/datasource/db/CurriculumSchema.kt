@@ -1,7 +1,9 @@
 package me.ltthuc.kmp.core.datasource.db
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonClassDiscriminator
 import me.ltthuc.kmp.core.datasource.db.entity.LevelEntity
 import me.ltthuc.kmp.core.datasource.db.entity.PhonicsLessonEntity
 import me.ltthuc.kmp.core.datasource.db.entity.UnitEntity
@@ -58,7 +60,39 @@ internal data class PhonicsLessonDto(
 internal data class LessonWordDto(
     val word: String,
     val emoji: String? = null,
+    val displays: List<WordDisplayDto> = emptyList(),
 )
+
+@OptIn(kotlinx.serialization.ExperimentalSerializationApi::class)
+@Serializable
+@JsonClassDiscriminator("type")
+internal sealed interface WordDisplayDto {
+    @Serializable
+    @SerialName("emoji")
+    data class Emoji(val char: String) : WordDisplayDto
+
+    @Serializable
+    @SerialName("image")
+    data class Image(val path: String) : WordDisplayDto
+}
+
+/**
+ * Normalized word shape persisted into `wordsJson`. The raw [LessonWordDto] (read from
+ * `curriculum.json`) carries both legacy `emoji` and modern `displays`; this normalized
+ * form keeps only `displays` so the read-side mapper has a single source of truth.
+ */
+@Serializable
+internal data class NormalizedLessonWord(
+    val word: String,
+    val displays: List<WordDisplayDto>,
+)
+
+private fun LessonWordDto.normalize(): NormalizedLessonWord {
+    val resolved = displays.ifEmpty {
+        emoji?.takeIf { it.isNotEmpty() }?.let { listOf(WordDisplayDto.Emoji(it)) } ?: emptyList()
+    }
+    return NormalizedLessonWord(word = word, displays = resolved)
+}
 
 internal data class CurriculumEntities(
     val levels: List<LevelEntity>,
@@ -101,7 +135,8 @@ private fun UnitDto.toEntity(levelId: String) = UnitEntity(
 )
 
 private fun PhonicsLessonDto.toEntity(unitId: String): PhonicsLessonEntity {
-    val wordsJsonStr = curriculumJson.encodeToString(words)
+    val normalizedWords = words.map { it.normalize() }
+    val wordsJsonStr = curriculumJson.encodeToString(normalizedWords)
     val chantTextsJsonStr = curriculumJson.encodeToString(chantTexts)
     val chantOrderJsonStr = curriculumJson.encodeToString(chantOrder)
     return PhonicsLessonEntity(

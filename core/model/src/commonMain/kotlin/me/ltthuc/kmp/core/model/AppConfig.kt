@@ -12,6 +12,7 @@ data class AppConfig(
     val adMobInterstitialAdUnitId: String,
     val adMobBannerAdUnitId: String,
     val adMobRewardedAdUnitId: String,
+    val adMobAppOpenAdUnitId: String,
     val purchaseAndroidApiKey: String?,
     val purchaseIosApiKey: String?,
 )

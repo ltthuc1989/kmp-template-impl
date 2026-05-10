@@ -129,6 +129,7 @@ androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref =
 androidx-sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "androidxSqlite" }
 androidx-media3-exoplayer = { module = "androidx.media3:media3-exoplayer", version.ref = "androidxMedia3" }
 androidx-media3-common = { module = "androidx.media3:media3-common", version.ref = "androidxMedia3" }
+androidx-lifecycle-process = { module = "androidx.lifecycle:lifecycle-process", version = "2.8.7" }
 
 # KMP
 kmp-lifecycle-runtime-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "kmpLifecycle" }

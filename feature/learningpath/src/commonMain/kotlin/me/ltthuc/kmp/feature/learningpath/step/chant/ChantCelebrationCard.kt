@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.sp
 import me.ltthuc.kmp.core.model.LessonWord
 import me.ltthuc.kmp.core.model.PhonicsLesson
 import me.ltthuc.kmp.feature.learningpath.step.common.StoryStyleCard
+import me.ltthuc.kmp.feature.learningpath.step.common.WordDisplayView
 import kotlin.math.PI
 import kotlin.math.sin
 
@@ -206,8 +207,8 @@ private fun WordCelebrationCard(word: LessonWord, isHighlighted: Boolean) {
             .width(72.dp)
             .height(CELEBRATION_HEIGHT_DP.dp),
     ) {
-        Text(
-            text = word.emoji.orEmpty().ifEmpty { "✨" },
+        WordDisplayView(
+            word = word,
             fontSize = 40.sp,
             modifier = Modifier.align(Alignment.Center),
         )

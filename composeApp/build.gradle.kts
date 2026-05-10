@@ -21,8 +21,10 @@ val localProperties = Properties().apply {
 
 val admobTestAppId = "ca-app-pub-0000000000000000~0000000000"
 val bannerAdTestId = "ca-app-pub-3940256099942544/6300978111"
+val interstitialAdTestId = "ca-app-pub-3940256099942544/1033173712"
 val nativeAdTestId = "ca-app-pub-3940256099942544/2247696110"
 val rewardAdTestId = "ca-app-pub-3940256099942544/5224354917"
+val appOpenAdTestId = "ca-app-pub-3940256099942544/9257395921"
 
 android {
     namespace = "me.ltthuc.kmp"
@@ -90,6 +92,15 @@ android {
     }
 }
 
+tasks.register<Exec>("installAndLaunchDebug") {
+    group = "install"
+    description = "Install debug APK on the running emulator and launch the app."
+    dependsOn("installDebug")
+    val adbPath = "${android.sdkDirectory}/platform-tools/adb"
+    // -e = target the running emulator only (ignore physical USB devices)
+    commandLine(adbPath, "-e", "shell", "am", "start", "-n", "me.ltthuc.kmp.debug/me.ltthuc.kmp.MainActivity")
+}
+
 kotlin {
     sourceSets {
         commonMain.dependencies {
@@ -115,6 +126,7 @@ kotlin {
             implementation(libs.play.review)
             implementation(libs.play.update)
             implementation(libs.koin.androidx.startup)
+            implementation(libs.androidx.lifecycle.process)
         }
     }
 }
@@ -138,16 +150,18 @@ buildkonfig {
         setField("PURCHASE_IOS_API_KEY")
 
         setField("ADMOB_ANDROID_APP_ID", admobTestAppId)
-        setField("ADMOB_ANDROID_BANNER_AD_UNIT_ID", admobTestAppId)
-        setField("ADMOB_ANDROID_INTERSTITIAL_AD_UNIT_ID", bannerAdTestId)
+        setField("ADMOB_ANDROID_BANNER_AD_UNIT_ID", bannerAdTestId)
+        setField("ADMOB_ANDROID_INTERSTITIAL_AD_UNIT_ID", interstitialAdTestId)
         setField("ADMOB_ANDROID_NATIVE_AD_UNIT_ID", nativeAdTestId)
         setField("ADMOB_ANDROID_REWARDED_AD_UNIT_ID", rewardAdTestId)
+        setField("ADMOB_ANDROID_APP_OPEN_AD_UNIT_ID", appOpenAdTestId)
 
         setField("ADMOB_IOS_APP_ID", admobTestAppId)
         setField("ADMOB_IOS_BANNER_AD_UNIT_ID", bannerAdTestId)
-        setField("ADMOB_IOS_INTERSTITIAL_AD_UNIT_ID", bannerAdTestId)
+        setField("ADMOB_IOS_INTERSTITIAL_AD_UNIT_ID", interstitialAdTestId)
         setField("ADMOB_IOS_NATIVE_AD_UNIT_ID", nativeAdTestId)
         setField("ADMOB_IOS_REWARDED_AD_UNIT_ID", rewardAdTestId)
+        setField("ADMOB_IOS_APP_OPEN_AD_UNIT_ID", appOpenAdTestId)
 
         setField("APPLOVIN_SDK_KEY")
     }

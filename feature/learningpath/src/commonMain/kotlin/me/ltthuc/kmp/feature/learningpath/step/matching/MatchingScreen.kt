@@ -21,10 +21,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.TouchApp
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -42,6 +38,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.input.pointer.pointerInput
@@ -62,17 +59,18 @@ import me.ltthuc.kmp.core.resource.chant_next
 import me.ltthuc.kmp.core.resource.chant_previous
 import me.ltthuc.kmp.core.resource.identify_all_done_subtitle
 import me.ltthuc.kmp.core.resource.identify_all_done_title
-import me.ltthuc.kmp.core.resource.matching_check_button
-import me.ltthuc.kmp.core.resource.matching_hint
 import me.ltthuc.kmp.core.resource.matching_title
 import me.ltthuc.kmp.core.resource.score_success_primary
+import me.ltthuc.kmp.core.resource.step_guide_matching
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
 import me.ltthuc.kmp.feature.learningpath.step.common.LetterStepperBar
 import me.ltthuc.kmp.feature.learningpath.step.common.PuffySurface
 import me.ltthuc.kmp.feature.learningpath.step.common.ScoreFeedback
 import me.ltthuc.kmp.feature.learningpath.step.common.ScoreFeedbackOverlay
 import me.ltthuc.kmp.feature.learningpath.step.common.StepHeader
-import me.ltthuc.kmp.feature.learningpath.step.common.StepNavRow
+import me.ltthuc.kmp.core.ui.ads.BottomBannerAd
+import me.ltthuc.kmp.feature.learningpath.step.common.StepContinueButton
+import me.ltthuc.kmp.feature.learningpath.step.common.WordDisplayView
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -85,6 +83,7 @@ internal fun MatchingScreen(
     unitId: String,
     lessonIndex: Int,
     onClose: () -> Unit,
+    onHome: () -> Unit,
     onPrevious: () -> Unit,
     onNext: () -> Unit,
     onStepJump: (Int) -> Unit,
@@ -111,7 +110,9 @@ internal fun MatchingScreen(
             lessons = uiState.lessons,
             currentIndex = safeIndex,
             onPlayWord = { word -> viewModel.onListenWord(currentLesson, word) },
+            onPlaySfx = viewModel::playSfx,
             onClose = onClose,
+            onHome = onHome,
             onPrevious = onPrevious,
             onNext = onNext,
             onStepJump = onStepJump,
@@ -126,7 +127,9 @@ private fun MatchingContent(
     lessons: ImmutableList<PhonicsLesson>,
     currentIndex: Int,
     onPlayWord: (word: String) -> Unit,
+    onPlaySfx: (String) -> Unit,
     onClose: () -> Unit,
+    onHome: () -> Unit,
     onPrevious: () -> Unit,
     onNext: () -> Unit,
     onStepJump: (Int) -> Unit,
@@ -148,6 +151,9 @@ private fun MatchingContent(
     // Dot positions captured from child composables (local to matching Box).
     val leftDotPositions = remember(currentLesson.id) { mutableStateMapOf<String, Offset>() }
     val rightDotPositions = remember(currentLesson.id) { mutableStateMapOf<String, Offset>() }
+    // Full card bounds (box-local coords) — drag-anywhere hit area, not just the small dot.
+    val leftCardBounds = remember(currentLesson.id) { mutableStateMapOf<String, Rect>() }
+    val rightCardBounds = remember(currentLesson.id) { mutableStateMapOf<String, Rect>() }
     // Draft pairings (may be wrong; not locked).
     val pendingMatches = remember(currentLesson.id) { mutableStateMapOf<String, String>() }
     // Validated correct pairings (locked, can't redo).
@@ -162,38 +168,31 @@ private fun MatchingContent(
 
     val scope = rememberCoroutineScope()
 
-    val canCheck = pendingMatches.isNotEmpty() &&
-        (pendingMatches.size + validatedMatches.size) == totalPairs
-
-    fun performCheck() {
-        val wrongSet = mutableSetOf<String>()
-        val correctEntries = mutableListOf<Pair<String, String>>()
-        pendingMatches.forEach { (leftText, rightText) ->
-            if (leftText.equals(rightText, ignoreCase = true)) {
-                correctEntries += leftText to rightText
-            } else {
-                wrongSet += leftText
+    fun onMatchAttempt(leftText: String, rightText: String) {
+        // Reject duplicate target — current pending entry pointing to this rightText must clear first
+        pendingMatches.entries.removeAll { it.value == rightText }
+        val isCorrect = leftText.equals(rightText, ignoreCase = true)
+        if (isCorrect) {
+            validatedMatches[leftText] = rightText
+            onPlaySfx(SFX_CORRECT)
+            if (validatedMatches.size == totalPairs) {
+                finalOverlay = ScoreFeedback.Success(
+                    title = allDoneTitle,
+                    subtitle = allDoneSubtitle,
+                    heroEmoji = heroEmoji,
+                    primaryLabel = successPrimary,
+                )
             }
-        }
-        correctEntries.forEach { (l, r) ->
-            validatedMatches[l] = r
-            pendingMatches.remove(l)
-        }
-        if (wrongSet.isNotEmpty()) {
-            wrongFlashTexts = wrongSet.toSet()
+        } else {
+            // Show wrong attempt briefly as a dashed line + red shake, then auto-clear so user can retry.
+            pendingMatches[leftText] = rightText
+            wrongFlashTexts = wrongFlashTexts + leftText
+            onPlaySfx(SFX_WRONG)
             scope.launch {
                 delay(WRONG_FLASH_MS)
-                wrongSet.forEach { pendingMatches.remove(it) }
-                wrongFlashTexts = emptySet()
+                pendingMatches.remove(leftText)
+                wrongFlashTexts = wrongFlashTexts - leftText
             }
-        }
-        if (validatedMatches.size == totalPairs) {
-            finalOverlay = ScoreFeedback.Success(
-                title = allDoneTitle,
-                subtitle = allDoneSubtitle,
-                heroEmoji = heroEmoji,
-                primaryLabel = successPrimary,
-            )
         }
     }
 
@@ -205,8 +204,10 @@ private fun MatchingContent(
                     title = stringResource(Res.string.matching_title),
                     currentStepIndex = STEP_INDEX,
                     onClose = onClose,
+                    onHomeClick = onHome,
                     onStepJump = onStepJump,
                     stepSegments = stepSegments,
+                    guideText = stringResource(Res.string.step_guide_matching),
                 )
             },
             bottomBar = {
@@ -223,9 +224,6 @@ private fun MatchingContent(
                     .padding(horizontal = 20.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Spacer(Modifier.height(8.dp))
-                HintPill()
-                Spacer(Modifier.height(16.dp))
                 MatchingArea(
                     wordKey = currentLesson.id,
                     leftItems = vocab,
@@ -235,21 +233,20 @@ private fun MatchingContent(
                     wrongFlashTexts = wrongFlashTexts,
                     leftDotPositions = leftDotPositions,
                     rightDotPositions = rightDotPositions,
-                    onPendingMatch = { leftText, rightText ->
-                        pendingMatches[leftText] = rightText
-                    },
+                    leftCardBounds = leftCardBounds,
+                    rightCardBounds = rightCardBounds,
+                    onPendingMatch = ::onMatchAttempt,
                     onPlayWord = onPlayWord,
-                    isLocked = { leftText -> validatedMatches.containsKey(leftText) },
-                    modifier = Modifier.weight(1f, fill = true),
+                    isLockedLeft = { leftText -> validatedMatches.containsKey(leftText) },
+                    isLockedRight = { rightText -> validatedMatches.containsValue(rightText) },
                 )
-                Spacer(Modifier.height(12.dp))
-                CheckButton(enabled = canCheck, onClick = ::performCheck)
+                Spacer(Modifier.weight(1f, fill = true))
+                BottomBannerAd()
                 Spacer(Modifier.height(8.dp))
-                StepNavRow(
-                    previousLabel = stringResource(Res.string.chant_previous),
-                    nextLabel = stringResource(Res.string.chant_next),
-                    onPrevious = onPrevious,
-                    onNext = onNext,
+                StepContinueButton(
+                    label = stringResource(Res.string.chant_next),
+                    onClick = onNext,
+                    enabled = validatedMatches.size == totalPairs && finalOverlay == null,
                 )
                 Spacer(Modifier.height(8.dp))
             }
@@ -266,44 +263,6 @@ private fun MatchingContent(
     }
 }
 
-@Composable
-private fun HintPill() {
-    PuffySurface(
-        modifier = Modifier.fillMaxWidth(),
-        shape = CircleShape,
-        containerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
-        shadowElevation = 6.dp,
-        shadowTint = MaterialTheme.colorScheme.primary,
-        shadowAlpha = 0.15f,
-        topHighlightHeight = 6.dp,
-        topHighlightAlpha = 0.85f,
-        bottomShadeHeight = 6.dp,
-        bottomShadeAlpha = 0.06f,
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 10.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center,
-        ) {
-            Icon(
-                imageVector = Icons.Filled.TouchApp,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(20.dp),
-            )
-            Spacer(Modifier.width(8.dp))
-            Text(
-                text = stringResource(Res.string.matching_hint),
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary,
-            )
-        }
-    }
-}
-
 @Suppress("LongParameterList", "MutableParams", "UnstableCollections")
 @Composable
 private fun MatchingArea(
@@ -315,9 +274,12 @@ private fun MatchingArea(
     wrongFlashTexts: Set<String>,
     leftDotPositions: MutableMap<String, Offset>,
     rightDotPositions: MutableMap<String, Offset>,
+    leftCardBounds: MutableMap<String, Rect>,
+    rightCardBounds: MutableMap<String, Rect>,
     onPendingMatch: (String, String) -> Unit,
     onPlayWord: (String) -> Unit,
-    isLocked: (String) -> Boolean,
+    isLockedLeft: (String) -> Boolean,
+    isLockedRight: (String) -> Boolean,
     modifier: Modifier = Modifier,
 ) {
     val primary = MaterialTheme.colorScheme.primary
@@ -327,6 +289,15 @@ private fun MatchingArea(
     var boxWindowOrigin by remember { mutableStateOf(Offset.Zero) }
     // Local drag state — must stay inside composable so pointerInput closures read fresh value.
     var dragLine by remember(wordKey) { mutableStateOf<DragLine?>(null) }
+    var hintDismissed by remember(wordKey) { mutableStateOf(false) }
+    val hintVisible = !hintDismissed &&
+        pendingMatches.isEmpty() &&
+        validatedMatches.isEmpty() &&
+        dragLine == null &&
+        leftDotPositions.isNotEmpty() &&
+        rightDotPositions.isNotEmpty() &&
+        leftItems.isNotEmpty() &&
+        rightItems.isNotEmpty()
 
     Box(
         modifier = modifier
@@ -337,13 +308,29 @@ private fun MatchingArea(
             .pointerInput(wordKey) {
                 detectDragGestures(
                     onDragStart = { offset ->
-                        val hit = leftDotPositions.entries.firstOrNull {
-                            (it.value - offset).distance() <= DOT_HIT_RADIUS_PX
-                        } ?: return@detectDragGestures
-                        if (isLocked(hit.key)) return@detectDragGestures
+                        hintDismissed = true
+                        // Drag-anywhere: hit-test against full card bounds, not just the dot.
+                        // Line still anchors at the dot position so the drawn connector looks right.
+                        val leftHit = leftCardBounds.entries.firstOrNull { (_, rect) -> rect.contains(offset) }
+                        if (leftHit != null) {
+                            if (isLockedLeft(leftHit.key)) return@detectDragGestures
+                            val anchor = leftDotPositions[leftHit.key] ?: return@detectDragGestures
+                            dragLine = DragLine(
+                                fromKey = leftHit.key,
+                                fromSide = DragSide.LEFT,
+                                start = anchor,
+                                end = offset,
+                            )
+                            return@detectDragGestures
+                        }
+                        val rightHit = rightCardBounds.entries.firstOrNull { (_, rect) -> rect.contains(offset) }
+                            ?: return@detectDragGestures
+                        if (isLockedRight(rightHit.key)) return@detectDragGestures
+                        val anchor = rightDotPositions[rightHit.key] ?: return@detectDragGestures
                         dragLine = DragLine(
-                            fromLeftText = hit.key,
-                            start = hit.value,
+                            fromKey = rightHit.key,
+                            fromSide = DragSide.RIGHT,
+                            start = anchor,
                             end = offset,
                         )
                     },
@@ -353,11 +340,23 @@ private fun MatchingArea(
                     },
                     onDragEnd = {
                         val line = dragLine ?: return@detectDragGestures
-                        val hitRight = rightDotPositions.entries.firstOrNull {
-                            (it.value - line.end).distance() <= DOT_HIT_RADIUS_PX
-                        }
-                        if (hitRight != null) {
-                            onPendingMatch(line.fromLeftText, hitRight.key)
+                        when (line.fromSide) {
+                            DragSide.LEFT -> {
+                                val hitRight = rightCardBounds.entries.firstOrNull { (_, rect) ->
+                                    rect.contains(line.end)
+                                }
+                                if (hitRight != null && !isLockedRight(hitRight.key)) {
+                                    onPendingMatch(line.fromKey, hitRight.key)
+                                }
+                            }
+                            DragSide.RIGHT -> {
+                                val hitLeft = leftCardBounds.entries.firstOrNull { (_, rect) ->
+                                    rect.contains(line.end)
+                                }
+                                if (hitLeft != null && !isLockedLeft(hitLeft.key)) {
+                                    onPendingMatch(hitLeft.key, line.fromKey)
+                                }
+                            }
                         }
                         dragLine = null
                     },
@@ -374,7 +373,16 @@ private fun MatchingArea(
             boxWindowOrigin = boxWindowOrigin,
             leftDotPositions = leftDotPositions,
             rightDotPositions = rightDotPositions,
+            leftCardBounds = leftCardBounds,
+            rightCardBounds = rightCardBounds,
             onPlayWord = onPlayWord,
+        )
+        MatchingDragHint(
+            isVisible = hintVisible,
+            leftItems = leftItems,
+            rightItems = rightItems,
+            leftDotPositions = leftDotPositions,
+            rightDotPositions = rightDotPositions,
         )
         Canvas(modifier = Modifier.fillMaxSize()) {
             // Validated correct — solid primary
@@ -435,12 +443,14 @@ private fun MatchingRows(
     boxWindowOrigin: Offset,
     leftDotPositions: MutableMap<String, Offset>,
     rightDotPositions: MutableMap<String, Offset>,
+    leftCardBounds: MutableMap<String, Rect>,
+    rightCardBounds: MutableMap<String, Rect>,
     onPlayWord: (String) -> Unit,
 ) {
     val rowCount = maxOf(leftItems.size, rightItems.size)
     Column(
         modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterVertically),
+        verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.Top),
     ) {
         for (rowIndex in 0 until rowCount) {
             Row(
@@ -465,6 +475,12 @@ private fun MatchingRows(
                             onDotPositioned = { absolute ->
                                 leftDotPositions[leftItem.text] = absolute - boxWindowOrigin
                             },
+                            onCardPositioned = { absoluteRect ->
+                                leftCardBounds[leftItem.text] = absoluteRect.translate(
+                                    -boxWindowOrigin.x,
+                                    -boxWindowOrigin.y,
+                                )
+                            },
                         )
                     }
                 }
@@ -483,8 +499,15 @@ private fun MatchingRows(
                             item = rightItem,
                             state = pillState(validated, pending, wrongFlash),
                             wrongKey = if (wrongFlash) wrongFlashTexts.hashCode() else 0,
+                            onClick = { onPlayWord(rightItem.text) },
                             onDotPositioned = { absolute ->
                                 rightDotPositions[rightItem.text] = absolute - boxWindowOrigin
+                            },
+                            onCardPositioned = { absoluteRect ->
+                                rightCardBounds[rightItem.text] = absoluteRect.translate(
+                                    -boxWindowOrigin.x,
+                                    -boxWindowOrigin.y,
+                                )
                             },
                         )
                     }
@@ -510,6 +533,7 @@ private fun WordPill(
     wrongKey: Int,
     onClick: () -> Unit,
     onDotPositioned: (Offset) -> Unit,
+    onCardPositioned: (Rect) -> Unit,
 ) {
     val rotation = remember { Animatable(0f) }
     LaunchedEffect(wrongKey) {
@@ -543,6 +567,18 @@ private fun WordPill(
     PuffySurface(
         modifier = Modifier
             .fillMaxWidth()
+            .onGloballyPositioned { coords ->
+                val pos = coords.positionInWindow()
+                val s = coords.size
+                onCardPositioned(
+                    Rect(
+                        left = pos.x,
+                        top = pos.y,
+                        right = pos.x + s.width,
+                        bottom = pos.y + s.height,
+                    ),
+                )
+            }
             .border(borderWidth, borderColor, shape)
             .clickable(
                 interactionSource = interaction,
@@ -589,7 +625,9 @@ private fun ImageCard(
     item: LessonWord,
     state: SlotState,
     wrongKey: Int,
+    onClick: () -> Unit,
     onDotPositioned: (Offset) -> Unit,
+    onCardPositioned: (Rect) -> Unit,
 ) {
     val rotation = remember { Animatable(0f) }
     LaunchedEffect(wrongKey) {
@@ -618,10 +656,28 @@ private fun ImageCard(
         SlotState.Idle -> 6.dp
     }
     val shape = RoundedCornerShape(20.dp)
+    val interaction = remember { MutableInteractionSource() }
     PuffySurface(
         modifier = Modifier
             .width(120.dp)
-            .border(borderWidth, borderColor, shape),
+            .onGloballyPositioned { coords ->
+                val pos = coords.positionInWindow()
+                val s = coords.size
+                onCardPositioned(
+                    Rect(
+                        left = pos.x,
+                        top = pos.y,
+                        right = pos.x + s.width,
+                        bottom = pos.y + s.height,
+                    ),
+                )
+            }
+            .border(borderWidth, borderColor, shape)
+            .clickable(
+                interactionSource = interaction,
+                indication = ripple(color = MaterialTheme.colorScheme.primary),
+                onClick = onClick,
+            ),
         shape = shape,
         containerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
         shadowElevation = elevation,
@@ -654,8 +710,8 @@ private fun ImageCard(
                     .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f)),
                 contentAlignment = Alignment.Center,
             ) {
-                Text(
-                    text = item.emoji.orEmpty().ifEmpty { "🎨" },
+                WordDisplayView(
+                    word = item,
                     fontSize = 32.sp,
                 )
             }
@@ -682,63 +738,13 @@ private fun AnchorDot(
     )
 }
 
-@Composable
-private fun CheckButton(
-    enabled: Boolean,
-    onClick: () -> Unit,
-) {
-    val interaction = remember { MutableInteractionSource() }
-    val containerColor = if (enabled) {
-        MaterialTheme.colorScheme.primary
-    } else {
-        MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
-    }
-    PuffySurface(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(56.dp)
-            .clickable(
-                interactionSource = interaction,
-                indication = ripple(color = MaterialTheme.colorScheme.onPrimary),
-                enabled = enabled,
-                onClick = onClick,
-            ),
-        shape = CircleShape,
-        containerColor = containerColor,
-        shadowElevation = 14.dp,
-        shadowTint = MaterialTheme.colorScheme.primary,
-        shadowAlpha = if (enabled) 0.55f else 0.30f,
-        topHighlightHeight = 10.dp,
-        topHighlightAlpha = 0.3f,
-        bottomShadeHeight = 10.dp,
-        bottomShadeAlpha = 0.30f,
-    ) {
-        Row(
-            modifier = Modifier.fillMaxSize(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center,
-        ) {
-            Icon(
-                imageVector = Icons.Filled.CheckCircle,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onPrimary,
-                modifier = Modifier.size(22.dp),
-            )
-            Spacer(Modifier.width(8.dp))
-            Text(
-                text = stringResource(Res.string.matching_check_button),
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onPrimary,
-            )
-        }
-    }
-}
-
 // -------- Helpers --------
 
+internal enum class DragSide { LEFT, RIGHT }
+
 private data class DragLine(
-    val fromLeftText: String,
+    val fromKey: String,
+    val fromSide: DragSide,
     val start: Offset,
     val end: Offset,
 )
@@ -752,3 +758,5 @@ private val ART_SIZE = 56.dp
 private const val DOT_HIT_RADIUS_PX = 70f
 private const val WRONG_FLASH_MS = 700L
 private const val AUTO_PLAY_DELAY_MS = 500L
+private const val SFX_CORRECT = "correct"
+private const val SFX_WRONG = "wrong"

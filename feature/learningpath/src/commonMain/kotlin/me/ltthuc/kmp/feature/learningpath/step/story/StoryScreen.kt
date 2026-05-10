@@ -4,8 +4,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,9 +18,11 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -57,6 +61,7 @@ import me.ltthuc.kmp.core.repository.LevelRepository
 import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.chant_next
 import me.ltthuc.kmp.core.resource.chant_previous
+import me.ltthuc.kmp.core.resource.step_guide_story
 import me.ltthuc.kmp.core.resource.story_audio_cd
 import me.ltthuc.kmp.core.resource.story_next_page_cd
 import me.ltthuc.kmp.core.resource.story_previous_page_cd
@@ -66,12 +71,13 @@ import me.ltthuc.kmp.core.ui.screen.Destination
 import me.ltthuc.kmp.core.ui.theme.LocalNavBackStack
 import me.ltthuc.kmp.feature.learningpath.step.DEFAULT_VISIBLE_STEPS
 import me.ltthuc.kmp.feature.learningpath.step.STORY_SEGMENT_INDEX
-import me.ltthuc.kmp.feature.learningpath.step.common.CircularAudioButton
 import me.ltthuc.kmp.feature.learningpath.step.common.KaraokeText
 import me.ltthuc.kmp.feature.learningpath.step.common.LetterStepperBar
 import me.ltthuc.kmp.feature.learningpath.step.common.PageDotsRow
+import me.ltthuc.kmp.feature.learningpath.step.common.PulseRings
 import me.ltthuc.kmp.feature.learningpath.step.common.StepHeader
-import me.ltthuc.kmp.feature.learningpath.step.common.StepNavRow
+import me.ltthuc.kmp.core.ui.ads.BottomBannerAd
+import me.ltthuc.kmp.feature.learningpath.step.common.StepContinueButton
 import me.ltthuc.kmp.feature.learningpath.step.common.StoryStyleCard
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
@@ -212,7 +218,10 @@ private fun StoryContent(
                 currentStepIndex = UNIT_STORY_STEP_INDEX,
                 stepSegments = stepSegments,
                 onClose = onClose,
+                onHomeClick = onClose,
                 onStepJump = onStepJump,
+                guideText = stringResource(Res.string.step_guide_story),
+                showGuideText = false,
             )
         },
         bottomBar = {
@@ -229,14 +238,38 @@ private fun StoryContent(
                 .padding(horizontal = 20.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Spacer(Modifier.height(8.dp))
-            Text(
-                text = story.title,
-                fontSize = 22.sp,
-                fontWeight = FontWeight.ExtraBold,
-                color = MaterialTheme.colorScheme.onSurface,
-                textAlign = TextAlign.Center,
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                Text(
+                    text = story.title,
+                    fontSize = 22.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    textAlign = TextAlign.Center,
+                )
+                Box(
+                    modifier = Modifier.size(48.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    PulseRings(
+                        isActive = isNarrating,
+                        ringColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.4f),
+                    )
+                    IconButton(
+                        onClick = onListen,
+                        modifier = Modifier.size(40.dp),
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.VolumeUp,
+                            contentDescription = stringResource(Res.string.story_audio_cd),
+                            tint = MaterialTheme.colorScheme.secondary,
+                            modifier = Modifier.size(26.dp),
+                        )
+                    }
+                }
+            }
             Spacer(Modifier.height(12.dp))
             StorySceneImagePager(
                 scenes = scenes,
@@ -266,18 +299,12 @@ private fun StoryContent(
                     .fillMaxWidth()
                     .padding(horizontal = 24.dp),
             )
-            Spacer(Modifier.height(24.dp))
-            CircularAudioButton(
-                isPlaying = isNarrating,
-                onClick = onListen,
-                contentDescription = stringResource(Res.string.story_audio_cd),
-            )
             Spacer(Modifier.weight(1f, fill = true))
-            StepNavRow(
-                previousLabel = stringResource(Res.string.chant_previous),
-                nextLabel = stringResource(Res.string.chant_next),
-                onPrevious = onPrevious,
-                onNext = onNext,
+            BottomBannerAd()
+            Spacer(Modifier.height(8.dp))
+            StepContinueButton(
+                label = stringResource(Res.string.chant_next),
+                onClick = onNext,
             )
             Spacer(Modifier.height(8.dp))
         }

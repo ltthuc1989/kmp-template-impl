@@ -16,8 +16,14 @@ data class PhonicsLesson(
 
 data class LessonWord(
     val word: String,
-    val emoji: String?,
+    val displays: List<WordDisplay>,
 ) {
     val text: String get() = word
-    val imageAsset: String? get() = null
+
+    /**
+     * First emoji variant for legacy preview/hero use cases (deterministic, not random).
+     * Returns null when no [WordDisplay.Emoji] variant exists in [displays].
+     */
+    val emoji: String?
+        get() = (displays.firstOrNull() as? WordDisplay.Emoji)?.char
 }

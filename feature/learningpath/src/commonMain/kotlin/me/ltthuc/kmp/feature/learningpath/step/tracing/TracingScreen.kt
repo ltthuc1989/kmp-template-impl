@@ -51,7 +51,6 @@ import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -65,20 +64,23 @@ import me.ltthuc.kmp.core.resource.score_fail_primary
 import me.ltthuc.kmp.core.resource.score_fail_title
 import me.ltthuc.kmp.core.resource.score_success_primary
 import me.ltthuc.kmp.core.resource.score_success_title
-import me.ltthuc.kmp.core.resource.tracing_case_lower
-import me.ltthuc.kmp.core.resource.tracing_case_upper
+import me.ltthuc.kmp.core.resource.step_guide_tracing
 import me.ltthuc.kmp.core.resource.tracing_draw_here
 import me.ltthuc.kmp.core.resource.tracing_fail_subtitle
-import me.ltthuc.kmp.core.resource.tracing_instruction
-import me.ltthuc.kmp.core.resource.tracing_success_subtitle
+import me.ltthuc.kmp.core.resource.tracing_score_excellent
+import me.ltthuc.kmp.core.resource.tracing_score_good
+import me.ltthuc.kmp.core.resource.tracing_score_very_good
 import me.ltthuc.kmp.core.resource.tracing_title
+import me.ltthuc.kmp.core.resource.tracing_watch_ad_to_pass
+import me.ltthuc.kmp.core.ui.ads.RewardedSkipLauncher
+import me.ltthuc.kmp.core.ui.ads.TracingInterstitial
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
 import me.ltthuc.kmp.feature.learningpath.step.common.LetterStepperBar
 import me.ltthuc.kmp.feature.learningpath.step.common.PuffySurface
 import me.ltthuc.kmp.feature.learningpath.step.common.ScoreFeedback
 import me.ltthuc.kmp.feature.learningpath.step.common.ScoreFeedbackOverlay
 import me.ltthuc.kmp.feature.learningpath.step.common.StepHeader
-import me.ltthuc.kmp.feature.learningpath.step.common.StepNavRow
+import me.ltthuc.kmp.feature.learningpath.step.common.StepContinueButton
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -90,6 +92,7 @@ internal fun TracingScreen(
     unitId: String,
     lessonIndex: Int,
     onClose: () -> Unit,
+    onHome: () -> Unit,
     onPrevious: () -> Unit,
     onNext: () -> Unit,
     onStepJump: (Int) -> Unit,
@@ -100,6 +103,7 @@ internal fun TracingScreen(
 ) {
     val screenState by viewModel.screenState.collectAsStateWithLifecycle()
 
+    TracingInterstitial()
     AsyncLoadContents(
         modifier = modifier.fillMaxSize(),
         screenState = screenState,
@@ -111,6 +115,7 @@ internal fun TracingScreen(
             lessons = uiState.lessons,
             currentIndex = safeIndex,
             onClose = onClose,
+            onHome = onHome,
             onPrevious = onPrevious,
             onNext = onNext,
             onStepJump = onStepJump,
@@ -125,6 +130,7 @@ private fun TracingContent(
     lessons: ImmutableList<PhonicsLesson>,
     currentIndex: Int,
     onClose: () -> Unit,
+    onHome: () -> Unit,
     onPrevious: () -> Unit,
     onNext: () -> Unit,
     onStepJump: (Int) -> Unit,
@@ -167,8 +173,11 @@ private fun TracingContent(
                     title = stringResource(Res.string.tracing_title),
                     currentStepIndex = STEP_INDEX,
                     onClose = onClose,
+                    onHomeClick = onHome,
                     onStepJump = onStepJump,
                     stepSegments = stepSegments,
+                    guideText = stringResource(Res.string.step_guide_tracing),
+                    showGuideText = false,
                 )
             },
             bottomBar = {
@@ -187,19 +196,12 @@ private fun TracingContent(
             ) {
                 Spacer(Modifier.height(6.dp))
                 CaseToggle(
+                    letterChar = letterChar,
                     uppercase = isUppercase,
                     onChange = {
                         isUppercase = it
                         resetCanvas()
                     },
-                )
-                Spacer(Modifier.height(6.dp))
-                Text(
-                    text = stringResource(Res.string.tracing_instruction),
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    textAlign = TextAlign.Center,
                 )
                 Spacer(Modifier.height(10.dp))
                 TracingGuideCard(guide = guide)
@@ -215,11 +217,9 @@ private fun TracingContent(
                         .weight(1f, fill = true),
                 )
                 Spacer(Modifier.height(10.dp))
-                StepNavRow(
-                    previousLabel = stringResource(Res.string.chant_previous),
-                    nextLabel = stringResource(Res.string.chant_next),
-                    onPrevious = onPrevious,
-                    onNext = { submitForScoring() },
+                StepContinueButton(
+                    label = stringResource(Res.string.chant_next),
+                    onClick = { submitForScoring() },
                 )
                 Spacer(Modifier.height(8.dp))
             }
@@ -227,9 +227,14 @@ private fun TracingContent(
 
         val feedback = result?.let { r ->
             if (r.passed) {
+                val tierLabel = when {
+                    r.percent >= EXCELLENT_THRESHOLD -> stringResource(Res.string.tracing_score_excellent)
+                    r.percent >= VERY_GOOD_THRESHOLD -> stringResource(Res.string.tracing_score_very_good)
+                    else -> stringResource(Res.string.tracing_score_good)
+                }
                 ScoreFeedback.Success(
                     title = stringResource(Res.string.score_success_title),
-                    subtitle = stringResource(Res.string.tracing_success_subtitle, r.percent),
+                    subtitle = tierLabel,
                     heroEmoji = "🎉",
                     primaryLabel = stringResource(Res.string.score_success_primary),
                 )
@@ -239,9 +244,11 @@ private fun TracingContent(
                     subtitle = stringResource(Res.string.tracing_fail_subtitle),
                     heroEmoji = "😔",
                     primaryLabel = stringResource(Res.string.score_fail_primary),
+                    secondaryLabel = stringResource(Res.string.tracing_watch_ad_to_pass),
                 )
             }
         }
+        var showRewardedAd by remember { mutableStateOf(false) }
         ScoreFeedbackOverlay(
             feedback = feedback,
             onDismiss = { result = null },
@@ -254,7 +261,20 @@ private fun TracingContent(
                     resetCanvas()
                 }
             },
+            onSecondary = { showRewardedAd = true },
         )
+        if (showRewardedAd) {
+            RewardedSkipLauncher(
+                onRewardEarned = {
+                    showRewardedAd = false
+                    result = null
+                    onNext()
+                },
+                onUnavailable = {
+                    showRewardedAd = false
+                },
+            )
+        }
     }
 }
 
@@ -263,6 +283,7 @@ private data class TracingResult(val percent: Int, val passed: Boolean)
 
 @Composable
 private fun CaseToggle(
+    letterChar: Char,
     uppercase: Boolean,
     onChange: (Boolean) -> Unit,
 ) {
@@ -274,12 +295,12 @@ private fun CaseToggle(
         horizontalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         CasePill(
-            label = stringResource(Res.string.tracing_case_upper),
+            label = letterChar.uppercaseChar().toString(),
             selected = uppercase,
             onClick = { onChange(true) },
         )
         CasePill(
-            label = stringResource(Res.string.tracing_case_lower),
+            label = letterChar.lowercaseChar().toString(),
             selected = !uppercase,
             onClick = { onChange(false) },
         )
@@ -299,7 +320,7 @@ private fun CasePill(label: String, selected: Boolean, onClick: () -> Unit) {
                 indication = ripple(),
                 onClick = onClick,
             )
-            .padding(horizontal = 20.dp, vertical = 8.dp),
+            .padding(horizontal = 16.dp, vertical = 6.dp),
     ) {
         Text(
             text = label,
@@ -317,6 +338,18 @@ private fun TracingGuideCard(guide: LetterGuide) {
     val playAnim = remember(guide.char, guide.uppercase) { Animatable(0f) }
     val scope = rememberCoroutineScope()
     var canvasSizePx by remember { mutableStateOf(Size.Zero) }
+
+    // Auto-play stroke animation on first mount + when letter or case changes
+    LaunchedEffect(guide.char, guide.uppercase) {
+        playAnim.snapTo(0f)
+        playAnim.animateTo(
+            targetValue = 1f,
+            animationSpec = tween(
+                durationMillis = guide.strokes.size * GUIDE_MS_PER_STROKE,
+                easing = FastOutSlowInEasing,
+            ),
+        )
+    }
 
     PuffySurface(
         modifier = Modifier
@@ -527,6 +560,8 @@ private fun PracticeCanvas(
     }
 }
 
+private const val EXCELLENT_THRESHOLD = 95
+private const val VERY_GOOD_THRESHOLD = 85
 private const val GUIDE_CARD_HEIGHT_DP = 210
 private const val GUIDE_CARD_CORNER_DP = 24
 private const val GUIDE_CARD_PADDING_DP = 20

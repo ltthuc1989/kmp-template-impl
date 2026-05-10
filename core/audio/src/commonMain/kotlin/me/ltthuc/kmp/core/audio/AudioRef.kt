@@ -31,4 +31,12 @@ sealed interface AudioRef {
     data class Story(val storyId: String, val sceneNumber: Int) : AudioRef {
         override val lessonFolder: String get() = "stories"
     }
+
+    /**
+     * Short UI sound effects (correct/wrong/etc.) bundled at `files/sfx/<name>.mp3`.
+     * Not tied to lesson content. [name] is the SFX identifier (e.g. "correct", "wrong").
+     */
+    data class Sfx(val name: String) : AudioRef {
+        override val lessonFolder: String get() = "sfx"
+    }
 }

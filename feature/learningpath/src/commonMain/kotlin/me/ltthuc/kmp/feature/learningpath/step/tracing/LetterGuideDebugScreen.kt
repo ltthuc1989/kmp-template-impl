@@ -133,6 +133,7 @@ private fun GuideTile(guide: LetterGuide) {
     val progress = playAnim.value
     val primary = MaterialTheme.colorScheme.primary
     val halo = MaterialTheme.colorScheme.primaryContainer
+    val ghostColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = GHOST_TILE_ALPHA)
     var tileSize by remember { mutableStateOf(Size.Zero) }
     val scope = rememberCoroutineScope()
 
@@ -198,6 +199,31 @@ private fun GuideTile(guide: LetterGuide) {
             }
         }
         Spacer(Modifier.height(4.dp))
+        // Ghost-letter QA preview — same render path as the practice canvas in TracingScreen,
+        // so any cap/alpha/overlap regression in drawGhostLetter shows up here for all 52 letters.
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(72.dp)
+                .clip(RoundedCornerShape(12.dp))
+                .background(Color.White),
+            contentAlignment = Alignment.Center,
+        ) {
+            Canvas(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(8.dp),
+            ) {
+                val ghostStrokeWidthPx = minOf(size.width, size.height) * GHOST_TILE_STROKE_FRACTION
+                drawGhostLetter(
+                    guide = guide,
+                    canvasSize = size,
+                    color = ghostColor,
+                    strokeWidthPx = ghostStrokeWidthPx,
+                )
+            }
+        }
+        Spacer(Modifier.height(4.dp))
         Text(
             text = "${guide.char} (${guide.strokes.size})",
             fontSize = 10.sp,
@@ -206,6 +232,9 @@ private fun GuideTile(guide: LetterGuide) {
         )
     }
 }
+
+private const val GHOST_TILE_ALPHA = 0.45f
+private const val GHOST_TILE_STROKE_FRACTION = 0.14f
 
 private const val MS_PER_STROKE = 1200
 

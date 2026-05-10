@@ -1,7 +1,9 @@
 package me.ltthuc.kmp.core.repository
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonClassDiscriminator
 import me.ltthuc.kmp.core.datasource.db.entity.LevelEntity
 import me.ltthuc.kmp.core.datasource.db.entity.PhonicsLessonEntity
 import me.ltthuc.kmp.core.datasource.db.entity.UnitEntity
@@ -11,14 +13,33 @@ import me.ltthuc.kmp.core.model.Level
 import me.ltthuc.kmp.core.model.PhonicsLesson
 import me.ltthuc.kmp.core.model.PhonicsUnit
 import me.ltthuc.kmp.core.model.UserProgress
+import me.ltthuc.kmp.core.model.WordDisplay
 
 private val jsonParser = Json { ignoreUnknownKeys = true }
 
 @Serializable
 private data class LessonWordJson(
     val word: String,
-    val emoji: String? = null,
+    val displays: List<WordDisplayJson> = emptyList(),
 )
+
+@OptIn(kotlinx.serialization.ExperimentalSerializationApi::class)
+@Serializable
+@JsonClassDiscriminator("type")
+private sealed interface WordDisplayJson {
+    @Serializable
+    @SerialName("emoji")
+    data class Emoji(val char: String) : WordDisplayJson
+
+    @Serializable
+    @SerialName("image")
+    data class Image(val path: String) : WordDisplayJson
+}
+
+private fun WordDisplayJson.toModel(): WordDisplay = when (this) {
+    is WordDisplayJson.Emoji -> WordDisplay.Emoji(char)
+    is WordDisplayJson.Image -> WordDisplay.Image(path)
+}
 
 internal fun LevelEntity.toModel() = Level(
     id = id,
@@ -41,7 +62,12 @@ internal fun UnitEntity.toModel() = PhonicsUnit(
 internal fun PhonicsLessonEntity.toModel(): PhonicsLesson {
     val words = runCatching {
         jsonParser.decodeFromString<List<LessonWordJson>>(wordsJson)
-            .map { LessonWord(word = it.word, emoji = it.emoji) }
+            .map { dto ->
+                LessonWord(
+                    word = dto.word,
+                    displays = dto.displays.map { it.toModel() },
+                )
+            }
     }.getOrElse { emptyList() }
     val chantTexts = runCatching {
         jsonParser.decodeFromString<List<String>>(chantTextsJson)

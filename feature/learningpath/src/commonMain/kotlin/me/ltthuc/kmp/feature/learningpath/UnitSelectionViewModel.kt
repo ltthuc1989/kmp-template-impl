@@ -38,7 +38,7 @@ internal class UnitSelectionViewModel(
         if (level == null) {
             ScreenState.Error(message = Res.string.error_network)
         } else {
-            val startedCount = units.count { it.totalStars > 0 }
+            val startedCount = units.count { it.completionCount > 0 }
             ScreenState.Idle(
                 UnitSelectionUiState(
                     level = level,

@@ -62,6 +62,7 @@ internal fun ScoreFeedbackOverlay(
     feedback: ScoreFeedback?,
     onDismiss: () -> Unit,
     onPrimary: () -> Unit,
+    onSecondary: () -> Unit = {},
 ) {
     AnimatedVisibility(
         visible = feedback != null,
@@ -76,6 +77,7 @@ internal fun ScoreFeedbackOverlay(
             feedback = current,
             onDismiss = onDismiss,
             onPrimary = onPrimary,
+            onSecondary = onSecondary,
         )
     }
 }
@@ -85,6 +87,7 @@ private fun ScoreFeedbackContent(
     feedback: ScoreFeedback,
     onDismiss: () -> Unit,
     onPrimary: () -> Unit,
+    onSecondary: () -> Unit,
 ) {
     Box(
         modifier = Modifier
@@ -151,6 +154,11 @@ private fun ScoreFeedbackContent(
                 )
                 Spacer(Modifier.height(24.dp))
                 PrimaryActionButton(label = feedback.primaryLabel, onClick = onPrimary)
+                val secondaryLabel = (feedback as? ScoreFeedback.Fail)?.secondaryLabel
+                if (secondaryLabel != null) {
+                    Spacer(Modifier.height(12.dp))
+                    SecondaryActionButton(label = secondaryLabel, onClick = onSecondary)
+                }
             }
         }
     }
@@ -207,12 +215,49 @@ private fun PrimaryActionButton(label: String, onClick: () -> Unit) {
     }
 }
 
+@Composable
+private fun SecondaryActionButton(label: String, onClick: () -> Unit) {
+    val interaction = remember { MutableInteractionSource() }
+    PuffySurface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(48.dp)
+            .clickable(
+                interactionSource = interaction,
+                indication = ripple(color = MaterialTheme.colorScheme.primary),
+                onClick = onClick,
+            ),
+        shape = CircleShape,
+        containerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
+        shadowElevation = 8.dp,
+        shadowTint = MaterialTheme.colorScheme.primary,
+        shadowAlpha = 0.20f,
+        topHighlightHeight = 8.dp,
+        topHighlightAlpha = 0.7f,
+        bottomShadeHeight = 6.dp,
+        bottomShadeAlpha = 0.06f,
+    ) {
+        Row(
+            modifier = Modifier.fillMaxSize(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center,
+        ) {
+            Text(
+                text = label,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.primary,
+            )
+        }
+    }
+}
+
 /**
  * Simple confetti particle system rendered on Canvas.
  * 24 particles, each with random start X + phase offset; loops vertically with slight horizontal drift.
  */
 @Composable
-private fun ConfettiCanvas(modifier: Modifier = Modifier) {
+internal fun ConfettiCanvas(modifier: Modifier = Modifier) {
     val particles = remember {
         List(PARTICLE_COUNT) { index ->
             Particle(
@@ -291,6 +336,7 @@ internal sealed interface ScoreFeedback {
         override val subtitle: String,
         override val heroEmoji: String = "😔",
         override val primaryLabel: String,
+        val secondaryLabel: String? = null,
     ) : ScoreFeedback
 }
 

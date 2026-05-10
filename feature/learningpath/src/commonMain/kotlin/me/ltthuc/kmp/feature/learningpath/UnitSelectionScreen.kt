@@ -46,7 +46,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -56,21 +59,31 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
 import me.ltthuc.kmp.core.model.UnitCard
 import me.ltthuc.kmp.core.model.UnitStatus
 import me.ltthuc.kmp.core.repository.LearningProgressRepository
 import me.ltthuc.kmp.core.repository.LevelRepository
+import me.ltthuc.kmp.core.repository.UnitCompletionRepository
+import me.ltthuc.kmp.core.repository.UnitRepository
+import me.ltthuc.kmp.core.resource.Res
+import me.ltthuc.kmp.core.resource.unit_practice_chip
+import me.ltthuc.kmp.core.resource.unit_practice_count
+import me.ltthuc.kmp.core.ui.ads.BottomBannerAd
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
 import me.ltthuc.kmp.core.ui.screen.Destination
 import me.ltthuc.kmp.core.ui.screen.ScreenState
 import me.ltthuc.kmp.core.ui.theme.LocalNavBackStack
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -78,9 +91,10 @@ import org.koin.core.parameter.parametersOf
 private val ScreenBg = Color(0xFFFCE4E7)
 private val AccentRed = Color(0xFFE63946)
 private val SoftPink = Color(0xFFF7B4BC)
-private val CompletedGreen = Color(0xFF2FBF71)
 private val LockedGray = Color(0xFFE4E7EB)
 private val LockedTextGray = Color(0xFF9AA3AF)
+private val PracticedChipBg = Color(0xFFD1F2DA)
+private val PracticedChipText = Color(0xFF1F8A3F)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -93,7 +107,10 @@ internal fun UnitSelectionScreen(
     val navBackStack = LocalNavBackStack.current
     val progressRepository: LearningProgressRepository = koinInject()
     val levelRepository: LevelRepository = koinInject()
+    val unitRepository: UnitRepository = koinInject()
+    val unitCompletionRepository: UnitCompletionRepository = koinInject()
     val scope = rememberCoroutineScope()
+    var sheetTarget by remember { mutableStateOf<UnitCard?>(null) }
 
     val isStartDestination = navBackStack.size == 1
     Scaffold(
@@ -110,6 +127,7 @@ internal fun UnitSelectionScreen(
                 onSettings = { navBackStack.add(Destination.Setting.Root) },
             )
         },
+        bottomBar = { BottomBannerAd() },
     ) { innerPadding ->
         AsyncLoadContents(
             modifier = Modifier.fillMaxSize(),
@@ -119,42 +137,104 @@ internal fun UnitSelectionScreen(
                 units = uiState.units,
                 contentPadding = innerPadding,
                 onUnitClick = { card ->
-                    if (card.status != UnitStatus.Locked) {
-                        scope.launch {
-                            // Resume from saved position if the user last left this unit, else
-                            // start fresh. Clamp to a visible step in case the saved position
-                            // landed on a step that is hidden for this level.
-                            val active = progressRepository.current()
-                            val visibleSteps = levelRepository.getVisibleSteps(levelId)
-                            val firstVisible = visibleSteps.firstOrNull() ?: 0
-                            val startLesson = if (active?.activeUnitId == card.unit.id) {
-                                active.activeLessonIndex
-                            } else {
-                                0
-                            }
-                            val startStep = if (active?.activeUnitId == card.unit.id) {
-                                val saved = active.activeStepIndex
-                                if (saved in visibleSteps) {
-                                    saved
+                    when (card.status) {
+                        UnitStatus.Locked -> Unit
+                        UnitStatus.Completed -> {
+                            // Completed units open the lesson selector sheet so the kid can
+                            // pick any letter (or Story) to replay independently.
+                            sheetTarget = card
+                        }
+                        UnitStatus.Active, UnitStatus.Unlocked -> {
+                            scope.launch {
+                                // Resume from saved position if user last left this unit,
+                                // else start fresh from lesson 0 first visible step.
+                                val active = progressRepository.current()
+                                val visibleSteps = levelRepository.getVisibleSteps(levelId)
+                                val firstVisible = visibleSteps.firstOrNull() ?: 0
+                                val startLesson = if (active?.activeUnitId == card.unit.id) {
+                                    active.activeLessonIndex
                                 } else {
-                                    visibleSteps.firstOrNull { it >= saved } ?: firstVisible
+                                    0
                                 }
-                            } else {
-                                firstVisible
+                                val startStep = if (active?.activeUnitId == card.unit.id) {
+                                    val saved = active.activeStepIndex
+                                    if (saved in visibleSteps) {
+                                        saved
+                                    } else {
+                                        visibleSteps.firstOrNull { it >= saved } ?: firstVisible
+                                    }
+                                } else {
+                                    firstVisible
+                                }
+                                navBackStack.add(
+                                    Destination.Learning.Step(
+                                        levelId = levelId,
+                                        unitId = card.unit.id,
+                                        lessonIndex = startLesson,
+                                        stepIndex = startStep,
+                                    ),
+                                )
                             }
-                            navBackStack.add(
-                                Destination.Learning.Step(
-                                    levelId = levelId,
-                                    unitId = card.unit.id,
-                                    lessonIndex = startLesson,
-                                    stepIndex = startStep,
-                                ),
-                            )
                         }
                     }
                 },
             )
         }
+    }
+
+    sheetTarget?.let { card ->
+        val lessons by remember(card.unit.id) {
+            unitRepository.observeLessons(card.unit.id)
+        }.collectAsStateWithLifecycle(initialValue = emptyList())
+
+        LessonSelectorSheet(
+            unit = card.unit,
+            lessons = lessons.toImmutableList(),
+            completionCount = card.completionCount,
+            onLessonClick = { lessonIdx ->
+                sheetTarget = null
+                scope.launch {
+                    val visibleSteps = levelRepository.getVisibleSteps(levelId)
+                    val firstVisible = visibleSteps.firstOrNull() ?: 0
+                    navBackStack.add(
+                        Destination.Learning.Step(
+                            levelId = levelId,
+                            unitId = card.unit.id,
+                            lessonIndex = lessonIdx,
+                            stepIndex = firstVisible,
+                        ),
+                    )
+                }
+            },
+            onStoryClick = {
+                sheetTarget = null
+                navBackStack.add(Destination.Learning.UnitStory(levelId, card.unit.id))
+            },
+            onRestart = {
+                sheetTarget = null
+                scope.launch {
+                    unitCompletionRepository.reset(card.unit.id)
+                    val visibleSteps = levelRepository.getVisibleSteps(levelId)
+                    val firstVisible = visibleSteps.firstOrNull() ?: 0
+                    progressRepository.setActivePosition(
+                        levelId = levelId,
+                        unitId = card.unit.id,
+                        lessonIndex = 0,
+                        stepIndex = firstVisible,
+                        progressPercent = 0,
+                    )
+                    navBackStack.add(
+                        Destination.Learning.Step(
+                            levelId = levelId,
+                            unitId = card.unit.id,
+                            lessonIndex = 0,
+                            stepIndex = firstVisible,
+                        ),
+                    )
+                }
+            },
+            onDismiss = { sheetTarget = null },
+        )
     }
 }
 
@@ -477,36 +557,62 @@ private fun UnitCardItem(
             disabledElevation = 0.dp,
         ),
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 14.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
+        Box(modifier = Modifier.fillMaxWidth()) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 14.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                if (isLocked) {
                     Text(
                         text = card.unit.title,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
-                        color = if (isLocked) LockedTextGray else MaterialTheme.colorScheme.onSurface,
+                        color = LockedTextGray,
                         modifier = Modifier.weight(1f),
                     )
-                    card.unit.themeChip?.takeIf { !isLocked }?.let { theme ->
-                        Spacer(Modifier.width(8.dp))
-                        ThemeChip(label = theme)
+                } else {
+                    Row(
+                        modifier = Modifier.weight(1f),
+                        horizontalArrangement = Arrangement.spacedBy(20.dp),
+                    ) {
+                        card.previewLetters.forEach { item ->
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Text(
+                                    text = item.letter,
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                )
+                                Spacer(Modifier.height(2.dp))
+                                Text(
+                                    text = item.emoji.orEmpty(),
+                                    fontSize = 24.sp,
+                                )
+                            }
+                        }
                     }
                 }
-                if (!isLocked && card.previewEmojis.isNotEmpty()) {
-                    Spacer(Modifier.height(4.dp))
-                    Text(
-                        text = card.previewEmojis.take(MAX_PREVIEW_EMOJIS).joinToString(" "),
-                        fontSize = 20.sp,
-                    )
+                Spacer(Modifier.width(12.dp))
+                ActionIcon(status = card.status)
+            }
+            if (!isLocked && (card.unit.themeChip != null || card.completionCount > 0)) {
+                Row(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(top = 8.dp, end = 12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    card.unit.themeChip?.let { theme ->
+                        ThemeChip(label = theme)
+                    }
+                    if (card.completionCount > 0) {
+                        PracticedChip(count = card.completionCount)
+                    }
                 }
             }
-            Spacer(Modifier.width(12.dp))
-            ActionIcon(status = card.status)
         }
     }
 }
@@ -514,13 +620,7 @@ private fun UnitCardItem(
 @Composable
 private fun ActionIcon(status: UnitStatus) {
     when (status) {
-        UnitStatus.Completed -> Icon(
-            imageVector = Icons.Filled.Check,
-            contentDescription = "Completed",
-            tint = CompletedGreen,
-            modifier = Modifier.size(24.dp),
-        )
-        UnitStatus.Active, UnitStatus.Unlocked -> Icon(
+        UnitStatus.Completed, UnitStatus.Active, UnitStatus.Unlocked -> Icon(
             imageVector = Icons.Filled.PlayArrow,
             contentDescription = "Play",
             tint = AccentRed,
@@ -531,22 +631,51 @@ private fun ActionIcon(status: UnitStatus) {
 }
 
 @Composable
-private fun ThemeChip(label: String) {
-    androidx.compose.material3.SuggestionChip(
-        onClick = {},
-        enabled = false,
-        label = {
-            Text(
-                text = label,
-                fontSize = 11.sp,
-                fontWeight = FontWeight.SemiBold,
-            )
-        },
-        modifier = Modifier.height(24.dp),
-    )
+private fun ThemeChip(
+    label: String,
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier = modifier
+            .height(24.dp)
+            .clip(CircleShape)
+            .background(MaterialTheme.colorScheme.secondaryContainer)
+            .padding(horizontal = 12.dp),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = label,
+            fontSize = 11.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = MaterialTheme.colorScheme.onSecondaryContainer,
+        )
+    }
 }
 
-private const val MAX_PREVIEW_EMOJIS = 4
+@Composable
+private fun PracticedChip(
+    count: Int,
+    modifier: Modifier = Modifier,
+) {
+    val accessibleLabel = stringResource(Res.string.unit_practice_count, count)
+    Box(
+        modifier = modifier
+            .height(24.dp)
+            .clip(CircleShape)
+            .background(PracticedChipBg)
+            .padding(horizontal = 12.dp)
+            .semantics { contentDescription = accessibleLabel },
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = stringResource(Res.string.unit_practice_chip, count),
+            fontSize = 11.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = PracticedChipText,
+        )
+    }
+}
+
 private val NodeSize = 64.dp
 private val NodeElevation = 8.dp
 private val TimelineColumnWidth = 80.dp

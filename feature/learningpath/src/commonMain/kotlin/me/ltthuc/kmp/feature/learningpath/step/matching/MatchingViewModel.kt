@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import me.ltthuc.kmp.core.audio.AudioRef
 import me.ltthuc.kmp.core.audio.AudioState
 import me.ltthuc.kmp.core.model.PhonicsLesson
 import me.ltthuc.kmp.core.repository.AudioRepository
@@ -54,6 +55,10 @@ internal class MatchingViewModel(
             return
         }
         audioRepository.play(ref)
+    }
+
+    fun playSfx(name: String) {
+        audioRepository.play(AudioRef.Sfx(name))
     }
 
     fun onLeaveScreen() {

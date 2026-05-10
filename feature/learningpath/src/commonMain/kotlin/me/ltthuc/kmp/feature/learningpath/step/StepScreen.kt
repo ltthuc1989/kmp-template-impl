@@ -24,10 +24,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.aakira.napier.Napier
 import kotlinx.collections.immutable.toImmutableList
-import me.ltthuc.kmp.core.repository.AppSettingRepository
 import me.ltthuc.kmp.core.repository.LearningProgressRepository
 import me.ltthuc.kmp.core.repository.LevelRepository
 import me.ltthuc.kmp.core.ui.screen.Destination
@@ -61,8 +59,6 @@ internal fun StepScreen(
     val navBackStack = LocalNavBackStack.current
     val progressRepository: LearningProgressRepository = koinInject()
     val levelRepository: LevelRepository = koinInject()
-    val settingRepository: AppSettingRepository = koinInject()
-    val setting by settingRepository.setting.collectAsStateWithLifecycle()
 
     var visibleSteps by remember(levelId) { mutableStateOf(DEFAULT_VISIBLE_STEPS) }
     LaunchedEffect(levelId) {
@@ -140,11 +136,25 @@ internal fun StepScreen(
         }
         navBackStack.add(next)
     }
-    val onClose: () -> Unit = {
+    val onHome: () -> Unit = {
         val bookIdx = navBackStack.indexOfLast { it is Destination.Learning.UnitSelection }
         if (bookIdx >= 0) {
             while (navBackStack.size > bookIdx + 1) navBackStack.removeAt(navBackStack.lastIndex)
         } else {
+            navBackStack.removeAt(navBackStack.lastIndex)
+        }
+    }
+    // Close = back 1 step. If we are at the first visible step OR popping back would land on
+    // step 0 (Sound Intro entry — already covered by reaching the unit), exit to UnitSelection
+    // instead so the kid doesn't bounce through the lesson opener twice.
+    val onClose: () -> Unit = {
+        val firstVisibleStep = visibleSteps.firstOrNull() ?: 0
+        val currentVisibleIdx = visibleSteps.indexOf(stepIndex)
+        val previousStep = if (currentVisibleIdx > 0) visibleSteps[currentVisibleIdx - 1] else null
+        val shouldGoHome = stepIndex == firstVisibleStep || previousStep == firstVisibleStep
+        if (shouldGoHome) {
+            onHome()
+        } else if (navBackStack.size > 1) {
             navBackStack.removeAt(navBackStack.lastIndex)
         }
     }
@@ -170,6 +180,7 @@ internal fun StepScreen(
             unitId = unitId,
             lessonIndex = lessonIndex,
             onClose = onClose,
+            onHome = onHome,
             onNext = onNext,
             onStepJump = onStepJump,
             stepSegments = stepSegments,
@@ -180,6 +191,7 @@ internal fun StepScreen(
             unitId = unitId,
             lessonIndex = lessonIndex,
             onClose = onClose,
+            onHome = onHome,
             onPrevious = onPrevious,
             onNext = onNext,
             onStepJump = onStepJump,
@@ -191,11 +203,11 @@ internal fun StepScreen(
             unitId = unitId,
             lessonIndex = lessonIndex,
             onClose = onClose,
+            onHome = onHome,
             onPrevious = onPrevious,
             onNext = onNext,
             onStepJump = onStepJump,
             modifier = modifier,
-            showSpeakButton = setting.showSpeakButton,
             stepSegments = stepSegments,
             onLessonsLoaded = onLessonsLoaded,
         )
@@ -203,6 +215,7 @@ internal fun StepScreen(
             unitId = unitId,
             lessonIndex = lessonIndex,
             onClose = onClose,
+            onHome = onHome,
             onPrevious = onPrevious,
             onNext = onNext,
             onStepJump = onStepJump,
@@ -214,6 +227,7 @@ internal fun StepScreen(
             unitId = unitId,
             lessonIndex = lessonIndex,
             onClose = onClose,
+            onHome = onHome,
             onPrevious = onPrevious,
             onNext = onNext,
             onStepJump = onStepJump,
@@ -225,6 +239,7 @@ internal fun StepScreen(
             unitId = unitId,
             lessonIndex = lessonIndex,
             onClose = onClose,
+            onHome = onHome,
             onPrevious = onPrevious,
             onNext = onNext,
             onStepJump = onStepJump,
@@ -236,6 +251,7 @@ internal fun StepScreen(
             unitId = unitId,
             lessonIndex = lessonIndex,
             onClose = onClose,
+            onHome = onHome,
             onPrevious = onPrevious,
             onNext = onNext,
             onStepJump = onStepJump,

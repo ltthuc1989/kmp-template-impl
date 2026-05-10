@@ -27,8 +27,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.outlined.StarBorder
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -50,7 +48,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -68,11 +65,10 @@ import me.ltthuc.kmp.core.resource.chant_previous
 import me.ltthuc.kmp.core.resource.identify_all_done_soft_subtitle
 import me.ltthuc.kmp.core.resource.identify_all_done_subtitle
 import me.ltthuc.kmp.core.resource.identify_all_done_title
-import me.ltthuc.kmp.core.resource.identify_instruction
 import me.ltthuc.kmp.core.resource.identify_listen_cd
-import me.ltthuc.kmp.core.resource.identify_round_progress
 import me.ltthuc.kmp.core.resource.identify_title
 import me.ltthuc.kmp.core.resource.score_success_primary
+import me.ltthuc.kmp.core.resource.step_guide_identify
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
 import me.ltthuc.kmp.feature.learningpath.step.common.LetterStepperBar
 import me.ltthuc.kmp.feature.learningpath.step.common.PuffySurface
@@ -80,7 +76,9 @@ import me.ltthuc.kmp.feature.learningpath.step.common.PulseRings
 import me.ltthuc.kmp.feature.learningpath.step.common.ScoreFeedback
 import me.ltthuc.kmp.feature.learningpath.step.common.ScoreFeedbackOverlay
 import me.ltthuc.kmp.feature.learningpath.step.common.StepHeader
-import me.ltthuc.kmp.feature.learningpath.step.common.StepNavRow
+import me.ltthuc.kmp.core.ui.ads.BottomBannerAd
+import me.ltthuc.kmp.feature.learningpath.step.common.StepContinueButton
+import me.ltthuc.kmp.feature.learningpath.step.common.WordDisplayView
 import me.ltthuc.kmp.feature.learningpath.step.common.wordRef
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -94,6 +92,7 @@ internal fun IdentifyScreen(
     unitId: String,
     lessonIndex: Int,
     onClose: () -> Unit,
+    onHome: () -> Unit,
     onPrevious: () -> Unit,
     onNext: () -> Unit,
     onStepJump: (Int) -> Unit,
@@ -123,6 +122,7 @@ internal fun IdentifyScreen(
             audioState = audioState,
             onPlayWord = { word -> viewModel.playTargetWord(currentLesson, word) },
             onClose = onClose,
+            onHome = onHome,
             onPrevious = onPrevious,
             onNext = onNext,
             onStepJump = onStepJump,
@@ -139,6 +139,7 @@ private fun IdentifyContent(
     audioState: AudioState,
     onPlayWord: (word: String) -> Unit,
     onClose: () -> Unit,
+    onHome: () -> Unit,
     onPrevious: () -> Unit,
     onNext: () -> Unit,
     onStepJump: (Int) -> Unit,
@@ -160,6 +161,7 @@ private fun IdentifyContent(
     var showHint by remember(currentLesson.id, roundIndex) { mutableStateOf(false) }
     var autoRevealed by remember(currentLesson.id, roundIndex) { mutableStateOf(false) }
     var finalOverlay by remember(currentLesson.id) { mutableStateOf<ScoreFeedback?>(null) }
+    var allRoundsCompleted by remember(currentLesson.id) { mutableStateOf(false) }
     var anyRoundFailed by remember(currentLesson.id) { mutableStateOf(false) }
 
     val target = vocab[roundIndex.coerceIn(0, vocab.lastIndex)]
@@ -197,6 +199,7 @@ private fun IdentifyContent(
                     if (roundIndex < totalRounds - 1) {
                         roundIndex++
                     } else {
+                        allRoundsCompleted = true
                         finalOverlay = ScoreFeedback.Success(
                             title = allDoneTitle,
                             subtitle = if (anyRoundFailed) allDoneSoftSubtitle else allDoneSubtitle,
@@ -218,6 +221,7 @@ private fun IdentifyContent(
                             if (roundIndex < totalRounds - 1) {
                                 roundIndex++
                             } else {
+                                allRoundsCompleted = true
                                 finalOverlay = ScoreFeedback.Success(
                                     title = allDoneTitle,
                                     subtitle = allDoneSoftSubtitle,
@@ -252,8 +256,10 @@ private fun IdentifyContent(
                     title = stringResource(Res.string.identify_title),
                     currentStepIndex = STEP_INDEX,
                     onClose = onClose,
+                    onHomeClick = onHome,
                     onStepJump = onStepJump,
                     stepSegments = stepSegments,
+                    guideText = stringResource(Res.string.step_guide_identify),
                 )
             },
             bottomBar = {
@@ -270,23 +276,12 @@ private fun IdentifyContent(
                     .padding(horizontal = 20.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Spacer(Modifier.height(8.dp))
                 TargetWordHeader(
                     targetText = target.text,
                     listenPlaying = listenPlaying,
                     onListen = { onPlayWord(target.text) },
                 )
-                Spacer(Modifier.height(4.dp))
-                Text(
-                    text = stringResource(Res.string.identify_instruction),
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    textAlign = TextAlign.Center,
-                )
-                Spacer(Modifier.height(10.dp))
-                RoundProgressRow(currentRound = roundIndex, totalRounds = totalRounds)
-                Spacer(Modifier.height(14.dp))
+                Spacer(Modifier.height(8.dp))
                 IdentifyGrid(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -302,11 +297,12 @@ private fun IdentifyContent(
                     onSelect = onCardTap,
                 )
                 Spacer(Modifier.weight(1f, fill = true))
-                StepNavRow(
-                    previousLabel = stringResource(Res.string.chant_previous),
-                    nextLabel = stringResource(Res.string.chant_next),
-                    onPrevious = onPrevious,
-                    onNext = onNext,
+                BottomBannerAd()
+                Spacer(Modifier.height(8.dp))
+                StepContinueButton(
+                    label = stringResource(Res.string.chant_next),
+                    onClick = onNext,
+                    enabled = allRoundsCompleted && finalOverlay == null,
                 )
                 Spacer(Modifier.height(8.dp))
             }
@@ -340,7 +336,7 @@ private fun TargetWordHeader(
             color = MaterialTheme.colorScheme.primary,
         )
         Box(
-            modifier = Modifier.size(44.dp),
+            modifier = Modifier.size(48.dp),
             contentAlignment = Alignment.Center,
         ) {
             PulseRings(
@@ -349,51 +345,16 @@ private fun TargetWordHeader(
             )
             IconButton(
                 onClick = onListen,
-                modifier = Modifier.size(36.dp),
+                modifier = Modifier.size(40.dp),
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.VolumeUp,
                     contentDescription = stringResource(Res.string.identify_listen_cd),
                     tint = MaterialTheme.colorScheme.secondary,
-                    modifier = Modifier.size(24.dp),
+                    modifier = Modifier.size(26.dp),
                 )
             }
         }
-    }
-}
-
-@Composable
-private fun RoundProgressRow(
-    currentRound: Int,
-    totalRounds: Int,
-) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(6.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            repeat(totalRounds) { index ->
-                val completed = index < currentRound
-                val current = index == currentRound
-                Icon(
-                    imageVector = if (completed) Icons.Filled.Star else Icons.Outlined.StarBorder,
-                    contentDescription = null,
-                    tint = when {
-                        completed -> MaterialTheme.colorScheme.primary
-                        current -> MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)
-                        else -> MaterialTheme.colorScheme.primaryContainer
-                    },
-                    modifier = Modifier.size(if (current) 24.dp else 20.dp),
-                )
-            }
-        }
-        Spacer(Modifier.height(4.dp))
-        Text(
-            text = stringResource(Res.string.identify_round_progress, currentRound + 1, totalRounds),
-            fontSize = 12.sp,
-            fontWeight = FontWeight.Medium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
     }
 }
 
@@ -528,8 +489,8 @@ private fun IdentifyCard(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center,
             ) {
-                Text(
-                    text = item.emoji.orEmpty().ifEmpty { "🎨" },
+                WordDisplayView(
+                    word = item,
                     fontSize = 68.sp,
                 )
             }

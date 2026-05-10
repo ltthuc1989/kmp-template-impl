@@ -44,6 +44,7 @@ Scaffold 1 phonics unit (8 step screens + Room seed). Optional: attach UI mockup
 
 # Install
 ./gradlew :composeApp:installDebug
+./gradlew :composeApp:installAndLaunchDebug   # install + auto launch on running emulator (-e)
 
 # Test
 ./gradlew test
