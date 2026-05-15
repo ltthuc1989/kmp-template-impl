@@ -18,6 +18,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
+import me.ltthuc.kmp.core.model.WordTiming
 
 /**
  * Karaoke-style progressive fill text — tokens stay at a single font size and color-fill from
@@ -43,6 +44,8 @@ internal fun KaraokeText(
     text: String,
     isPlaying: Boolean,
     modifier: Modifier = Modifier,
+    positionMs: Long = -1L,
+    wordTimings: List<WordTiming> = emptyList(),
     fontSize: TextUnit = 24.sp,
     lineHeight: TextUnit = 36.sp,
     tokenDurationMs: Int = 450,
@@ -50,6 +53,37 @@ internal fun KaraokeText(
     baseColor: Color = MaterialTheme.colorScheme.onSurface,
     activeColor: Color = MaterialTheme.colorScheme.primary,
 ) {
+    // Word-level sync mode: use Whisper-extracted timings + audio playback position.
+    // Display original `text` (preserves punctuation), map words to timings by index.
+    if (wordTimings.isNotEmpty() && positionMs >= 0L) {
+        val displayWords = text.split(Regex("\\s+")).filter { it.isNotEmpty() }
+        if (displayWords.size == wordTimings.size) {
+            val annotated = buildAnnotatedString {
+                displayWords.forEachIndexed { i, displayWord ->
+                    val wt = wordTimings[i]
+                    val isActive = isPlaying && positionMs in wt.startMs..wt.endMs
+                    val isPast = positionMs > wt.endMs
+                    val color = if (isActive || isPast) activeColor else baseColor
+                    val weight = if (isActive) FontWeight.ExtraBold else fontWeight
+                    withStyle(SpanStyle(color = color, fontSize = fontSize, fontWeight = weight)) {
+                        append(displayWord)
+                    }
+                    if (i < displayWords.lastIndex) append(" ")
+                }
+            }
+            Text(
+                text = annotated,
+                modifier = modifier,
+                fontWeight = fontWeight,
+                textAlign = TextAlign.Center,
+                lineHeight = lineHeight,
+            )
+            return
+        }
+        // count mismatch — fall through to fixed-rate fallback
+    }
+
+    // Fallback: fixed-rate animation based on isPlaying (no audio sync).
     val tokens = remember(text) { text.tokenize() }
     if (tokens.isEmpty()) return
 

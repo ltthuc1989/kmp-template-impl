@@ -12,20 +12,48 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import me.ltthuc.kmp.core.audio.AudioState
+import me.ltthuc.kmp.core.model.ChantMeta
 import me.ltthuc.kmp.core.model.PhonicsLesson
 import me.ltthuc.kmp.core.repository.AudioRepository
+import me.ltthuc.kmp.core.repository.ChantMetaRepository
 import me.ltthuc.kmp.core.repository.UnitRepository
 import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.error_network
 import me.ltthuc.kmp.core.resource.error_no_data
 import me.ltthuc.kmp.core.ui.screen.ScreenState
+import me.ltthuc.kmp.feature.learningpath.step.common.audioFolderName
 import me.ltthuc.kmp.feature.learningpath.step.common.chantRef
 
 internal class ChantViewModel(
     private val unitId: String,
     unitRepository: UnitRepository,
     private val audioRepository: AudioRepository,
+    private val chantMetaRepository: ChantMetaRepository,
 ) : ViewModel() {
+
+    /**
+     * ChantMeta JSON keys lessons by [audioFolderName] (e.g. "L1U01_A_apple"), which
+     * matches the on-disk audio asset folder. Lesson.id is shorter ("L1U1_A") and only
+     * gives us the level number. Repository derives wordTimings from start_ms/speed_ms
+     * + the lesson's ordered words (chantOrder respected).
+     */
+    suspend fun loadChantMeta(lesson: PhonicsLesson): ChantMeta? {
+        val level = parseLevelFromLessonId(lesson.id) ?: return null
+        val key = lesson.audioFolderName() ?: return null
+        val orderedWords = lesson.chantOrder
+            .takeIf { it.size == lesson.words.size }
+            ?.map { lesson.words[it].word }
+            ?: lesson.words.map { it.word }
+        return chantMetaRepository.metaFor(level, key, orderedWords)
+    }
+
+    private fun parseLevelFromLessonId(id: String): Int? {
+        // Pattern: "L{n}U{n}_{LETTER}" e.g. "L1U1_A" → 1
+        if (!id.startsWith("L")) return null
+        val uIndex = id.indexOf('U')
+        if (uIndex <= 1) return null
+        return id.substring(1, uIndex).toIntOrNull()
+    }
 
     val screenState: StateFlow<ScreenState<ChantUiState>> =
         unitRepository.observeLessons(unitId)

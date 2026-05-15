@@ -1,21 +1,16 @@
 package me.ltthuc.kmp.feature.learningpath
 
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -23,11 +18,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.VolumeOff
+import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.PlayArrow
@@ -44,6 +41,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -52,13 +51,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.draw.scale
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
@@ -70,7 +65,9 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
 import me.ltthuc.kmp.core.model.UnitCard
+import me.ltthuc.kmp.core.model.UnitLetterPreview
 import me.ltthuc.kmp.core.model.UnitStatus
+import me.ltthuc.kmp.core.repository.AppSettingRepository
 import me.ltthuc.kmp.core.repository.LearningProgressRepository
 import me.ltthuc.kmp.core.repository.LevelRepository
 import me.ltthuc.kmp.core.repository.UnitCompletionRepository
@@ -109,12 +106,15 @@ internal fun UnitSelectionScreen(
     val levelRepository: LevelRepository = koinInject()
     val unitRepository: UnitRepository = koinInject()
     val unitCompletionRepository: UnitCompletionRepository = koinInject()
+    val appSettingRepository: AppSettingRepository = koinInject()
+    val appSetting by appSettingRepository.setting.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
     var sheetTarget by remember { mutableStateOf<UnitCard?>(null) }
 
     val isStartDestination = navBackStack.size == 1
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
     Scaffold(
-        modifier = modifier,
+        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         containerColor = ScreenBg,
         topBar = {
             val uiState = (screenState as? ScreenState.Idle)?.data
@@ -123,8 +123,13 @@ internal fun UnitSelectionScreen(
                 startedCount = uiState?.startedCount ?: 0,
                 totalUnits = uiState?.units?.size ?: 0,
                 showBackButton = !isStartDestination,
+                isMuted = appSetting.globalMuted,
+                onToggleMute = {
+                    scope.launch { appSettingRepository.setGlobalMuted(!appSetting.globalMuted) }
+                },
                 onBack = { if (navBackStack.size > 1) navBackStack.removeAt(navBackStack.size - 1) },
                 onSettings = { navBackStack.add(Destination.Setting.Root) },
+                scrollBehavior = scrollBehavior,
             )
         },
         bottomBar = { BottomBannerAd() },
@@ -135,7 +140,12 @@ internal fun UnitSelectionScreen(
         ) { uiState ->
             UnitSelectionList(
                 units = uiState.units,
-                contentPadding = innerPadding,
+                contentPadding = PaddingValues(
+                    top = innerPadding.calculateTopPadding() + 12.dp,
+                    bottom = innerPadding.calculateBottomPadding() + 12.dp,
+                    start = 16.dp,
+                    end = 16.dp,
+                ),
                 onUnitClick = { card ->
                     when (card.status) {
                         UnitStatus.Locked -> Unit
@@ -246,24 +256,95 @@ private fun UnitSelectionList(
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(
-            top = contentPadding.calculateTopPadding() + 12.dp,
-            bottom = contentPadding.calculateBottomPadding() + 12.dp,
-            start = 16.dp,
-            end = 16.dp,
-        ),
-        verticalArrangement = Arrangement.spacedBy(TimelineRowSpacing),
+        contentPadding = contentPadding,
+        verticalArrangement = Arrangement.spacedBy(0.dp),
     ) {
-        items(
+        itemsIndexed(
             items = units,
-            key = { it.unit.id },
-        ) { card ->
+            key = { _, card -> card.unit.id },
+        ) { index, card ->
             UnitRow(
                 card = card,
-                isLast = card.unit.orderIndex == units.lastIndex,
+                isFirst = index == 0,
+                isLast = index == units.lastIndex,
                 onClick = { onUnitClick(card) },
             )
         }
+    }
+}
+
+@Composable
+private fun UnitRow(
+    card: UnitCard,
+    isFirst: Boolean,
+    isLast: Boolean,
+    onClick: () -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(IntrinsicSize.Min),
+        verticalAlignment = Alignment.Top,
+    ) {
+        TimelineColumn(
+            status = card.status,
+            unitNumber = card.unit.number,
+            isFirst = isFirst,
+            isLast = isLast,
+            modifier = Modifier.fillMaxHeight(),
+        )
+        Spacer(Modifier.width(12.dp))
+        UnitCardItem(
+            card = card,
+            onClick = onClick,
+            modifier = Modifier
+                .weight(1f)
+                .padding(vertical = CardVerticalPadding),
+        )
+    }
+}
+
+@Composable
+private fun TimelineColumn(
+    status: UnitStatus,
+    unitNumber: Int,
+    isFirst: Boolean,
+    isLast: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    val topLineColor = when {
+        isFirst -> Color.Transparent
+        status == UnitStatus.Completed || status == UnitStatus.Active -> AccentRed
+        else -> LockedGray
+    }
+    val bottomLineColor = when {
+        isLast -> Color.Transparent
+        status == UnitStatus.Completed -> AccentRed
+        else -> LockedGray
+    }
+    Box(
+        modifier = modifier.width(TimelineColumnWidth),
+        contentAlignment = Alignment.Center,
+    ) {
+        Column(
+            modifier = Modifier.fillMaxHeight(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .width(ConnectorStrokeWidth)
+                    .background(topLineColor),
+            )
+            Spacer(Modifier.height(UnitBadgeSize))
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .width(ConnectorStrokeWidth)
+                    .background(bottomLineColor),
+            )
+        }
+        UnitNumberBadge(status = status, unitNumber = unitNumber)
     }
 }
 
@@ -274,10 +355,14 @@ private fun UnitTopBar(
     startedCount: Int,
     totalUnits: Int,
     showBackButton: Boolean,
+    isMuted: Boolean,
+    onToggleMute: () -> Unit,
     onBack: () -> Unit,
     onSettings: () -> Unit,
+    scrollBehavior: TopAppBarScrollBehavior,
 ) {
     CenterAlignedTopAppBar(
+        scrollBehavior = scrollBehavior,
         title = {
             Text(
                 text = title,
@@ -304,6 +389,18 @@ private fun UnitTopBar(
                 StarBadge(count = startedCount, total = totalUnits)
                 Spacer(Modifier.width(8.dp))
             }
+            // Khan-style quick mute — one tap silences everything, persists across sessions.
+            IconButton(onClick = onToggleMute) {
+                Icon(
+                    imageVector = if (isMuted) {
+                        Icons.AutoMirrored.Filled.VolumeOff
+                    } else {
+                        Icons.AutoMirrored.Filled.VolumeUp
+                    },
+                    contentDescription = if (isMuted) "Unmute" else "Mute",
+                    tint = MaterialTheme.colorScheme.onSurface,
+                )
+            }
             IconButton(onClick = onSettings) {
                 Icon(
                     imageVector = Icons.Filled.Settings,
@@ -314,6 +411,7 @@ private fun UnitTopBar(
         },
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = Color.Transparent,
+            scrolledContainerColor = ScreenBg,
         ),
     )
 }
@@ -346,188 +444,37 @@ private fun StarBadge(count: Int, total: Int) {
 }
 
 @Composable
-private fun UnitRow(
-    card: UnitCard,
-    isLast: Boolean,
-    onClick: () -> Unit,
-) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.Top,
-    ) {
-        TimelineColumn(
-            status = card.status,
-            unitNumber = card.unit.number,
-            isLast = isLast,
-        )
-        Spacer(Modifier.width(16.dp))
-        UnitCardItem(
-            card = card,
-            onClick = onClick,
-            modifier = Modifier.weight(1f),
-        )
+private fun UnitNumberBadge(status: UnitStatus, unitNumber: Int) {
+    val label = unitNumber.toString().padStart(2, '0')
+    val base = Modifier.size(UnitBadgeSize).clip(CircleShape)
+    val styled = when (status) {
+        UnitStatus.Completed -> base.background(AccentRed)
+        UnitStatus.Active -> base.background(Color.White).border(2.dp, AccentRed, CircleShape)
+        UnitStatus.Unlocked -> base.background(Color.White).border(1.5.dp, SoftPink, CircleShape)
+        UnitStatus.Locked -> base.background(LockedGray)
     }
-}
-
-@Composable
-private fun TimelineColumn(
-    status: UnitStatus,
-    unitNumber: Int,
-    isLast: Boolean,
-) {
-    Column(
-        modifier = Modifier.width(TimelineColumnWidth),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        TimelineNode(status = status, unitNumber = unitNumber)
-        if (!isLast) {
-            VerticalConnector(
-                modifier = Modifier
-                    .height(ConnectorHeight)
-                    .width(ConnectorStrokeWidth),
-            )
-        }
-    }
-}
-
-@Composable
-private fun TimelineNode(status: UnitStatus, unitNumber: Int) {
-    Box(contentAlignment = Alignment.Center, modifier = Modifier.size(NodeSize)) {
-        if (status == UnitStatus.Active) {
-            PulsingRing(
-                color = AccentRed,
-                modifier = Modifier.size(NodeSize),
-            )
-        }
-        NodeContent(status = status, unitNumber = unitNumber)
-    }
-}
-
-@Composable
-private fun NodeContent(status: UnitStatus, unitNumber: Int) {
-    val elevation = if (status == UnitStatus.Locked) 0.dp else NodeElevation
-    val shadowColor = when (status) {
-        UnitStatus.Completed -> AccentRed
-        UnitStatus.Active -> AccentRed
-        UnitStatus.Unlocked -> SoftPink
-        UnitStatus.Locked -> Color.Transparent
-    }
-    val baseModifier = Modifier
-        .size(NodeSize)
-        .shadow(
-            elevation = elevation,
-            shape = CircleShape,
-            ambientColor = shadowColor.copy(alpha = 0.25f),
-            spotColor = shadowColor.copy(alpha = 0.45f),
-        )
-        .clip(CircleShape)
-    when (status) {
-        UnitStatus.Completed -> Box(
-            modifier = baseModifier.background(AccentRed),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(
+    Box(modifier = styled, contentAlignment = Alignment.Center) {
+        when (status) {
+            UnitStatus.Completed -> Icon(
                 imageVector = Icons.Filled.Check,
                 contentDescription = null,
                 tint = Color.White,
-                modifier = Modifier.size(32.dp),
+                modifier = Modifier.size(16.dp),
             )
-        }
-        UnitStatus.Active -> Box(
-            modifier = baseModifier
-                .background(Color.White)
-                .border(width = 3.dp, color = AccentRed, shape = CircleShape),
-            contentAlignment = Alignment.Center,
-        ) {
-            UnitLabel(unitNumber = unitNumber, color = AccentRed)
-        }
-        UnitStatus.Unlocked -> Box(
-            modifier = baseModifier
-                .background(Color.White)
-                .border(width = 2.dp, color = SoftPink, shape = CircleShape),
-            contentAlignment = Alignment.Center,
-        ) {
-            UnitLabel(unitNumber = unitNumber, color = AccentRed)
-        }
-        UnitStatus.Locked -> Box(
-            modifier = baseModifier.background(LockedGray),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(
+            UnitStatus.Locked -> Icon(
                 imageVector = Icons.Filled.Lock,
                 contentDescription = null,
                 tint = LockedTextGray,
-                modifier = Modifier.size(26.dp),
+                modifier = Modifier.size(14.dp),
+            )
+            UnitStatus.Active, UnitStatus.Unlocked -> Text(
+                text = label,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Bold,
+                color = AccentRed,
             )
         }
     }
-}
-
-@Composable
-private fun UnitLabel(unitNumber: Int, color: Color) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(
-            text = "Unit",
-            fontSize = 11.sp,
-            fontWeight = FontWeight.Bold,
-            color = color,
-            maxLines = 1,
-        )
-        Text(
-            text = "$unitNumber",
-            fontSize = 20.sp,
-            fontWeight = FontWeight.ExtraBold,
-            color = color,
-            maxLines = 1,
-        )
-    }
-}
-
-@Composable
-private fun PulsingRing(color: Color, modifier: Modifier = Modifier) {
-    val infinite = rememberInfiniteTransition(label = "pulse")
-    val scale by infinite.animateFloat(
-        initialValue = 1f,
-        targetValue = 1.45f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(1400, easing = FastOutSlowInEasing),
-            repeatMode = RepeatMode.Restart,
-        ),
-        label = "scale",
-    )
-    val alpha by infinite.animateFloat(
-        initialValue = 0.55f,
-        targetValue = 0f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(1400, easing = LinearEasing),
-            repeatMode = RepeatMode.Restart,
-        ),
-        label = "alpha",
-    )
-    Box(
-        modifier = modifier
-            .scale(scale)
-            .alpha(alpha)
-            .clip(CircleShape)
-            .background(color),
-    )
-}
-
-@Composable
-private fun VerticalConnector(modifier: Modifier = Modifier) {
-    val connectorColor = MaterialTheme.colorScheme.primary
-    Box(
-        modifier = modifier.drawBehind {
-            val strokeWidth = ConnectorStrokeWidth.toPx()
-            val centerX = size.width / 2f
-            drawLine(
-                color = connectorColor,
-                start = Offset(centerX, 0f),
-                end = Offset(centerX, size.height),
-                strokeWidth = strokeWidth,
-            )
-        },
-    )
 }
 
 @Composable
@@ -543,10 +490,19 @@ private fun UnitCardItem(
         MaterialTheme.colorScheme.surface
     }
 
+    val activeBorder = if (card.status == UnitStatus.Active) {
+        Modifier.border(1.5.dp, AccentRed.copy(alpha = 0.5f), RoundedCornerShape(CardCornerRadius))
+    } else {
+        Modifier
+    }
+
     ElevatedCard(
         onClick = onClick,
         enabled = !isLocked,
-        modifier = modifier.defaultMinSize(minHeight = CardMinHeight),
+        modifier = modifier
+            .fillMaxWidth()
+            .defaultMinSize(minHeight = CardMinHeight)
+            .then(activeBorder),
         shape = RoundedCornerShape(CardCornerRadius),
         colors = CardDefaults.elevatedCardColors(
             containerColor = containerColor,
@@ -561,7 +517,7 @@ private fun UnitCardItem(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 14.dp),
+                    .padding(horizontal = 14.dp, vertical = 12.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 if (isLocked) {
@@ -575,27 +531,15 @@ private fun UnitCardItem(
                 } else {
                     Row(
                         modifier = Modifier.weight(1f),
-                        horizontalArrangement = Arrangement.spacedBy(20.dp),
+                        horizontalArrangement = Arrangement.spacedBy(18.dp),
                     ) {
                         card.previewLetters.forEach { item ->
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Text(
-                                    text = item.letter,
-                                    fontSize = 16.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.onSurface,
-                                )
-                                Spacer(Modifier.height(2.dp))
-                                Text(
-                                    text = item.emoji.orEmpty(),
-                                    fontSize = 24.sp,
-                                )
-                            }
+                            LetterPreview(item)
                         }
                     }
                 }
-                Spacer(Modifier.width(12.dp))
-                ActionIcon(status = card.status)
+                Spacer(Modifier.width(8.dp))
+                ActionPlayButton(status = card.status)
             }
             if (!isLocked && (card.unit.themeChip != null || card.completionCount > 0)) {
                 Row(
@@ -618,15 +562,61 @@ private fun UnitCardItem(
 }
 
 @Composable
-private fun ActionIcon(status: UnitStatus) {
+private fun LetterPreview(item: UnitLetterPreview) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Row(verticalAlignment = Alignment.Bottom) {
+            Text(
+                text = item.letter.take(1),
+                fontSize = 22.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+            if (item.letter.length > 1) {
+                Text(
+                    text = item.letter.drop(1),
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Normal,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
+        Spacer(Modifier.height(2.dp))
+        Text(text = item.emoji.orEmpty(), fontSize = 22.sp)
+    }
+}
+
+@Composable
+private fun ActionPlayButton(status: UnitStatus) {
     when (status) {
-        UnitStatus.Completed, UnitStatus.Active, UnitStatus.Unlocked -> Icon(
-            imageVector = Icons.Filled.PlayArrow,
-            contentDescription = "Play",
-            tint = AccentRed,
-            modifier = Modifier.size(24.dp),
-        )
-        UnitStatus.Locked -> Spacer(Modifier.size(24.dp))
+        UnitStatus.Completed -> Box(
+            modifier = Modifier
+                .size(PlayButtonSize)
+                .clip(CircleShape)
+                .border(1.5.dp, AccentRed, CircleShape),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Check,
+                contentDescription = "Completed",
+                tint = AccentRed,
+                modifier = Modifier.size(18.dp),
+            )
+        }
+        UnitStatus.Active, UnitStatus.Unlocked -> Box(
+            modifier = Modifier
+                .size(PlayButtonSize)
+                .clip(CircleShape)
+                .border(1.5.dp, AccentRed, CircleShape),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(
+                imageVector = Icons.Filled.PlayArrow,
+                contentDescription = "Play",
+                tint = AccentRed,
+                modifier = Modifier.size(18.dp),
+            )
+        }
+        UnitStatus.Locked -> Spacer(Modifier.size(PlayButtonSize))
     }
 }
 
@@ -676,11 +666,10 @@ private fun PracticedChip(
     }
 }
 
-private val NodeSize = 64.dp
-private val NodeElevation = 8.dp
-private val TimelineColumnWidth = 80.dp
-private val TimelineRowSpacing = 0.dp
-private val ConnectorHeight = 36.dp
-private val ConnectorStrokeWidth = 4.dp
+private val UnitBadgeSize = 32.dp
+private val PlayButtonSize = 34.dp
+private val TimelineColumnWidth = 36.dp
+private val ConnectorStrokeWidth = 2.dp
+private val CardVerticalPadding = 6.dp
 private val CardMinHeight = 76.dp
 private val CardCornerRadius = 20.dp

@@ -11,10 +11,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import me.ltthuc.kmp.core.audio.AudioRef
 import me.ltthuc.kmp.core.audio.AudioState
 import me.ltthuc.kmp.core.model.PhonicsLesson
 import me.ltthuc.kmp.core.repository.AudioRepository
+import me.ltthuc.kmp.core.repository.SfxController
 import me.ltthuc.kmp.core.repository.UnitRepository
 import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.error_network
@@ -26,6 +26,7 @@ internal class MatchingViewModel(
     private val unitId: String,
     unitRepository: UnitRepository,
     private val audioRepository: AudioRepository,
+    private val sfxController: SfxController,
 ) : ViewModel() {
 
     val screenState: StateFlow<ScreenState<MatchingUiState>> =
@@ -58,7 +59,12 @@ internal class MatchingViewModel(
     }
 
     fun playSfx(name: String) {
-        audioRepository.play(AudioRef.Sfx(name))
+        // Route through SfxController — separate player so we don't cancel lesson voice.
+        sfxController.playSfx(name)
+    }
+
+    fun playVoicePraise(name: String) {
+        sfxController.playVoicePraise(name)
     }
 
     fun onLeaveScreen() {

@@ -23,6 +23,7 @@ import me.ltthuc.kmp.core.resource.paywall_privacy
 import me.ltthuc.kmp.core.resource.paywall_restore
 import me.ltthuc.kmp.core.resource.paywall_subscribe
 import me.ltthuc.kmp.core.resource.paywall_terms
+import me.ltthuc.kmp.core.resource.paywall_trial_note
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -39,6 +40,12 @@ internal fun PaywallFooter(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
+        Text(
+            text = stringResource(Res.string.paywall_trial_note),
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+
         Button(
             modifier = Modifier
                 .fillMaxWidth()

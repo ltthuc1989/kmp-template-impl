@@ -6,32 +6,36 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.lexilabs.basic.ads.AdState
 import app.lexilabs.basic.ads.DependsOnGoogleMobileAds
 import app.lexilabs.basic.ads.composable.rememberInterstitialAd
 import io.github.aakira.napier.Napier
+import me.ltthuc.kmp.core.model.AppConfig
+import me.ltthuc.kmp.core.repository.AppSettingRepository
+import org.koin.compose.koinInject
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.TimeSource
-import me.ltthuc.kmp.core.model.AppConfig
-import org.koin.compose.koinInject
 
 /**
- * Shows fullscreen interstitial when user enters Tracing screen, gated by per-process
- * frequency cap (3 minutes). Balance between revenue and kid-friendly pacing —
- * gives ~3-4 ads per typical 10-15 min phonics session.
+ * Shows fullscreen interstitial between learning sessions (e.g. on UnitCompleteScreen),
+ * gated by per-process frequency cap (3 minutes). Balance between revenue and kid-friendly
+ * pacing — gives ~3-4 ads per typical 10-15 min phonics session.
  *
- * Uses `rememberInterstitialAd` (auto-loads in background) + `LaunchedEffect` watching state,
- * showing the ad once it reaches [AdState.READY]. Direct `InterstitialAd()` composable
- * crashes if state isn't READY when composition runs — must be guarded with state observation.
+ * Premium users (`hasPrivilege`) see no ads.
  */
 @OptIn(DependsOnGoogleMobileAds::class)
 @Composable
-fun TracingInterstitial() {
+fun LearningInterstitial() {
+    val appSettingRepository: AppSettingRepository = koinInject()
+    val setting by appSettingRepository.setting.collectAsStateWithLifecycle()
+    if (setting.hasPrivilege) return
+
     val appConfig: AppConfig = koinInject()
     val shouldAttempt = remember {
-        val last = TracingAdGate.lastShownMark
+        val last = LearningAdGate.lastShownMark
         val canShow = last == null || last.elapsedNow() >= INTERSTITIAL_COOLDOWN
-        if (canShow) TracingAdGate.lastShownMark = TimeSource.Monotonic.markNow()
+        if (canShow) LearningAdGate.lastShownMark = TimeSource.Monotonic.markNow()
         canShow
     }
     if (!shouldAttempt) return
@@ -39,7 +43,7 @@ fun TracingInterstitial() {
     val ad by rememberInterstitialAd(
         adUnitId = appConfig.adMobInterstitialAdUnitId,
         onFailure = { e ->
-            Napier.w(tag = "TracingInterstitial") { "Load fail: ${e.message}" }
+            Napier.w(tag = "LearningInterstitial") { "Load fail: ${e.message}" }
         },
     )
     var shown by remember { mutableStateOf(false) }
@@ -48,7 +52,7 @@ fun TracingInterstitial() {
             shown = true
             ad.setListeners(
                 onFailure = { e ->
-                    Napier.w(tag = "TracingInterstitial") { "Show fail: ${e.message}" }
+                    Napier.w(tag = "LearningInterstitial") { "Show fail: ${e.message}" }
                 },
                 onDismissed = {},
             )
@@ -59,6 +63,6 @@ fun TracingInterstitial() {
 
 private val INTERSTITIAL_COOLDOWN = 3.minutes
 
-private object TracingAdGate {
+private object LearningAdGate {
     var lastShownMark: TimeSource.Monotonic.ValueTimeMark? = null
 }

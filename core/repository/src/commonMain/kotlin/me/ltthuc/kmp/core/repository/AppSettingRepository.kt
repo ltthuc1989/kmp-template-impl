@@ -26,4 +26,12 @@ class AppSettingRepository(
     suspend fun setHasSeenOnboarding(hasSeenOnboarding: Boolean) = dataSource.setHasSeenOnboarding(hasSeenOnboarding)
 
     suspend fun setShowSpeakButton(value: Boolean) = dataSource.setShowSpeakButton(value)
+
+    suspend fun setSfxEnabled(value: Boolean) = dataSource.setSfxEnabled(value)
+
+    suspend fun setVoiceEnabled(value: Boolean) = dataSource.setVoiceEnabled(value)
+
+    suspend fun setMusicEnabled(value: Boolean) = dataSource.setMusicEnabled(value)
+
+    suspend fun setGlobalMuted(value: Boolean) = dataSource.setGlobalMuted(value)
 }

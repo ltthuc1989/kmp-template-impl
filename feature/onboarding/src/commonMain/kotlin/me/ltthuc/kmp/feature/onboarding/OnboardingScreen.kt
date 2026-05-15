@@ -11,14 +11,14 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material.icons.filled.EmojiEvents
+import androidx.compose.material.icons.automirrored.filled.MenuBook
+import androidx.compose.material.icons.filled.AutoStories
+import androidx.compose.material.icons.filled.Extension
 import androidx.compose.material.icons.filled.Hearing
-import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.MusicNote
-import androidx.compose.material.icons.filled.RecordVoiceOver
 import androidx.compose.material.icons.filled.School
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.filled.WorkspacePremium
+import androidx.compose.material.icons.filled.TouchApp
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -169,13 +169,13 @@ private fun onboardingPages(): List<OnboardingPageData> = listOf(
     OnboardingPageData(
         title = Res.string.onboarding_page3_title,
         subtitle = Res.string.onboarding_page3_subtitle,
-        illustration = Icons.Filled.RecordVoiceOver,
-        badge = Icons.Filled.Mic,
+        illustration = Icons.Filled.Extension,
+        badge = Icons.Filled.TouchApp,
     ),
     OnboardingPageData(
         title = Res.string.onboarding_page4_title,
         subtitle = Res.string.onboarding_page4_subtitle,
-        illustration = Icons.Filled.EmojiEvents,
-        badge = Icons.Filled.WorkspacePremium,
+        illustration = Icons.Filled.AutoStories,
+        badge = Icons.AutoMirrored.Filled.MenuBook,
     ),
 )

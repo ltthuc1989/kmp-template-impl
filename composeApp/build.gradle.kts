@@ -164,5 +164,7 @@ buildkonfig {
         setField("ADMOB_IOS_APP_OPEN_AD_UNIT_ID", appOpenAdTestId)
 
         setField("APPLOVIN_SDK_KEY")
+
+        setField("FIREBASE_STORAGE_BUCKET", "grabee-368d2.firebasestorage.app")
     }
 }

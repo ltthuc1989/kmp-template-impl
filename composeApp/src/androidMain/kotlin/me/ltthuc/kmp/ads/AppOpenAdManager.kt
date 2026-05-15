@@ -6,11 +6,11 @@ import android.os.Bundle
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
-import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.FullScreenContentCallback
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.appopen.AppOpenAd
 import io.github.aakira.napier.Napier
+import me.ltthuc.kmp.core.repository.AppSettingRepository
 
 /**
  * Manages App Open Ads — fullscreen ads shown when user brings the app back to the
@@ -24,6 +24,7 @@ import io.github.aakira.napier.Napier
 class AppOpenAdManager(
     private val application: Application,
     private val adUnitId: String,
+    private val appSettingRepository: AppSettingRepository,
 ) : Application.ActivityLifecycleCallbacks, DefaultLifecycleObserver {
 
     private var appOpenAd: AppOpenAd? = null
@@ -31,6 +32,7 @@ class AppOpenAdManager(
     private var isShowingAd = false
     private var loadTime: Long = 0
     private var currentActivity: Activity? = null
+
     /** Skip the very first foreground transition (cold start). */
     private var coldStart = true
 
@@ -65,12 +67,13 @@ class AppOpenAdManager(
 
     // ---- Ad lifecycle ----
     private fun loadAd() {
+        if (appSettingRepository.setting.value.hasPrivilege) return
         if (isLoadingAd || isAdAvailable()) return
         isLoadingAd = true
         AppOpenAd.load(
             application,
             adUnitId,
-            AdRequest.Builder().build(),
+            AdsInitializer.kidsSafeAdRequest(),
             object : AppOpenAd.AppOpenAdLoadCallback() {
                 override fun onAdLoaded(ad: AppOpenAd) {
                     appOpenAd = ad
@@ -90,7 +93,11 @@ class AppOpenAdManager(
         appOpenAd != null && System.currentTimeMillis() - loadTime < AD_EXPIRY_MS
 
     private fun showAdIfAvailable() {
-        val activity = currentActivity ?: run { loadAd(); return }
+        if (appSettingRepository.setting.value.hasPrivilege) return
+        val activity = currentActivity ?: run {
+            loadAd()
+            return
+        }
         if (isShowingAd || !isAdAvailable()) {
             loadAd()
             return
@@ -118,6 +125,6 @@ class AppOpenAdManager(
 
     private companion object {
         const val TAG = "AppOpenAdManager"
-        const val AD_EXPIRY_MS = 4L * 60 * 60 * 1000  // 4 hours per AdMob recommendation
+        const val AD_EXPIRY_MS = 4L * 60 * 60 * 1000 // 4 hours per AdMob recommendation
     }
 }

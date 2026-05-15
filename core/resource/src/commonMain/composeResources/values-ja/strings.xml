@@ -259,6 +259,15 @@
     <string name="unit_complete_choose_letter">べつのもじをえらぶ</string>
     <string name="unit_complete_level_done">🎓 レベルクリア！</string>
 
+    <!-- Level complete celebration screen (all units in a level done) -->
+    <string name="level_complete_title">やったね！🎉</string>
+    <string name="level_complete_subtitle">%1$s を ぜんぶ クリア！</string>
+    <string name="level_complete_letter_count">%1$d もじ ✨</string>
+    <string name="level_complete_parent_thanks">いっしょに がくしゅう してくれて ありがとう。レベル2 は ちかぢか こうかい！</string>
+    <string name="level_complete_replay">もういちど あそぶ</string>
+    <string name="level_complete_go_home">ホームへ もどる</string>
+    <string name="level_card_coming_soon">ちかぢか こうかい ✨</string>
+
     <!-- Score feedback (reusable across step screens) -->
     <string name="score_success_title">素晴らしい！</string>
     <string name="score_success_subtitle">完璧に発音できました！</string>
@@ -271,11 +280,11 @@
     <string name="onboarding_title">英語を学ぼう</string>
     <string name="onboarding_get_started">はじめる</string>
     <string name="onboarding_page1_title">ようこそ！</string>
-    <string name="onboarding_page1_subtitle">フォニーと一緒にフォニックスを学ぼう</string>
+    <string name="onboarding_page1_subtitle">英語フォニックスの冒険を始めよう</string>
     <string name="onboarding_page2_title">音を学ぼう</string>
     <string name="onboarding_page2_subtitle">アルファベットと音をマスター</string>
-    <string name="onboarding_page3_title">発音の練習</string>
-    <string name="onboarding_page3_subtitle">聞いて、繰り返して、覚えよう</string>
-    <string name="onboarding_page4_title">ごほうびをゲット</string>
-    <string name="onboarding_page4_subtitle">スターとバッジを集めよう</string>
+    <string name="onboarding_page3_title">遊んで学ぼう</string>
+    <string name="onboarding_page3_subtitle">楽しいゲームでアルファベットをマスター</string>
+    <string name="onboarding_page4_title">おはなしタイム</string>
+    <string name="onboarding_page4_subtitle">各レターの最後に楽しいおはなし</string>
 </resources>

@@ -31,7 +31,7 @@ internal object TracingScorer {
     private const val SAMPLE_POINTS_PER_STROKE = 40
     private const val HIT_RADIUS_FRACTION = 0.06f // 6% of canvas width
     private const val STROKE_COUNT_PENALTY_PER_DIFF = 0.15f // -15% per stroke off
-    private const val STROKE_COUNT_MIN_FACTOR = 0.4f       // floor to avoid zero-out
+    private const val STROKE_COUNT_MIN_FACTOR = 0.4f // floor to avoid zero-out
 
     /**
      * @return a score in 0..1 reflecting how well [userStrokes] cover the ideal [guide] path.

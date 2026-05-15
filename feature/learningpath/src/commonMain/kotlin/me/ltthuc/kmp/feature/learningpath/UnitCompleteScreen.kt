@@ -44,7 +44,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.coroutines.delay
 import me.ltthuc.kmp.core.model.PhonicsUnit
+import me.ltthuc.kmp.core.repository.SfxController
 import me.ltthuc.kmp.core.repository.UnitCompletionRepository
 import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.unit_complete_choose_letter
@@ -53,6 +55,8 @@ import me.ltthuc.kmp.core.resource.unit_complete_next_button
 import me.ltthuc.kmp.core.resource.unit_complete_practice_badge
 import me.ltthuc.kmp.core.resource.unit_complete_subtitle
 import me.ltthuc.kmp.core.resource.unit_complete_title
+import me.ltthuc.kmp.core.ui.ads.BottomBannerAd
+import me.ltthuc.kmp.core.ui.ads.LearningInterstitial
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
 import me.ltthuc.kmp.core.ui.screen.Destination
 import me.ltthuc.kmp.core.ui.theme.LocalNavBackStack
@@ -75,6 +79,7 @@ internal fun UnitCompleteScreen(
 ) {
     val navBackStack = LocalNavBackStack.current
     val unitCompletionRepository: UnitCompletionRepository = koinInject()
+    val sfx: SfxController = koinInject()
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     // Reaching this screen = user finished all lessons + Story. Increment unit completion
@@ -82,10 +87,19 @@ internal fun UnitCompleteScreen(
     LaunchedEffect(unitId) {
         unitCompletionRepository.markCompleted(unitId)
     }
+    // Khan-simple celebration: fire fanfare on entry, then voice praise 800ms in.
+    LaunchedEffect(unitId) {
+        sfx.playSfx("lesson_complete")
+        delay(UNIT_COMPLETE_VOICE_DELAY_MS)
+        sfx.playVoicePraise(UNIT_COMPLETE_PRAISE_POOL.random())
+    }
+
+    LearningInterstitial()
 
     Scaffold(
         modifier = modifier,
         containerColor = ScreenBgComplete,
+        bottomBar = { BottomBannerAd() },
     ) { padding ->
         AsyncLoadContents(
             modifier = Modifier.fillMaxSize().padding(padding),
@@ -114,8 +128,10 @@ internal fun UnitCompleteScreen(
                                 stepIndex = 0,
                             ),
                         )
+                    } else {
+                        // Last unit of last available level → celebrate level completion.
+                        navBackStack.add(Destination.Learning.LevelComplete(levelId = levelId))
                     }
-                    // else: last unit in level → just stay on UnitSelection
                 },
                 onChooseLetterClick = {
                     while (
@@ -327,3 +343,9 @@ private val ScreenBgComplete = Color(0xFFFFF6E5)
 private const val MIN_UNITS_FOR_CHOOSE_LETTER = 2
 private const val BOUNCE_DURATION_MS = 700
 private const val BOUNCE_TARGET_SCALE = 1.18f
+private const val UNIT_COMPLETE_VOICE_DELAY_MS = 800L
+private val UNIT_COMPLETE_PRAISE_POOL = listOf(
+    "praise_great_job",
+    "praise_well_done",
+    "praise_you_got_it",
+)

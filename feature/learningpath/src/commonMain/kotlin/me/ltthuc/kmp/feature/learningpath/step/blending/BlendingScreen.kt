@@ -60,7 +60,6 @@ import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.blending_title
 import me.ltthuc.kmp.core.resource.blending_word_progress
 import me.ltthuc.kmp.core.resource.chant_next
-import me.ltthuc.kmp.core.resource.chant_previous
 import me.ltthuc.kmp.core.resource.identify_all_done_subtitle
 import me.ltthuc.kmp.core.resource.identify_all_done_title
 import me.ltthuc.kmp.core.resource.score_success_primary
@@ -70,9 +69,8 @@ import me.ltthuc.kmp.feature.learningpath.step.common.LetterStepperBar
 import me.ltthuc.kmp.feature.learningpath.step.common.PuffySurface
 import me.ltthuc.kmp.feature.learningpath.step.common.ScoreFeedback
 import me.ltthuc.kmp.feature.learningpath.step.common.ScoreFeedbackOverlay
-import me.ltthuc.kmp.feature.learningpath.step.common.StepHeader
-import me.ltthuc.kmp.core.ui.ads.BottomBannerAd
 import me.ltthuc.kmp.feature.learningpath.step.common.StepContinueButton
+import me.ltthuc.kmp.feature.learningpath.step.common.StepHeader
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -243,7 +241,6 @@ private fun BlendingContent(
                     onClick = ::startBlend,
                 )
                 Spacer(Modifier.weight(1f, fill = true))
-                BottomBannerAd()
                 Spacer(Modifier.height(8.dp))
                 StepContinueButton(
                     label = stringResource(Res.string.chant_next),

@@ -4,7 +4,7 @@ import io.ktor.client.HttpClient
 import me.ltthuc.kmp.core.audio.AudioAssetResolver
 import me.ltthuc.kmp.core.audio.AudioDownloader
 import org.koin.core.module.Module
-import org.koin.core.module.dsl.singleOf
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 /**
@@ -16,9 +16,12 @@ data class AudioConfig(
     val storageBucket: String,
 )
 
+/** Koin qualifier for the dedicated SFX-layer [AudioPlayer] (separate from lesson voice). */
+val AudioPlayerSfx = named("sfx")
+
 val audioModule = module {
     single { HttpClient() }
-    singleOf(::AudioDownloader)
+    single { AudioDownloader(get()) }
     single { AudioAssetResolver(storageBucket = get<AudioConfig>().storageBucket) }
 
     includes(audioPlatformModule)

@@ -1,14 +1,14 @@
 package me.ltthuc.kmp.feature.learningpath.step.story
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -33,6 +33,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -41,7 +42,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -60,7 +63,6 @@ import me.ltthuc.kmp.core.repository.LearningProgressRepository
 import me.ltthuc.kmp.core.repository.LevelRepository
 import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.chant_next
-import me.ltthuc.kmp.core.resource.chant_previous
 import me.ltthuc.kmp.core.resource.step_guide_story
 import me.ltthuc.kmp.core.resource.story_audio_cd
 import me.ltthuc.kmp.core.resource.story_next_page_cd
@@ -75,10 +77,11 @@ import me.ltthuc.kmp.feature.learningpath.step.common.KaraokeText
 import me.ltthuc.kmp.feature.learningpath.step.common.LetterStepperBar
 import me.ltthuc.kmp.feature.learningpath.step.common.PageDotsRow
 import me.ltthuc.kmp.feature.learningpath.step.common.PulseRings
-import me.ltthuc.kmp.feature.learningpath.step.common.StepHeader
-import me.ltthuc.kmp.core.ui.ads.BottomBannerAd
 import me.ltthuc.kmp.feature.learningpath.step.common.StepContinueButton
+import me.ltthuc.kmp.feature.learningpath.step.common.StepHeader
 import me.ltthuc.kmp.feature.learningpath.step.common.StoryStyleCard
+import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.decodeToImageBitmap
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
@@ -221,7 +224,28 @@ private fun StoryContent(
                 onHomeClick = onClose,
                 onStepJump = onStepJump,
                 guideText = stringResource(Res.string.step_guide_story),
-                showGuideText = false,
+                guideTrailing = {
+                    Box(
+                        modifier = Modifier.size(36.dp),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        PulseRings(
+                            isActive = isNarrating,
+                            ringColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.4f),
+                        )
+                        IconButton(
+                            onClick = onListen,
+                            modifier = Modifier.size(32.dp),
+                        ) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.VolumeUp,
+                                contentDescription = stringResource(Res.string.story_audio_cd),
+                                tint = MaterialTheme.colorScheme.secondary,
+                                modifier = Modifier.size(20.dp),
+                            )
+                        }
+                    }
+                },
             )
         },
         bottomBar = {
@@ -238,38 +262,13 @@ private fun StoryContent(
                 .padding(horizontal = 20.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                Text(
-                    text = story.title,
-                    fontSize = 22.sp,
-                    fontWeight = FontWeight.ExtraBold,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    textAlign = TextAlign.Center,
-                )
-                Box(
-                    modifier = Modifier.size(48.dp),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    PulseRings(
-                        isActive = isNarrating,
-                        ringColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.4f),
-                    )
-                    IconButton(
-                        onClick = onListen,
-                        modifier = Modifier.size(40.dp),
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.VolumeUp,
-                            contentDescription = stringResource(Res.string.story_audio_cd),
-                            tint = MaterialTheme.colorScheme.secondary,
-                            modifier = Modifier.size(26.dp),
-                        )
-                    }
-                }
-            }
+            Text(
+                text = story.title,
+                fontSize = 22.sp,
+                fontWeight = FontWeight.ExtraBold,
+                color = MaterialTheme.colorScheme.onSurface,
+                textAlign = TextAlign.Center,
+            )
             Spacer(Modifier.height(12.dp))
             StorySceneImagePager(
                 scenes = scenes,
@@ -292,15 +291,21 @@ private fun StoryContent(
             Spacer(Modifier.height(16.dp))
             PageDotsRow(currentPage = currentPage, total = pageCount)
             Spacer(Modifier.height(16.dp))
+            val positionMs = when (val s = audioState) {
+                is AudioState.Playing -> s.positionMs
+                is AudioState.Paused -> s.positionMs
+                else -> -1L
+            }
             KaraokeText(
                 text = currentScene.text,
                 isPlaying = isNarrating,
+                positionMs = positionMs,
+                wordTimings = currentScene.wordTimings,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 24.dp),
             )
             Spacer(Modifier.weight(1f, fill = true))
-            BottomBannerAd()
             Spacer(Modifier.height(8.dp))
             StepContinueButton(
                 label = stringResource(Res.string.chant_next),
@@ -323,10 +328,12 @@ private fun StorySceneImagePager(
     val canNext = pagerState.currentPage < scenes.lastIndex
 
     Box(modifier = Modifier.fillMaxWidth()) {
-        StoryStyleCard {
+        StoryStyleCard(aspectRatio = null, whiteInner = true) {
             HorizontalPager(
                 state = pagerState,
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(16f / 9f),
             ) { pageIndex ->
                 StorySceneCard(scene = scenes[pageIndex])
             }
@@ -353,18 +360,38 @@ private fun StorySceneImagePager(
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun StorySceneCard(scene: StoryScene) {
+    val imagePath = scene.imagePathLandscape
+    val bitmap: ImageBitmap? = if (imagePath != null) {
+        produceState<ImageBitmap?>(initialValue = null, imagePath) {
+            value = runCatching { Res.readBytes(imagePath).decodeToImageBitmap() }
+                .onFailure { Napier.w(tag = TAG) { "No image at $imagePath, falling back to emoji" } }
+                .getOrNull()
+        }.value
+    } else {
+        null
+    }
+
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center,
     ) {
-        // Placeholder: emoji per scene name. Swap for real illustration when art lands.
-        Text(
-            text = sceneEmoji(scene.name),
-            fontSize = 120.sp,
-            textAlign = TextAlign.Center,
-        )
+        if (bitmap != null) {
+            Image(
+                bitmap = bitmap,
+                contentDescription = scene.text,
+                contentScale = ContentScale.Fit,
+                modifier = Modifier.fillMaxSize(),
+            )
+        } else {
+            Text(
+                text = sceneEmoji(scene.name),
+                fontSize = 120.sp,
+                textAlign = TextAlign.Center,
+            )
+        }
     }
 }
 

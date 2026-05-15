@@ -20,4 +20,16 @@ data class StoryScene(
     val name: String,
     val durationSec: Int,
     val text: String,
+    val imagePathLandscape: String? = null,
+    val imagePathPortrait: String? = null,
+    val wordTimings: List<WordTiming> = emptyList(),
+)
+
+/**
+ * Word-level timestamp for karaoke sync. Extracted from MP3 audio via Whisper.
+ */
+data class WordTiming(
+    val word: String,
+    val startMs: Int,
+    val endMs: Int,
 )

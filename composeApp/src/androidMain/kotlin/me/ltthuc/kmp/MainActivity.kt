@@ -12,9 +12,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.google.android.gms.ads.MobileAds
 import io.github.vinceglb.filekit.FileKit
 import io.github.vinceglb.filekit.dialogs.init
+import me.ltthuc.kmp.ads.AdsInitializer
 import me.ltthuc.kmp.core.model.Theme
 import me.ltthuc.kmp.core.ui.theme.shouldUseDarkTheme
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -61,7 +61,7 @@ class MainActivity : ComponentActivity() {
             return
         }
 
-        MobileAds.initialize(this)
+        AdsInitializer.initialize(this)
         viewModel.setAdsSdkInitialized()
     }
 }

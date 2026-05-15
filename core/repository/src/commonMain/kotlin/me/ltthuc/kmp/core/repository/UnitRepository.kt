@@ -77,15 +77,18 @@ class UnitRepository(
         // Sequential gating: first unit in a level is always Unlocked (entry point);
         // each subsequent unit unlocks only when the previous one has been completed
         // (user reached UnitCompleteScreen at least once → completionCount > 0).
-        // Developer mode bypasses gating: all units are at least Unlocked.
+        // Developer mode bypasses gating entirely: every unit is forced to Completed
+        // so UnitSelectionScreen opens the LessonSelectorSheet on tap, letting QA jump
+        // directly to any lesson or Story without playing through prerequisites.
         return sorted.mapIndexed { index, signal ->
             val isActive = signal.unit.id == activeUnitId
             val isCompleted = signal.completionCount > 0
             val prevCompleted = index == 0 || sorted[index - 1].completionCount > 0
             val status = when {
+                developerMode -> UnitStatus.Completed
                 isCompleted -> UnitStatus.Completed
                 isActive -> UnitStatus.Active
-                prevCompleted || developerMode -> UnitStatus.Unlocked
+                prevCompleted -> UnitStatus.Unlocked
                 else -> UnitStatus.Locked
             }
             UnitCard(

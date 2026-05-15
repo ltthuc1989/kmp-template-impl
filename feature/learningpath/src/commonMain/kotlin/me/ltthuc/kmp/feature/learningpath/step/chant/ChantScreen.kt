@@ -32,6 +32,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -51,20 +52,19 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.delay
 import me.ltthuc.kmp.core.audio.AudioState
 import me.ltthuc.kmp.core.audio.isActiveFor
+import me.ltthuc.kmp.core.model.ChantMeta
 import me.ltthuc.kmp.core.model.PhonicsLesson
 import me.ltthuc.kmp.core.resource.Res
-import me.ltthuc.kmp.core.resource.chant_next
-import me.ltthuc.kmp.core.resource.chant_previous
 import me.ltthuc.kmp.core.resource.chant_listen_cd
+import me.ltthuc.kmp.core.resource.chant_next
 import me.ltthuc.kmp.core.resource.chant_title
 import me.ltthuc.kmp.core.resource.step_guide_chant
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
 import me.ltthuc.kmp.feature.learningpath.step.common.LetterStepperBar
 import me.ltthuc.kmp.feature.learningpath.step.common.PageDotsRow
 import me.ltthuc.kmp.feature.learningpath.step.common.PulseRings
-import me.ltthuc.kmp.feature.learningpath.step.common.StepHeader
-import me.ltthuc.kmp.core.ui.ads.BottomBannerAd
 import me.ltthuc.kmp.feature.learningpath.step.common.StepContinueButton
+import me.ltthuc.kmp.feature.learningpath.step.common.StepHeader
 import me.ltthuc.kmp.feature.learningpath.step.common.StoryStyleCard
 import me.ltthuc.kmp.feature.learningpath.step.common.chantRef
 import org.jetbrains.compose.resources.stringResource
@@ -107,11 +107,15 @@ internal fun ChantScreen(
         LaunchedEffect(uiState.lessons.size) { onLessonsLoaded(uiState.lessons.size) }
         val safeIndex = lessonIndex.coerceIn(0, uiState.lessons.lastIndex)
         val currentLesson = uiState.lessons[safeIndex]
+        val chantMeta by produceState<ChantMeta?>(initialValue = null, key1 = currentLesson.id) {
+            value = viewModel.loadChantMeta(currentLesson)
+        }
         ChantContent(
             currentLesson = currentLesson,
             lessons = uiState.lessons,
             currentIndex = safeIndex,
             audioState = audioState,
+            chantMeta = chantMeta,
             onChantToggle = { viewModel.onChantToggle(currentLesson) },
             onClose = onClose,
             onHome = onHome,
@@ -129,6 +133,7 @@ private fun ChantContent(
     lessons: ImmutableList<PhonicsLesson>,
     currentIndex: Int,
     audioState: AudioState,
+    chantMeta: ChantMeta?,
     onChantToggle: () -> Unit,
     onClose: () -> Unit,
     onHome: () -> Unit,
@@ -218,20 +223,27 @@ private fun ChantContent(
                         isChanting = isChanting,
                     )
                 } else {
+                    val chantPositionMs = when (val s = audioState) {
+                        is AudioState.Playing -> s.positionMs
+                        is AudioState.Paused -> s.positionMs
+                        else -> 0L
+                    }
                     ChantCelebrationCard(
                         lesson = currentLesson,
                         isPlaying = isChanting,
+                        audioPositionMs = chantPositionMs,
+                        wordTimings = chantMeta?.wordTimings.orEmpty(),
                     )
                 }
             }
             Spacer(Modifier.height(12.dp))
             PageDotsRow(currentPage = slideIndex, total = TOTAL_SLIDES)
             Spacer(Modifier.weight(1f, fill = true))
-            BottomBannerAd()
             Spacer(Modifier.height(8.dp))
             StepContinueButton(
                 label = stringResource(Res.string.chant_next),
                 onClick = onNext,
+                enabled = slideIndex >= CELEBRATION_SLIDE_INDEX,
             )
             Spacer(Modifier.height(8.dp))
         }

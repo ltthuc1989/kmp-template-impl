@@ -128,7 +128,7 @@ internal fun StepScreen(
             isLastLesson ->
                 Destination.Learning.UnitStory(levelId, unitId)
             else ->
-                Destination.Learning.Step(levelId, unitId, lessonIndex + 1, stepIndex = visibleSteps.first())
+                Destination.Learning.LessonComplete(levelId, unitId, lessonIndex)
         }
         Napier.d(tag = TAG) {
             "onNext advance: $levelId/$unitId lesson=$lessonIndex step=$stepIndex -> $next " +

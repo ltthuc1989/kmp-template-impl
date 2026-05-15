@@ -50,14 +50,12 @@ import me.ltthuc.kmp.core.model.LessonWord
 import me.ltthuc.kmp.core.model.PhonicsLesson
 import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.chant_next
-import me.ltthuc.kmp.core.resource.chant_previous
 import me.ltthuc.kmp.core.resource.step_guide_vocabulary
 import me.ltthuc.kmp.core.resource.vocabulary_title
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
 import me.ltthuc.kmp.feature.learningpath.step.common.LetterStepperBar
-import me.ltthuc.kmp.feature.learningpath.step.common.StepHeader
-import me.ltthuc.kmp.core.ui.ads.BottomBannerAd
 import me.ltthuc.kmp.feature.learningpath.step.common.StepContinueButton
+import me.ltthuc.kmp.feature.learningpath.step.common.StepHeader
 import me.ltthuc.kmp.feature.learningpath.step.common.StoryStyleCard
 import me.ltthuc.kmp.feature.learningpath.step.common.WordDisplayView
 import me.ltthuc.kmp.feature.learningpath.step.common.wordRef
@@ -173,11 +171,11 @@ private fun VocabularyContent(
                 },
                 modifier = Modifier.weight(1f, fill = true),
             )
-            BottomBannerAd()
             Spacer(Modifier.height(8.dp))
             StepContinueButton(
                 label = stringResource(Res.string.chant_next),
                 onClick = onNext,
+                enabled = vocabItems.isNotEmpty() && heardWords.size >= vocabItems.size,
             )
             Spacer(Modifier.height(8.dp))
         }

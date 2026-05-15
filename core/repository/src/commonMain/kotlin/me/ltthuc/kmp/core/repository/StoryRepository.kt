@@ -6,6 +6,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import me.ltthuc.kmp.core.model.Story
 import me.ltthuc.kmp.core.model.StoryScene
+import me.ltthuc.kmp.core.model.WordTiming
 import me.ltthuc.kmp.core.resource.Res
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 
@@ -22,7 +23,7 @@ class StoryRepository {
         return runCatching {
             val bytes = Res.readBytes(path)
             val list = jsonParser.decodeFromString<List<StoryDto>>(bytes.decodeToString())
-            list.map { it.toModel() }
+            list.map { it.toModel(level) }
         }.onFailure {
             Napier.e(tag = TAG, throwable = it) { "Failed to load stories from $path" }
         }.getOrDefault(emptyList())
@@ -41,14 +42,14 @@ class StoryRepository {
         @SerialName("duration_seconds") val durationSeconds: Int = 0,
         val scenes: List<SceneDto> = emptyList(),
     ) {
-        fun toModel() = Story(
+        fun toModel(loadedLevel: Int) = Story(
             id = id,
             title = title,
             level = level,
             afterUnit = afterUnit,
             phonicsUsed = phonicsUsed,
             durationSeconds = durationSeconds,
-            scenes = scenes.map { it.toModel() },
+            scenes = scenes.map { it.toModel(loadedLevel, id) },
         )
     }
 
@@ -58,13 +59,30 @@ class StoryRepository {
         val name: String,
         @SerialName("duration_sec") val durationSec: Int,
         val text: String,
+        @SerialName("image_path_landscape") val imagePathLandscape: String? = null,
+        @SerialName("image_path_portrait") val imagePathPortrait: String? = null,
+        @SerialName("word_timings") val wordTimings: List<WordTimingDto> = emptyList(),
     ) {
-        fun toModel() = StoryScene(
+        fun toModel(level: Int, storyId: String) = StoryScene(
             sceneNumber = scene,
             name = name,
             durationSec = durationSec,
             text = text,
+            // Fallback to convention path if not in JSON.
+            imagePathLandscape = imagePathLandscape
+                ?: "files/images/level_$level/stories/$storyId/scene_$scene.webp",
+            imagePathPortrait = imagePathPortrait,
+            wordTimings = wordTimings.map { it.toModel() },
         )
+    }
+
+    @Serializable
+    private data class WordTimingDto(
+        val word: String,
+        @SerialName("start_ms") val startMs: Int,
+        @SerialName("end_ms") val endMs: Int,
+    ) {
+        fun toModel() = WordTiming(word = word, startMs = startMs, endMs = endMs)
     }
 
     private companion object {

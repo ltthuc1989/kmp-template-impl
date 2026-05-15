@@ -15,5 +15,8 @@ sealed interface LevelStatus {
 
     data class Locked(
         val prerequisiteLevel: Level?,
+        val isPremiumRequired: Boolean = false,
     ) : LevelStatus
+
+    data object ComingSoon : LevelStatus
 }

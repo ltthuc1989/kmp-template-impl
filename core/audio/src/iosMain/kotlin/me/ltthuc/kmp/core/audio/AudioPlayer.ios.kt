@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.StateFlow
 import platform.AVFAudio.AVAudioPlayer
 import platform.AVFAudio.AVAudioPlayerDelegateProtocol
 import platform.AVFAudio.AVAudioSession
-import platform.AVFAudio.AVAudioSessionCategoryPlayback
+import platform.AVFAudio.AVAudioSessionCategoryAmbient
 import platform.AVFAudio.setActive
 import platform.Foundation.NSError
 import platform.Foundation.NSTimer
@@ -25,10 +25,12 @@ actual class AudioPlayer {
     private var progressTimer: NSTimer? = null
 
     init {
-        // Activate playback session so audio plays through speakers (silent mode aware).
+        // .ambient respects the iPhone silent switch — Khan Kids ships .playback
+        // and gets 1-star reviews from parents whose silent-mode phones still
+        // played celebration sounds at the dentist / bedtime.
         runCatching {
             val session = AVAudioSession.sharedInstance()
-            session.setCategory(AVAudioSessionCategoryPlayback, null)
+            session.setCategory(AVAudioSessionCategoryAmbient, null)
             session.setActive(true, null)
         }.onFailure { Napier.e("AVAudioSession activate failed", it) }
     }

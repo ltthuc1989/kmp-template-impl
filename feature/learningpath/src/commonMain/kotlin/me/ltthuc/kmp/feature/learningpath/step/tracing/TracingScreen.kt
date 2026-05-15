@@ -55,11 +55,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import me.ltthuc.kmp.core.model.PhonicsLesson
+import me.ltthuc.kmp.core.repository.SfxController
 import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.chant_next
-import me.ltthuc.kmp.core.resource.chant_previous
 import me.ltthuc.kmp.core.resource.score_fail_primary
 import me.ltthuc.kmp.core.resource.score_fail_title
 import me.ltthuc.kmp.core.resource.score_success_primary
@@ -73,15 +74,15 @@ import me.ltthuc.kmp.core.resource.tracing_score_very_good
 import me.ltthuc.kmp.core.resource.tracing_title
 import me.ltthuc.kmp.core.resource.tracing_watch_ad_to_pass
 import me.ltthuc.kmp.core.ui.ads.RewardedSkipLauncher
-import me.ltthuc.kmp.core.ui.ads.TracingInterstitial
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
 import me.ltthuc.kmp.feature.learningpath.step.common.LetterStepperBar
 import me.ltthuc.kmp.feature.learningpath.step.common.PuffySurface
 import me.ltthuc.kmp.feature.learningpath.step.common.ScoreFeedback
 import me.ltthuc.kmp.feature.learningpath.step.common.ScoreFeedbackOverlay
-import me.ltthuc.kmp.feature.learningpath.step.common.StepHeader
 import me.ltthuc.kmp.feature.learningpath.step.common.StepContinueButton
+import me.ltthuc.kmp.feature.learningpath.step.common.StepHeader
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -103,7 +104,6 @@ internal fun TracingScreen(
 ) {
     val screenState by viewModel.screenState.collectAsStateWithLifecycle()
 
-    TracingInterstitial()
     AsyncLoadContents(
         modifier = modifier.fillMaxSize(),
         screenState = screenState,
@@ -140,6 +140,8 @@ private fun TracingContent(
     var isUppercase by remember(currentLesson.id) { mutableStateOf(true) }
     val guide = remember(letterChar, isUppercase) { LetterPaths.get(letterChar, isUppercase) }
     var result by remember(currentLesson.id) { mutableStateOf<TracingResult?>(null) }
+    val sfx = koinInject<SfxController>()
+    val tracingScope = rememberCoroutineScope()
 
     // State owned here so Next can read current strokes for scoring.
     val userStrokes = remember(currentLesson.id, isUppercase) {
@@ -162,7 +164,18 @@ private fun TracingContent(
             canvasSize = size,
         )
         val percent = (raw * 100).toInt().coerceIn(0, 100)
-        result = TracingResult(percent = percent, passed = raw >= TracingScorer.PASS_THRESHOLD)
+        val passed = raw >= TracingScorer.PASS_THRESHOLD
+        result = TracingResult(percent = percent, passed = passed)
+        // Khan-simple feedback: success → chime + voice praise; fail → voice "try_again" only.
+        if (passed) {
+            sfx.playSfx("correct")
+            tracingScope.launch {
+                delay(TRACING_PRAISE_DELAY_MS)
+                sfx.playVoicePraise(TRACING_PRAISE_POOL.random())
+            }
+        } else {
+            sfx.playVoicePraise("try_again")
+        }
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -562,6 +575,12 @@ private fun PracticeCanvas(
 
 private const val EXCELLENT_THRESHOLD = 95
 private const val VERY_GOOD_THRESHOLD = 85
+private const val TRACING_PRAISE_DELAY_MS = 500L
+private val TRACING_PRAISE_POOL = listOf(
+    "praise_great_job",
+    "praise_nice",
+    "praise_well_done",
+)
 private const val GUIDE_CARD_HEIGHT_DP = 210
 private const val GUIDE_CARD_CORNER_DP = 24
 private const val GUIDE_CARD_PADDING_DP = 20

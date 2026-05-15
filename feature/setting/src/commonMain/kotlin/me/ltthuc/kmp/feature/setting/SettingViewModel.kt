@@ -35,4 +35,16 @@ class SettingViewModel(
             repository.setShowSpeakButton(value)
         }
     }
+
+    fun setSfxEnabled(value: Boolean) {
+        viewModelScope.launch { repository.setSfxEnabled(value) }
+    }
+
+    fun setVoiceEnabled(value: Boolean) {
+        viewModelScope.launch { repository.setVoiceEnabled(value) }
+    }
+
+    fun setMusicEnabled(value: Boolean) {
+        viewModelScope.launch { repository.setMusicEnabled(value) }
+    }
 }

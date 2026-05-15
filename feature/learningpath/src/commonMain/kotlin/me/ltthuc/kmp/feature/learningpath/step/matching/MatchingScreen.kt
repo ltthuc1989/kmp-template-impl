@@ -56,7 +56,6 @@ import me.ltthuc.kmp.core.model.LessonWord
 import me.ltthuc.kmp.core.model.PhonicsLesson
 import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.chant_next
-import me.ltthuc.kmp.core.resource.chant_previous
 import me.ltthuc.kmp.core.resource.identify_all_done_subtitle
 import me.ltthuc.kmp.core.resource.identify_all_done_title
 import me.ltthuc.kmp.core.resource.matching_title
@@ -67,9 +66,8 @@ import me.ltthuc.kmp.feature.learningpath.step.common.LetterStepperBar
 import me.ltthuc.kmp.feature.learningpath.step.common.PuffySurface
 import me.ltthuc.kmp.feature.learningpath.step.common.ScoreFeedback
 import me.ltthuc.kmp.feature.learningpath.step.common.ScoreFeedbackOverlay
-import me.ltthuc.kmp.feature.learningpath.step.common.StepHeader
-import me.ltthuc.kmp.core.ui.ads.BottomBannerAd
 import me.ltthuc.kmp.feature.learningpath.step.common.StepContinueButton
+import me.ltthuc.kmp.feature.learningpath.step.common.StepHeader
 import me.ltthuc.kmp.feature.learningpath.step.common.WordDisplayView
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -111,6 +109,7 @@ internal fun MatchingScreen(
             currentIndex = safeIndex,
             onPlayWord = { word -> viewModel.onListenWord(currentLesson, word) },
             onPlaySfx = viewModel::playSfx,
+            onPlayVoice = viewModel::playVoicePraise,
             onClose = onClose,
             onHome = onHome,
             onPrevious = onPrevious,
@@ -128,6 +127,7 @@ private fun MatchingContent(
     currentIndex: Int,
     onPlayWord: (word: String) -> Unit,
     onPlaySfx: (String) -> Unit,
+    onPlayVoice: (String) -> Unit,
     onClose: () -> Unit,
     onHome: () -> Unit,
     onPrevious: () -> Unit,
@@ -174,8 +174,14 @@ private fun MatchingContent(
         val isCorrect = leftText.equals(rightText, ignoreCase = true)
         if (isCorrect) {
             validatedMatches[leftText] = rightText
+            // Khan-simple: chime + voice praise after delay on every correct match.
             onPlaySfx(SFX_CORRECT)
+            scope.launch {
+                delay(PRAISE_DELAY_MS)
+                onPlayVoice(MATCHING_PRAISE_POOL.random())
+            }
             if (validatedMatches.size == totalPairs) {
+                onPlaySfx(SFX_LESSON_COMPLETE)
                 finalOverlay = ScoreFeedback.Success(
                     title = allDoneTitle,
                     subtitle = allDoneSubtitle,
@@ -184,10 +190,9 @@ private fun MatchingContent(
                 )
             }
         } else {
-            // Show wrong attempt briefly as a dashed line + red shake, then auto-clear so user can retry.
+            // Khan-simple: NO SFX on wrong. Visual shake + dashed line is the feedback.
             pendingMatches[leftText] = rightText
             wrongFlashTexts = wrongFlashTexts + leftText
-            onPlaySfx(SFX_WRONG)
             scope.launch {
                 delay(WRONG_FLASH_MS)
                 pendingMatches.remove(leftText)
@@ -241,7 +246,6 @@ private fun MatchingContent(
                     isLockedRight = { rightText -> validatedMatches.containsValue(rightText) },
                 )
                 Spacer(Modifier.weight(1f, fill = true))
-                BottomBannerAd()
                 Spacer(Modifier.height(8.dp))
                 StepContinueButton(
                     label = stringResource(Res.string.chant_next),
@@ -759,4 +763,11 @@ private const val DOT_HIT_RADIUS_PX = 70f
 private const val WRONG_FLASH_MS = 700L
 private const val AUTO_PLAY_DELAY_MS = 500L
 private const val SFX_CORRECT = "correct"
-private const val SFX_WRONG = "wrong"
+private const val SFX_LESSON_COMPLETE = "lesson_complete"
+private const val PRAISE_DELAY_MS = 500L
+private val MATCHING_PRAISE_POOL = listOf(
+    "praise_great_job",
+    "praise_nice",
+    "praise_you_got_it",
+    "praise_well_done",
+)

@@ -59,9 +59,9 @@ import me.ltthuc.kmp.core.audio.AudioState
 import me.ltthuc.kmp.core.audio.isActiveFor
 import me.ltthuc.kmp.core.model.LessonWord
 import me.ltthuc.kmp.core.model.PhonicsLesson
+import me.ltthuc.kmp.core.repository.SfxController
 import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.chant_next
-import me.ltthuc.kmp.core.resource.chant_previous
 import me.ltthuc.kmp.core.resource.identify_all_done_soft_subtitle
 import me.ltthuc.kmp.core.resource.identify_all_done_subtitle
 import me.ltthuc.kmp.core.resource.identify_all_done_title
@@ -75,12 +75,12 @@ import me.ltthuc.kmp.feature.learningpath.step.common.PuffySurface
 import me.ltthuc.kmp.feature.learningpath.step.common.PulseRings
 import me.ltthuc.kmp.feature.learningpath.step.common.ScoreFeedback
 import me.ltthuc.kmp.feature.learningpath.step.common.ScoreFeedbackOverlay
-import me.ltthuc.kmp.feature.learningpath.step.common.StepHeader
-import me.ltthuc.kmp.core.ui.ads.BottomBannerAd
 import me.ltthuc.kmp.feature.learningpath.step.common.StepContinueButton
+import me.ltthuc.kmp.feature.learningpath.step.common.StepHeader
 import me.ltthuc.kmp.feature.learningpath.step.common.WordDisplayView
 import me.ltthuc.kmp.feature.learningpath.step.common.wordRef
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 import kotlin.random.Random
@@ -183,6 +183,7 @@ private fun IdentifyContent(
     val allDoneSoftSubtitle = stringResource(Res.string.identify_all_done_soft_subtitle)
 
     val scope = rememberCoroutineScope()
+    val sfx = koinInject<SfxController>()
 
     // Auto-play target word on round change. Grid alpha follows audio state.
     LaunchedEffect(currentLesson.id, roundIndex) {
@@ -193,6 +194,12 @@ private fun IdentifyContent(
         if (selectedText == null && !autoRevealed && !listenPlaying) {
             if (tappedText == target.text) {
                 selectedText = tappedText
+                // Khan-simple: chime + voice praise every correct, voice ~500ms after chime.
+                sfx.playSfx("correct")
+                scope.launch {
+                    delay(PRAISE_DELAY_MS)
+                    sfx.playVoicePraise(PRAISE_POOL.random())
+                }
                 scope.launch {
                     delay(CORRECT_CELEBRATION_MS)
                     selectedText = null
@@ -200,6 +207,7 @@ private fun IdentifyContent(
                         roundIndex++
                     } else {
                         allRoundsCompleted = true
+                        sfx.playSfx("lesson_complete")
                         finalOverlay = ScoreFeedback.Success(
                             title = allDoneTitle,
                             subtitle = if (anyRoundFailed) allDoneSoftSubtitle else allDoneSubtitle,
@@ -212,6 +220,11 @@ private fun IdentifyContent(
                 wrongCount++
                 wiggleTarget = tappedText
                 wiggleKey++
+                // Khan-simple: NO error SFX. Voice "Try again" only after 2nd consecutive miss
+                // on the same round. Visual shake is the first feedback.
+                if (wrongCount == HINT_AFTER_WRONGS) {
+                    sfx.playVoicePraise("try_again")
+                }
                 when {
                     wrongCount >= MAX_WRONG_BEFORE_REVEAL -> {
                         autoRevealed = true
@@ -222,6 +235,7 @@ private fun IdentifyContent(
                                 roundIndex++
                             } else {
                                 allRoundsCompleted = true
+                                sfx.playSfx("lesson_complete")
                                 finalOverlay = ScoreFeedback.Success(
                                     title = allDoneTitle,
                                     subtitle = allDoneSoftSubtitle,
@@ -260,6 +274,28 @@ private fun IdentifyContent(
                     onStepJump = onStepJump,
                     stepSegments = stepSegments,
                     guideText = stringResource(Res.string.step_guide_identify),
+                    guideTrailing = {
+                        Box(
+                            modifier = Modifier.size(36.dp),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            PulseRings(
+                                isActive = listenPlaying,
+                                ringColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.4f),
+                            )
+                            IconButton(
+                                onClick = { onPlayWord(target.text) },
+                                modifier = Modifier.size(32.dp),
+                            ) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.VolumeUp,
+                                    contentDescription = stringResource(Res.string.identify_listen_cd),
+                                    tint = MaterialTheme.colorScheme.secondary,
+                                    modifier = Modifier.size(20.dp),
+                                )
+                            }
+                        }
+                    },
                 )
             },
             bottomBar = {
@@ -276,11 +312,7 @@ private fun IdentifyContent(
                     .padding(horizontal = 20.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                TargetWordHeader(
-                    targetText = target.text,
-                    listenPlaying = listenPlaying,
-                    onListen = { onPlayWord(target.text) },
-                )
+                TargetWordHeader(targetText = target.text)
                 Spacer(Modifier.height(8.dp))
                 IdentifyGrid(
                     modifier = Modifier
@@ -297,7 +329,6 @@ private fun IdentifyContent(
                     onSelect = onCardTap,
                 )
                 Spacer(Modifier.weight(1f, fill = true))
-                BottomBannerAd()
                 Spacer(Modifier.height(8.dp))
                 StepContinueButton(
                     label = stringResource(Res.string.chant_next),
@@ -320,42 +351,13 @@ private fun IdentifyContent(
 }
 
 @Composable
-private fun TargetWordHeader(
-    targetText: String,
-    listenPlaying: Boolean,
-    onListen: () -> Unit,
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        Text(
-            text = targetText,
-            fontSize = 28.sp,
-            fontWeight = FontWeight.ExtraBold,
-            color = MaterialTheme.colorScheme.primary,
-        )
-        Box(
-            modifier = Modifier.size(48.dp),
-            contentAlignment = Alignment.Center,
-        ) {
-            PulseRings(
-                isActive = listenPlaying,
-                ringColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.4f),
-            )
-            IconButton(
-                onClick = onListen,
-                modifier = Modifier.size(40.dp),
-            ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.VolumeUp,
-                    contentDescription = stringResource(Res.string.identify_listen_cd),
-                    tint = MaterialTheme.colorScheme.secondary,
-                    modifier = Modifier.size(26.dp),
-                )
-            }
-        }
-    }
+private fun TargetWordHeader(targetText: String) {
+    Text(
+        text = targetText,
+        fontSize = 28.sp,
+        fontWeight = FontWeight.ExtraBold,
+        color = MaterialTheme.colorScheme.primary,
+    )
 }
 
 @Composable
@@ -562,3 +564,10 @@ private const val CORRECT_CELEBRATION_MS = 800L
 private const val AUTO_REVEAL_DELAY_MS = 1500L
 private const val HINT_AFTER_WRONGS = 2
 private const val MAX_WRONG_BEFORE_REVEAL = 3
+private const val PRAISE_DELAY_MS = 500L
+private val PRAISE_POOL = listOf(
+    "praise_great_job",
+    "praise_nice",
+    "praise_you_got_it",
+    "praise_well_done",
+)

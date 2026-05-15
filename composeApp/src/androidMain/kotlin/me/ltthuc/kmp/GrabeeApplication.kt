@@ -5,6 +5,7 @@ import io.github.aakira.napier.DebugAntilog
 import io.github.aakira.napier.Napier
 import me.ltthuc.kmp.ads.AppOpenAdManager
 import me.ltthuc.kmp.core.model.AppConfig
+import me.ltthuc.kmp.core.repository.AppSettingRepository
 import me.ltthuc.kmp.di.applyModules
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -24,7 +25,8 @@ class GrabeeApplication : Application(), KoinStartup {
         }
 
         val appConfig = KoinPlatform.getKoin().get<AppConfig>()
-        AppOpenAdManager(this, appConfig.adMobAppOpenAdUnitId)
+        val appSettingRepository = KoinPlatform.getKoin().get<AppSettingRepository>()
+        AppOpenAdManager(this, appConfig.adMobAppOpenAdUnitId, appSettingRepository)
     }
 
     override fun onKoinStartup() = koinConfiguration {

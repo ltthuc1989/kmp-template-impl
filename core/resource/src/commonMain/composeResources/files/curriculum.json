@@ -7,7 +7,14 @@
       "isPremium": false,
       "ageRange": "3-5",
       "orderIndex": 0,
-      "visibleSteps": [0, 1, 2, 3, 5, 6],
+      "visibleSteps": [
+        0,
+        1,
+        2,
+        3,
+        5,
+        6
+      ],
       "units": [
         {
           "id": "L1U1",
@@ -22,15 +29,21 @@
               "displayLetter": "Aa",
               "soundSpelling": "ahh",
               "sentence": "An apple and an ant.",
-              "stretchedWord": "AAA-pple",
+              "stretchedWord": "A-A-pple",
               "orderIndex": 0,
               "words": [
                 {
                   "word": "apple",
                   "emoji": "🍎",
                   "displays": [
-                    {"type": "emoji", "char": "🍎"},
-                    {"type": "emoji", "char": "🍏"}
+                    {
+                      "type": "emoji",
+                      "char": "🍎"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "🍏"
+                    }
                   ]
                 },
                 {
@@ -47,10 +60,10 @@
                 }
               ],
               "chantTexts": [
-                "AAA-Apple",
-                "AAA-Ax",
-                "AAA-Ant",
-                "AAA-Alligator"
+                "A-A-Apple",
+                "A-A-Ax",
+                "A-A-Ant",
+                "A-A-Alligator"
               ],
               "chantOrder": [
                 0,
@@ -104,15 +117,21 @@
               "displayLetter": "Cc",
               "soundSpelling": "kuh",
               "sentence": "A cat by a cup.",
-              "stretchedWord": "K-K-Cat",
+              "stretchedWord": "C-C-Cat",
               "orderIndex": 2,
               "words": [
                 {
                   "word": "cat",
                   "emoji": "🐱",
                   "displays": [
-                    {"type": "emoji", "char": "🐱"},
-                    {"type": "emoji", "char": "🐈"}
+                    {
+                      "type": "emoji",
+                      "char": "🐱"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "🐈"
+                    }
                   ]
                 },
                 {
@@ -123,24 +142,36 @@
                   "word": "car",
                   "emoji": "🚗",
                   "displays": [
-                    {"type": "emoji", "char": "🚗"},
-                    {"type": "emoji", "char": "🚙"}
+                    {
+                      "type": "emoji",
+                      "char": "🚗"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "🚙"
+                    }
                   ]
                 },
                 {
                   "word": "computer",
                   "emoji": "💻",
                   "displays": [
-                    {"type": "emoji", "char": "💻"},
-                    {"type": "emoji", "char": "🖥️"}
+                    {
+                      "type": "emoji",
+                      "char": "💻"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "🖥️"
+                    }
                   ]
                 }
               ],
               "chantTexts": [
-                "K-K-Cat",
-                "K-K-Cup",
-                "K-K-Car",
-                "K-K-Computer"
+                "C-C-Cat",
+                "C-C-Cup",
+                "C-C-Car",
+                "C-C-Computer"
               ],
               "chantOrder": [
                 0,
@@ -203,7 +234,7 @@
               "displayLetter": "Ee",
               "soundSpelling": "ehh",
               "sentence": "An egg and an elephant.",
-              "stretchedWord": "EHH-gg",
+              "stretchedWord": "E-E-gg",
               "orderIndex": 1,
               "words": [
                 {
@@ -224,10 +255,10 @@
                 }
               ],
               "chantTexts": [
-                "EHH-Egg",
-                "EHH-Elbow",
-                "EHH-Envelope",
-                "EHH-Elephant"
+                "E-E-Egg",
+                "E-E-Elbow",
+                "E-E-Envelope",
+                "E-E-Elephant"
               ],
               "chantOrder": [
                 0,
@@ -368,7 +399,7 @@
               "displayLetter": "Ii",
               "soundSpelling": "ihh",
               "sentence": "An insect in an igloo.",
-              "stretchedWord": "IHH-nsect",
+              "stretchedWord": "I-I-nsect",
               "orderIndex": 2,
               "words": [
                 {
@@ -389,10 +420,10 @@
                 }
               ],
               "chantTexts": [
-                "IHH-Insect",
-                "IHH-Ink",
-                "IHH-Igloo",
-                "IHH-Iguana"
+                "I-I-Insect",
+                "I-I-Ink",
+                "I-I-Igloo",
+                "I-I-Iguana"
               ],
               "chantOrder": [
                 0,
@@ -620,7 +651,7 @@
               "displayLetter": "Oo",
               "soundSpelling": "ohh",
               "sentence": "An octopus and an ox.",
-              "stretchedWord": "OHH-ctopus",
+              "stretchedWord": "O-O-ctopus",
               "orderIndex": 2,
               "words": [
                 {
@@ -641,10 +672,10 @@
                 }
               ],
               "chantTexts": [
-                "OHH-Octopus",
-                "OHH-Ox",
-                "OHH-Olive",
-                "OHH-Ostrich"
+                "O-O-Octopus",
+                "O-O-Ox",
+                "O-O-Olive",
+                "O-O-Ostrich"
               ],
               "chantOrder": [
                 0,
@@ -707,7 +738,7 @@
               "displayLetter": "Qq",
               "soundSpelling": "kwuh",
               "sentence": "The queen asks a question.",
-              "stretchedWord": "KW-Queen",
+              "stretchedWord": "Q-Q-Queen",
               "orderIndex": 1,
               "words": [
                 {
@@ -728,10 +759,10 @@
                 }
               ],
               "chantTexts": [
-                "KW-Queen",
-                "KW-Quiz",
-                "KW-Quilt",
-                "KW-Question"
+                "Q-Q-Queen",
+                "Q-Q-Quiz",
+                "Q-Q-Quilt",
+                "Q-Q-Question"
               ],
               "chantOrder": [
                 0,
@@ -872,7 +903,7 @@
               "displayLetter": "Uu",
               "soundSpelling": "uhh",
               "sentence": "An umbrella up high.",
-              "stretchedWord": "UHH-mbrella",
+              "stretchedWord": "U-U-mbrella",
               "orderIndex": 2,
               "words": [
                 {
@@ -893,10 +924,10 @@
                 }
               ],
               "chantTexts": [
-                "UHH-Umbrella",
-                "UHH-Up",
-                "UHH-Uncle",
-                "UHH-Umpire"
+                "U-U-Umbrella",
+                "U-U-Up",
+                "U-U-Uncle",
+                "U-U-Umpire"
               ],
               "chantOrder": [
                 0,
@@ -998,7 +1029,7 @@
               "displayLetter": "Xx",
               "soundSpelling": "ks",
               "sentence": "A fox in a box.",
-              "stretchedWord": "B-O-Ks",
+              "stretchedWord": "X-X-Ks",
               "orderIndex": 1,
               "words": [
                 {
@@ -1019,10 +1050,10 @@
                 }
               ],
               "chantTexts": [
-                "B-O-Fox",
-                "B-O-Box",
-                "B-O-Six",
-                "B-O-Wax"
+                "X-X-Fox",
+                "X-X-Box",
+                "X-X-Six",
+                "X-X-Wax"
               ],
               "chantOrder": [
                 0,

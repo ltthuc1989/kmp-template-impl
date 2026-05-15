@@ -31,6 +31,8 @@ class AudioAssetResolver(
      */
     fun bundledResourcePath(ref: AudioRef): String? = when (ref) {
         is AudioRef.Sfx -> "files/sfx/${ref.name}.mp3"
+        is AudioRef.Voice -> "files/sfx/voice/${ref.name}.mp3"
+        is AudioRef.Music -> "files/sfx/music/${ref.name}.mp3"
         is AudioRef.Story -> "files/audio/${storagePath(ref)}".takeIf { ref.storyId.startsWith(L1_STORY_PREFIX) }
         else -> "files/audio/${storagePath(ref)}".takeIf { ref.lessonFolder.startsWith(L1_BUNDLE_PREFIX) }
     }
@@ -45,6 +47,8 @@ class AudioAssetResolver(
         is AudioRef.Phoneme -> "${ref.lessonFolder.toUnitPath()}/${ref.lessonFolder}/$FILE_PHONEME"
         is AudioRef.Story -> "${ref.storyId.toStoryLevelPath()}/stories/${ref.storyId}/scene_${ref.sceneNumber}.mp3"
         is AudioRef.Sfx -> "sfx/${ref.name}.mp3"
+        is AudioRef.Voice -> "sfx/voice/${ref.name}.mp3"
+        is AudioRef.Music -> "sfx/music/${ref.name}.mp3"
     }
 
     /** "L1_S01" -> "level_1" */

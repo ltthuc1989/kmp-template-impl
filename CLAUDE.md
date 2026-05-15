@@ -66,6 +66,7 @@ Git-ignored. Keys read from here or environment variables:
 | `ADMOB_ANDROID_APP_ID`, `ADMOB_IOS_APP_ID` | AdMob (falls back to test IDs) |
 | `PURCHASE_ANDROID_API_KEY`, `PURCHASE_IOS_API_KEY` | RevenueCat |
 | `APPLOVIN_SDK_KEY` | AppLovin |
+| `FIREBASE_STORAGE_BUCKET` | Audio CDN bucket (defaults to `grabee-368d2.firebasestorage.app`); override for staging |
 
 All injected at compile time via **BuildKonfig** → `me.ltthuc.kmp.BuildKonfig`.
 

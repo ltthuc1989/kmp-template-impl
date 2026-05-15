@@ -1,10 +1,14 @@
 package me.ltthuc.kmp.core.repository.di
 
+import me.ltthuc.kmp.core.audio.AudioPlayer
+import me.ltthuc.kmp.core.audio.di.AudioPlayerSfx
 import me.ltthuc.kmp.core.repository.AppSettingRepository
 import me.ltthuc.kmp.core.repository.AudioRepository
 import me.ltthuc.kmp.core.repository.BillingRepository
+import me.ltthuc.kmp.core.repository.ChantMetaRepository
 import me.ltthuc.kmp.core.repository.LearningProgressRepository
 import me.ltthuc.kmp.core.repository.LevelRepository
+import me.ltthuc.kmp.core.repository.SfxController
 import me.ltthuc.kmp.core.repository.StoryRepository
 import me.ltthuc.kmp.core.repository.UnitCompletionRepository
 import me.ltthuc.kmp.core.repository.UnitRepository
@@ -16,10 +20,18 @@ val repositoryModule = module {
     singleOf(::AppSettingRepository)
     singleOf(::AudioRepository)
     singleOf(::BillingRepository)
+    singleOf(::ChantMetaRepository)
     singleOf(::LearningProgressRepository)
     singleOf(::LevelRepository)
     singleOf(::StoryRepository)
     singleOf(::UnitCompletionRepository)
     singleOf(::UnitRepository)
     singleOf(::UserProgressRepository)
+    single {
+        SfxController(
+            player = get<AudioPlayer>(AudioPlayerSfx),
+            resolver = get(),
+            cache = get(),
+        )
+    }
 }

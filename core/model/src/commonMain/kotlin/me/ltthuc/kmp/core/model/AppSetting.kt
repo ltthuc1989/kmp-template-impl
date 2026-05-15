@@ -12,6 +12,14 @@ data class AppSetting(
     val hasSeenOnboarding: Boolean,
     val practiceRoundMultiplier: Float = 1f,
     val showSpeakButton: Boolean = false,
+    // UI sound effects (chime/click/lesson_complete).
+    val sfxEnabled: Boolean = true,
+    // Voice praise / nudge ("Great job!", "Try again!"). MUST NOT gate lesson phoneme audio.
+    val voiceEnabled: Boolean = true,
+    // Background music loop (Home/UnitSelection).
+    val musicEnabled: Boolean = true,
+    // Khan Kids-style master mute. Overrides the three flags above when true.
+    val globalMuted: Boolean = false,
 ) {
     val hasPrivilege get() = plusMode || developerMode
 

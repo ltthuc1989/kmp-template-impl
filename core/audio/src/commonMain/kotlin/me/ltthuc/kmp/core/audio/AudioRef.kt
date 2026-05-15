@@ -39,4 +39,20 @@ sealed interface AudioRef {
     data class Sfx(val name: String) : AudioRef {
         override val lessonFolder: String get() = "sfx"
     }
+
+    /**
+     * Voice praise / nudge bundled at `files/sfx/voice/<name>.mp3`. Khan Kids–style
+     * warm narrator, fired only when voice toggle enabled. Never gates lesson phonemes.
+     */
+    data class Voice(val name: String) : AudioRef {
+        override val lessonFolder: String get() = "sfx/voice"
+    }
+
+    /**
+     * Background music loop bundled at `files/sfx/music/<name>.mp3`. Ducks under
+     * lesson phoneme audio per the standard mix-bus rules.
+     */
+    data class Music(val name: String) : AudioRef {
+        override val lessonFolder: String get() = "sfx/music"
+    }
 }

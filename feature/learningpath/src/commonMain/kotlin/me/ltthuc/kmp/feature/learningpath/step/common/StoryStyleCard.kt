@@ -31,10 +31,12 @@ import androidx.compose.ui.unit.dp
 internal fun StoryStyleCard(
     modifier: Modifier = Modifier,
     aspectRatio: Float? = 4f / 3f,
+    whiteInner: Boolean = false,
     content: @Composable BoxScope.() -> Unit,
 ) {
     val frameColor = MaterialTheme.colorScheme.primaryContainer
-    val innerBg = frameColor.copy(alpha = INNER_BG_ALPHA)
+    val pinkTint = frameColor.copy(alpha = INNER_BG_ALPHA)
+    val innerBg = if (whiteInner) Color.White else pinkTint
     val outerShape = RoundedCornerShape(STORY_OUTER_CORNER_DP.dp)
     val innerShape = RoundedCornerShape(STORY_INNER_CORNER_DP.dp)
 

@@ -12,6 +12,7 @@ import me.ltthuc.kmp.core.datasource.db.dao.UnitDao
 import me.ltthuc.kmp.core.datasource.db.entity.LearningProgressEntity
 import me.ltthuc.kmp.core.datasource.db.entity.LevelEntity
 import me.ltthuc.kmp.core.datasource.db.entity.UnitEntity
+import me.ltthuc.kmp.core.model.Level
 import me.ltthuc.kmp.core.model.LevelCard
 import me.ltthuc.kmp.core.model.LevelStatus
 import me.ltthuc.kmp.core.model.PhonicsUnit
@@ -42,9 +43,13 @@ class LevelRepository(
         learningProgressDao.observe(),
         appSettingRepository.setting,
     ) { levels, units, progress, setting ->
-        buildLevelCards(levels, units, progress, setting.developerMode)
+        buildLevelCards(levels, units, progress, setting.hasPrivilege)
     }.onStart {
         seeder.seedIfEmpty()
+    }
+
+    fun observeLevel(levelId: String): Flow<Level?> = levelDao.observeAll().map { all ->
+        all.firstOrNull { it.id == levelId }?.toModel()
     }
 
     /**
@@ -63,7 +68,7 @@ class LevelRepository(
         levels: List<LevelEntity>,
         units: List<UnitEntity>,
         progress: LearningProgressEntity?,
-        developerMode: Boolean,
+        hasPrivilege: Boolean,
     ): List<LevelCard> {
         val unitsByLevel = units.groupBy { it.levelId }
         val activeOrderIndex = progress?.let { active ->
@@ -72,7 +77,12 @@ class LevelRepository(
 
         return levels.sortedBy { it.orderIndex }.map { entity ->
             val level = entity.toModel()
+            val prerequisite = levels.firstOrNull { it.orderIndex == entity.orderIndex - 1 }?.toModel()
             val status = when {
+                // V1: L2-L5 are flagged isPremium but have no real content yet.
+                // Show ComingSoon (not Locked-premium) to avoid selling something we don't ship.
+                // Revert to Locked(isPremiumRequired=true) when L2 content ships.
+                entity.isPremium -> LevelStatus.ComingSoon
                 progress != null && entity.id == progress.activeLevelId -> activeStatus(
                     entity = entity,
                     progress = progress,
@@ -81,10 +91,8 @@ class LevelRepository(
                 activeOrderIndex != null && entity.orderIndex == activeOrderIndex + 1 -> {
                     LevelStatus.ReadyToStart
                 }
-                developerMode -> LevelStatus.ReadyToStart
-                else -> LevelStatus.Locked(
-                    prerequisiteLevel = levels.firstOrNull { it.orderIndex == entity.orderIndex - 1 }?.toModel(),
-                )
+                hasPrivilege -> LevelStatus.ReadyToStart
+                else -> LevelStatus.Locked(prerequisiteLevel = prerequisite)
             }
             LevelCard(level = level, status = status)
         }

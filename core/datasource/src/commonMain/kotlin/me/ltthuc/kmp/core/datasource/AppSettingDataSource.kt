@@ -100,4 +100,24 @@ class AppSettingDataSource(
             it[booleanPreferencesKey(AppSetting::showSpeakButton.name)] = value
         }
     }
+
+    suspend fun setSfxEnabled(value: Boolean) = withContext(ioDispatcher) {
+        if (setting.first().sfxEnabled == value) return@withContext
+        preference.edit { it[booleanPreferencesKey(AppSetting::sfxEnabled.name)] = value }
+    }
+
+    suspend fun setVoiceEnabled(value: Boolean) = withContext(ioDispatcher) {
+        if (setting.first().voiceEnabled == value) return@withContext
+        preference.edit { it[booleanPreferencesKey(AppSetting::voiceEnabled.name)] = value }
+    }
+
+    suspend fun setMusicEnabled(value: Boolean) = withContext(ioDispatcher) {
+        if (setting.first().musicEnabled == value) return@withContext
+        preference.edit { it[booleanPreferencesKey(AppSetting::musicEnabled.name)] = value }
+    }
+
+    suspend fun setGlobalMuted(value: Boolean) = withContext(ioDispatcher) {
+        if (setting.first().globalMuted == value) return@withContext
+        preference.edit { it[booleanPreferencesKey(AppSetting::globalMuted.name)] = value }
+    }
 }

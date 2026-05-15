@@ -42,8 +42,10 @@ class PaywallViewModel(
             _screenState.value = ScreenState.Loading()
             _screenState.value = suspendRunCatching {
                 val fetchedProducts = billingRepository.getProducts() ?: emptyList()
-                products = fetchedProducts
-                PaywallUiState(products = fetchedProducts.toImmutableList())
+                // v1.0 ships Monthly + Yearly only; Lifetime deferred per PRD §4.6.
+                val displayedProducts = fetchedProducts.filter { it.plan != SubscriptionPlan.LIFETIME }
+                products = displayedProducts
+                PaywallUiState(products = displayedProducts.toImmutableList())
             }.fold(
                 onSuccess = { ScreenState.Idle(it) },
                 onFailure = { ScreenState.Error(Res.string.error_network) },

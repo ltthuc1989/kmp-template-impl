@@ -21,6 +21,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.MenuBook
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.outlined.Lock
+import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -33,6 +34,9 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -42,7 +46,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.collections.immutable.ImmutableList
 import me.ltthuc.kmp.core.model.LevelCard
-import me.ltthuc.kmp.core.ui.ads.BottomBannerAd
 import me.ltthuc.kmp.core.model.LevelStatus
 import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.home_badge_active
@@ -53,6 +56,9 @@ import me.ltthuc.kmp.core.resource.home_progress_label
 import me.ltthuc.kmp.core.resource.home_start_button
 import me.ltthuc.kmp.core.resource.home_title
 import me.ltthuc.kmp.core.resource.home_unit_label
+import me.ltthuc.kmp.core.resource.level_card_coming_soon
+import me.ltthuc.kmp.core.ui.ads.BottomBannerAd
+import me.ltthuc.kmp.core.ui.dialog.ParentalGateDialog
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
 import me.ltthuc.kmp.core.ui.screen.Destination
 import me.ltthuc.kmp.core.ui.theme.LocalNavBackStack
@@ -66,6 +72,17 @@ internal fun HomeScreen(
 ) {
     val screenState by viewModel.screenState.collectAsStateWithLifecycle()
     val navBackStack = LocalNavBackStack.current
+    var showParentalGate by remember { mutableStateOf(false) }
+
+    if (showParentalGate) {
+        ParentalGateDialog(
+            onPass = {
+                showParentalGate = false
+                navBackStack.add(Destination.Paywall(Destination.Paywall.Source.LEVEL_LOCKED))
+            },
+            onDismiss = { showParentalGate = false },
+        )
+    }
 
     HomeScreenContent(
         modifier = modifier,
@@ -79,8 +96,13 @@ internal fun HomeScreen(
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = it,
                     onLevelClick = { levelCard ->
-                        if (levelCard.status !is LevelStatus.Locked) {
-                            navBackStack.add(Destination.Learning.UnitSelection(levelCard.level.id))
+                        val status = levelCard.status
+                        when {
+                            status is LevelStatus.Locked && status.isPremiumRequired ->
+                                showParentalGate = true
+                            status is LevelStatus.ComingSoon -> Unit
+                            status !is LevelStatus.Locked ->
+                                navBackStack.add(Destination.Learning.UnitSelection(levelCard.level.id))
                         }
                     },
                 )
@@ -178,18 +200,21 @@ private fun LevelCardRow(
     modifier: Modifier = Modifier,
 ) {
     val isLocked = card.status is LevelStatus.Locked
-    val containerColor = if (isLocked) {
-        MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-    } else {
-        MaterialTheme.colorScheme.surface
+    val isComingSoon = card.status is LevelStatus.ComingSoon
+    val containerColor = when {
+        isLocked -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+        isComingSoon -> MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.35f)
+        else -> MaterialTheme.colorScheme.surface
     }
+    val isPremiumRequired = (card.status as? LevelStatus.Locked)?.isPremiumRequired == true
+    val isInteractive = (!isLocked || isPremiumRequired) && !isComingSoon
     Surface(
         modifier = modifier,
         shape = RoundedCornerShape(20.dp),
         color = containerColor,
-        shadowElevation = if (isLocked) 0.dp else 2.dp,
+        shadowElevation = if (isLocked || isComingSoon) 0.dp else 2.dp,
         onClick = onClick,
-        enabled = !isLocked,
+        enabled = isInteractive,
     ) {
         Row(
             modifier = Modifier
@@ -214,6 +239,8 @@ private fun LevelCardRow(
                         title = card.level.title,
                         prerequisiteTitle = status.prerequisiteLevel?.title,
                     )
+
+                    LevelStatus.ComingSoon -> ComingSoonCardContent(title = card.level.title)
                 }
             }
         }
@@ -229,16 +256,18 @@ private fun LevelCardThumbnail(
         is LevelStatus.Active -> MaterialTheme.colorScheme.primaryContainer
         LevelStatus.ReadyToStart -> MaterialTheme.colorScheme.tertiaryContainer
         is LevelStatus.Locked -> MaterialTheme.colorScheme.surfaceVariant
+        LevelStatus.ComingSoon -> MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.6f)
     }
     val iconTint = when (status) {
         is LevelStatus.Active -> MaterialTheme.colorScheme.onPrimaryContainer
         LevelStatus.ReadyToStart -> MaterialTheme.colorScheme.onTertiaryContainer
         is LevelStatus.Locked -> MaterialTheme.colorScheme.onSurfaceVariant
+        LevelStatus.ComingSoon -> MaterialTheme.colorScheme.onTertiaryContainer
     }
-    val icon: ImageVector = if (status is LevelStatus.Locked) {
-        Icons.Outlined.Lock
-    } else {
-        Icons.AutoMirrored.Outlined.MenuBook
+    val icon: ImageVector = when (status) {
+        is LevelStatus.Locked -> Icons.Outlined.Lock
+        LevelStatus.ComingSoon -> Icons.Outlined.Schedule
+        else -> Icons.AutoMirrored.Outlined.MenuBook
     }
 
     Box(
@@ -400,6 +429,34 @@ private fun LockedCardContent(
             fontStyle = androidx.compose.ui.text.font.FontStyle.Italic,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
+    }
+}
+
+@Composable
+private fun ComingSoonCardContent(
+    title: String,
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier = modifier) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+        )
+        Spacer(Modifier.height(4.dp))
+        Surface(
+            shape = RoundedCornerShape(50),
+            color = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.85f),
+        ) {
+            Text(
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
+                text = stringResource(Res.string.level_card_coming_soon),
+                style = MaterialTheme.typography.labelSmall,
+                fontWeight = FontWeight.ExtraBold,
+                color = MaterialTheme.colorScheme.onTertiary,
+            )
+        }
     }
 }
 

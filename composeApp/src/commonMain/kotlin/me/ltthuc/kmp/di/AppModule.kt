@@ -61,9 +61,7 @@ val appModule = module {
         )
     }
 
-    // TODO: replace hardcoded bucket with BuildKonfig.FIREBASE_STORAGE_BUCKET once
-    // the Firebase project is provisioned (Mốc 1 W1).
-    single { AudioConfig(storageBucket = "abc-phonics-kids.appspot.com") }
+    single { AudioConfig(storageBucket = BuildKonfig.FIREBASE_STORAGE_BUCKET) }
 
     includes(appModulePlatform)
 }

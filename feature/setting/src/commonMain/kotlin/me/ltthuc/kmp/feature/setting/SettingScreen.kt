@@ -6,11 +6,16 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import me.ltthuc.kmp.core.ui.dialog.ParentalGateDialog
 import me.ltthuc.kmp.core.ui.screen.Destination
 import me.ltthuc.kmp.core.ui.theme.LocalNavBackStack
+import me.ltthuc.kmp.feature.setting.components.SettingSwitchItem
 import me.ltthuc.kmp.feature.setting.components.SettingTopAppBar
 import me.ltthuc.kmp.feature.setting.components.section.SettingInfoSection
 import me.ltthuc.kmp.feature.setting.components.section.SettingOthersSection
@@ -26,8 +31,19 @@ internal fun SettingScreen(
     val navBackStack = LocalNavBackStack.current
     val uriHandler = LocalUriHandler.current
     val setting by viewModel.setting.collectAsStateWithLifecycle()
+    var showParentalGate by remember { mutableStateOf(false) }
 
     val isRootTab = navBackStack.size <= 1
+
+    if (showParentalGate) {
+        ParentalGateDialog(
+            onPass = {
+                showParentalGate = false
+                navBackStack.add(Destination.Paywall(Destination.Paywall.Source.SETTINGS))
+            },
+            onDismiss = { showParentalGate = false },
+        )
+    }
 
     Scaffold(
         modifier = modifier,
@@ -47,7 +63,7 @@ internal fun SettingScreen(
                 item {
                     SettingPaywallSection(
                         modifier = Modifier.fillMaxWidth(),
-                        onUpgradeClicked = { navBackStack.add(Destination.Paywall("setting")) },
+                        onUpgradeClicked = { showParentalGate = true },
                     )
                 }
             }
@@ -58,6 +74,31 @@ internal fun SettingScreen(
                     setting = setting,
                     onThemeChanged = viewModel::setTheme,
                     onPaletteChanged = viewModel::setAppThemePalette,
+                )
+            }
+
+            item {
+                SettingSwitchItem(
+                    title = "Sound effects",
+                    description = "Chime when you tap and on correct answers.",
+                    value = setting.sfxEnabled,
+                    onValueChanged = viewModel::setSfxEnabled,
+                )
+            }
+            item {
+                SettingSwitchItem(
+                    title = "Voice praise",
+                    description = "\"Great job!\", \"Try again!\". Does not affect letter sounds.",
+                    value = setting.voiceEnabled,
+                    onValueChanged = viewModel::setVoiceEnabled,
+                )
+            }
+            item {
+                SettingSwitchItem(
+                    title = "Background music",
+                    description = "Soft music loop on menu screens.",
+                    value = setting.musicEnabled,
+                    onValueChanged = viewModel::setMusicEnabled,
                 )
             }
 

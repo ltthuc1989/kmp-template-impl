@@ -155,28 +155,35 @@
     <string name="download_limit_watch_ad_loading">Loading ad…</string>
 
     <!-- Paywall -->
-    <string name="paywall_title">Grabee Pro</string>
-    <string name="paywall_subtitle">Unlock all features for a better download experience.</string>
-    <string name="paywall_feature_unlimited_downloads">Unlimited Downloads</string>
-    <string name="paywall_feature_unlimited_downloads_desc">Download without any limits.</string>
-    <string name="paywall_feature_high_quality">High Quality Downloads</string>
-    <string name="paywall_feature_high_quality_desc">Download media in original quality.</string>
+    <string name="paywall_title">ABC Phonics Kids Pro</string>
+    <string name="paywall_subtitle">Unlock all 5 levels and remove ads — built for kids 3–8.</string>
+    <string name="paywall_feature_unlimited_downloads">All 5 Levels Unlocked</string>
+    <string name="paywall_feature_unlimited_downloads_desc">36 units, 500+ words, 12 stories across Levels 2–5.</string>
+    <string name="paywall_feature_high_quality">Offline Mode</string>
+    <string name="paywall_feature_high_quality_desc">Learn anywhere — no internet needed.</string>
     <string name="paywall_feature_no_ads">No Ads</string>
-    <string name="paywall_feature_no_ads_desc">Hide all advertisements.</string>
+    <string name="paywall_feature_no_ads_desc">A clean, distraction-free space for your child.</string>
     <string name="paywall_feature_priority_support">Priority Support</string>
-    <string name="paywall_feature_priority_support_desc">Get priority responses to your inquiries.</string>
+    <string name="paywall_feature_priority_support_desc">We answer parent questions first.</string>
     <string name="paywall_plan_monthly">Monthly</string>
     <string name="paywall_plan_monthly_badge">Monthly Plan</string>
     <string name="paywall_plan_yearly">Yearly</string>
-    <string name="paywall_plan_yearly_badge">Recommended</string>
+    <string name="paywall_plan_yearly_badge">Best Value</string>
     <string name="paywall_plan_lifetime">Lifetime</string>
     <string name="paywall_plan_lifetime_badge">Forever</string>
     <string name="paywall_subscribe">Subscribe</string>
+    <string name="paywall_trial_note">Includes 7-day free trial. Cancel anytime.</string>
     <string name="paywall_restore">Restore Purchase</string>
     <string name="paywall_terms">Terms of Service</string>
     <string name="paywall_privacy">Privacy Policy</string>
     <string name="paywall_error_purchase_failed">Purchase failed.</string>
     <string name="paywall_error_no_subscription_to_restore">No restorable purchases found.</string>
+
+    <!-- Parental Gate (kids COPPA protection) -->
+    <string name="parental_gate_title">For parents only</string>
+    <string name="parental_gate_question">What is %1$d + %2$d?</string>
+    <string name="parental_gate_hint">Answer to continue</string>
+    <string name="parental_gate_error">Try again</string>
 
     <!-- Learning Path: Sound Intro step -->
     <string name="sound_intro_title">Sound Intro</string>
@@ -259,6 +266,15 @@
     <string name="unit_complete_choose_letter">Pick another letter</string>
     <string name="unit_complete_level_done">🎓 Level complete!</string>
 
+    <!-- Level complete celebration screen (all units in a level done) -->
+    <string name="level_complete_title">You did it! 🎉</string>
+    <string name="level_complete_subtitle">You finished %1$s</string>
+    <string name="level_complete_letter_count">%1$d letters ✨</string>
+    <string name="level_complete_parent_thanks">Thank you for learning with us. Level 2 is coming soon!</string>
+    <string name="level_complete_replay">Replay this level</string>
+    <string name="level_complete_go_home">Back to home</string>
+    <string name="level_card_coming_soon">Coming soon ✨</string>
+
     <!-- Score feedback (reusable across step screens) -->
     <string name="score_success_title">Great Job!</string>
     <string name="score_success_subtitle">You pronounced it perfectly!</string>
@@ -271,11 +287,11 @@
     <string name="onboarding_title">Learn English</string>
     <string name="onboarding_get_started">Get Started</string>
     <string name="onboarding_page1_title">Welcome!</string>
-    <string name="onboarding_page1_subtitle">Learn phonics with Phonie</string>
+    <string name="onboarding_page1_subtitle">Start your English phonics adventure</string>
     <string name="onboarding_page2_title">Learn Sounds</string>
     <string name="onboarding_page2_subtitle">Master letters and their sounds</string>
-    <string name="onboarding_page3_title">Practice Speaking</string>
-    <string name="onboarding_page3_subtitle">Hear, repeat, and master words</string>
-    <string name="onboarding_page4_title">Earn Rewards</string>
-    <string name="onboarding_page4_subtitle">Collect stars and badges</string>
+    <string name="onboarding_page3_title">Play &amp; Learn</string>
+    <string name="onboarding_page3_subtitle">Master letters through fun games</string>
+    <string name="onboarding_page4_title">Story Time</string>
+    <string name="onboarding_page4_subtitle">Enjoy a fun story at the end of each letter</string>
 </resources>

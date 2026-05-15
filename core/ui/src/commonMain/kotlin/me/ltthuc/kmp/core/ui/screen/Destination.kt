@@ -20,7 +20,13 @@ sealed interface Destination : NavKey {
     data class Download(val url: String) : Destination
 
     @Serializable
-    data class Paywall(val source: String) : Destination
+    data class Paywall(val source: String) : Destination {
+        object Source {
+            const val SETTINGS = "settings"
+            const val LEVEL_LOCKED = "level_locked"
+            const val LEVEL1_COMPLETE = "level1_complete"
+        }
+    }
 
     @Serializable
     sealed interface Learning : Destination {
@@ -43,10 +49,20 @@ sealed interface Destination : NavKey {
         ) : Learning
 
         @Serializable
+        data class LessonComplete(
+            val levelId: String,
+            val unitId: String,
+            val lessonIndex: Int,
+        ) : Learning
+
+        @Serializable
         data class UnitStory(
             val levelId: String,
             val unitId: String,
         ) : Learning
+
+        @Serializable
+        data class LevelComplete(val levelId: String) : Learning
 
         @Serializable
         data object TracingGuideDebug : Learning
@@ -75,7 +91,9 @@ sealed interface Destination : NavKey {
                     subclass(Learning.UnitSelection::class, Learning.UnitSelection.serializer())
                     subclass(Learning.Step::class, Learning.Step.serializer())
                     subclass(Learning.UnitComplete::class, Learning.UnitComplete.serializer())
+                    subclass(Learning.LessonComplete::class, Learning.LessonComplete.serializer())
                     subclass(Learning.UnitStory::class, Learning.UnitStory.serializer())
+                    subclass(Learning.LevelComplete::class, Learning.LevelComplete.serializer())
                     subclass(Learning.TracingGuideDebug::class, Learning.TracingGuideDebug.serializer())
                     subclass(Review::class, Review.serializer())
                     subclass(Setting.Root::class, Setting.Root.serializer())
