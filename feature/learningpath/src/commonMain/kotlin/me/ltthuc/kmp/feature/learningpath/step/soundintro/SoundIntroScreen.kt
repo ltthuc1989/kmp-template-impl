@@ -35,12 +35,10 @@ import me.ltthuc.kmp.core.model.PhonicsLesson
 import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.sound_intro_listen
 import me.ltthuc.kmp.core.resource.sound_intro_next_lesson
-import me.ltthuc.kmp.core.resource.sound_intro_title
 import me.ltthuc.kmp.core.resource.step_guide_sound_intro
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
 import me.ltthuc.kmp.feature.learningpath.step.common.LetterStepperBar
 import me.ltthuc.kmp.feature.learningpath.step.common.PulseRings
-import me.ltthuc.kmp.feature.learningpath.step.common.StepContinueButton
 import me.ltthuc.kmp.feature.learningpath.step.common.StepHeader
 import me.ltthuc.kmp.feature.learningpath.step.common.StoryStyleCard
 import me.ltthuc.kmp.feature.learningpath.step.common.WordDisplayView
@@ -57,7 +55,6 @@ internal fun SoundIntroScreen(
     unitId: String,
     lessonIndex: Int,
     onClose: () -> Unit,
-    onHome: () -> Unit,
     onNext: () -> Unit,
     onStepJump: (Int) -> Unit,
     stepSegments: ImmutableList<Int>,
@@ -86,7 +83,6 @@ internal fun SoundIntroScreen(
             audioState = audioState,
             onListen = { viewModel.onListenToggle(currentLesson) },
             onClose = onClose,
-            onHome = onHome,
             onNext = onNext,
             onStepJump = onStepJump,
             stepSegments = stepSegments,
@@ -102,7 +98,6 @@ private fun SoundIntroContent(
     audioState: AudioState,
     onListen: () -> Unit,
     onClose: () -> Unit,
-    onHome: () -> Unit,
     onNext: () -> Unit,
     onStepJump: (Int) -> Unit,
     stepSegments: ImmutableList<Int>,
@@ -121,13 +116,14 @@ private fun SoundIntroContent(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             StepHeader(
-                title = stringResource(Res.string.sound_intro_title),
                 currentStepIndex = STEP_INDEX,
                 onClose = onClose,
-                onHomeClick = onHome,
                 onStepJump = onStepJump,
+                onNext = onNext,
+                nextEnabled = hasStartedListening,
                 stepSegments = stepSegments,
                 guideText = stringResource(Res.string.step_guide_sound_intro),
+                nextContentDescription = stringResource(Res.string.sound_intro_next_lesson),
                 guideTrailing = {
                     Box(
                         modifier = Modifier.size(36.dp),
@@ -178,12 +174,6 @@ private fun SoundIntroContent(
                 FrameContent(item = featuredWord)
             }
             Spacer(Modifier.weight(1f, fill = true))
-            Spacer(Modifier.height(8.dp))
-            StepContinueButton(
-                label = stringResource(Res.string.sound_intro_next_lesson),
-                onClick = onNext,
-                enabled = hasStartedListening,
-            )
             Spacer(Modifier.height(8.dp))
         }
     }

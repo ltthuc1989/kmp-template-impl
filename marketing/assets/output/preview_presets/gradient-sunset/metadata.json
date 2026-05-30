@@ -1,0 +1,12 @@
+{
+  "source_background": "output/feature_graphic/2026-05-16_06-59-04_batch/concept_01_mascot_lineup_var_2.png",
+  "source_icon": null,
+  "output_spec": "1024x500",
+  "locales": [
+    {
+      "locale": "vi",
+      "file": "feature-graphic-vi.png",
+      "size_kb": 397
+    }
+  ]
+}

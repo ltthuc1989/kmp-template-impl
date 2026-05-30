@@ -62,10 +62,23 @@ sealed interface Destination : NavKey {
         ) : Learning
 
         @Serializable
+        data class UnitGame(
+            val levelId: String,
+            val unitId: String,
+            val gameIndex: Int,
+        ) : Learning
+
+        @Serializable
         data class LevelComplete(val levelId: String) : Learning
 
         @Serializable
         data object TracingGuideDebug : Learning
+
+        @Serializable
+        data object BubblePopPreview : Learning
+
+        @Serializable
+        data object MemoryMatchPreview : Learning
     }
 
     @Serializable
@@ -93,8 +106,11 @@ sealed interface Destination : NavKey {
                     subclass(Learning.UnitComplete::class, Learning.UnitComplete.serializer())
                     subclass(Learning.LessonComplete::class, Learning.LessonComplete.serializer())
                     subclass(Learning.UnitStory::class, Learning.UnitStory.serializer())
+                    subclass(Learning.UnitGame::class, Learning.UnitGame.serializer())
                     subclass(Learning.LevelComplete::class, Learning.LevelComplete.serializer())
                     subclass(Learning.TracingGuideDebug::class, Learning.TracingGuideDebug.serializer())
+                    subclass(Learning.BubblePopPreview::class, Learning.BubblePopPreview.serializer())
+                    subclass(Learning.MemoryMatchPreview::class, Learning.MemoryMatchPreview.serializer())
                     subclass(Review::class, Review.serializer())
                     subclass(Setting.Root::class, Setting.Root.serializer())
                     subclass(Setting.License::class, Setting.License.serializer())

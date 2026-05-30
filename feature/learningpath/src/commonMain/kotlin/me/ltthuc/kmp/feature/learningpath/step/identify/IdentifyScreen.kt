@@ -61,12 +61,10 @@ import me.ltthuc.kmp.core.model.LessonWord
 import me.ltthuc.kmp.core.model.PhonicsLesson
 import me.ltthuc.kmp.core.repository.SfxController
 import me.ltthuc.kmp.core.resource.Res
-import me.ltthuc.kmp.core.resource.chant_next
 import me.ltthuc.kmp.core.resource.identify_all_done_soft_subtitle
 import me.ltthuc.kmp.core.resource.identify_all_done_subtitle
 import me.ltthuc.kmp.core.resource.identify_all_done_title
 import me.ltthuc.kmp.core.resource.identify_listen_cd
-import me.ltthuc.kmp.core.resource.identify_title
 import me.ltthuc.kmp.core.resource.score_success_primary
 import me.ltthuc.kmp.core.resource.step_guide_identify
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
@@ -75,7 +73,6 @@ import me.ltthuc.kmp.feature.learningpath.step.common.PuffySurface
 import me.ltthuc.kmp.feature.learningpath.step.common.PulseRings
 import me.ltthuc.kmp.feature.learningpath.step.common.ScoreFeedback
 import me.ltthuc.kmp.feature.learningpath.step.common.ScoreFeedbackOverlay
-import me.ltthuc.kmp.feature.learningpath.step.common.StepContinueButton
 import me.ltthuc.kmp.feature.learningpath.step.common.StepHeader
 import me.ltthuc.kmp.feature.learningpath.step.common.WordDisplayView
 import me.ltthuc.kmp.feature.learningpath.step.common.wordRef
@@ -92,7 +89,6 @@ internal fun IdentifyScreen(
     unitId: String,
     lessonIndex: Int,
     onClose: () -> Unit,
-    onHome: () -> Unit,
     onPrevious: () -> Unit,
     onNext: () -> Unit,
     onStepJump: (Int) -> Unit,
@@ -122,7 +118,6 @@ internal fun IdentifyScreen(
             audioState = audioState,
             onPlayWord = { word -> viewModel.playTargetWord(currentLesson, word) },
             onClose = onClose,
-            onHome = onHome,
             onPrevious = onPrevious,
             onNext = onNext,
             onStepJump = onStepJump,
@@ -139,7 +134,6 @@ private fun IdentifyContent(
     audioState: AudioState,
     onPlayWord: (word: String) -> Unit,
     onClose: () -> Unit,
-    onHome: () -> Unit,
     onPrevious: () -> Unit,
     onNext: () -> Unit,
     onStepJump: (Int) -> Unit,
@@ -191,14 +185,20 @@ private fun IdentifyContent(
     }
 
     val onCardTap: (String) -> Unit = { tappedText ->
-        if (selectedText == null && !autoRevealed && !listenPlaying) {
+        // After auto-reveal: only the correct card is tappable (decoys ignored). Kid must
+        // tap the highlighted answer themselves — matches Duolingo ABC / Khan Kids pattern
+        // of preserving agency rather than auto-skipping.
+        if (selectedText == null && !listenPlaying) {
             if (tappedText == target.text) {
+                val wasRevealed = autoRevealed
                 selectedText = tappedText
-                // Khan-simple: chime + voice praise every correct, voice ~500ms after chime.
                 sfx.playSfx("correct")
-                scope.launch {
-                    delay(PRAISE_DELAY_MS)
-                    sfx.playVoicePraise(PRAISE_POOL.random())
+                if (!wasRevealed) {
+                    // Earned the praise — fire voice praise. After reveal: chime only.
+                    scope.launch {
+                        delay(PRAISE_DELAY_MS)
+                        sfx.playVoicePraise(PRAISE_POOL.random())
+                    }
                 }
                 scope.launch {
                     delay(CORRECT_CELEBRATION_MS)
@@ -216,7 +216,7 @@ private fun IdentifyContent(
                         )
                     }
                 }
-            } else {
+            } else if (!autoRevealed) {
                 wrongCount++
                 wiggleTarget = tappedText
                 wiggleKey++
@@ -227,27 +227,16 @@ private fun IdentifyContent(
                 }
                 when {
                     wrongCount >= MAX_WRONG_BEFORE_REVEAL -> {
+                        // Highlight correct + soft voice nudge — but DO NOT auto-skip.
+                        // Kid taps the revealed answer themselves to advance.
                         autoRevealed = true
                         anyRoundFailed = true
-                        scope.launch {
-                            delay(AUTO_REVEAL_DELAY_MS)
-                            if (roundIndex < totalRounds - 1) {
-                                roundIndex++
-                            } else {
-                                allRoundsCompleted = true
-                                sfx.playSfx("lesson_complete")
-                                finalOverlay = ScoreFeedback.Success(
-                                    title = allDoneTitle,
-                                    subtitle = allDoneSoftSubtitle,
-                                    heroEmoji = vocab.firstOrNull()?.emoji.orEmpty().ifEmpty { "🎉" },
-                                    primaryLabel = successPrimary,
-                                )
-                            }
-                        }
+                        sfx.playVoicePraise("try_again")
                     }
                     wrongCount >= HINT_AFTER_WRONGS -> showHint = true
                 }
             }
+            // else: tap on decoy after reveal — ignored
         }
     }
 
@@ -267,11 +256,11 @@ private fun IdentifyContent(
             containerColor = MaterialTheme.colorScheme.background,
             topBar = {
                 StepHeader(
-                    title = stringResource(Res.string.identify_title),
                     currentStepIndex = STEP_INDEX,
                     onClose = onClose,
-                    onHomeClick = onHome,
                     onStepJump = onStepJump,
+                    onNext = onNext,
+                    nextEnabled = allRoundsCompleted && finalOverlay == null,
                     stepSegments = stepSegments,
                     guideText = stringResource(Res.string.step_guide_identify),
                     guideTrailing = {
@@ -330,12 +319,6 @@ private fun IdentifyContent(
                 )
                 Spacer(Modifier.weight(1f, fill = true))
                 Spacer(Modifier.height(8.dp))
-                StepContinueButton(
-                    label = stringResource(Res.string.chant_next),
-                    onClick = onNext,
-                    enabled = allRoundsCompleted && finalOverlay == null,
-                )
-                Spacer(Modifier.height(8.dp))
             }
         }
 
@@ -382,15 +365,18 @@ private fun IdentifyGrid(
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
             ) {
                 rowItems.forEach { item ->
+                    val isCorrectItem = item.text == correctText
                     IdentifyCard(
                         item = item,
                         selected = selectedText == item.text,
-                        isCorrect = item.text == correctText,
+                        isCorrect = isCorrectItem,
                         wiggleActive = wiggleTarget == item.text,
                         wiggleKey = wiggleKey,
                         showHint = showHint,
                         autoRevealed = autoRevealed,
-                        selectionLocked = selectedText != null || autoRevealed,
+                        // After auto-reveal: only the correct card stays tappable so kid
+                        // taps the highlighted answer themselves (Option A — preserve agency).
+                        selectionLocked = selectedText != null || (autoRevealed && !isCorrectItem),
                         onClick = { onSelect(item.text) },
                         modifier = Modifier.weight(1f),
                     )
@@ -561,7 +547,6 @@ private const val COLUMNS = 2
 private val CARD_HEIGHT = 120.dp
 private const val OPTIONS_COUNT = 6
 private const val CORRECT_CELEBRATION_MS = 800L
-private const val AUTO_REVEAL_DELAY_MS = 1500L
 private const val HINT_AFTER_WRONGS = 2
 private const val MAX_WRONG_BEFORE_REVEAL = 3
 private const val PRAISE_DELAY_MS = 500L

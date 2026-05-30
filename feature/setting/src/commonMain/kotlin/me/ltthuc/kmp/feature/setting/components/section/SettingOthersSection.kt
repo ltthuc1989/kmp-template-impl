@@ -32,6 +32,8 @@ internal fun SettingOthersSection(
     onDeveloperModeChanged: (Boolean) -> Unit,
     onShowSpeakButtonChanged: (Boolean) -> Unit,
     onLetterGuideDebugClicked: () -> Unit,
+    onBubblePopPreviewClicked: () -> Unit,
+    onMemoryMatchPreviewClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var isShowDeveloperModeDialog by remember { mutableStateOf(false) }
@@ -88,6 +90,18 @@ internal fun SettingOthersSection(
                 title = "Letter guide QA",
                 description = "Visual review of all 52 Zaner-Bloser tracing guides",
                 onClick = onLetterGuideDebugClicked,
+            )
+            SettingTextItem(
+                modifier = Modifier.fillMaxWidth(),
+                title = "Bubble Pop Preview",
+                description = "Dev: test bubble physics + pop animation standalone",
+                onClick = onBubblePopPreviewClicked,
+            )
+            SettingTextItem(
+                modifier = Modifier.fillMaxWidth(),
+                title = "Memory Match Preview",
+                description = "Dev: test card flip + match animations standalone",
+                onClick = onMemoryMatchPreviewClicked,
             )
         }
     }

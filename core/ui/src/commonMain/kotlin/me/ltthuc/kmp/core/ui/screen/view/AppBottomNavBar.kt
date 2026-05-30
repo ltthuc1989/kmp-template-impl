@@ -1,8 +1,6 @@
 package me.ltthuc.kmp.core.ui.screen.view
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.MenuBook
-import androidx.compose.material.icons.automirrored.outlined.MenuBook
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.Home
@@ -14,7 +12,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import kotlinx.collections.immutable.persistentListOf
 import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.nav_home
-import me.ltthuc.kmp.core.resource.nav_review
 import me.ltthuc.kmp.core.resource.nav_settings
 import me.ltthuc.kmp.core.ui.screen.Destination
 import me.ltthuc.kmp.core.ui.theme.LocalNavBackStack
@@ -33,13 +30,6 @@ enum class AppBottomNavTab(
         labelRes = Res.string.nav_home,
         iconInactive = Icons.Outlined.Home,
         iconActive = Icons.Filled.Home,
-    ),
-    Review(
-        key = "review",
-        destination = Destination.Review,
-        labelRes = Res.string.nav_review,
-        iconInactive = Icons.AutoMirrored.Outlined.MenuBook,
-        iconActive = Icons.AutoMirrored.Filled.MenuBook,
     ),
     Settings(
         key = "settings",
@@ -63,12 +53,6 @@ fun AppBottomNavBar(
                 label = AppBottomNavTab.Home.labelRes,
                 iconInactive = AppBottomNavTab.Home.iconInactive,
                 iconActive = AppBottomNavTab.Home.iconActive,
-            ),
-            FloatingPillNavItem(
-                key = AppBottomNavTab.Review.key,
-                label = AppBottomNavTab.Review.labelRes,
-                iconInactive = AppBottomNavTab.Review.iconInactive,
-                iconActive = AppBottomNavTab.Review.iconActive,
             ),
             FloatingPillNavItem(
                 key = AppBottomNavTab.Settings.key,

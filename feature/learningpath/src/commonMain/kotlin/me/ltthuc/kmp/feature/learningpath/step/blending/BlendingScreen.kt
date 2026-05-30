@@ -57,9 +57,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import me.ltthuc.kmp.core.model.PhonicsLesson
 import me.ltthuc.kmp.core.resource.Res
-import me.ltthuc.kmp.core.resource.blending_title
 import me.ltthuc.kmp.core.resource.blending_word_progress
-import me.ltthuc.kmp.core.resource.chant_next
 import me.ltthuc.kmp.core.resource.identify_all_done_subtitle
 import me.ltthuc.kmp.core.resource.identify_all_done_title
 import me.ltthuc.kmp.core.resource.score_success_primary
@@ -69,7 +67,6 @@ import me.ltthuc.kmp.feature.learningpath.step.common.LetterStepperBar
 import me.ltthuc.kmp.feature.learningpath.step.common.PuffySurface
 import me.ltthuc.kmp.feature.learningpath.step.common.ScoreFeedback
 import me.ltthuc.kmp.feature.learningpath.step.common.ScoreFeedbackOverlay
-import me.ltthuc.kmp.feature.learningpath.step.common.StepContinueButton
 import me.ltthuc.kmp.feature.learningpath.step.common.StepHeader
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -82,7 +79,6 @@ internal fun BlendingScreen(
     unitId: String,
     lessonIndex: Int,
     onClose: () -> Unit,
-    onHome: () -> Unit,
     onPrevious: () -> Unit,
     onNext: () -> Unit,
     onStepJump: (Int) -> Unit,
@@ -110,7 +106,6 @@ internal fun BlendingScreen(
             currentIndex = safeIndex,
             onPlayBlendedWord = { word -> viewModel.playBlendedWord(currentLesson, word) },
             onClose = onClose,
-            onHome = onHome,
             onPrevious = onPrevious,
             onNext = onNext,
             onStepJump = onStepJump,
@@ -128,7 +123,6 @@ private fun BlendingContent(
     currentIndex: Int,
     onPlayBlendedWord: (word: String) -> Unit,
     onClose: () -> Unit,
-    onHome: () -> Unit,
     onPrevious: () -> Unit,
     onNext: () -> Unit,
     onStepJump: (Int) -> Unit,
@@ -196,11 +190,11 @@ private fun BlendingContent(
             containerColor = MaterialTheme.colorScheme.background,
             topBar = {
                 StepHeader(
-                    title = stringResource(Res.string.blending_title),
                     currentStepIndex = STEP_INDEX,
                     onClose = onClose,
-                    onHomeClick = onHome,
                     onStepJump = onStepJump,
+                    onNext = ::onNextHandler,
+                    nextEnabled = blendState == BlendState.Complete && finalOverlay == null,
                     stepSegments = stepSegments,
                     guideText = stringResource(Res.string.step_guide_blending),
                 )
@@ -241,12 +235,6 @@ private fun BlendingContent(
                     onClick = ::startBlend,
                 )
                 Spacer(Modifier.weight(1f, fill = true))
-                Spacer(Modifier.height(8.dp))
-                StepContinueButton(
-                    label = stringResource(Res.string.chant_next),
-                    onClick = ::onNextHandler,
-                    enabled = blendState == BlendState.Complete && finalOverlay == null,
-                )
                 Spacer(Modifier.height(8.dp))
             }
         }

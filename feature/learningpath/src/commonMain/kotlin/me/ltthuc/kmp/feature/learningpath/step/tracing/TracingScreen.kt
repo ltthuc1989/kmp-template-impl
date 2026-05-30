@@ -60,7 +60,6 @@ import kotlinx.coroutines.launch
 import me.ltthuc.kmp.core.model.PhonicsLesson
 import me.ltthuc.kmp.core.repository.SfxController
 import me.ltthuc.kmp.core.resource.Res
-import me.ltthuc.kmp.core.resource.chant_next
 import me.ltthuc.kmp.core.resource.score_fail_primary
 import me.ltthuc.kmp.core.resource.score_fail_title
 import me.ltthuc.kmp.core.resource.score_success_primary
@@ -71,7 +70,6 @@ import me.ltthuc.kmp.core.resource.tracing_fail_subtitle
 import me.ltthuc.kmp.core.resource.tracing_score_excellent
 import me.ltthuc.kmp.core.resource.tracing_score_good
 import me.ltthuc.kmp.core.resource.tracing_score_very_good
-import me.ltthuc.kmp.core.resource.tracing_title
 import me.ltthuc.kmp.core.resource.tracing_watch_ad_to_pass
 import me.ltthuc.kmp.core.ui.ads.RewardedSkipLauncher
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
@@ -79,7 +77,6 @@ import me.ltthuc.kmp.feature.learningpath.step.common.LetterStepperBar
 import me.ltthuc.kmp.feature.learningpath.step.common.PuffySurface
 import me.ltthuc.kmp.feature.learningpath.step.common.ScoreFeedback
 import me.ltthuc.kmp.feature.learningpath.step.common.ScoreFeedbackOverlay
-import me.ltthuc.kmp.feature.learningpath.step.common.StepContinueButton
 import me.ltthuc.kmp.feature.learningpath.step.common.StepHeader
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
@@ -93,7 +90,6 @@ internal fun TracingScreen(
     unitId: String,
     lessonIndex: Int,
     onClose: () -> Unit,
-    onHome: () -> Unit,
     onPrevious: () -> Unit,
     onNext: () -> Unit,
     onStepJump: (Int) -> Unit,
@@ -115,7 +111,6 @@ internal fun TracingScreen(
             lessons = uiState.lessons,
             currentIndex = safeIndex,
             onClose = onClose,
-            onHome = onHome,
             onPrevious = onPrevious,
             onNext = onNext,
             onStepJump = onStepJump,
@@ -130,7 +125,6 @@ private fun TracingContent(
     lessons: ImmutableList<PhonicsLesson>,
     currentIndex: Int,
     onClose: () -> Unit,
-    onHome: () -> Unit,
     onPrevious: () -> Unit,
     onNext: () -> Unit,
     onStepJump: (Int) -> Unit,
@@ -183,11 +177,11 @@ private fun TracingContent(
             containerColor = MaterialTheme.colorScheme.background,
             topBar = {
                 StepHeader(
-                    title = stringResource(Res.string.tracing_title),
                     currentStepIndex = STEP_INDEX,
                     onClose = onClose,
-                    onHomeClick = onHome,
                     onStepJump = onStepJump,
+                    onNext = { submitForScoring() },
+                    nextEnabled = userStrokes.isNotEmpty() && result == null,
                     stepSegments = stepSegments,
                     guideText = stringResource(Res.string.step_guide_tracing),
                     showGuideText = false,
@@ -228,11 +222,6 @@ private fun TracingContent(
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f, fill = true),
-                )
-                Spacer(Modifier.height(10.dp))
-                StepContinueButton(
-                    label = stringResource(Res.string.chant_next),
-                    onClick = { submitForScoring() },
                 )
                 Spacer(Modifier.height(8.dp))
             }

@@ -29,7 +29,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
@@ -46,7 +45,6 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.ImmutableList
 import org.jetbrains.compose.resources.StringResource
@@ -184,7 +182,7 @@ private fun NavItem(
                 contentDescription = label
             },
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(space = 2.dp, alignment = Alignment.CenterVertically),
+        verticalArrangement = Arrangement.Center,
     ) {
         AnimatedContent(
             targetState = isSelected,
@@ -201,12 +199,6 @@ private fun NavItem(
                 tint = contentColor,
             )
         }
-
-        Text(
-            text = label,
-            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
-            color = contentColor,
-        )
     }
 }
 

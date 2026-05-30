@@ -49,12 +49,9 @@ import me.ltthuc.kmp.core.audio.isActiveFor
 import me.ltthuc.kmp.core.model.LessonWord
 import me.ltthuc.kmp.core.model.PhonicsLesson
 import me.ltthuc.kmp.core.resource.Res
-import me.ltthuc.kmp.core.resource.chant_next
 import me.ltthuc.kmp.core.resource.step_guide_vocabulary
-import me.ltthuc.kmp.core.resource.vocabulary_title
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
 import me.ltthuc.kmp.feature.learningpath.step.common.LetterStepperBar
-import me.ltthuc.kmp.feature.learningpath.step.common.StepContinueButton
 import me.ltthuc.kmp.feature.learningpath.step.common.StepHeader
 import me.ltthuc.kmp.feature.learningpath.step.common.StoryStyleCard
 import me.ltthuc.kmp.feature.learningpath.step.common.WordDisplayView
@@ -70,7 +67,6 @@ internal fun VocabularyScreen(
     unitId: String,
     lessonIndex: Int,
     onClose: () -> Unit,
-    onHome: () -> Unit,
     onPrevious: () -> Unit,
     onNext: () -> Unit,
     onStepJump: (Int) -> Unit,
@@ -100,7 +96,6 @@ internal fun VocabularyScreen(
             audioState = audioState,
             onListenWord = { word -> viewModel.onListenWordToggle(currentLesson, word) },
             onClose = onClose,
-            onHome = onHome,
             onPrevious = onPrevious,
             onNext = onNext,
             onStepJump = onStepJump,
@@ -117,7 +112,6 @@ private fun VocabularyContent(
     audioState: AudioState,
     onListenWord: (word: String) -> Unit,
     onClose: () -> Unit,
-    onHome: () -> Unit,
     onPrevious: () -> Unit,
     onNext: () -> Unit,
     onStepJump: (Int) -> Unit,
@@ -134,11 +128,11 @@ private fun VocabularyContent(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             StepHeader(
-                title = stringResource(Res.string.vocabulary_title),
                 currentStepIndex = STEP_INDEX,
                 onClose = onClose,
-                onHomeClick = onHome,
                 onStepJump = onStepJump,
+                onNext = onNext,
+                nextEnabled = vocabItems.isNotEmpty() && heardWords.size >= vocabItems.size,
                 stepSegments = stepSegments,
                 guideText = stringResource(Res.string.step_guide_vocabulary),
             )
@@ -170,12 +164,6 @@ private fun VocabularyContent(
                     onListenWord(word)
                 },
                 modifier = Modifier.weight(1f, fill = true),
-            )
-            Spacer(Modifier.height(8.dp))
-            StepContinueButton(
-                label = stringResource(Res.string.chant_next),
-                onClick = onNext,
-                enabled = vocabItems.isNotEmpty() && heardWords.size >= vocabItems.size,
             )
             Spacer(Modifier.height(8.dp))
         }

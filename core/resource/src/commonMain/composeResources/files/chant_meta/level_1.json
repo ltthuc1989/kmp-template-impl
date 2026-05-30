@@ -13,7 +13,7 @@
   },
   {
     "lesson_id": "L1U01_C_cat",
-    "start_ms": 10000,
+    "start_ms": 9000,
     "speed_ms": 800,
     "edge_speed_ms": 800
   },
@@ -25,7 +25,7 @@
   },
   {
     "lesson_id": "L1U02_E_egg",
-    "start_ms": 10000,
+    "start_ms": 11000,
     "speed_ms": 800,
     "edge_speed_ms": 800
   },

@@ -1,0 +1,52 @@
+{
+  "source_background": "/Volumes/Entertainment/GeminiGenerator/opw_audio_project/output/feature_graphic/2026-05-16_06-59-04_batch/concept_06_letter_garden_var_2.png",
+  "source_icon": null,
+  "output_spec": "1024x500",
+  "locales": [
+    {
+      "locale": "vi",
+      "file": "feature-graphic-vi.png",
+      "size_kb": 410
+    },
+    {
+      "locale": "id",
+      "file": "feature-graphic-id.png",
+      "size_kb": 412
+    },
+    {
+      "locale": "th",
+      "file": "feature-graphic-th.png",
+      "size_kb": 411
+    },
+    {
+      "locale": "pt-BR",
+      "file": "feature-graphic-pt-BR.png",
+      "size_kb": 412
+    },
+    {
+      "locale": "es-MX",
+      "file": "feature-graphic-es-MX.png",
+      "size_kb": 412
+    },
+    {
+      "locale": "ja",
+      "file": "feature-graphic-ja.png",
+      "size_kb": 410
+    },
+    {
+      "locale": "ko",
+      "file": "feature-graphic-ko.png",
+      "size_kb": 408
+    },
+    {
+      "locale": "tr",
+      "file": "feature-graphic-tr.png",
+      "size_kb": 411
+    },
+    {
+      "locale": "en",
+      "file": "feature-graphic-en.png",
+      "size_kb": 410
+    }
+  ]
+}

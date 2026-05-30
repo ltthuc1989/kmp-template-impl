@@ -79,7 +79,6 @@
 
     <!-- Navigation -->
     <string name="nav_home">ホーム</string>
-    <string name="nav_review">復習</string>
     <string name="nav_settings">設定</string>
 
     <!-- Review -->
@@ -220,6 +219,52 @@
     <string name="story_audio_cd">読み上げる</string>
     <string name="story_previous_page_cd">前のページ</string>
     <string name="story_next_page_cd">次のページ</string>
+
+    <!-- Game flow (after Story) — shared chrome + per-game strings -->
+    <string name="game_flow_title">あそびの じかん！</string>
+
+    <!-- PickWord -->
+    <string name="pick_word_guide">えに あう ことばを タップしよう</string>
+    <string name="pick_word_celebration_title">ことば マスター！</string>
+    <string name="pick_word_celebration_subtitle">ぜんぶ あったよ！</string>
+
+    <!-- FillLetter -->
+    <string name="fill_letter_guide">たりない もじを タップしよう</string>
+    <string name="fill_letter_celebration_title">もじ たんてい！</string>
+    <string name="fill_letter_celebration_subtitle">もじが ぜんぶ そろった！</string>
+
+    <!-- SpellLetters -->
+    <string name="spell_letters_guide">もじを タップして ことばを つづろう</string>
+    <string name="spell_letters_celebration_title">スペル スター！</string>
+    <string name="spell_letters_celebration_subtitle">ぜんぶ かけたね！</string>
+
+    <!-- DragWords -->
+    <string name="drag_words_guide">ことばを タップ → えを タップ</string>
+    <string name="drag_words_celebration_title">マッチアップ！</string>
+    <string name="drag_words_celebration_subtitle">ぜんぶ ペアに なった！</string>
+
+
+    <!-- Memory Match (game 1) -->
+    <string name="memory_match_title">きおく ゲーム</string>
+    <string name="memory_match_guide">カードを 2枚 タップして ペアを みつけよう</string>
+    <string name="memory_match_complete_title">ぜんぶ そろった！</string>
+    <string name="memory_match_complete_subtitle">よくできました！</string>
+
+    <!-- Bubble Pop v5 -->
+    <string name="bubble_game_find_letter">%1$s の もじを みつけよう</string>
+    <string name="bubble_game_time_up">時間切れ！</string>
+    <string name="bubble_game_lightning_fast">超速い！</string>
+    <string name="bubble_game_round_score">%1$d / %2$d もじ みつけた</string>
+
+    <!-- Bubble Pop game (step 8 — after Story) -->
+    <string name="bubble_game_title">バブル ポップ</string>
+    <string name="bubble_game_guide">同じ もじの バブルを タップしよう</string>
+    <string name="bubble_game_listen_cd">音をきく</string>
+    <string name="bubble_game_round_label">ラウンド %1$d / %2$d</string>
+    <string name="bubble_game_round_complete_title">すごい！</string>
+    <string name="bubble_game_round_complete_subtitle">ぜんぶの %1$s を みつけたね！</string>
+    <string name="bubble_game_celebration_title">ぜんぶ クリア！</string>
+    <string name="bubble_game_celebration_subtitle">フォニックス チャンピオン！</string>
 
     <!-- Tracing (step 6) -->
     <string name="tracing_title">なぞる</string>

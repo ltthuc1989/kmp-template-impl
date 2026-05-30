@@ -29,6 +29,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
@@ -131,7 +134,12 @@ private fun ScoreFeedbackContent(
             ) {
                 DecorationRow(feedback = feedback)
                 Spacer(Modifier.height(16.dp))
-                Text(text = feedback.heroEmoji, fontSize = 80.sp)
+                val starRating = (feedback as? ScoreFeedback.Success)?.starRating
+                if (starRating != null) {
+                    StarRatingRow(filled = starRating)
+                } else {
+                    Text(text = feedback.heroEmoji, fontSize = 80.sp)
+                }
                 Spacer(Modifier.height(12.dp))
                 Text(
                     text = feedback.title,
@@ -160,6 +168,33 @@ private fun ScoreFeedbackContent(
                     SecondaryActionButton(label = secondaryLabel, onClick = onSecondary)
                 }
             }
+        }
+    }
+}
+
+/**
+ * Compact star-rating row: 5 stars, first [filled] gold-filled, the rest grayed.
+ * Used by BubblePop's round-end overlay to show 1-5 stars based on score tier.
+ *
+ * Uses Material `Icons.Filled.Star` (not emoji) so filled + unfilled stars render at the
+ * EXACT same size — emoji ⭐ / symbol ☆ are font-dependent and size-inconsistent.
+ */
+@Composable
+private fun StarRatingRow(filled: Int, max: Int = 5) {
+    val clamped = filled.coerceIn(0, max)
+    // 5 × 40dp + 4 × 4dp = 216dp — fits inside the 0.82-fraction card on a 360dp screen.
+    Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+        repeat(max) { idx ->
+            Icon(
+                imageVector = Icons.Filled.Star,
+                contentDescription = null,
+                modifier = Modifier.size(40.dp),
+                tint = if (idx < clamped) {
+                    androidx.compose.ui.graphics.Color(0xFFFFC107) // gold
+                } else {
+                    androidx.compose.ui.graphics.Color(0xFFBDBDBD) // gray
+                },
+            )
         }
     }
 }
@@ -329,6 +364,8 @@ internal sealed interface ScoreFeedback {
         override val heroEmoji: String = "🎉",
         override val primaryLabel: String,
         val decoration: Decoration = Decoration.Confetti,
+        /** When non-null (0..5), render a star-rating row instead of [heroEmoji]. */
+        val starRating: Int? = null,
     ) : ScoreFeedback
 
     data class Fail(

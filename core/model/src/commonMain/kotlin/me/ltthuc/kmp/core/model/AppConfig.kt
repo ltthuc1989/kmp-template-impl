@@ -1,18 +1,16 @@
 package me.ltthuc.kmp.core.model
 
 /**
- * アプリのビルド設定値を保持するデータクラス。
- * AdMob の広告ユニット ID や課金 API キーなど、ビルド時に決定される値を管理する。
+ * App build-time configuration. Holds version info, developer PIN, and
+ * platform-specific subscription API keys.
+ *
+ * Mốc 1: ad-related fields removed (no ad SDKs integrated). Archived in
+ * marketing/mocs/moc1-ads-archive.md for Mốc 2 restoration.
  */
 data class AppConfig(
     val versionName: String,
     val versionCode: Int,
     val developerPin: String,
-    val adMobAppId: String,
-    val adMobInterstitialAdUnitId: String,
-    val adMobBannerAdUnitId: String,
-    val adMobRewardedAdUnitId: String,
-    val adMobAppOpenAdUnitId: String,
     val purchaseAndroidApiKey: String?,
     val purchaseIosApiKey: String?,
 )

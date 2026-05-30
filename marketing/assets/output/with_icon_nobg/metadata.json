@@ -1,0 +1,12 @@
+{
+  "source_background": "output/feature_graphic/2026-05-16_06-59-04_batch/concept_01_mascot_lineup_var_2.png",
+  "source_icon": "output/app_icon/2026-05-15_16-42-39_batch/nobg/concept_01_bee_letter_a_var_1_nobg.png",
+  "output_spec": "1024x500",
+  "locales": [
+    {
+      "locale": "vi",
+      "file": "feature-graphic-vi.png",
+      "size_kb": 404
+    }
+  ]
+}

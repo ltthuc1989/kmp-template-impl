@@ -1,0 +1,12 @@
+{
+  "source_background": "/Users/ltthuc1989/AndroidStudioProjects/kmp-template-impl/marketing/assets/icons/feature_bg.png",
+  "source_icon": "/Users/ltthuc1989/AndroidStudioProjects/kmp-template-impl/marketing/assets/icons/app_icon_transparent.png",
+  "output_spec": "1024x500",
+  "locales": [
+    {
+      "locale": "vi",
+      "file": "feature-graphic-vi.png",
+      "size_kb": 420
+    }
+  ]
+}

@@ -1,64 +1,45 @@
 # Play Store Listing — Vietnam (vi-VN) — PRIMARY MARKET
 
-## App title (29/30 chars)
+⚠️ **Mốc 1 strategy**: 100% FREE, NO ADS, NO Premium tier. Description không mention monetization.
+
+## App title (24 chars)
 
 ```
-ABC Phonics: Tiếng Anh Cho Bé
+Phonics Kids: Học Tiếng Anh
 ```
 
-## Short description (78/80 chars)
+## Short description (76 chars)
 
 ```
-Học phonics tiếng Anh cho bé 3-8 tuổi — phát âm, bảng chữ cái, ghép vần ✨
+Phonics tiếng Anh cho bé — 488+ từ, 8 truyện, 6 mini-game vui cho bé 3-8 ✨
 ```
 
-## Long description (~3800/4000 chars)
+## Long description (~830 chars)
 
 ```
-Học phonics tiếng Anh cho bé 3-8 tuổi — bảng chữ cái, phát âm, đọc qua trò chơi.
+Phonics Kids — học đọc tiếng Anh qua phonics. 488+ từ vựng, 8 truyện, 6 mini-game cho bé 3-8 tuổi.
 
-ABC Phonics Kids là ứng dụng học phonics tiếng Anh dành cho trẻ em từ 3 đến 8 tuổi. Bé sẽ học bảng chữ cái, phát âm chuẩn, ghép vần và đọc câu chuyện ngắn qua các trò chơi thú vị — phương pháp synthetic phonics đã được kiểm chứng tại trường Anh-Mỹ.
+Phonics Kids giúp bé 3-8 tuổi học đọc tiếng Anh qua phương pháp phonics. Bé học bảng chữ cái A-Z, ghép âm thành từ, đọc 8 câu chuyện — và chơi 6 mini-game vui sau mỗi bài.
 
-🌟 TÍNH NĂNG CHÍNH
-✓ 5 CẤP ĐỘ học phonics có hệ thống (bảng chữ cái → ghép vần → từ dài)
-✓ 670+ từ vựng tiếng Anh có audio phát âm chuẩn người bản xứ
-✓ 26 NHÂN VẬT Phonics Friends ngộ nghĩnh giúp bé nhớ chữ
-✓ Game tô chữ, ghép vần, ghép từ, đoán từ — 8 dạng trò chơi mỗi unit
-✓ 15 CÂU CHUYỆN có giọng đọc + highlight từng từ
-✓ Phát âm chuẩn cho từng chữ cái A đến Z
-✓ Họ vần ngắn & vần dài (CVC words, long vowels)
-✓ Sight words chuẩn bị vào lớp 1
-✓ Đọc hiểu cơ bản tiếng Anh trẻ em
+🌟 BÉ HỌC GÌ
+✓ Bảng chữ cái A-Z với âm chuẩn bản xứ
+✓ 488+ từ vựng có audio phát âm
+✓ 8 câu chuyện — chữ sáng theo lời đọc (karaoke style)
+✓ Tô chữ thông minh — chấm điểm độ chính xác
 
-📚 PHƯƠNG PHÁP KHOA HỌC
-ABC Phonics Kids xây dựng trên synthetic phonics — phương pháp dạy đọc tiếng Anh khoa học nhất hiện nay, được dùng tại trường UK National Curriculum và Common Core (Mỹ). Mỗi unit theo lộ trình 8 bước: Giới Thiệu Âm → Đồng Dao → Từ Vựng → Nhận Diện → Ghép Vần → Ghép Từ → Tô Chữ → Câu Chuyện.
+🎮 6 MINI-GAME mỗi unit
+Bong Bóng Vỡ • Lật Thẻ Memory • Điền Chữ • Chọn Từ • Ghép Chữ • Kéo Thả Từ
 
-🎈 PHÙ HỢP ĐỘ TUỔI
-• 3-4 tuổi: Nhận biết bảng chữ cái & phát âm tiếng Anh cho bé
-• 4-5 tuổi: Ghép vần CVC & từ vần ngắn
-• 5-6 tuổi: Vần dài & sight words tiếng Anh trẻ em
-• 6-8 tuổi: Phụ âm kép, từ phức & đọc trôi chảy tiếng Anh
-• Học sinh ESL: mọi lứa tuổi bắt đầu học tiếng Anh
+📚 PHƯƠNG PHÁP PHONICS
+Synthetic phonics — phương pháp dùng tại trường UK National Curriculum và US Common Core.
 
-👨‍👩‍👧 BỐ MẸ AN TÂM VÌ
-• Tuân thủ 100% COPPA — không thu thập thông tin cá nhân của bé
-• Không cần đăng ký, không email, không tài khoản
-• Dashboard phụ huynh (mở qua câu đố toán chống bé vô tình vào)
-• Học tiếng Anh offline — không cần wifi
-• Quảng cáo an toàn cho trẻ em (không cá nhân hoá)
-• Không mạng xã hội, không chat, không nội dung không phù hợp
-
-🆓 MIỄN PHÍ vs ⭐ PREMIUM
-🆓 MIỄN PHÍ vĩnh viễn: Cấp 1 (9 units, 100+ từ vựng tiếng Anh, 3 truyện)
-⭐ PREMIUM: Mở khoá Cấp 2-5 — 249.000đ/tháng hoặc 1.690.000đ/năm
-   (Dùng thử 7 ngày miễn phí)
-
-🌍 NGÔN NGỮ HỖ TRỢ: Tiếng Việt, English, Bahasa Indonesia, ภาษาไทย, Português, Español, 日本語, 한국어
-
-Dù bạn cần app học tiếng Anh cho bé, phần mềm phát âm tiếng Anh trẻ em, luyện đọc bảng chữ cái tiếng Anh, hay phonics cho trẻ mẫu giáo và tiểu học — ABC Phonics Kids đáp ứng tất cả trong 1 app an toàn, nhẹ quảng cáo.
+👨‍👩‍👧 AN TOÀN CHO BÉ
+✓ Tuân thủ COPPA 100% — không thu thập thông tin cá nhân
+✓ Không cần đăng ký, không email, không tài khoản
+✓ Hoàn toàn không quảng cáo
 
 📧 support@abcphonicskids.com
-🔒 Privacy: https://ltthuc1989.github.io/abc-phonics-kids/privacy
+🔒 https://ltthuc1989.github.io/phonics-kids/
 ```
 
 ## Target keywords (priority order)
@@ -66,30 +47,26 @@ Dù bạn cần app học tiếng Anh cho bé, phần mềm phát âm tiếng An
 | Tier | Keyword | Target rank |
 |---|---|---|
 | 1 | `học tiếng anh cho bé` | Top 10 |
-| 1 | `tiếng anh cho bé` | Top 20 |
+| 1 | `học đọc tiếng anh` | Top 20 |
 | 1 | `tiếng anh trẻ em` | Top 20 |
-| 1 | `phát âm tiếng anh` | Top 30 |
 | 2 | `phonics tiếng anh` | Top 10 |
-| 2 | `học bảng chữ cái tiếng anh` | Top 20 |
-| 2 | `tiếng anh mẫu giáo` | Top 30 |
 | 3 | `phonics cho bé` | Top 5 ⭐ |
 | 3 | `app phonics trẻ em` | Top 5 ⭐ |
-| 3 | `ghép vần tiếng anh cho bé` | Top 5 ⭐ |
 
-## Keyword density check
+## Verified features (audit 2026-05-17)
 
-| Keyword | Count | Density |
-|---|---|---|
-| `tiếng anh` | 12 | 2.3% ✓ |
-| `phonics` | 7 | 1.3% ✓ |
-| `bé`/`trẻ`/`em` | 14 | 2.7% ✓ |
-| `học` | 8 | 1.5% ✓ |
-| `bảng chữ cái` | 4 | 0.8% ✓ |
-| `phát âm` | 5 | 1.0% ✓ |
+| Feature | Code path |
+|---|---|
+| 488+ words | `curriculum.json` actual count |
+| 8 stories | `L1_S01-L1_S08` with audio + word-timing |
+| 6 mini-games | `game/{bubblepop,memorymatch,filletter,pickword,spellletters,dragwords}/` |
+| Karaoke word-sync | `step/common/KaraokeText.kt` |
+| Smart tracing | `step/tracing/TracingScorer.kt` (75% threshold) |
+| COPPA-compliant | No personal data collection |
 
-## QA checklist before paste
+## Action items trước submit Play Console
 
-- [ ] Native VN parent reviewer pass (tuần -7)
-- [ ] Verify pricing 249.000đ/tháng match Play Console actual
-- [ ] Privacy URL `https://ltthuc1989.github.io/abc-phonics-kids/privacy` accessible
-- [ ] No trademark violation (avoid "Monkey Junior", "Oxford Phonics", "Hooked on Phonics", "ELSA")
+- [ ] **Disable ads in code** (AdMob + AppLovin) — required cho "Hoàn toàn không quảng cáo" claim
+- [ ] **Data Safety form**: "Contains ads" = **No**
+- [ ] **Pricing model**: "Free" (no IAP cho Mốc 1)
+- [ ] **No Premium tier** trong app cho đến Mốc 2

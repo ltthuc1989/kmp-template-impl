@@ -26,12 +26,10 @@ kotlin {
 
             api(libs.adaptive)
             api(libs.adaptive.layout)
-            api(libs.lexilabs.basic.ads)
         }
 
         androidMain.dependencies {
             api(libs.bundles.ui.android)
-            api(libs.play.service.ads)
         }
     }
 }

@@ -1,0 +1,52 @@
+{
+  "source_background": "/Users/ltthuc1989/AndroidStudioProjects/kmp-template-impl/marketing/assets/icons/feature_bg.png",
+  "source_icon": "/Users/ltthuc1989/AndroidStudioProjects/kmp-template-impl/marketing/assets/icons/app_icon_transparent.png",
+  "output_spec": "1024x500",
+  "locales": [
+    {
+      "locale": "vi",
+      "file": "feature-graphic-vi.png",
+      "size_kb": 419
+    },
+    {
+      "locale": "id",
+      "file": "feature-graphic-id.png",
+      "size_kb": 422
+    },
+    {
+      "locale": "th",
+      "file": "feature-graphic-th.png",
+      "size_kb": 419
+    },
+    {
+      "locale": "pt-BR",
+      "file": "feature-graphic-pt-BR.png",
+      "size_kb": 420
+    },
+    {
+      "locale": "es-MX",
+      "file": "feature-graphic-es-MX.png",
+      "size_kb": 420
+    },
+    {
+      "locale": "ja",
+      "file": "feature-graphic-ja.png",
+      "size_kb": 420
+    },
+    {
+      "locale": "ko",
+      "file": "feature-graphic-ko.png",
+      "size_kb": 417
+    },
+    {
+      "locale": "tr",
+      "file": "feature-graphic-tr.png",
+      "size_kb": 421
+    },
+    {
+      "locale": "en",
+      "file": "feature-graphic-en.png",
+      "size_kb": 419
+    }
+  ]
+}

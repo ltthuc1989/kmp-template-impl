@@ -6,6 +6,9 @@ import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 import me.ltthuc.kmp.core.ui.screen.Destination
 import me.ltthuc.kmp.core.ui.theme.LocalNavBackStack
+import me.ltthuc.kmp.feature.learningpath.game.GameFlowScreen
+import me.ltthuc.kmp.feature.learningpath.game.bubblepop.preview.BubblePopPreviewScreen
+import me.ltthuc.kmp.feature.learningpath.game.memorymatch.preview.MemoryMatchPreviewScreen
 import me.ltthuc.kmp.feature.learningpath.step.StepScreen
 import me.ltthuc.kmp.feature.learningpath.step.story.StoryScreen
 import me.ltthuc.kmp.feature.learningpath.step.tracing.LetterGuideDebugScreen
@@ -48,6 +51,20 @@ fun EntryProviderScope<NavKey>.learningEntry() {
             unitId = dest.unitId,
             modifier = Modifier.fillMaxSize(),
         )
+    }
+    entry<Destination.Learning.UnitGame> { dest ->
+        GameFlowScreen(
+            levelId = dest.levelId,
+            unitId = dest.unitId,
+            gameIndex = dest.gameIndex,
+            modifier = Modifier.fillMaxSize(),
+        )
+    }
+    entry<Destination.Learning.BubblePopPreview> {
+        BubblePopPreviewScreen(modifier = Modifier.fillMaxSize())
+    }
+    entry<Destination.Learning.MemoryMatchPreview> {
+        MemoryMatchPreviewScreen(modifier = Modifier.fillMaxSize())
     }
     entry<Destination.Learning.LevelComplete> { dest ->
         LevelCompleteScreen(

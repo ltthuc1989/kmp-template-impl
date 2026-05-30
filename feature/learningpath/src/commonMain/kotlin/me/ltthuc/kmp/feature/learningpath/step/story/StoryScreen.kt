@@ -62,12 +62,10 @@ import me.ltthuc.kmp.core.model.StoryScene
 import me.ltthuc.kmp.core.repository.LearningProgressRepository
 import me.ltthuc.kmp.core.repository.LevelRepository
 import me.ltthuc.kmp.core.resource.Res
-import me.ltthuc.kmp.core.resource.chant_next
 import me.ltthuc.kmp.core.resource.step_guide_story
 import me.ltthuc.kmp.core.resource.story_audio_cd
 import me.ltthuc.kmp.core.resource.story_next_page_cd
 import me.ltthuc.kmp.core.resource.story_previous_page_cd
-import me.ltthuc.kmp.core.resource.story_title
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
 import me.ltthuc.kmp.core.ui.screen.Destination
 import me.ltthuc.kmp.core.ui.theme.LocalNavBackStack
@@ -77,7 +75,6 @@ import me.ltthuc.kmp.feature.learningpath.step.common.KaraokeText
 import me.ltthuc.kmp.feature.learningpath.step.common.LetterStepperBar
 import me.ltthuc.kmp.feature.learningpath.step.common.PageDotsRow
 import me.ltthuc.kmp.feature.learningpath.step.common.PulseRings
-import me.ltthuc.kmp.feature.learningpath.step.common.StepContinueButton
 import me.ltthuc.kmp.feature.learningpath.step.common.StepHeader
 import me.ltthuc.kmp.feature.learningpath.step.common.StoryStyleCard
 import org.jetbrains.compose.resources.ExperimentalResourceApi
@@ -88,7 +85,6 @@ import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 private const val UNIT_STORY_STEP_INDEX = STORY_SEGMENT_INDEX // = 7
-private const val UNIT_COMPLETE_STARS = 24
 private const val TAG = "StoryScreen"
 
 @Composable
@@ -151,9 +147,7 @@ internal fun StoryScreen(
             if (navBackStack.size > 1) navBackStack.removeAt(navBackStack.lastIndex)
         }
         val onNext: () -> Unit = {
-            navBackStack.add(
-                Destination.Learning.UnitComplete(levelId, unitId, starsEarned = UNIT_COMPLETE_STARS),
-            )
+            navBackStack.add(Destination.Learning.UnitGame(levelId, unitId, gameIndex = 0))
         }
         val onStepJump: (Int) -> Unit = { targetStep ->
             if (targetStep in visibleSteps) {
@@ -217,12 +211,12 @@ private fun StoryContent(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             StepHeader(
-                title = stringResource(Res.string.story_title),
                 currentStepIndex = UNIT_STORY_STEP_INDEX,
                 stepSegments = stepSegments,
                 onClose = onClose,
-                onHomeClick = onClose,
                 onStepJump = onStepJump,
+                onNext = onNext,
+                nextEnabled = true,
                 guideText = stringResource(Res.string.step_guide_story),
                 guideTrailing = {
                     Box(
@@ -306,11 +300,6 @@ private fun StoryContent(
                     .padding(horizontal = 24.dp),
             )
             Spacer(Modifier.weight(1f, fill = true))
-            Spacer(Modifier.height(8.dp))
-            StepContinueButton(
-                label = stringResource(Res.string.chant_next),
-                onClick = onNext,
-            )
             Spacer(Modifier.height(8.dp))
         }
     }

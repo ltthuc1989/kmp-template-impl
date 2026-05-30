@@ -79,7 +79,6 @@
 
     <!-- Navigation -->
     <string name="nav_home">Home</string>
-    <string name="nav_review">Review</string>
     <string name="nav_settings">Settings</string>
 
     <!-- Review -->
@@ -227,6 +226,52 @@
     <string name="story_audio_cd">Play narration</string>
     <string name="story_previous_page_cd">Previous page</string>
     <string name="story_next_page_cd">Next page</string>
+
+    <!-- Game flow (after Story) — shared chrome + per-game strings -->
+    <string name="game_flow_title">Time to Play!</string>
+
+    <!-- PickWord (game 2 — pick correct word for picture) -->
+    <string name="pick_word_guide">Tap the word that matches the picture</string>
+    <string name="pick_word_celebration_title">Word picker!</string>
+    <string name="pick_word_celebration_subtitle">You matched every word!</string>
+
+    <!-- FillLetter (game 3 — tap missing letter to complete word) -->
+    <string name="fill_letter_guide">Tap the missing letter</string>
+    <string name="fill_letter_celebration_title">Letter detective!</string>
+    <string name="fill_letter_celebration_subtitle">All letters in their place!</string>
+
+    <!-- SpellLetters (game 4 — tap letters to spell the word) -->
+    <string name="spell_letters_guide">Tap the letters to spell the word</string>
+    <string name="spell_letters_celebration_title">Spelling star!</string>
+    <string name="spell_letters_celebration_subtitle">All words spelled!</string>
+
+    <!-- DragWords (game 5 — match each word to its picture) -->
+    <string name="drag_words_guide">Tap a word, then tap the matching picture</string>
+    <string name="drag_words_celebration_title">Word match-up!</string>
+    <string name="drag_words_celebration_subtitle">Every word found its picture!</string>
+
+
+    <!-- Memory Match (game 1) -->
+    <string name="memory_match_title">Memory Match</string>
+    <string name="memory_match_guide">Tap two cards to find a pair</string>
+    <string name="memory_match_complete_title">All matched!</string>
+    <string name="memory_match_complete_subtitle">Great memory work!</string>
+
+    <!-- Bubble Pop v5 — 30s arcade round, tier stars -->
+    <string name="bubble_game_find_letter">Find the letter %1$s</string>
+    <string name="bubble_game_time_up">Time's up!</string>
+    <string name="bubble_game_lightning_fast">Lightning fast!</string>
+    <string name="bubble_game_round_score">You found %1$d / %2$d letters</string>
+
+    <!-- Bubble Pop game (step 8 — after Story) -->
+    <string name="bubble_game_title">Bubble Pop</string>
+    <string name="bubble_game_guide">Tap the bubble with the matching letter</string>
+    <string name="bubble_game_listen_cd">Play the letter sound</string>
+    <string name="bubble_game_round_label">Round %1$d of %2$d</string>
+    <string name="bubble_game_round_complete_title">Awesome!</string>
+    <string name="bubble_game_round_complete_subtitle">You found all the %1$s\'s!</string>
+    <string name="bubble_game_celebration_title">All done!</string>
+    <string name="bubble_game_celebration_subtitle">Great work, phonics champion!</string>
 
     <!-- Tracing (step 6) -->
     <string name="tracing_title">Tracing</string>

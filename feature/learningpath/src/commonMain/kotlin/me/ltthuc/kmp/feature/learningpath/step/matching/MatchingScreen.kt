@@ -55,10 +55,8 @@ import kotlinx.coroutines.launch
 import me.ltthuc.kmp.core.model.LessonWord
 import me.ltthuc.kmp.core.model.PhonicsLesson
 import me.ltthuc.kmp.core.resource.Res
-import me.ltthuc.kmp.core.resource.chant_next
 import me.ltthuc.kmp.core.resource.identify_all_done_subtitle
 import me.ltthuc.kmp.core.resource.identify_all_done_title
-import me.ltthuc.kmp.core.resource.matching_title
 import me.ltthuc.kmp.core.resource.score_success_primary
 import me.ltthuc.kmp.core.resource.step_guide_matching
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
@@ -66,7 +64,6 @@ import me.ltthuc.kmp.feature.learningpath.step.common.LetterStepperBar
 import me.ltthuc.kmp.feature.learningpath.step.common.PuffySurface
 import me.ltthuc.kmp.feature.learningpath.step.common.ScoreFeedback
 import me.ltthuc.kmp.feature.learningpath.step.common.ScoreFeedbackOverlay
-import me.ltthuc.kmp.feature.learningpath.step.common.StepContinueButton
 import me.ltthuc.kmp.feature.learningpath.step.common.StepHeader
 import me.ltthuc.kmp.feature.learningpath.step.common.WordDisplayView
 import org.jetbrains.compose.resources.stringResource
@@ -81,7 +78,6 @@ internal fun MatchingScreen(
     unitId: String,
     lessonIndex: Int,
     onClose: () -> Unit,
-    onHome: () -> Unit,
     onPrevious: () -> Unit,
     onNext: () -> Unit,
     onStepJump: (Int) -> Unit,
@@ -111,7 +107,6 @@ internal fun MatchingScreen(
             onPlaySfx = viewModel::playSfx,
             onPlayVoice = viewModel::playVoicePraise,
             onClose = onClose,
-            onHome = onHome,
             onPrevious = onPrevious,
             onNext = onNext,
             onStepJump = onStepJump,
@@ -129,7 +124,6 @@ private fun MatchingContent(
     onPlaySfx: (String) -> Unit,
     onPlayVoice: (String) -> Unit,
     onClose: () -> Unit,
-    onHome: () -> Unit,
     onPrevious: () -> Unit,
     onNext: () -> Unit,
     onStepJump: (Int) -> Unit,
@@ -206,11 +200,11 @@ private fun MatchingContent(
             containerColor = MaterialTheme.colorScheme.background,
             topBar = {
                 StepHeader(
-                    title = stringResource(Res.string.matching_title),
                     currentStepIndex = STEP_INDEX,
                     onClose = onClose,
-                    onHomeClick = onHome,
                     onStepJump = onStepJump,
+                    onNext = onNext,
+                    nextEnabled = validatedMatches.size == totalPairs && finalOverlay == null,
                     stepSegments = stepSegments,
                     guideText = stringResource(Res.string.step_guide_matching),
                 )
@@ -246,12 +240,6 @@ private fun MatchingContent(
                     isLockedRight = { rightText -> validatedMatches.containsValue(rightText) },
                 )
                 Spacer(Modifier.weight(1f, fill = true))
-                Spacer(Modifier.height(8.dp))
-                StepContinueButton(
-                    label = stringResource(Res.string.chant_next),
-                    onClick = onNext,
-                    enabled = validatedMatches.size == totalPairs && finalOverlay == null,
-                )
                 Spacer(Modifier.height(8.dp))
             }
         }

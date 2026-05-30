@@ -1,7 +1,11 @@
 package me.ltthuc.kmp.feature.learningpath.step.common
 
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -26,23 +30,25 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
@@ -51,29 +57,39 @@ import androidx.compose.ui.unit.sp
 import kotlinx.collections.immutable.ImmutableList
 import me.ltthuc.kmp.core.model.PhonicsLesson
 import me.ltthuc.kmp.core.resource.Res
+import me.ltthuc.kmp.core.resource.chant_next
 import me.ltthuc.kmp.core.resource.common_close
-import me.ltthuc.kmp.core.resource.step_home_action
 import org.jetbrains.compose.resources.stringResource
 
 /**
- * Shared top header for step screens (Sound Intro, Chant, Vocabulary, ...).
- * `stepSegments` lists the canonical step indices to render (e.g. [0,1,2,3,5,6,7] when
- * step 4 is hidden for this level + last lesson). `currentStepIndex` is canonical too —
- * highlighting matches by canonical equality, and `onStepJump` receives the canonical idx.
+ * Shared top header for step + game screens.
+ *
+ * Mockup C layout (single controls row + optional guide row):
+ * ```
+ *  ✕    ●━●━●━●━●━○━○                →    ← row 1: Close + segments + Next, center-vertical
+ *         Tap matching bubble   🔊         ← row 2: guide text + trailing (audio button)
+ * ```
+ *
+ * `stepSegments` lists the canonical step indices to render. `currentStepIndex` is canonical
+ * too — highlighting matches by canonical equality, and `onStepJump` receives the canonical idx.
+ * Close + Next are plain icons (no circle background); Next pulses once on disabled → enabled.
  */
 @Composable
 internal fun StepHeader(
-    title: String,
     currentStepIndex: Int,
     stepSegments: ImmutableList<Int>,
     onClose: () -> Unit,
     onStepJump: (Int) -> Unit,
+    onNext: () -> Unit,
+    nextEnabled: Boolean,
     modifier: Modifier = Modifier,
     guideText: String = "",
     showGuideText: Boolean = true,
-    onHomeClick: () -> Unit = {},
+    nextContentDescription: String? = null,
     guideTrailing: (@Composable () -> Unit)? = null,
 ) {
+    val resolvedNextCd = nextContentDescription ?: stringResource(Res.string.chant_next)
+    val showGuideRow = (showGuideText && guideText.isNotEmpty()) || guideTrailing != null
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -82,66 +98,99 @@ internal fun StepHeader(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 20.dp, end = 20.dp, top = 2.dp, bottom = 6.dp),
+                .padding(start = 12.dp, end = 12.dp, top = 4.dp, bottom = 4.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             IconButton(
                 onClick = onClose,
-                modifier = Modifier.size(40.dp),
-                colors = IconButtonDefaults.iconButtonColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    contentColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-                ),
+                modifier = Modifier.size(44.dp),
             ) {
                 Icon(
                     imageVector = Icons.Filled.Close,
                     contentDescription = stringResource(Res.string.common_close),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
                 )
             }
-            Column(
+            Spacer(Modifier.width(4.dp))
+            StepSegmentRow(
+                currentStepIndex = currentStepIndex,
+                stepSegments = stepSegments,
+                onStepJump = onStepJump,
                 modifier = Modifier.weight(1f),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(4.dp),
+            )
+            Spacer(Modifier.width(4.dp))
+            PlainNextButton(
+                onClick = onNext,
+                enabled = nextEnabled,
+                contentDescription = resolvedNextCd,
+            )
+        }
+        if (showGuideRow) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp, vertical = 2.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center,
             ) {
-                Text(
-                    text = title,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface,
-                )
-                StepSegmentRow(
-                    currentStepIndex = currentStepIndex,
-                    stepSegments = stepSegments,
-                    onStepJump = onStepJump,
-                )
                 if (showGuideText && guideText.isNotEmpty()) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(6.dp),
-                    ) {
-                        Text(
-                            text = guideText,
-                            textAlign = TextAlign.Center,
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            maxLines = 1,
-                        )
-                        guideTrailing?.invoke()
-                    }
+                    Text(
+                        text = guideText,
+                        textAlign = TextAlign.Center,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1,
+                    )
+                }
+                if (guideTrailing != null) {
+                    Spacer(Modifier.width(6.dp))
+                    guideTrailing()
                 }
             }
-            IconButton(
-                onClick = onHomeClick,
-                modifier = Modifier.size(40.dp),
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Home,
-                    contentDescription = stringResource(Res.string.step_home_action),
-                    tint = MaterialTheme.colorScheme.primary,
-                )
-            }
         }
+    }
+}
+
+/**
+ * Plain icon "Next / advance" button — no background, no shadow. Encodes state via:
+ * - enabled = primary alpha 1.0, pulses scale 1.0 → 1.2 → 1.0 once when transitioning
+ *   disabled → enabled, so the eye catches "you can move on now".
+ * - disabled = primary alpha 0.30, still visible so the kid sees the goal.
+ *
+ * Tap target is the IconButton's default 48dp circle (invisible), comfortable for small fingers.
+ */
+@Composable
+private fun PlainNextButton(
+    onClick: () -> Unit,
+    enabled: Boolean,
+    contentDescription: String,
+    modifier: Modifier = Modifier,
+) {
+    val scale = remember { Animatable(1f) }
+    LaunchedEffect(enabled) {
+        if (enabled) {
+            scale.animateTo(1.20f, animationSpec = tween(150, easing = FastOutSlowInEasing))
+            scale.animateTo(
+                1f,
+                animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
+            )
+        }
+    }
+    IconButton(
+        onClick = onClick,
+        enabled = enabled,
+        modifier = modifier
+            .size(44.dp)
+            .scale(scale.value)
+            .semantics { this.contentDescription = contentDescription },
+    ) {
+        Icon(
+            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.primary.copy(alpha = if (enabled) 1f else 0.30f),
+            modifier = Modifier.size(28.dp),
+        )
     }
 }
 

@@ -1,0 +1,52 @@
+{
+  "source_background": "output/feature_graphic/2026-05-16_06-59-04_batch/concept_01_mascot_lineup_var_2.png",
+  "source_icon": "output/app_icon/2026-05-15_16-42-39_batch/concept_01_bee_letter_a_var_1.png",
+  "output_spec": "1024x500",
+  "locales": [
+    {
+      "locale": "vi",
+      "file": "feature-graphic-vi.png",
+      "size_kb": 399
+    },
+    {
+      "locale": "id",
+      "file": "feature-graphic-id.png",
+      "size_kb": 400
+    },
+    {
+      "locale": "th",
+      "file": "feature-graphic-th.png",
+      "size_kb": 399
+    },
+    {
+      "locale": "pt-BR",
+      "file": "feature-graphic-pt-BR.png",
+      "size_kb": 400
+    },
+    {
+      "locale": "es-MX",
+      "file": "feature-graphic-es-MX.png",
+      "size_kb": 399
+    },
+    {
+      "locale": "ja",
+      "file": "feature-graphic-ja.png",
+      "size_kb": 398
+    },
+    {
+      "locale": "ko",
+      "file": "feature-graphic-ko.png",
+      "size_kb": 398
+    },
+    {
+      "locale": "tr",
+      "file": "feature-graphic-tr.png",
+      "size_kb": 399
+    },
+    {
+      "locale": "en",
+      "file": "feature-graphic-en.png",
+      "size_kb": 398
+    }
+  ]
+}

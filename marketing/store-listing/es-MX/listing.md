@@ -1,74 +1,52 @@
 # Play Store Listing — Mexico (es-MX)
 
-## App title (29/30 chars)
+⚠️ **Mốc 1 strategy**: 100% FREE, NO ADS.
+
+## App title (29 chars)
 
 ```
-ABC Phonics: Inglés para Niños
+Phonics Kids: Inglés para Niños
 ```
 
-## Short description (79/80 chars)
+## Short description (78 chars)
 
 ```
-Inglés para niños con phonics — alfabeto, sonidos, lectura de 3-8 años ✨
+Phonics inglés niños — 488+ palabras, 8 cuentos, 6 mini-juegos gratis ✨
 ```
 
-## Long description (~3700/4000 chars)
+## Long description (~860 chars)
 
 ```
-Inglés para niños con phonics — alfabeto, sonidos de letras y juegos de lectura para niños de 3-8 años.
+Phonics Kids — aprende a leer inglés con phonics. 488+ palabras, 8 cuentos, 6 mini-juegos para niños 3-8.
 
-ABC Phonics Kids es una aplicación completa de phonics en inglés para niños pequeños y preescolares. Usando el método synthetic phonics comprobado, tu hijo dominará el alfabeto, los sonidos de las letras, blending de palabras CVC y la lectura de cuentos cortos — todo a través de juegos divertidos y apropiados para la edad.
+Phonics Kids ayuda a niños de 3-8 años a aprender a leer inglés a través del método phonics comprobado. Domina el alfabeto A-Z, junta sonidos de letras, y lee 8 cuentos narrados — reforzados por 6 mini-juegos divertidos después de cada cuento.
 
-🌟 CARACTERÍSTICAS PRINCIPALES
-✓ 5 NIVELES de aprendizaje estructurado de phonics (alfabeto → blends → digraphs)
-✓ 670+ palabras de vocabulario inglés con audio nativo
-✓ 26 personajes Phonics Friends que los niños adoran
-✓ Trazar letras, blending de sonidos, emparejar palabras, juegos ABC
-✓ 15 cuentos narrados con highlight palabra por palabra
-✓ Sonidos de letras para cada letra del alfabeto A a Z
-✓ Familias de vocales cortas & largas
-✓ Sight words para preparación al kinder
-✓ Comprensión básica de lectura inglés para niños
+🌟 QUÉ APRENDEN LOS NIÑOS
+✓ Alfabeto A-Z con pronunciación nativa
+✓ 488+ palabras de vocabulario inglés con audio
+✓ 8 cuentos — palabras se iluminan mientras el narrador lee
+✓ Trazado inteligente de letras con puntuación de precisión
 
-📚 MÉTODO CIENTÍFICO
-ABC Phonics Kids está construido sobre synthetic phonics — el método de lectura basado en evidencia usado por escuelas del UK National Curriculum y US Common Core. Cada unit phonics sigue la misma ruta de 8 pasos: Sound Intro → Chant → Vocabulary → Identify → Blending → Matching → Tracing → Story.
+🎮 6 MINI-JUEGOS por unidad
+Bubble Pop • Memory Match • Fill Letter • Pick Word • Spell Letters • Drag Words
 
-🎈 PERFECTO PARA EDADES
-• 3-4 años: Reconocimiento del alfabeto & sonidos de letras
-• 4-5 años: Blending CVC & palabras de vocales cortas
-• 5-6 años: Vocales largas & sight words
-• 6-8 años: Blends, digraphs & fluidez de lectura en inglés
-• Estudiantes ESL: cualquier edad empezando inglés
+📚 MÉTODO PHONICS
+Synthetic phonics — usado por escuelas del UK National Curriculum y US Common Core.
 
-👨‍👩‍👧 PADRES TRANQUILOS PORQUE
-• 100% en cumplimiento con COPPA — sin recolección de datos personales
-• Anónimo primero — sin registro, sin email
-• Dashboard para padres (protegido por math-gate)
-• Modo offline — aprendizaje de phonics sin internet
-• Solo anuncios seguros para niños (no personalizados) en versión gratuita
-• Sin funciones sociales, sin chat, sin contenido inapropiado
-
-🆓 GRATIS vs ⭐ PREMIUM
-🆓 GRATIS para siempre: Nivel 1 (9 units, 100+ palabras, 3 cuentos)
-⭐ PREMIUM: Desbloquea Niveles 2-5 — $79 MXN/mes o $599 MXN/año (prueba gratis de 7 días)
-
-🌍 IDIOMAS: Español, English, Português, Tiếng Việt, Bahasa Indonesia, ภาษาไทย, 日本語, 한국어
-
-Ya sea que busques una app de inglés para niños, fonética inglés niños, aprender a leer inglés, inglés para bebés, o app inglés infantil — ABC Phonics Kids cubre todo en una aplicación segura y con pocos anuncios.
+👨‍👩‍👧 SEGURO PARA NIÑOS
+✓ 100% en cumplimiento con COPPA — sin recolección de datos personales
+✓ Sin registro, sin email, sin cuenta
+✓ Completamente sin anuncios
 
 📧 support@abcphonicskids.com
-🔒 Privacy: https://ltthuc1989.github.io/abc-phonics-kids/privacy
+🔒 https://ltthuc1989.github.io/phonics-kids/
 ```
 
 ## Target keywords
 
-| Tier | Keyword | English | Target rank |
-|---|---|---|---|
-| 1 | `inglés para niños` | English for kids | Top 30 |
-| 1 | `aprender inglés niños` | Kids learn English | Top 30 |
-| 1 | `abecedario en inglés` | Alphabet in English | Top 50 |
-| 2 | `phonics niños` | Phonics kids | Top 5 ⭐ |
-| 2 | `fonética inglés niños` | English phonetics | Top 10 |
-| 2 | `aprender a leer inglés` | Learn to read English | Top 20 |
-| 3 | `inglés para bebés` | English for babies | Top 10 |
-| 3 | `app inglés infantil` | English app for kids | Top 10 |
+| Tier | Keyword | Target |
+|---|---|---|
+| 1 | `inglés para niños` | Top 30 |
+| 1 | `aprender a leer inglés` | Top 30 |
+| 2 | `phonics niños` | Top 5 ⭐ |
+| 3 | `inglés para bebés` | Top 10 |

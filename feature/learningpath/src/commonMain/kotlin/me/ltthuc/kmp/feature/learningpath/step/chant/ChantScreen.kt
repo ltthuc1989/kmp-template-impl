@@ -56,14 +56,11 @@ import me.ltthuc.kmp.core.model.ChantMeta
 import me.ltthuc.kmp.core.model.PhonicsLesson
 import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.chant_listen_cd
-import me.ltthuc.kmp.core.resource.chant_next
-import me.ltthuc.kmp.core.resource.chant_title
 import me.ltthuc.kmp.core.resource.step_guide_chant
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
 import me.ltthuc.kmp.feature.learningpath.step.common.LetterStepperBar
 import me.ltthuc.kmp.feature.learningpath.step.common.PageDotsRow
 import me.ltthuc.kmp.feature.learningpath.step.common.PulseRings
-import me.ltthuc.kmp.feature.learningpath.step.common.StepContinueButton
 import me.ltthuc.kmp.feature.learningpath.step.common.StepHeader
 import me.ltthuc.kmp.feature.learningpath.step.common.StoryStyleCard
 import me.ltthuc.kmp.feature.learningpath.step.common.chantRef
@@ -83,7 +80,6 @@ internal fun ChantScreen(
     unitId: String,
     lessonIndex: Int,
     onClose: () -> Unit,
-    onHome: () -> Unit,
     onPrevious: () -> Unit,
     onNext: () -> Unit,
     onStepJump: (Int) -> Unit,
@@ -118,7 +114,6 @@ internal fun ChantScreen(
             chantMeta = chantMeta,
             onChantToggle = { viewModel.onChantToggle(currentLesson) },
             onClose = onClose,
-            onHome = onHome,
             onPrevious = onPrevious,
             onNext = onNext,
             onStepJump = onStepJump,
@@ -136,7 +131,6 @@ private fun ChantContent(
     chantMeta: ChantMeta?,
     onChantToggle: () -> Unit,
     onClose: () -> Unit,
-    onHome: () -> Unit,
     onPrevious: () -> Unit,
     onNext: () -> Unit,
     onStepJump: (Int) -> Unit,
@@ -163,11 +157,11 @@ private fun ChantContent(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             StepHeader(
-                title = stringResource(Res.string.chant_title),
                 currentStepIndex = STEP_INDEX,
                 onClose = onClose,
-                onHomeClick = onHome,
                 onStepJump = onStepJump,
+                onNext = onNext,
+                nextEnabled = slideIndex >= CELEBRATION_SLIDE_INDEX,
                 stepSegments = stepSegments,
                 guideText = stringResource(Res.string.step_guide_chant),
                 guideTrailing = {
@@ -239,12 +233,6 @@ private fun ChantContent(
             Spacer(Modifier.height(12.dp))
             PageDotsRow(currentPage = slideIndex, total = TOTAL_SLIDES)
             Spacer(Modifier.weight(1f, fill = true))
-            Spacer(Modifier.height(8.dp))
-            StepContinueButton(
-                label = stringResource(Res.string.chant_next),
-                onClick = onNext,
-                enabled = slideIndex >= CELEBRATION_SLIDE_INDEX,
-            )
             Spacer(Modifier.height(8.dp))
         }
     }
