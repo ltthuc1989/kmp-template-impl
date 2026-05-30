@@ -12,6 +12,7 @@ import app.lexilabs.basic.ads.DependsOnGoogleMobileAds
 import app.lexilabs.basic.ads.composable.rememberInterstitialAd
 import io.github.aakira.napier.Napier
 import me.ltthuc.kmp.core.model.AppConfig
+import me.ltthuc.kmp.core.model.MONETIZATION_ENABLED
 import me.ltthuc.kmp.core.repository.AppSettingRepository
 import org.koin.compose.koinInject
 import kotlin.time.Duration.Companion.minutes
@@ -27,6 +28,7 @@ import kotlin.time.TimeSource
 @OptIn(DependsOnGoogleMobileAds::class)
 @Composable
 fun LearningInterstitial() {
+    if (!MONETIZATION_ENABLED) return
     val appSettingRepository: AppSettingRepository = koinInject()
     val setting by appSettingRepository.setting.collectAsStateWithLifecycle()
     if (setting.hasPrivilege) return

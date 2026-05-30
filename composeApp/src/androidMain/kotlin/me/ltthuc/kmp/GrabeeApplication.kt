@@ -5,6 +5,7 @@ import io.github.aakira.napier.DebugAntilog
 import io.github.aakira.napier.Napier
 import me.ltthuc.kmp.ads.AppOpenAdManager
 import me.ltthuc.kmp.core.model.AppConfig
+import me.ltthuc.kmp.core.model.MONETIZATION_ENABLED
 import me.ltthuc.kmp.core.repository.AppSettingRepository
 import me.ltthuc.kmp.di.applyModules
 import org.koin.android.ext.koin.androidContext
@@ -24,9 +25,11 @@ class GrabeeApplication : Application(), KoinStartup {
             Napier.base(DebugAntilog())
         }
 
-        val appConfig = KoinPlatform.getKoin().get<AppConfig>()
-        val appSettingRepository = KoinPlatform.getKoin().get<AppSettingRepository>()
-        AppOpenAdManager(this, appConfig.adMobAppOpenAdUnitId, appSettingRepository)
+        if (MONETIZATION_ENABLED) {
+            val appConfig = KoinPlatform.getKoin().get<AppConfig>()
+            val appSettingRepository = KoinPlatform.getKoin().get<AppSettingRepository>()
+            AppOpenAdManager(this, appConfig.adMobAppOpenAdUnitId, appSettingRepository)
+        }
     }
 
     override fun onKoinStartup() = koinConfiguration {

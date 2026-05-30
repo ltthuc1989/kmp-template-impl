@@ -12,6 +12,7 @@ import app.lexilabs.basic.ads.DependsOnGoogleMobileAds
 import app.lexilabs.basic.ads.composable.rememberRewardedAd
 import io.github.aakira.napier.Napier
 import me.ltthuc.kmp.core.model.AppConfig
+import me.ltthuc.kmp.core.model.MONETIZATION_ENABLED
 import me.ltthuc.kmp.core.repository.AppSettingRepository
 import org.koin.compose.koinInject
 
@@ -28,6 +29,10 @@ fun RewardedSkipLauncher(
     onRewardEarned: () -> Unit,
     onUnavailable: () -> Unit,
 ) {
+    if (!MONETIZATION_ENABLED) {
+        LaunchedEffect(Unit) { onUnavailable() }
+        return
+    }
     val appSettingRepository: AppSettingRepository = koinInject()
     val setting by appSettingRepository.setting.collectAsStateWithLifecycle()
     LaunchedEffect(setting.hasPrivilege) {

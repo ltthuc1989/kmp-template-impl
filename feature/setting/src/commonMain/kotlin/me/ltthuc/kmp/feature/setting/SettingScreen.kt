@@ -12,6 +12,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import me.ltthuc.kmp.core.model.MONETIZATION_ENABLED
 import me.ltthuc.kmp.core.ui.dialog.ParentalGateDialog
 import me.ltthuc.kmp.core.ui.screen.Destination
 import me.ltthuc.kmp.core.ui.theme.LocalNavBackStack
@@ -59,7 +60,7 @@ internal fun SettingScreen(
             modifier = Modifier.fillMaxSize(),
             contentPadding = it,
         ) {
-            if (!setting.plusMode || setting.developerMode) {
+            if (MONETIZATION_ENABLED && (!setting.plusMode || setting.developerMode)) {
                 item {
                     SettingPaywallSection(
                         modifier = Modifier.fillMaxWidth(),
@@ -114,10 +115,10 @@ internal fun SettingScreen(
                     modifier = Modifier.fillMaxWidth(),
                     setting = setting,
                     onTeamsOfServiceClicked = {
-                        uriHandler.openUri("https://www.matsumo.me/application/all/team_of_service")
+                        uriHandler.openUri("https://ltthuc1989.github.io/phonics-kids/")
                     },
                     onPrivacyPolicyClicked = {
-                        uriHandler.openUri("https://www.matsumo.me/application/all/privacy_policy")
+                        uriHandler.openUri("https://ltthuc1989.github.io/phonics-kids/")
                     },
                     onOpenSourceLicenseClicked = {
                         navBackStack.add(Destination.Setting.License)
@@ -126,6 +127,12 @@ internal fun SettingScreen(
                     onShowSpeakButtonChanged = viewModel::setShowSpeakButton,
                     onLetterGuideDebugClicked = {
                         navBackStack.add(Destination.Learning.TracingGuideDebug)
+                    },
+                    onBubblePopPreviewClicked = {
+                        navBackStack.add(Destination.Learning.BubblePopPreview)
+                    },
+                    onMemoryMatchPreviewClicked = {
+                        navBackStack.add(Destination.Learning.MemoryMatchPreview)
                     },
                 )
             }

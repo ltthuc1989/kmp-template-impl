@@ -47,6 +47,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.collections.immutable.ImmutableList
 import me.ltthuc.kmp.core.model.LevelCard
 import me.ltthuc.kmp.core.model.LevelStatus
+import me.ltthuc.kmp.core.model.MONETIZATION_ENABLED
 import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.home_badge_active
 import me.ltthuc.kmp.core.resource.home_badge_locked
@@ -99,7 +100,7 @@ internal fun HomeScreen(
                         val status = levelCard.status
                         when {
                             status is LevelStatus.Locked && status.isPremiumRequired ->
-                                showParentalGate = true
+                                if (MONETIZATION_ENABLED) showParentalGate = true else Unit
                             status is LevelStatus.ComingSoon -> Unit
                             status !is LevelStatus.Locked ->
                                 navBackStack.add(Destination.Learning.UnitSelection(levelCard.level.id))

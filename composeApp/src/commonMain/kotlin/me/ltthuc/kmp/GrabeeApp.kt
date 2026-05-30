@@ -11,6 +11,7 @@ import coil3.compose.setSingletonImageLoaderFactory
 import coil3.request.crossfade
 import io.github.vinceglb.filekit.coil.addPlatformFileSupport
 import me.ltthuc.kmp.core.model.AppSetting
+import me.ltthuc.kmp.core.model.MONETIZATION_ENABLED
 import me.ltthuc.kmp.core.repository.SfxController
 import me.ltthuc.kmp.core.ui.screen.Destination
 import me.ltthuc.kmp.core.ui.theme.GrabeeTheme
@@ -23,7 +24,7 @@ internal fun GrabeeApp(
     modifier: Modifier = Modifier,
 ) {
     SetupCoil()
-    BasicAds.Initialize()
+    if (MONETIZATION_ENABLED) BasicAds.Initialize()
 
     // Mirror user audio settings into the SFX layer. Cheap (writes to MutableStateFlow)
     // so we run it on every recomposition keyed by the relevant fields.

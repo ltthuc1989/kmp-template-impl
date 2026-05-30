@@ -15,6 +15,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.vinceglb.filekit.FileKit
 import io.github.vinceglb.filekit.dialogs.init
 import me.ltthuc.kmp.ads.AdsInitializer
+import me.ltthuc.kmp.core.model.MONETIZATION_ENABLED
 import me.ltthuc.kmp.core.model.Theme
 import me.ltthuc.kmp.core.ui.theme.shouldUseDarkTheme
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -57,6 +58,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun initAdsSdk() {
+        if (!MONETIZATION_ENABLED) return
         if (viewModel.isAdsSdkInitialized.value) {
             return
         }
