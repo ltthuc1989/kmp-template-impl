@@ -16,6 +16,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -26,9 +27,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import me.ltthuc.kmp.core.resource.Res
-import me.ltthuc.kmp.core.resource.chant_next
-import me.ltthuc.kmp.core.resource.pick_word_celebration_subtitle
-import me.ltthuc.kmp.core.resource.pick_word_celebration_title
 import me.ltthuc.kmp.core.resource.pick_word_guide
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
 import me.ltthuc.kmp.feature.learningpath.game.common.CreamBackground
@@ -37,8 +35,6 @@ import me.ltthuc.kmp.feature.learningpath.game.common.gameSegmentsFor
 import me.ltthuc.kmp.feature.learningpath.game.pickword.view.AnswerSlot
 import me.ltthuc.kmp.feature.learningpath.game.pickword.view.PickWordChoice
 import me.ltthuc.kmp.feature.learningpath.game.pickword.view.PicturePanel
-import me.ltthuc.kmp.feature.learningpath.step.common.ScoreFeedback
-import me.ltthuc.kmp.feature.learningpath.step.common.ScoreFeedbackOverlay
 import me.ltthuc.kmp.feature.learningpath.step.common.StepHeader
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -70,6 +66,10 @@ internal fun PickWordScreen(
         screenState = screenState,
         containerColor = Color.Transparent,
     ) { ui ->
+        // Auto-advance to the next game once the final round's word audio has finished.
+        LaunchedEffect(ui.isComplete) {
+            if (ui.isComplete) onGameComplete()
+        }
         Scaffold(
             modifier = Modifier.fillMaxSize(),
             containerColor = MaterialTheme.colorScheme.background,
@@ -79,8 +79,6 @@ internal fun PickWordScreen(
                     stepSegments = stepSegments,
                     onClose = onClose,
                     onStepJump = onJumpToGame,
-                    onNext = onGameComplete,
-                    nextEnabled = ui.isComplete,
                     guideText = stringResource(Res.string.pick_word_guide),
                 )
             },
@@ -136,12 +134,6 @@ internal fun PickWordScreen(
                     }
                     Spacer(Modifier.height(20.dp))
                 }
-
-                ScoreFeedbackOverlay(
-                    feedback = buildOverlayFeedback(ui),
-                    onDismiss = { /* tap-outside disabled */ },
-                    onPrimary = onGameComplete,
-                )
             }
         }
     }
@@ -155,16 +147,4 @@ private fun RoundIndicator(current: Int, total: Int) {
         fontWeight = FontWeight.SemiBold,
         color = ReadingTextDark.copy(alpha = 0.7f),
     )
-}
-
-@Composable
-private fun buildOverlayFeedback(ui: PickWordUiState): ScoreFeedback? = if (ui.isComplete) {
-    ScoreFeedback.Success(
-        title = stringResource(Res.string.pick_word_celebration_title),
-        subtitle = stringResource(Res.string.pick_word_celebration_subtitle),
-        heroEmoji = "🎉",
-        primaryLabel = stringResource(Res.string.chant_next),
-    )
-} else {
-    null
 }

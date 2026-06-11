@@ -58,15 +58,16 @@ import kotlinx.coroutines.launch
 import me.ltthuc.kmp.core.model.PhonicsLesson
 import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.blending_word_progress
+import me.ltthuc.kmp.core.resource.common_next
 import me.ltthuc.kmp.core.resource.identify_all_done_subtitle
 import me.ltthuc.kmp.core.resource.identify_all_done_title
 import me.ltthuc.kmp.core.resource.score_success_primary
 import me.ltthuc.kmp.core.resource.step_guide_blending
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
-import me.ltthuc.kmp.feature.learningpath.step.common.LetterStepperBar
 import me.ltthuc.kmp.feature.learningpath.step.common.PuffySurface
 import me.ltthuc.kmp.feature.learningpath.step.common.ScoreFeedback
 import me.ltthuc.kmp.feature.learningpath.step.common.ScoreFeedbackOverlay
+import me.ltthuc.kmp.feature.learningpath.step.common.StepContinueButton
 import me.ltthuc.kmp.feature.learningpath.step.common.StepHeader
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -79,7 +80,6 @@ internal fun BlendingScreen(
     unitId: String,
     lessonIndex: Int,
     onClose: () -> Unit,
-    onPrevious: () -> Unit,
     onNext: () -> Unit,
     onStepJump: (Int) -> Unit,
     stepSegments: ImmutableList<Int>,
@@ -102,11 +102,8 @@ internal fun BlendingScreen(
         val currentLesson = uiState.lessons[safeIndex]
         BlendingContent(
             currentLesson = currentLesson,
-            lessons = uiState.lessons,
-            currentIndex = safeIndex,
             onPlayBlendedWord = { word -> viewModel.playBlendedWord(currentLesson, word) },
             onClose = onClose,
-            onPrevious = onPrevious,
             onNext = onNext,
             onStepJump = onStepJump,
             stepSegments = stepSegments,
@@ -119,11 +116,8 @@ private enum class BlendState { Initial, Blending, Complete }
 @Composable
 private fun BlendingContent(
     currentLesson: PhonicsLesson,
-    lessons: ImmutableList<PhonicsLesson>,
-    currentIndex: Int,
     onPlayBlendedWord: (word: String) -> Unit,
     onClose: () -> Unit,
-    onPrevious: () -> Unit,
     onNext: () -> Unit,
     onStepJump: (Int) -> Unit,
     stepSegments: ImmutableList<Int>,
@@ -193,16 +187,15 @@ private fun BlendingContent(
                     currentStepIndex = STEP_INDEX,
                     onClose = onClose,
                     onStepJump = onStepJump,
-                    onNext = ::onNextHandler,
-                    nextEnabled = blendState == BlendState.Complete && finalOverlay == null,
                     stepSegments = stepSegments,
                     guideText = stringResource(Res.string.step_guide_blending),
                 )
             },
             bottomBar = {
-                LetterStepperBar(
-                    lessons = lessons,
-                    currentIndex = currentIndex,
+                StepContinueButton(
+                    label = stringResource(Res.string.common_next),
+                    onClick = ::onNextHandler,
+                    enabled = blendState == BlendState.Complete && finalOverlay == null,
                 )
             },
         ) { innerPadding ->

@@ -33,6 +33,25 @@ sealed interface AudioRef {
     }
 
     /**
+     * Single-phoneme letter sound for the Bubble Pop game, bundled at
+     * `files/audio/phonemes/<letter>.mp3` (lowercased). The phoneme is spoken once
+     * (~1-2s) — distinct from [SoundIntro], which is the long teaching paragraph.
+     * Not tied to lesson curriculum: keyed only by [letter] (e.g. "A").
+     */
+    data class LetterSound(val letter: String) : AudioRef {
+        override val lessonFolder: String get() = "phonemes"
+    }
+
+    /**
+     * Round-start prompt for the Bubble Pop game, bundled at
+     * `files/audio/find_sound/<letter>.mp3` (lowercased). Says "Can you find the <phoneme>
+     * sound?" — played once when a round begins, before the bubbles appear. Keyed by [letter].
+     */
+    data class FindSound(val letter: String) : AudioRef {
+        override val lessonFolder: String get() = "find_sound"
+    }
+
+    /**
      * Short UI sound effects (correct/wrong/etc.) bundled at `files/sfx/<name>.mp3`.
      * Not tied to lesson content. [name] is the SFX identifier (e.g. "correct", "wrong").
      */

@@ -37,24 +37,6 @@ internal class ChantViewModel(
      * gives us the level number. Repository derives wordTimings from start_ms/speed_ms
      * + the lesson's ordered words (chantOrder respected).
      */
-    suspend fun loadChantMeta(lesson: PhonicsLesson): ChantMeta? {
-        val level = parseLevelFromLessonId(lesson.id) ?: return null
-        val key = lesson.audioFolderName() ?: return null
-        val orderedWords = lesson.chantOrder
-            .takeIf { it.size == lesson.words.size }
-            ?.map { lesson.words[it].word }
-            ?: lesson.words.map { it.word }
-        return chantMetaRepository.metaFor(level, key, orderedWords)
-    }
-
-    private fun parseLevelFromLessonId(id: String): Int? {
-        // Pattern: "L{n}U{n}_{LETTER}" e.g. "L1U1_A" → 1
-        if (!id.startsWith("L")) return null
-        val uIndex = id.indexOf('U')
-        if (uIndex <= 1) return null
-        return id.substring(1, uIndex).toIntOrNull()
-    }
-
     val screenState: StateFlow<ScreenState<ChantUiState>> =
         unitRepository.observeLessons(unitId)
             .map { lessons ->
@@ -75,6 +57,24 @@ internal class ChantViewModel(
             )
 
     val audioState: StateFlow<AudioState> = audioRepository.state
+
+    suspend fun loadChantMeta(lesson: PhonicsLesson): ChantMeta? {
+        val level = parseLevelFromLessonId(lesson.id) ?: return null
+        val key = lesson.audioFolderName() ?: return null
+        val orderedWords = lesson.chantOrder
+            .takeIf { it.size == lesson.words.size }
+            ?.map { lesson.words[it].word }
+            ?: lesson.words.map { it.word }
+        return chantMetaRepository.metaFor(level, key, orderedWords)
+    }
+
+    private fun parseLevelFromLessonId(id: String): Int? {
+        // Pattern: "L{n}U{n}_{LETTER}" e.g. "L1U1_A" → 1
+        if (!id.startsWith("L")) return null
+        val uIndex = id.indexOf('U')
+        if (uIndex <= 1) return null
+        return id.substring(1, uIndex).toIntOrNull()
+    }
 
     fun onChantToggle(lesson: PhonicsLesson) {
         val ref = lesson.chantRef() ?: run {

@@ -53,15 +53,17 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.aakira.napier.Napier
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
 import me.ltthuc.kmp.core.audio.AudioState
 import me.ltthuc.kmp.core.audio.isActive
-import me.ltthuc.kmp.core.model.PhonicsLesson
 import me.ltthuc.kmp.core.model.Story
 import me.ltthuc.kmp.core.model.StoryScene
 import me.ltthuc.kmp.core.repository.LearningProgressRepository
 import me.ltthuc.kmp.core.repository.LevelRepository
 import me.ltthuc.kmp.core.resource.Res
+import me.ltthuc.kmp.core.resource.common_next
 import me.ltthuc.kmp.core.resource.step_guide_story
 import me.ltthuc.kmp.core.resource.story_audio_cd
 import me.ltthuc.kmp.core.resource.story_next_page_cd
@@ -72,9 +74,9 @@ import me.ltthuc.kmp.core.ui.theme.LocalNavBackStack
 import me.ltthuc.kmp.feature.learningpath.step.DEFAULT_VISIBLE_STEPS
 import me.ltthuc.kmp.feature.learningpath.step.STORY_SEGMENT_INDEX
 import me.ltthuc.kmp.feature.learningpath.step.common.KaraokeText
-import me.ltthuc.kmp.feature.learningpath.step.common.LetterStepperBar
 import me.ltthuc.kmp.feature.learningpath.step.common.PageDotsRow
 import me.ltthuc.kmp.feature.learningpath.step.common.PulseRings
+import me.ltthuc.kmp.feature.learningpath.step.common.StepContinueButton
 import me.ltthuc.kmp.feature.learningpath.step.common.StepHeader
 import me.ltthuc.kmp.feature.learningpath.step.common.StoryStyleCard
 import org.jetbrains.compose.resources.ExperimentalResourceApi
@@ -143,9 +145,6 @@ internal fun StoryScreen(
                 navBackStack.removeAt(navBackStack.lastIndex)
             }
         }
-        val onPrevious: () -> Unit = {
-            if (navBackStack.size > 1) navBackStack.removeAt(navBackStack.lastIndex)
-        }
         val onNext: () -> Unit = {
             navBackStack.add(Destination.Learning.UnitGame(levelId, unitId, gameIndex = 0))
         }
@@ -162,14 +161,13 @@ internal fun StoryScreen(
         }
 
         StoryContent(
-            lessons = uiState.lessons,
             story = uiState.story,
             scenes = uiState.scenes,
             audioState = audioState,
+            sceneCompleted = viewModel.sceneCompleted,
             onPageChange = viewModel::onPageChange,
             onListen = viewModel::onListenToggle,
             onClose = onClose,
-            onPrevious = onPrevious,
             onNext = onNext,
             onStepJump = onStepJump,
             stepSegments = stepSegments,
@@ -179,14 +177,13 @@ internal fun StoryScreen(
 
 @Composable
 private fun StoryContent(
-    lessons: ImmutableList<PhonicsLesson>,
     story: Story,
     scenes: ImmutableList<StoryScene>,
     audioState: AudioState,
+    sceneCompleted: SharedFlow<Int>,
     onPageChange: (Int) -> Unit,
     onListen: () -> Unit,
     onClose: () -> Unit,
-    onPrevious: () -> Unit,
     onNext: () -> Unit,
     onStepJump: (Int) -> Unit,
     stepSegments: ImmutableList<Int>,
@@ -203,6 +200,26 @@ private fun StoryContent(
         onPageChange(currentPage)
     }
 
+    // Auto-advance to next slide after the current scene's audio finishes (not user-stopped,
+    // not last slide). Brief 800ms delay so the kid sees the last karaoke word before turning.
+    LaunchedEffect(sceneCompleted, pagerState) {
+        sceneCompleted.collect { sceneIndex ->
+            if (pagerState.currentPage == sceneIndex && sceneIndex < scenes.lastIndex) {
+                delay(AUTO_ADVANCE_DELAY_MS)
+                if (pagerState.currentPage == sceneIndex) {
+                    pagerState.animateScrollToPage(sceneIndex + 1)
+                }
+            }
+        }
+    }
+
+    // Gate Next: only enabled once the kid has paged through to the last story slide.
+    // Latched so it stays enabled if they swipe back to re-read earlier pages.
+    var reachedLastPage by remember(story.title) { mutableStateOf(false) }
+    LaunchedEffect(currentPage) {
+        if (currentPage >= scenes.lastIndex) reachedLastPage = true
+    }
+
     val currentScene = scenes[currentPage]
     val isNarrating = audioState.isActive()
 
@@ -215,8 +232,7 @@ private fun StoryContent(
                 stepSegments = stepSegments,
                 onClose = onClose,
                 onStepJump = onStepJump,
-                onNext = onNext,
-                nextEnabled = true,
+                showSegments = false,
                 guideText = stringResource(Res.string.step_guide_story),
                 guideTrailing = {
                     Box(
@@ -243,9 +259,10 @@ private fun StoryContent(
             )
         },
         bottomBar = {
-            LetterStepperBar(
-                lessons = lessons,
-                currentIndex = 0,
+            StepContinueButton(
+                label = stringResource(Res.string.common_next),
+                onClick = onNext,
+                enabled = reachedLastPage,
             )
         },
     ) { innerPadding ->
@@ -432,3 +449,4 @@ private fun ChevronButton(
 }
 
 private const val CHEVRON_SIZE_DP = 48
+private const val AUTO_ADVANCE_DELAY_MS = 800L

@@ -68,8 +68,6 @@ internal fun MemoryMatchScreen(
                     stepSegments = stepSegments,
                     onClose = onClose,
                     onStepJump = onJumpToGame,
-                    onNext = onGameComplete,
-                    nextEnabled = ui.isComplete,
                     guideText = stringResource(Res.string.memory_match_guide),
                 )
             },

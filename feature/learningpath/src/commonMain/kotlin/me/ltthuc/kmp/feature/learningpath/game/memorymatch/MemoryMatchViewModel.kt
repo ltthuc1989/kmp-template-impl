@@ -15,15 +15,18 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import me.ltthuc.kmp.core.model.PhonicsLesson
+import me.ltthuc.kmp.core.repository.AudioRepository
 import me.ltthuc.kmp.core.repository.SfxController
 import me.ltthuc.kmp.core.repository.UnitRepository
 import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.error_no_data
 import me.ltthuc.kmp.core.ui.screen.ScreenState
 import me.ltthuc.kmp.feature.learningpath.game.bubblepop.view.BUBBLE_TINT_PALETTE
+import me.ltthuc.kmp.feature.learningpath.step.common.soundIntroRef
 import kotlin.random.Random
 
 /**
@@ -39,8 +42,10 @@ internal class MemoryMatchViewModel(
     private val unitId: String,
     unitRepository: UnitRepository,
     private val sfxController: SfxController,
+    private val audioRepository: AudioRepository,
 ) : ViewModel() {
 
+    private val lessonsFlow = MutableStateFlow<List<PhonicsLesson>>(emptyList())
     private val cardsFlow = MutableStateFlow<ImmutableList<MemoryCardSpec>>(persistentListOf())
     private val selectedIds = MutableStateFlow<ImmutableList<Int>>(persistentListOf())
     private val matchedIds = MutableStateFlow<Set<Int>>(persistentSetOf())
@@ -50,7 +55,7 @@ internal class MemoryMatchViewModel(
 
     val screenState: StateFlow<ScreenState<MemoryMatchUiState>> =
         combine(
-            unitRepository.observeLessons(unitId),
+            unitRepository.observeLessons(unitId).onEach { lessonsFlow.value = it },
             cardsFlow,
             selectedIds,
             matchedIds,
@@ -99,13 +104,30 @@ internal class MemoryMatchViewModel(
         if (cardId in selectedIds.value) return
         if (selectedIds.value.size >= 2) return
 
+        val card = cardsFlow.value.firstOrNull { it.id == cardId } ?: return
         val nextSelected = (selectedIds.value + cardId).toImmutableList()
         selectedIds.value = nextSelected
-        sfxController.playSfx("click")
+        // Replace UI "click" chime with the card's letter phoneme — same pattern as
+        // BubblePop. Lets the kid hear the letter sound while exploring cards.
+        playLetterSound(card.letter)
 
         if (nextSelected.size == 2) {
             resolvePair(nextSelected)
         }
+    }
+
+    private fun playLetterSound(letter: String) {
+        val lesson = lessonsFlow.value.firstOrNull {
+            it.letter.equals(letter, ignoreCase = true)
+        } ?: run {
+            Napier.v(tag = TAG) { "No lesson for letter '$letter' — skipping audio" }
+            return
+        }
+        val ref = lesson.soundIntroRef() ?: run {
+            Napier.w(tag = TAG) { "No SoundIntro ref for lesson ${lesson.id}" }
+            return
+        }
+        audioRepository.play(ref)
     }
 
     private fun resolvePair(pair: ImmutableList<Int>) {

@@ -11,20 +11,23 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableSet
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import me.ltthuc.kmp.core.audio.AudioRef
 import me.ltthuc.kmp.core.model.PhonicsLesson
+import me.ltthuc.kmp.core.repository.AudioRepository
 import me.ltthuc.kmp.core.repository.SfxController
 import me.ltthuc.kmp.core.repository.UnitRepository
+import me.ltthuc.kmp.core.repository.playAndAwait
 import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.error_no_data
 import me.ltthuc.kmp.core.ui.screen.ScreenState
 import me.ltthuc.kmp.feature.learningpath.game.bubblepop.view.BUBBLE_TINT_PALETTE
+import me.ltthuc.kmp.feature.learningpath.step.common.wordRef
 import kotlin.random.Random
 
 /**
@@ -39,6 +42,7 @@ internal class DragWordsViewModel(
     private val unitId: String,
     unitRepository: UnitRepository,
     private val sfxController: SfxController,
+    private val audioRepository: AudioRepository,
 ) : ViewModel() {
 
     private data class InternalState(
@@ -108,7 +112,14 @@ internal class DragWordsViewModel(
             sfxController.playSfx("correct")
             val newMatched = (state.matchedWordIndices + wordId).toImmutableSet()
             val items = itemsFlow.value
-            scheduleCompletionIfDone(newMatched, items.size)
+            val droppedRef = items.firstOrNull { it.id == wordId }?.wordRef
+            if (newMatched.size >= items.size) {
+                // Final match: play this word then auto-advance to next game (no overlay/praise).
+                completeAfterWord(droppedRef)
+            } else {
+                // Intermediate match: play the dropped word's audio (no completion gating).
+                viewModelScope.launch { playWordAndAwait(droppedRef) }
+            }
             stateFlow.value = state.copy(matchedWordIndices = newMatched, wrongCount = 0)
             true
         } else {
@@ -118,7 +129,8 @@ internal class DragWordsViewModel(
                 Napier.d(tag = TAG) { "Auto-match triggered after $WRONG_THRESHOLD wrong drops" }
                 val items = itemsFlow.value
                 val allMatched = (0 until items.size).toSet().toImmutableSet()
-                scheduleCompletionIfDone(allMatched, items.size)
+                // Auto-fill the board, then play the last item's word and auto-advance.
+                completeAfterWord(items.lastOrNull()?.wordRef)
                 stateFlow.value = state.copy(matchedWordIndices = allMatched, wrongCount = 0)
             } else {
                 stateFlow.value = state.copy(
@@ -130,41 +142,46 @@ internal class DragWordsViewModel(
         }
     }
 
-    private fun scheduleCompletionIfDone(matched: ImmutableSet<Int>, total: Int) {
-        if (matched.size >= total) {
-            viewModelScope.launch {
-                sfxController.playVoicePraise(COMPLETE_PRAISE_POOL.random())
-                delay(COMPLETE_HOLD_MS)
-                stateFlow.value = stateFlow.value.copy(isComplete = true)
-            }
+    /** Play [ref] to completion (or timeout), then mark the game complete to auto-advance. */
+    private fun completeAfterWord(ref: AudioRef.Word?) {
+        viewModelScope.launch {
+            playWordAndAwait(ref)
+            stateFlow.value = stateFlow.value.copy(isComplete = true)
         }
     }
 
+    private suspend fun playWordAndAwait(ref: AudioRef.Word?) {
+        if (ref == null) return
+        audioRepository.playAndAwait(ref, AUDIO_MAX_MS)
+    }
+
     private fun buildItems(lessons: List<PhonicsLesson>): ImmutableList<DragWordsItem> {
+        // Keep each word paired with its originating lesson so we can resolve the word audio ref.
         val perLesson = lessons.mapNotNull { lesson ->
-            lesson.words.firstOrNull { !it.emoji.isNullOrBlank() }
+            lesson.words.firstOrNull { !it.emoji.isNullOrBlank() }?.let { lesson to it }
         }
         val extras = lessons.flatMap { lesson ->
-            lesson.words.filter { !it.emoji.isNullOrBlank() }
+            lesson.words.filter { !it.emoji.isNullOrBlank() }.map { lesson to it }
         }.shuffled(Random.Default)
-        val seen = perLesson.map { it.word }.toMutableSet()
+        val seen = perLesson.map { it.second.word }.toMutableSet()
         val selected = perLesson.toMutableList()
         for (extra in extras) {
             if (selected.size >= ITEM_COUNT) break
-            if (extra.word !in seen) {
+            if (extra.second.word !in seen) {
                 selected += extra
-                seen += extra.word
+                seen += extra.second.word
             }
         }
         if (selected.size < 2) return persistentListOf()
         val shuffled = selected.shuffled(Random.Default).take(ITEM_COUNT)
-        return shuffled.mapIndexed { i, w ->
+        return shuffled.mapIndexed { i, (lesson, w) ->
             val tint = BUBBLE_TINT_PALETTE[i % BUBBLE_TINT_PALETTE.size]
             DragWordsItem(
                 id = i,
                 word = w.word,
                 emoji = w.emoji.orEmpty(),
                 tint = tint,
+                wordRef = lesson.wordRef(w.word),
             )
         }.toImmutableList()
     }
@@ -172,10 +189,9 @@ internal class DragWordsViewModel(
     private companion object {
         const val TAG = "DragWordsViewModel"
         const val SUBSCRIPTION_TIMEOUT_MS = 5_000L
-        const val COMPLETE_HOLD_MS = 600L
+        const val AUDIO_MAX_MS = 6_000L
         const val ITEM_COUNT = 4
         const val WRONG_THRESHOLD = 5
-        val COMPLETE_PRAISE_POOL = listOf("praise_great_job", "praise_well_done", "praise_you_got_it")
     }
 }
 
@@ -185,6 +201,7 @@ internal data class DragWordsItem(
     val word: String,
     val emoji: String,
     val tint: Color,
+    val wordRef: AudioRef.Word?,
 )
 
 @Immutable

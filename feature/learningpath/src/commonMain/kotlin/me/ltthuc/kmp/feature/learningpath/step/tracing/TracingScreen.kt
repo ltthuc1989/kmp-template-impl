@@ -60,6 +60,7 @@ import kotlinx.coroutines.launch
 import me.ltthuc.kmp.core.model.PhonicsLesson
 import me.ltthuc.kmp.core.repository.SfxController
 import me.ltthuc.kmp.core.resource.Res
+import me.ltthuc.kmp.core.resource.common_next
 import me.ltthuc.kmp.core.resource.score_fail_primary
 import me.ltthuc.kmp.core.resource.score_fail_title
 import me.ltthuc.kmp.core.resource.score_success_primary
@@ -70,13 +71,11 @@ import me.ltthuc.kmp.core.resource.tracing_fail_subtitle
 import me.ltthuc.kmp.core.resource.tracing_score_excellent
 import me.ltthuc.kmp.core.resource.tracing_score_good
 import me.ltthuc.kmp.core.resource.tracing_score_very_good
-import me.ltthuc.kmp.core.resource.tracing_watch_ad_to_pass
-import me.ltthuc.kmp.core.ui.ads.RewardedSkipLauncher
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
-import me.ltthuc.kmp.feature.learningpath.step.common.LetterStepperBar
 import me.ltthuc.kmp.feature.learningpath.step.common.PuffySurface
 import me.ltthuc.kmp.feature.learningpath.step.common.ScoreFeedback
 import me.ltthuc.kmp.feature.learningpath.step.common.ScoreFeedbackOverlay
+import me.ltthuc.kmp.feature.learningpath.step.common.StepContinueButton
 import me.ltthuc.kmp.feature.learningpath.step.common.StepHeader
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
@@ -90,7 +89,6 @@ internal fun TracingScreen(
     unitId: String,
     lessonIndex: Int,
     onClose: () -> Unit,
-    onPrevious: () -> Unit,
     onNext: () -> Unit,
     onStepJump: (Int) -> Unit,
     stepSegments: ImmutableList<Int>,
@@ -108,10 +106,7 @@ internal fun TracingScreen(
         val safeIndex = lessonIndex.coerceIn(0, uiState.lessons.lastIndex)
         TracingContent(
             currentLesson = uiState.lessons[safeIndex],
-            lessons = uiState.lessons,
-            currentIndex = safeIndex,
             onClose = onClose,
-            onPrevious = onPrevious,
             onNext = onNext,
             onStepJump = onStepJump,
             stepSegments = stepSegments,
@@ -122,10 +117,7 @@ internal fun TracingScreen(
 @Composable
 private fun TracingContent(
     currentLesson: PhonicsLesson,
-    lessons: ImmutableList<PhonicsLesson>,
-    currentIndex: Int,
     onClose: () -> Unit,
-    onPrevious: () -> Unit,
     onNext: () -> Unit,
     onStepJump: (Int) -> Unit,
     stepSegments: ImmutableList<Int>,
@@ -134,6 +126,9 @@ private fun TracingContent(
     var isUppercase by remember(currentLesson.id) { mutableStateOf(true) }
     val guide = remember(letterChar, isUppercase) { LetterPaths.get(letterChar, isUppercase) }
     var result by remember(currentLesson.id) { mutableStateOf<TracingResult?>(null) }
+    // Count failed attempts for this lesson — after MAX_FAIL_ATTEMPTS, the fail overlay's button
+    // lets the kid move on instead of retrying forever.
+    var failCount by remember(currentLesson.id) { mutableStateOf(0) }
     val sfx = koinInject<SfxController>()
     val tracingScope = rememberCoroutineScope()
 
@@ -168,6 +163,7 @@ private fun TracingContent(
                 sfx.playVoicePraise(TRACING_PRAISE_POOL.random())
             }
         } else {
+            failCount += 1
             sfx.playVoicePraise("try_again")
         }
     }
@@ -180,17 +176,21 @@ private fun TracingContent(
                     currentStepIndex = STEP_INDEX,
                     onClose = onClose,
                     onStepJump = onStepJump,
-                    onNext = { submitForScoring() },
-                    nextEnabled = userStrokes.isNotEmpty() && result == null,
                     stepSegments = stepSegments,
                     guideText = stringResource(Res.string.step_guide_tracing),
                     showGuideText = false,
                 )
             },
             bottomBar = {
-                LetterStepperBar(
-                    lessons = lessons,
-                    currentIndex = currentIndex,
+                StepContinueButton(
+                    label = stringResource(Res.string.common_next),
+                    // After MAX_FAIL_ATTEMPTS, Next skips scoring + the fail popup and goes
+                    // straight to the next step.
+                    onClick = {
+                        if (failCount >= MAX_FAIL_ATTEMPTS) onNext() else submitForScoring()
+                    },
+                    enabled = (failCount >= MAX_FAIL_ATTEMPTS) ||
+                        (userStrokes.isNotEmpty() && result == null),
                 )
             },
         ) { innerPadding ->
@@ -246,11 +246,10 @@ private fun TracingContent(
                     subtitle = stringResource(Res.string.tracing_fail_subtitle),
                     heroEmoji = "😔",
                     primaryLabel = stringResource(Res.string.score_fail_primary),
-                    secondaryLabel = stringResource(Res.string.tracing_watch_ad_to_pass),
+                    secondaryLabel = null,
                 )
             }
         }
-        var showRewardedAd by remember { mutableStateOf(false) }
         ScoreFeedbackOverlay(
             feedback = feedback,
             onDismiss = { result = null },
@@ -263,20 +262,7 @@ private fun TracingContent(
                     resetCanvas()
                 }
             },
-            onSecondary = { showRewardedAd = true },
         )
-        if (showRewardedAd) {
-            RewardedSkipLauncher(
-                onRewardEarned = {
-                    showRewardedAd = false
-                    result = null
-                    onNext()
-                },
-                onUnavailable = {
-                    showRewardedAd = false
-                },
-            )
-        }
     }
 }
 
@@ -564,6 +550,7 @@ private fun PracticeCanvas(
 
 private const val EXCELLENT_THRESHOLD = 95
 private const val VERY_GOOD_THRESHOLD = 85
+private const val MAX_FAIL_ATTEMPTS = 3
 private const val TRACING_PRAISE_DELAY_MS = 500L
 private val TRACING_PRAISE_POOL = listOf(
     "praise_great_job",

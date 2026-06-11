@@ -61,18 +61,14 @@ import me.ltthuc.kmp.core.model.LessonWord
 import me.ltthuc.kmp.core.model.PhonicsLesson
 import me.ltthuc.kmp.core.repository.SfxController
 import me.ltthuc.kmp.core.resource.Res
-import me.ltthuc.kmp.core.resource.identify_all_done_soft_subtitle
-import me.ltthuc.kmp.core.resource.identify_all_done_subtitle
-import me.ltthuc.kmp.core.resource.identify_all_done_title
+import me.ltthuc.kmp.core.resource.common_next
 import me.ltthuc.kmp.core.resource.identify_listen_cd
-import me.ltthuc.kmp.core.resource.score_success_primary
 import me.ltthuc.kmp.core.resource.step_guide_identify
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
-import me.ltthuc.kmp.feature.learningpath.step.common.LetterStepperBar
+import me.ltthuc.kmp.feature.learningpath.step.common.ConfettiCanvas
 import me.ltthuc.kmp.feature.learningpath.step.common.PuffySurface
 import me.ltthuc.kmp.feature.learningpath.step.common.PulseRings
-import me.ltthuc.kmp.feature.learningpath.step.common.ScoreFeedback
-import me.ltthuc.kmp.feature.learningpath.step.common.ScoreFeedbackOverlay
+import me.ltthuc.kmp.feature.learningpath.step.common.StepContinueButton
 import me.ltthuc.kmp.feature.learningpath.step.common.StepHeader
 import me.ltthuc.kmp.feature.learningpath.step.common.WordDisplayView
 import me.ltthuc.kmp.feature.learningpath.step.common.wordRef
@@ -89,7 +85,6 @@ internal fun IdentifyScreen(
     unitId: String,
     lessonIndex: Int,
     onClose: () -> Unit,
-    onPrevious: () -> Unit,
     onNext: () -> Unit,
     onStepJump: (Int) -> Unit,
     stepSegments: ImmutableList<Int>,
@@ -114,11 +109,9 @@ internal fun IdentifyScreen(
         IdentifyContent(
             currentLesson = currentLesson,
             lessons = uiState.lessons,
-            currentIndex = safeIndex,
             audioState = audioState,
             onPlayWord = { word -> viewModel.playTargetWord(currentLesson, word) },
             onClose = onClose,
-            onPrevious = onPrevious,
             onNext = onNext,
             onStepJump = onStepJump,
             stepSegments = stepSegments,
@@ -130,11 +123,9 @@ internal fun IdentifyScreen(
 private fun IdentifyContent(
     currentLesson: PhonicsLesson,
     lessons: ImmutableList<PhonicsLesson>,
-    currentIndex: Int,
     audioState: AudioState,
     onPlayWord: (word: String) -> Unit,
     onClose: () -> Unit,
-    onPrevious: () -> Unit,
     onNext: () -> Unit,
     onStepJump: (Int) -> Unit,
     stepSegments: ImmutableList<Int>,
@@ -154,9 +145,7 @@ private fun IdentifyContent(
     var wiggleKey by remember(currentLesson.id, roundIndex) { mutableStateOf(0) }
     var showHint by remember(currentLesson.id, roundIndex) { mutableStateOf(false) }
     var autoRevealed by remember(currentLesson.id, roundIndex) { mutableStateOf(false) }
-    var finalOverlay by remember(currentLesson.id) { mutableStateOf<ScoreFeedback?>(null) }
     var allRoundsCompleted by remember(currentLesson.id) { mutableStateOf(false) }
-    var anyRoundFailed by remember(currentLesson.id) { mutableStateOf(false) }
 
     val target = vocab[roundIndex.coerceIn(0, vocab.lastIndex)]
     val gridItems = remember(currentLesson.id, roundIndex) {
@@ -171,15 +160,11 @@ private fun IdentifyContent(
     val targetRef = remember(currentLesson.id, target.text) { currentLesson.wordRef(target.text) }
     val listenPlaying = targetRef != null && audioState.isActiveFor(targetRef)
 
-    val successPrimary = stringResource(Res.string.score_success_primary)
-    val allDoneTitle = stringResource(Res.string.identify_all_done_title)
-    val allDoneSubtitle = stringResource(Res.string.identify_all_done_subtitle, totalRounds)
-    val allDoneSoftSubtitle = stringResource(Res.string.identify_all_done_soft_subtitle)
-
     val scope = rememberCoroutineScope()
     val sfx = koinInject<SfxController>()
 
-    // Auto-play target word on round change. Grid alpha follows audio state.
+    // Auto-play target word on round change (and on first entering the step). Grid alpha
+    // follows audio state.
     LaunchedEffect(currentLesson.id, roundIndex) {
         onPlayWord(target.text)
     }
@@ -190,48 +175,29 @@ private fun IdentifyContent(
         // of preserving agency rather than auto-skipping.
         if (selectedText == null && !listenPlaying) {
             if (tappedText == target.text) {
-                val wasRevealed = autoRevealed
                 selectedText = tappedText
+                // Only the "correct" chime plays here — no voice praise, no other SFX.
                 sfx.playSfx("correct")
-                if (!wasRevealed) {
-                    // Earned the praise — fire voice praise. After reveal: chime only.
-                    scope.launch {
-                        delay(PRAISE_DELAY_MS)
-                        sfx.playVoicePraise(PRAISE_POOL.random())
-                    }
-                }
                 scope.launch {
                     delay(CORRECT_CELEBRATION_MS)
                     selectedText = null
                     if (roundIndex < totalRounds - 1) {
                         roundIndex++
                     } else {
+                        // Done: confetti effect + Next enabled, no popup, no completion sound.
                         allRoundsCompleted = true
-                        sfx.playSfx("lesson_complete")
-                        finalOverlay = ScoreFeedback.Success(
-                            title = allDoneTitle,
-                            subtitle = if (anyRoundFailed) allDoneSoftSubtitle else allDoneSubtitle,
-                            heroEmoji = vocab.firstOrNull()?.emoji.orEmpty().ifEmpty { "🎉" },
-                            primaryLabel = successPrimary,
-                        )
                     }
                 }
             } else if (!autoRevealed) {
                 wrongCount++
                 wiggleTarget = tappedText
                 wiggleKey++
-                // Khan-simple: NO error SFX. Voice "Try again" only after 2nd consecutive miss
-                // on the same round. Visual shake is the first feedback.
-                if (wrongCount == HINT_AFTER_WRONGS) {
-                    sfx.playVoicePraise("try_again")
-                }
+                // Khan-simple: NO error/voice SFX on a miss — visual shake is the only feedback.
                 when {
                     wrongCount >= MAX_WRONG_BEFORE_REVEAL -> {
-                        // Highlight correct + soft voice nudge — but DO NOT auto-skip.
-                        // Kid taps the revealed answer themselves to advance.
+                        // Highlight correct — but DO NOT auto-skip. Kid taps the revealed
+                        // answer themselves to advance.
                         autoRevealed = true
-                        anyRoundFailed = true
-                        sfx.playVoicePraise("try_again")
                     }
                     wrongCount >= HINT_AFTER_WRONGS -> showHint = true
                 }
@@ -259,13 +225,11 @@ private fun IdentifyContent(
                     currentStepIndex = STEP_INDEX,
                     onClose = onClose,
                     onStepJump = onStepJump,
-                    onNext = onNext,
-                    nextEnabled = allRoundsCompleted && finalOverlay == null,
                     stepSegments = stepSegments,
                     guideText = stringResource(Res.string.step_guide_identify),
                     guideTrailing = {
                         Box(
-                            modifier = Modifier.size(36.dp),
+                            modifier = Modifier.size(LISTEN_BOX_DP.dp),
                             contentAlignment = Alignment.Center,
                         ) {
                             PulseRings(
@@ -274,13 +238,13 @@ private fun IdentifyContent(
                             )
                             IconButton(
                                 onClick = { onPlayWord(target.text) },
-                                modifier = Modifier.size(32.dp),
+                                modifier = Modifier.size(LISTEN_BUTTON_DP.dp),
                             ) {
                                 Icon(
                                     imageVector = Icons.AutoMirrored.Filled.VolumeUp,
                                     contentDescription = stringResource(Res.string.identify_listen_cd),
                                     tint = MaterialTheme.colorScheme.secondary,
-                                    modifier = Modifier.size(20.dp),
+                                    modifier = Modifier.size(LISTEN_ICON_DP.dp),
                                 )
                             }
                         }
@@ -288,9 +252,10 @@ private fun IdentifyContent(
                 )
             },
             bottomBar = {
-                LetterStepperBar(
-                    lessons = lessons,
-                    currentIndex = currentIndex,
+                StepContinueButton(
+                    label = stringResource(Res.string.common_next),
+                    onClick = onNext,
+                    enabled = allRoundsCompleted,
                 )
             },
         ) { innerPadding ->
@@ -322,14 +287,10 @@ private fun IdentifyContent(
             }
         }
 
-        ScoreFeedbackOverlay(
-            feedback = finalOverlay,
-            onDismiss = { finalOverlay = null },
-            onPrimary = {
-                finalOverlay = null
-                onNext()
-            },
-        )
+        // Completion: celebratory confetti only (no popup). Next button is enabled separately.
+        if (allRoundsCompleted) {
+            ConfettiCanvas(modifier = Modifier.fillMaxSize())
+        }
     }
 }
 
@@ -549,10 +510,8 @@ private const val OPTIONS_COUNT = 6
 private const val CORRECT_CELEBRATION_MS = 800L
 private const val HINT_AFTER_WRONGS = 2
 private const val MAX_WRONG_BEFORE_REVEAL = 3
-private const val PRAISE_DELAY_MS = 500L
-private val PRAISE_POOL = listOf(
-    "praise_great_job",
-    "praise_nice",
-    "praise_you_got_it",
-    "praise_well_done",
-)
+
+// Header listen icon — ~30% larger than the original 36/32/20dp.
+private const val LISTEN_BOX_DP = 47
+private const val LISTEN_BUTTON_DP = 42
+private const val LISTEN_ICON_DP = 26

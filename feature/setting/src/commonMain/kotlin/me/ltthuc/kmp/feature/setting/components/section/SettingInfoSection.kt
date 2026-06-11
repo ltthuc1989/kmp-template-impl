@@ -9,7 +9,6 @@ import androidx.compose.ui.text.AnnotatedString
 import me.ltthuc.kmp.core.model.AppSetting
 import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.setting_information
-import me.ltthuc.kmp.core.resource.setting_information_app_id
 import me.ltthuc.kmp.core.resource.setting_information_app_version
 import me.ltthuc.kmp.core.ui.theme.LocalAppConfig
 import me.ltthuc.kmp.feature.setting.components.SettingTextItem
@@ -35,14 +34,6 @@ internal fun SettingInfoSection(
         SettingTitleItem(
             modifier = Modifier.fillMaxWidth(),
             text = Res.string.setting_information,
-        )
-
-        SettingTextItem(
-            modifier = Modifier.fillMaxWidth(),
-            title = stringResource(Res.string.setting_information_app_id),
-            description = setting.id,
-            onClick = { },
-            onLongClick = { clipboardManager.setText(AnnotatedString(setting.id)) },
         )
 
         SettingTextItem(

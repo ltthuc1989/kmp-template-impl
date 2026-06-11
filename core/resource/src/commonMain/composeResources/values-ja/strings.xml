@@ -126,7 +126,6 @@
     <string name="setting_palette_fluid">プロフェッショナル</string>
     <string name="setting_general">一般</string>
     <string name="setting_information">情報</string>
-    <string name="setting_information_app_id">アプリID</string>
     <string name="setting_information_app_version">アプリバージョン</string>
     <string name="setting_other">その他</string>
     <string name="setting_other_team_of_service">利用規約</string>
@@ -287,19 +286,16 @@
     <string name="step_guide_tracing">もじを なぞろう</string>
     <string name="step_guide_story">おはなしを きこう</string>
 
-    <!-- Unit selection: practice count + lesson selector sheet -->
-    <string name="unit_practice_count">%1$d 回 練習しました</string>
-    <string name="unit_practice_chip">%1$d 回</string>
+    <!-- Lesson selector sheet -->
     <string name="lesson_sheet_lesson_label">レッスン %1$d: %2$s</string>
     <string name="lesson_sheet_story_label">おはなし</string>
-    <string name="lesson_sheet_practice_count">%1$d 回 練習しました</string>
-    <string name="lesson_sheet_restart">このユニットをやり直す</string>
+    <string name="lesson_map_games_label">ミニゲーム</string>
+    <string name="lesson_complete_back_to_list">レッスン一覧へ</string>
 
     <!-- Unit complete celebration screen -->
     <string name="unit_complete_title">やったね！</string>
     <string name="unit_complete_subtitle">%1$s クリア！</string>
     <string name="unit_complete_first_badge">✨ はじめてクリア！</string>
-    <string name="unit_complete_practice_badge">れんしゅう %1$d 回め</string>
     <string name="unit_complete_next_button">つぎ：%1$s</string>
     <string name="unit_complete_choose_letter">べつのもじをえらぶ</string>
     <string name="unit_complete_level_done">🎓 レベルクリア！</string>

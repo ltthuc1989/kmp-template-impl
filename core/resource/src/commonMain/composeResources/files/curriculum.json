@@ -282,11 +282,11 @@
                 },
                 {
                   "word": "fan",
-                  "emoji": "🌀"
+                  "emoji": "🪭"
                 },
                 {
                   "word": "farm",
-                  "emoji": "🚜"
+                  "emoji": "🏡"
                 },
                 {
                   "word": "fork",
@@ -751,7 +751,17 @@
                 },
                 {
                   "word": "quilt",
-                  "emoji": "🛏️"
+                  "emoji": "🛏️",
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/quilt.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "🛏️"
+                    }
+                  ]
                 },
                 {
                   "word": "question",
@@ -1112,7 +1122,17 @@
               "words": [
                 {
                   "word": "zipper",
-                  "emoji": "🤐"
+                  "emoji": "🤐",
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/zip.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "🤐"
+                    }
+                  ]
                 },
                 {
                   "word": "zero",
@@ -1221,7 +1241,17 @@
                 },
                 {
                   "word": "dam",
-                  "emoji": "🏞️"
+                  "emoji": "🏞️",
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/dam.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "🏞️"
+                    }
+                  ]
                 }
               ],
               "chantTexts": [
@@ -1248,7 +1278,7 @@
               "words": [
                 {
                   "word": "fan",
-                  "emoji": "🌀"
+                  "emoji": "🪭"
                 },
                 {
                   "word": "man",
@@ -1308,7 +1338,17 @@
                 },
                 {
                   "word": "rag",
-                  "emoji": "🧹"
+                  "emoji": "🧹",
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/rag.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "🧹"
+                    }
+                  ]
                 }
               ],
               "chantTexts": [
@@ -1548,7 +1588,17 @@
               "words": [
                 {
                   "word": "hip",
-                  "emoji": "🍑"
+                  "emoji": "🍑",
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/hip.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "🍑"
+                    }
+                  ]
                 },
                 {
                   "word": "ink",
@@ -1556,7 +1606,17 @@
                 },
                 {
                   "word": "zip",
-                  "emoji": "🤐"
+                  "emoji": "🤐",
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/zip.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "🤐"
+                    }
+                  ]
                 },
                 {
                   "word": "in",
@@ -1626,7 +1686,17 @@
               "words": [
                 {
                   "word": "bib",
-                  "emoji": "👶"
+                  "emoji": "👶",
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/bib.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "👶"
+                    }
+                  ]
                 },
                 {
                   "word": "rib",
@@ -1638,7 +1708,17 @@
                 },
                 {
                   "word": "lid",
-                  "emoji": "🥫"
+                  "emoji": "🥫",
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/lid.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "🥫"
+                    }
+                  ]
                 }
               ],
               "chantTexts": [
@@ -1678,7 +1758,17 @@
                 },
                 {
                   "word": "fin",
-                  "emoji": "🐟"
+                  "emoji": "🐟",
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/fin.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "🐟"
+                    }
+                  ]
                 },
                 {
                   "word": "bin",
@@ -1713,7 +1803,17 @@
               "words": [
                 {
                   "word": "fig",
-                  "emoji": "🍐"
+                  "emoji": "🍐",
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/fig.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "🍐"
+                    }
+                  ]
                 },
                 {
                   "word": "wig",
@@ -1882,7 +1982,17 @@
                 },
                 {
                   "word": "mop",
-                  "emoji": "🧹"
+                  "emoji": "🧹",
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/mop.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "🧹"
+                    }
+                  ]
                 },
                 {
                   "word": "hop",
@@ -2008,7 +2118,17 @@
                 },
                 {
                   "word": "mud",
-                  "emoji": "💧"
+                  "emoji": "💧",
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/mud.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "💧"
+                    }
+                  ]
                 },
                 {
                   "word": "pup",
@@ -2574,7 +2694,17 @@
                 },
                 {
                   "word": "tail",
-                  "emoji": "🐈"
+                  "emoji": "🐈",
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/tail.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "🐈"
+                    }
+                  ]
                 },
                 {
                   "word": "wait",
@@ -2995,7 +3125,17 @@
                 },
                 {
                   "word": "pillow",
-                  "emoji": "🛏️"
+                  "emoji": "🛏️",
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/pillow.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "🛏️"
+                    }
+                  ]
                 }
               ],
               "chantTexts": [
@@ -3210,7 +3350,17 @@
                 },
                 {
                   "word": "blanket",
-                  "emoji": "🛏️"
+                  "emoji": "🛏️",
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/blanket.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "🛏️"
+                    }
+                  ]
                 },
                 {
                   "word": "clock",
@@ -3800,7 +3950,17 @@
                 },
                 {
                   "word": "quilt",
-                  "emoji": "🛏️"
+                  "emoji": "🛏️",
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/quilt.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "🛏️"
+                    }
+                  ]
                 }
               ],
               "chantTexts": [
@@ -3914,7 +4074,17 @@
               "words": [
                 {
                   "word": "belt",
-                  "emoji": "🧷"
+                  "emoji": "🧷",
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/belt.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "🧷"
+                    }
+                  ]
                 },
                 {
                   "word": "adult",
@@ -4139,7 +4309,17 @@
                 },
                 {
                   "word": "cage",
-                  "emoji": "🪺"
+                  "emoji": "🪺",
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/cage.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "🪺"
+                    }
+                  ]
                 }
               ],
               "chantTexts": [
@@ -4228,7 +4408,7 @@
                 },
                 {
                   "word": "farm",
-                  "emoji": "🚜"
+                  "emoji": "🏡"
                 },
                 {
                   "word": "park",
@@ -4436,11 +4616,21 @@
                 },
                 {
                   "word": "bush",
-                  "emoji": "🌳"
+                  "emoji": "🌿"
                 },
                 {
                   "word": "pull",
-                  "emoji": "🤜"
+                  "emoji": "🤜",
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/pull.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "🤜"
+                    }
+                  ]
                 }
               ],
               "chantTexts": [
@@ -4476,7 +4666,17 @@
               "words": [
                 {
                   "word": "sauce",
-                  "emoji": "🥣"
+                  "emoji": "🥣",
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/sauce.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "🥣"
+                    }
+                  ]
                 },
                 {
                   "word": "August",
@@ -5023,7 +5223,7 @@
                 },
                 {
                   "word": "comb",
-                  "emoji": "💇"
+                  "emoji": "🪮"
                 },
                 {
                   "word": "glove",
@@ -5062,11 +5262,31 @@
                 },
                 {
                   "word": "rhubarb",
-                  "emoji": "🌱"
+                  "emoji": "🌱",
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/rhubarb.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "🌱"
+                    }
+                  ]
                 },
                 {
                   "word": "whistle",
-                  "emoji": "🎽"
+                  "emoji": "🎽",
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/whistle.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "🎽"
+                    }
+                  ]
                 },
                 {
                   "word": "castle",

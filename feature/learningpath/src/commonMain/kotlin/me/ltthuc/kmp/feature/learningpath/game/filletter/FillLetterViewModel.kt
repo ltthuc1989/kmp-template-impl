@@ -8,20 +8,26 @@ import io.github.aakira.napier.Napier
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
+import me.ltthuc.kmp.core.audio.AudioRef
+import me.ltthuc.kmp.core.audio.AudioState
+import me.ltthuc.kmp.core.audio.isActiveFor
 import me.ltthuc.kmp.core.model.PhonicsLesson
+import me.ltthuc.kmp.core.repository.AudioRepository
 import me.ltthuc.kmp.core.repository.SfxController
 import me.ltthuc.kmp.core.repository.UnitRepository
 import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.error_no_data
 import me.ltthuc.kmp.core.ui.screen.ScreenState
 import me.ltthuc.kmp.feature.learningpath.game.bubblepop.view.BUBBLE_TINT_PALETTE
+import me.ltthuc.kmp.feature.learningpath.step.common.wordRef
 import kotlin.random.Random
 
 /**
@@ -35,6 +41,7 @@ internal class FillLetterViewModel(
     private val unitId: String,
     unitRepository: UnitRepository,
     private val sfxController: SfxController,
+    private val audioRepository: AudioRepository,
 ) : ViewModel() {
 
     private data class InternalState(
@@ -111,10 +118,11 @@ internal class FillLetterViewModel(
         sfxController.playSfx("correct")
         stateFlow.value = state.copy(lastWrongPick = null, isResolving = true, wrongCount = 0)
         viewModelScope.launch {
-            delay(CORRECT_HOLD_MS)
+            // Play the just-completed word's audio and wait for it to finish before advancing.
+            playWordAndAwait(rounds.getOrNull(state.currentRoundIndex)?.wordRef)
             val next = state.currentRoundIndex + 1
             if (next >= rounds.size) {
-                sfxController.playVoicePraise(COMPLETE_PRAISE_POOL.random())
+                // Final round: auto-advance to next game (no completion praise / overlay).
                 stateFlow.value = stateFlow.value.copy(isComplete = true, isResolving = false)
             } else {
                 stateFlow.value = stateFlow.value.copy(
@@ -125,15 +133,27 @@ internal class FillLetterViewModel(
         }
     }
 
+    private suspend fun playWordAndAwait(ref: AudioRef.Word?) {
+        if (ref == null) return
+        audioRepository.play(ref)
+        withTimeoutOrNull(AUDIO_MAX_MS) {
+            audioRepository.state.first { it.isActiveFor(ref) }
+            audioRepository.state.first { it is AudioState.Idle || it is AudioState.Error }
+        }
+    }
+
     private fun buildRounds(lessons: List<PhonicsLesson>): ImmutableList<FillLetterRound> {
+        // Keep each word paired with its originating lesson so we can resolve the word audio ref.
         val pool = lessons.flatMap { lesson ->
-            lesson.words.filter { it.word.length >= MIN_WORD_LEN && !it.emoji.isNullOrBlank() }
+            lesson.words
+                .filter { it.word.length >= MIN_WORD_LEN && !it.emoji.isNullOrBlank() }
+                .map { lesson to it }
         }
         if (pool.size < 2) return persistentListOf()
         // Unit letters = distractor source (kid sticks to letters they're learning, no random alphabet noise).
         val unitLetters = lessons.map { it.letter.lowercase().first() }.distinct()
         val targets = pool.shuffled(Random.Default).take(ROUND_COUNT)
-        return targets.mapIndexed { idx, target ->
+        return targets.mapIndexed { idx, (lesson, target) ->
             val word = target.word.lowercase()
             // Blank always the first letter (e.g. "_pple", "_at") — matches Fonics Game 4 design.
             val blankIndex = 0
@@ -160,6 +180,8 @@ internal class FillLetterViewModel(
                 choices = (listOf(correctLetter) + distractors)
                     .shuffled(Random.Default).toImmutableList(),
                 tint = tint,
+                // Resolve with original-case word so wordRef's exact match succeeds.
+                wordRef = lesson.wordRef(target.word),
             )
         }.toImmutableList()
     }
@@ -167,12 +189,11 @@ internal class FillLetterViewModel(
     private companion object {
         const val TAG = "FillLetterViewModel"
         const val SUBSCRIPTION_TIMEOUT_MS = 5_000L
-        const val CORRECT_HOLD_MS = 600L
+        const val AUDIO_MAX_MS = 6_000L
         const val ROUND_COUNT = 4
         const val MIN_WORD_LEN = 3
         const val WRONG_THRESHOLD = 5
         const val CHOICE_COUNT = 4
-        val COMPLETE_PRAISE_POOL = listOf("praise_great_job", "praise_well_done", "praise_you_got_it")
     }
 }
 
@@ -184,6 +205,7 @@ internal data class FillLetterRound(
     val correctLetter: Char,
     val choices: ImmutableList<Char>,
     val tint: Color,
+    val wordRef: AudioRef.Word?,
 ) {
     fun displayWord(filled: Boolean): String = if (filled) {
         fullWord

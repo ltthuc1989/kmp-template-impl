@@ -52,7 +52,6 @@ import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.unit_complete_choose_letter
 import me.ltthuc.kmp.core.resource.unit_complete_level_done
 import me.ltthuc.kmp.core.resource.unit_complete_next_button
-import me.ltthuc.kmp.core.resource.unit_complete_practice_badge
 import me.ltthuc.kmp.core.resource.unit_complete_subtitle
 import me.ltthuc.kmp.core.resource.unit_complete_title
 import me.ltthuc.kmp.core.ui.ads.BottomBannerAd
@@ -83,7 +82,7 @@ internal fun UnitCompleteScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     // Reaching this screen = user finished all lessons + Story. Increment unit completion
-    // counter to drive next-unit unlock and the "Practiced N times" badge.
+    // counter to drive next-unit unlock.
     LaunchedEffect(unitId) {
         unitCompletionRepository.markCompleted(unitId)
     }
@@ -233,8 +232,6 @@ private fun HeroCard(
                 Spacer(Modifier.height(20.dp))
                 BouncingEmojiRow(emojis = emojis)
             }
-            Spacer(Modifier.height(20.dp))
-            PracticeBadge(completionCount = completionCount)
         }
     }
 }
@@ -266,25 +263,6 @@ private fun BouncingEmojiRow(emojis: ImmutableList<String>) {
                 modifier = Modifier.scale(scale),
             )
         }
-    }
-}
-
-@Composable
-private fun PracticeBadge(completionCount: Int) {
-    Box(
-        modifier = Modifier
-            .background(
-                color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f),
-                shape = RoundedCornerShape(20.dp),
-            )
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-    ) {
-        Text(
-            text = stringResource(Res.string.unit_complete_practice_badge, completionCount),
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.primary,
-        )
     }
 }
 

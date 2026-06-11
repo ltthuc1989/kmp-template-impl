@@ -126,7 +126,6 @@
     <string name="setting_palette_fluid">Professional</string>
     <string name="setting_general">General</string>
     <string name="setting_information">Information</string>
-    <string name="setting_information_app_id">App ID</string>
     <string name="setting_information_app_version">App Version</string>
     <string name="setting_other">Other</string>
     <string name="setting_other_team_of_service">Terms of Service</string>
@@ -294,19 +293,16 @@
     <string name="step_guide_tracing">Trace along the letter</string>
     <string name="step_guide_story">Listen to the story</string>
 
-    <!-- Unit selection: practice count + lesson selector sheet -->
-    <string name="unit_practice_count">Practiced %1$d time(s)</string>
-    <string name="unit_practice_chip">Practiced %1$d</string>
+    <!-- Lesson selector sheet -->
     <string name="lesson_sheet_lesson_label">Lesson %1$d: %2$s</string>
     <string name="lesson_sheet_story_label">Story</string>
-    <string name="lesson_sheet_practice_count">Practiced %1$d time(s)</string>
-    <string name="lesson_sheet_restart">Restart entire unit</string>
+    <string name="lesson_map_games_label">Mini Games</string>
+    <string name="lesson_complete_back_to_list">Back to lessons</string>
 
     <!-- Unit complete celebration screen -->
     <string name="unit_complete_title">Great job!</string>
     <string name="unit_complete_subtitle">%1$s Complete!</string>
     <string name="unit_complete_first_badge">✨ First completion!</string>
-    <string name="unit_complete_practice_badge">Practice #%1$d</string>
     <string name="unit_complete_next_button">Next: %1$s</string>
     <string name="unit_complete_choose_letter">Pick another letter</string>
     <string name="unit_complete_level_done">🎓 Level complete!</string>

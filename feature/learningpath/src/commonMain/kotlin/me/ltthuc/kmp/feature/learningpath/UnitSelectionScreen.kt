@@ -23,13 +23,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.VolumeOff
-import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ElevatedCard
@@ -38,17 +35,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -62,26 +54,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.toImmutableList
-import kotlinx.coroutines.launch
 import me.ltthuc.kmp.core.model.UnitCard
 import me.ltthuc.kmp.core.model.UnitLetterPreview
 import me.ltthuc.kmp.core.model.UnitStatus
-import me.ltthuc.kmp.core.repository.AppSettingRepository
-import me.ltthuc.kmp.core.repository.LearningProgressRepository
-import me.ltthuc.kmp.core.repository.LevelRepository
-import me.ltthuc.kmp.core.repository.UnitCompletionRepository
-import me.ltthuc.kmp.core.repository.UnitRepository
 import me.ltthuc.kmp.core.resource.Res
-import me.ltthuc.kmp.core.resource.unit_practice_chip
-import me.ltthuc.kmp.core.resource.unit_practice_count
 import me.ltthuc.kmp.core.ui.ads.BottomBannerAd
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
 import me.ltthuc.kmp.core.ui.screen.Destination
 import me.ltthuc.kmp.core.ui.screen.ScreenState
 import me.ltthuc.kmp.core.ui.theme.LocalNavBackStack
 import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -90,8 +72,6 @@ private val AccentRed = Color(0xFFE63946)
 private val SoftPink = Color(0xFFF7B4BC)
 private val LockedGray = Color(0xFFE4E7EB)
 private val LockedTextGray = Color(0xFF9AA3AF)
-private val PracticedChipBg = Color(0xFFD1F2DA)
-private val PracticedChipText = Color(0xFF1F8A3F)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -102,14 +82,6 @@ internal fun UnitSelectionScreen(
 ) {
     val screenState by viewModel.screenState.collectAsStateWithLifecycle()
     val navBackStack = LocalNavBackStack.current
-    val progressRepository: LearningProgressRepository = koinInject()
-    val levelRepository: LevelRepository = koinInject()
-    val unitRepository: UnitRepository = koinInject()
-    val unitCompletionRepository: UnitCompletionRepository = koinInject()
-    val appSettingRepository: AppSettingRepository = koinInject()
-    val appSetting by appSettingRepository.setting.collectAsStateWithLifecycle()
-    val scope = rememberCoroutineScope()
-    var sheetTarget by remember { mutableStateOf<UnitCard?>(null) }
 
     val isStartDestination = navBackStack.size == 1
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
@@ -120,13 +92,7 @@ internal fun UnitSelectionScreen(
             val uiState = (screenState as? ScreenState.Idle)?.data
             UnitTopBar(
                 title = uiState?.let { "Book ${it.level.number}: ${it.level.title}" }.orEmpty(),
-                startedCount = uiState?.startedCount ?: 0,
-                totalUnits = uiState?.units?.size ?: 0,
                 showBackButton = !isStartDestination,
-                isMuted = appSetting.globalMuted,
-                onToggleMute = {
-                    scope.launch { appSettingRepository.setGlobalMuted(!appSetting.globalMuted) }
-                },
                 onBack = { if (navBackStack.size > 1) navBackStack.removeAt(navBackStack.size - 1) },
                 onSettings = { navBackStack.add(Destination.Setting.Root) },
                 scrollBehavior = scrollBehavior,
@@ -149,102 +115,16 @@ internal fun UnitSelectionScreen(
                 onUnitClick = { card ->
                     when (card.status) {
                         UnitStatus.Locked -> Unit
-                        UnitStatus.Completed -> {
-                            // Completed units open the lesson selector sheet so the kid can
-                            // pick any letter (or Story) to replay independently.
-                            sheetTarget = card
-                        }
-                        UnitStatus.Active, UnitStatus.Unlocked -> {
-                            scope.launch {
-                                // Resume from saved position if user last left this unit,
-                                // else start fresh from lesson 0 first visible step.
-                                val active = progressRepository.current()
-                                val visibleSteps = levelRepository.getVisibleSteps(levelId)
-                                val firstVisible = visibleSteps.firstOrNull() ?: 0
-                                val startLesson = if (active?.activeUnitId == card.unit.id) {
-                                    active.activeLessonIndex
-                                } else {
-                                    0
-                                }
-                                val startStep = if (active?.activeUnitId == card.unit.id) {
-                                    val saved = active.activeStepIndex
-                                    if (saved in visibleSteps) {
-                                        saved
-                                    } else {
-                                        visibleSteps.firstOrNull { it >= saved } ?: firstVisible
-                                    }
-                                } else {
-                                    firstVisible
-                                }
-                                navBackStack.add(
-                                    Destination.Learning.Step(
-                                        levelId = levelId,
-                                        unitId = card.unit.id,
-                                        lessonIndex = startLesson,
-                                        stepIndex = startStep,
-                                    ),
-                                )
-                            }
-                        }
+                        // Any unlocked/active/completed unit opens the full-screen Lesson Map,
+                        // which handles per-lesson lock state and resume/replay.
+                        UnitStatus.Completed,
+                        UnitStatus.Active,
+                        UnitStatus.Unlocked,
+                        -> navBackStack.add(Destination.Learning.LessonMap(levelId, card.unit.id))
                     }
                 },
             )
         }
-    }
-
-    sheetTarget?.let { card ->
-        val lessons by remember(card.unit.id) {
-            unitRepository.observeLessons(card.unit.id)
-        }.collectAsStateWithLifecycle(initialValue = emptyList())
-
-        LessonSelectorSheet(
-            unit = card.unit,
-            lessons = lessons.toImmutableList(),
-            completionCount = card.completionCount,
-            onLessonClick = { lessonIdx ->
-                sheetTarget = null
-                scope.launch {
-                    val visibleSteps = levelRepository.getVisibleSteps(levelId)
-                    val firstVisible = visibleSteps.firstOrNull() ?: 0
-                    navBackStack.add(
-                        Destination.Learning.Step(
-                            levelId = levelId,
-                            unitId = card.unit.id,
-                            lessonIndex = lessonIdx,
-                            stepIndex = firstVisible,
-                        ),
-                    )
-                }
-            },
-            onStoryClick = {
-                sheetTarget = null
-                navBackStack.add(Destination.Learning.UnitStory(levelId, card.unit.id))
-            },
-            onRestart = {
-                sheetTarget = null
-                scope.launch {
-                    unitCompletionRepository.reset(card.unit.id)
-                    val visibleSteps = levelRepository.getVisibleSteps(levelId)
-                    val firstVisible = visibleSteps.firstOrNull() ?: 0
-                    progressRepository.setActivePosition(
-                        levelId = levelId,
-                        unitId = card.unit.id,
-                        lessonIndex = 0,
-                        stepIndex = firstVisible,
-                        progressPercent = 0,
-                    )
-                    navBackStack.add(
-                        Destination.Learning.Step(
-                            levelId = levelId,
-                            unitId = card.unit.id,
-                            lessonIndex = 0,
-                            stepIndex = firstVisible,
-                        ),
-                    )
-                }
-            },
-            onDismiss = { sheetTarget = null },
-        )
     }
 }
 
@@ -352,11 +232,7 @@ private fun TimelineColumn(
 @Composable
 private fun UnitTopBar(
     title: String,
-    startedCount: Int,
-    totalUnits: Int,
     showBackButton: Boolean,
-    isMuted: Boolean,
-    onToggleMute: () -> Unit,
     onBack: () -> Unit,
     onSettings: () -> Unit,
     scrollBehavior: TopAppBarScrollBehavior,
@@ -385,22 +261,6 @@ private fun UnitTopBar(
             }
         },
         actions = {
-            if (totalUnits > 0) {
-                StarBadge(count = startedCount, total = totalUnits)
-                Spacer(Modifier.width(8.dp))
-            }
-            // Khan-style quick mute — one tap silences everything, persists across sessions.
-            IconButton(onClick = onToggleMute) {
-                Icon(
-                    imageVector = if (isMuted) {
-                        Icons.AutoMirrored.Filled.VolumeOff
-                    } else {
-                        Icons.AutoMirrored.Filled.VolumeUp
-                    },
-                    contentDescription = if (isMuted) "Unmute" else "Mute",
-                    tint = MaterialTheme.colorScheme.onSurface,
-                )
-            }
             IconButton(onClick = onSettings) {
                 Icon(
                     imageVector = Icons.Filled.Settings,
@@ -414,33 +274,6 @@ private fun UnitTopBar(
             scrolledContainerColor = ScreenBg,
         ),
     )
-}
-
-@Composable
-private fun StarBadge(count: Int, total: Int) {
-    Surface(
-        shape = CircleShape,
-        color = Color.White,
-    ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
-        ) {
-            Icon(
-                imageVector = Icons.Filled.Star,
-                contentDescription = null,
-                tint = AccentRed,
-                modifier = Modifier.size(16.dp),
-            )
-            Text(
-                text = "$count/$total",
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Bold,
-                color = AccentRed,
-            )
-        }
-    }
 }
 
 @Composable
@@ -541,19 +374,14 @@ private fun UnitCardItem(
                 Spacer(Modifier.width(8.dp))
                 ActionPlayButton(status = card.status)
             }
-            if (!isLocked && (card.unit.themeChip != null || card.completionCount > 0)) {
-                Row(
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(top = 8.dp, end = 12.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    card.unit.themeChip?.let { theme ->
+            if (!isLocked) {
+                card.unit.themeChip?.let { theme ->
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(top = 8.dp, end = 12.dp),
+                    ) {
                         ThemeChip(label = theme)
-                    }
-                    if (card.completionCount > 0) {
-                        PracticedChip(count = card.completionCount)
                     }
                 }
             }
@@ -638,30 +466,6 @@ private fun ThemeChip(
             fontSize = 11.sp,
             fontWeight = FontWeight.SemiBold,
             color = MaterialTheme.colorScheme.onSecondaryContainer,
-        )
-    }
-}
-
-@Composable
-private fun PracticedChip(
-    count: Int,
-    modifier: Modifier = Modifier,
-) {
-    val accessibleLabel = stringResource(Res.string.unit_practice_count, count)
-    Box(
-        modifier = modifier
-            .height(24.dp)
-            .clip(CircleShape)
-            .background(PracticedChipBg)
-            .padding(horizontal = 12.dp)
-            .semantics { contentDescription = accessibleLabel },
-        contentAlignment = Alignment.Center,
-    ) {
-        Text(
-            text = stringResource(Res.string.unit_practice_chip, count),
-            fontSize = 11.sp,
-            fontWeight = FontWeight.SemiBold,
-            color = PracticedChipText,
         )
     }
 }

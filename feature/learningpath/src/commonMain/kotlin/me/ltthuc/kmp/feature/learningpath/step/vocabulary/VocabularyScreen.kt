@@ -21,8 +21,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -49,9 +51,11 @@ import me.ltthuc.kmp.core.audio.isActiveFor
 import me.ltthuc.kmp.core.model.LessonWord
 import me.ltthuc.kmp.core.model.PhonicsLesson
 import me.ltthuc.kmp.core.resource.Res
+import me.ltthuc.kmp.core.resource.common_next
 import me.ltthuc.kmp.core.resource.step_guide_vocabulary
+import me.ltthuc.kmp.core.resource.vocabulary_listen_cd
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
-import me.ltthuc.kmp.feature.learningpath.step.common.LetterStepperBar
+import me.ltthuc.kmp.feature.learningpath.step.common.StepContinueButton
 import me.ltthuc.kmp.feature.learningpath.step.common.StepHeader
 import me.ltthuc.kmp.feature.learningpath.step.common.StoryStyleCard
 import me.ltthuc.kmp.feature.learningpath.step.common.WordDisplayView
@@ -67,7 +71,6 @@ internal fun VocabularyScreen(
     unitId: String,
     lessonIndex: Int,
     onClose: () -> Unit,
-    onPrevious: () -> Unit,
     onNext: () -> Unit,
     onStepJump: (Int) -> Unit,
     stepSegments: ImmutableList<Int>,
@@ -91,12 +94,9 @@ internal fun VocabularyScreen(
         val currentLesson = uiState.lessons[safeIndex]
         VocabularyContent(
             currentLesson = currentLesson,
-            lessons = uiState.lessons,
-            currentIndex = safeIndex,
             audioState = audioState,
             onListenWord = { word -> viewModel.onListenWordToggle(currentLesson, word) },
             onClose = onClose,
-            onPrevious = onPrevious,
             onNext = onNext,
             onStepJump = onStepJump,
             stepSegments = stepSegments,
@@ -107,12 +107,9 @@ internal fun VocabularyScreen(
 @Composable
 private fun VocabularyContent(
     currentLesson: PhonicsLesson,
-    lessons: ImmutableList<PhonicsLesson>,
-    currentIndex: Int,
     audioState: AudioState,
     onListenWord: (word: String) -> Unit,
     onClose: () -> Unit,
-    onPrevious: () -> Unit,
     onNext: () -> Unit,
     onStepJump: (Int) -> Unit,
     stepSegments: ImmutableList<Int>,
@@ -131,16 +128,15 @@ private fun VocabularyContent(
                 currentStepIndex = STEP_INDEX,
                 onClose = onClose,
                 onStepJump = onStepJump,
-                onNext = onNext,
-                nextEnabled = vocabItems.isNotEmpty() && heardWords.size >= vocabItems.size,
                 stepSegments = stepSegments,
                 guideText = stringResource(Res.string.step_guide_vocabulary),
             )
         },
         bottomBar = {
-            LetterStepperBar(
-                lessons = lessons,
-                currentIndex = currentIndex,
+            StepContinueButton(
+                label = stringResource(Res.string.common_next),
+                onClick = onNext,
+                enabled = vocabItems.isNotEmpty() && heardWords.size >= vocabItems.size,
             )
         },
     ) { innerPadding ->
@@ -248,6 +244,18 @@ private fun VocabularyGridCell(
                         overflow = TextOverflow.Ellipsis,
                         textAlign = TextAlign.Center,
                     )
+                    Spacer(Modifier.height(6.dp))
+                    IconButton(
+                        onClick = onClick,
+                        modifier = Modifier.size(LISTEN_ICON_BUTTON_DP.dp),
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.VolumeUp,
+                            contentDescription = stringResource(Res.string.vocabulary_listen_cd),
+                            tint = MaterialTheme.colorScheme.secondary,
+                            modifier = Modifier.size(LISTEN_ICON_DP.dp),
+                        )
+                    }
                 }
             }
         }
@@ -266,8 +274,10 @@ private fun VocabularyGridCell(
 }
 
 private const val GRID_GAP_DP = 12
-private const val EMOJI_FONT_SP = 56
+private const val EMOJI_FONT_SP = 48
 private const val WORD_FONT_SP = 20
 private const val BADGE_SIZE_DP = 24
+private const val LISTEN_ICON_BUTTON_DP = 32
+private const val LISTEN_ICON_DP = 18
 private const val PULSE_TARGET_SCALE = 1.04f
 private const val PULSE_DURATION_MS = 700

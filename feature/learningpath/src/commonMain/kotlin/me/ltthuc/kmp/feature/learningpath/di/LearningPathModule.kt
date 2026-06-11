@@ -1,6 +1,7 @@
 package me.ltthuc.kmp.feature.learningpath.di
 
 import me.ltthuc.kmp.feature.learningpath.LessonCompleteViewModel
+import me.ltthuc.kmp.feature.learningpath.LessonMapViewModel
 import me.ltthuc.kmp.feature.learningpath.LevelCompleteViewModel
 import me.ltthuc.kmp.feature.learningpath.UnitCompleteViewModel
 import me.ltthuc.kmp.feature.learningpath.UnitSelectionViewModel
@@ -32,6 +33,13 @@ val learningPathModule = module {
             unitRepository = get(),
         )
     }
+    viewModel { params ->
+        LessonMapViewModel(
+            unitId = params.get(),
+            unitRepository = get(),
+            unitCompletionRepository = get(),
+        )
+    }
     viewModel { params -> SoundIntroViewModel(unitId = params.get(), get(), get()) }
     viewModel { params -> ChantViewModel(unitId = params.get(), get(), get(), get()) }
     viewModel { params -> VocabularyViewModel(unitId = params.get(), get(), get()) }
@@ -41,9 +49,9 @@ val learningPathModule = module {
     viewModel { params -> TracingViewModel(unitId = params.get(), get()) }
     viewModel { params -> StoryViewModel(unitId = params.get(), get(), get(), get()) }
     viewModel { params -> BubblePopViewModel(unitId = params.get(), get(), get(), get()) }
-    viewModel { params -> MemoryMatchViewModel(unitId = params.get(), get(), get()) }
-    viewModel { params -> PickWordViewModel(unitId = params.get(), get(), get()) }
-    viewModel { params -> FillLetterViewModel(unitId = params.get(), get(), get()) }
-    viewModel { params -> SpellLettersViewModel(unitId = params.get(), get(), get()) }
-    viewModel { params -> DragWordsViewModel(unitId = params.get(), get(), get()) }
+    viewModel { params -> MemoryMatchViewModel(unitId = params.get(), get(), get(), get()) }
+    viewModel { params -> PickWordViewModel(unitId = params.get(), get(), get(), get()) }
+    viewModel { params -> FillLetterViewModel(unitId = params.get(), get(), get(), get()) }
+    viewModel { params -> SpellLettersViewModel(unitId = params.get(), get(), get(), get()) }
+    viewModel { params -> DragWordsViewModel(unitId = params.get(), get(), get(), get()) }
 }

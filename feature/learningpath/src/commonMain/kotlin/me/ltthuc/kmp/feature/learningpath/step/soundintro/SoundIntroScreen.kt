@@ -33,12 +33,12 @@ import me.ltthuc.kmp.core.audio.isActiveFor
 import me.ltthuc.kmp.core.model.LessonWord
 import me.ltthuc.kmp.core.model.PhonicsLesson
 import me.ltthuc.kmp.core.resource.Res
+import me.ltthuc.kmp.core.resource.common_next
 import me.ltthuc.kmp.core.resource.sound_intro_listen
-import me.ltthuc.kmp.core.resource.sound_intro_next_lesson
 import me.ltthuc.kmp.core.resource.step_guide_sound_intro
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
-import me.ltthuc.kmp.feature.learningpath.step.common.LetterStepperBar
 import me.ltthuc.kmp.feature.learningpath.step.common.PulseRings
+import me.ltthuc.kmp.feature.learningpath.step.common.StepContinueButton
 import me.ltthuc.kmp.feature.learningpath.step.common.StepHeader
 import me.ltthuc.kmp.feature.learningpath.step.common.StoryStyleCard
 import me.ltthuc.kmp.feature.learningpath.step.common.WordDisplayView
@@ -78,8 +78,6 @@ internal fun SoundIntroScreen(
         val currentLesson = uiState.lessons[safeIndex]
         SoundIntroContent(
             currentLesson = currentLesson,
-            lessons = uiState.lessons,
-            currentIndex = safeIndex,
             audioState = audioState,
             onListen = { viewModel.onListenToggle(currentLesson) },
             onClose = onClose,
@@ -93,8 +91,6 @@ internal fun SoundIntroScreen(
 @Composable
 private fun SoundIntroContent(
     currentLesson: PhonicsLesson,
-    lessons: ImmutableList<PhonicsLesson>,
-    currentIndex: Int,
     audioState: AudioState,
     onListen: () -> Unit,
     onClose: () -> Unit,
@@ -119,14 +115,11 @@ private fun SoundIntroContent(
                 currentStepIndex = STEP_INDEX,
                 onClose = onClose,
                 onStepJump = onStepJump,
-                onNext = onNext,
-                nextEnabled = hasStartedListening,
                 stepSegments = stepSegments,
                 guideText = stringResource(Res.string.step_guide_sound_intro),
-                nextContentDescription = stringResource(Res.string.sound_intro_next_lesson),
                 guideTrailing = {
                     Box(
-                        modifier = Modifier.size(36.dp),
+                        modifier = Modifier.size(47.dp),
                         contentAlignment = Alignment.Center,
                     ) {
                         PulseRings(
@@ -135,13 +128,13 @@ private fun SoundIntroContent(
                         )
                         IconButton(
                             onClick = onListen,
-                            modifier = Modifier.size(32.dp),
+                            modifier = Modifier.size(42.dp),
                         ) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.VolumeUp,
                                 contentDescription = stringResource(Res.string.sound_intro_listen),
                                 tint = MaterialTheme.colorScheme.secondary,
-                                modifier = Modifier.size(20.dp),
+                                modifier = Modifier.size(26.dp),
                             )
                         }
                     }
@@ -149,9 +142,10 @@ private fun SoundIntroContent(
             )
         },
         bottomBar = {
-            LetterStepperBar(
-                lessons = lessons,
-                currentIndex = currentIndex,
+            StepContinueButton(
+                label = stringResource(Res.string.common_next),
+                onClick = onNext,
+                enabled = hasStartedListening,
             )
         },
     ) { innerPadding ->

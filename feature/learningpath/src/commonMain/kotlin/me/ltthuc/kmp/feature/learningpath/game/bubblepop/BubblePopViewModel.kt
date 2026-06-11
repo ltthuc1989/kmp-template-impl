@@ -13,18 +13,17 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import me.ltthuc.kmp.core.audio.AudioRef
 import me.ltthuc.kmp.core.audio.AudioState
-import me.ltthuc.kmp.core.model.PhonicsLesson
 import me.ltthuc.kmp.core.repository.AudioRepository
 import me.ltthuc.kmp.core.repository.SfxController
 import me.ltthuc.kmp.core.repository.UnitRepository
+import me.ltthuc.kmp.core.repository.playAndAwait
 import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.error_no_data
 import me.ltthuc.kmp.core.ui.screen.ScreenState
-import me.ltthuc.kmp.feature.learningpath.step.common.soundIntroRef
 
 /**
  * Drives BubblePop v5: 30s round, kid races to pop up to [TARGET_POOL] target letter bubbles.
@@ -53,7 +52,6 @@ internal class BubblePopViewModel(
     private val sfxController: SfxController,
 ) : ViewModel() {
 
-    private val lessonsFlow = MutableStateFlow<List<PhonicsLesson>>(emptyList())
     private val roundIndex = MutableStateFlow(0)
     private val popCount = MutableStateFlow(0)
     private val timeRemainingMs = MutableStateFlow(ROUND_DURATION_MS)
@@ -61,16 +59,23 @@ internal class BubblePopViewModel(
     private val gameComplete = MutableStateFlow(false)
     private val roundStars = MutableStateFlow(0)
 
+    /** True while the round-start guide audio plays — bubbles hidden + timer paused until it ends. */
+    private val guidePlaying = MutableStateFlow(false)
+
     private val bubblesCache = mutableMapOf<Int, ImmutableList<BubbleSpec>>()
 
     private var timerJob: Job? = null
 
+    /** Round index whose guide prompt has already been kicked off (fire-once-per-round guard). */
+    private var lastRoundStarted = -1
+
     val screenState: StateFlow<ScreenState<BubblePopUiState>> =
         combine(
-            unitRepository.observeLessons(unitId).onEach { lessonsFlow.value = it },
+            unitRepository.observeLessons(unitId),
             combine(roundIndex, popCount, timeRemainingMs) { r, p, t -> Triple(r, p, t) },
             combine(roundComplete, gameComplete, roundStars) { rc, gc, rs -> Triple(rc, gc, rs) },
-        ) { lessons, roundData, statusData ->
+            guidePlaying,
+        ) { lessons, roundData, statusData, guide ->
             val (round, popped, time) = roundData
             val (isRoundDone, isGameDone, stars) = statusData
             if (lessons.isEmpty()) {
@@ -95,6 +100,7 @@ internal class BubblePopViewModel(
                         isRoundComplete = isRoundDone,
                         isGameComplete = isGameDone,
                         roundStars = stars,
+                        isGuidePlaying = guide,
                     ),
                 )
             }
@@ -108,37 +114,40 @@ internal class BubblePopViewModel(
 
     init {
         viewModelScope.launch {
-            // Each time a new active round starts, ensure timer is running.
-            // (Audio guide prompt deferred — currently no asset; per-tap letter sound plays
-            // instead via onBubbleTapped.)
+            // On each new active round: play the "Can you find the <sound> sound?" guide prompt
+            // first (bubbles hidden, timer paused), then reveal bubbles and start the timer once
+            // the guide finishes. Fires once per round via lastRoundStarted.
             screenState.collect { state ->
                 if (state is ScreenState.Idle) {
                     val ui = state.data
                     if (!ui.isRoundComplete && !ui.isGameComplete) {
-                        ensureTimerRunning()
+                        startRoundIfNeeded(ui)
                     }
                 }
             }
         }
     }
 
+    private fun startRoundIfNeeded(ui: BubblePopUiState) {
+        if (ui.roundIndex == lastRoundStarted || ui.targetLetter.isEmpty()) return
+        lastRoundStarted = ui.roundIndex
+        viewModelScope.launch {
+            guidePlaying.value = true // hide bubbles, keep timer paused
+            delay(ROUND_START_DELAY_MS) // brief beat before the guide speaks
+            audioRepository.playAndAwait(AudioRef.FindSound(ui.targetLetter), GUIDE_AUDIO_MAX_MS)
+            guidePlaying.value = false // bubbles appear
+            ensureTimerRunning() // timer starts only now
+        }
+    }
+
     /**
-     * Plays the phoneme audio for any letter present in the unit's lessons (used by both
-     * target and distractor taps). If the letter isn't in this unit (rare — distractor
-     * sourced from random alphabet), no audio plays.
+     * Plays the single-phoneme clip for the popped letter (both target and distractor taps).
+     * Every a-z letter has a bundled clip at `files/audio/phonemes/<letter>.mp3`, so any
+     * popped bubble speaks its sound — snappy for tap-to-pop, unlike the long SoundIntro
+     * teaching paragraph.
      */
     private fun playLetterSound(letter: String) {
-        val lesson = lessonsFlow.value.firstOrNull {
-            it.letter.equals(letter, ignoreCase = true)
-        } ?: run {
-            Napier.v(tag = TAG) { "No lesson for letter '$letter' — skipping audio" }
-            return
-        }
-        val ref = lesson.soundIntroRef() ?: run {
-            Napier.w(tag = TAG) { "No SoundIntro ref for lesson ${lesson.id}" }
-            return
-        }
-        audioRepository.play(ref)
+        audioRepository.play(AudioRef.LetterSound(letter))
     }
 
     private fun ensureTimerRunning() {
@@ -160,7 +169,8 @@ internal class BubblePopViewModel(
         // Always play the letter's phoneme on any tap — kid learns the sound by exploring.
         playLetterSound(spec.letter)
         if (isCorrect) {
-            sfxController.playSfx("correct")
+            // Per user spec v5d: tap target → only the letter phoneme (already played above).
+            // No "correct" chime — keeps audio focus on the phoneme as the reward.
             val newCount = (popCount.value + 1).coerceAtMost(TARGET_POOL)
             popCount.value = newCount
             if (newCount >= TARGET_POOL) {
@@ -231,6 +241,8 @@ internal class BubblePopViewModel(
         const val ROUND_DURATION_MS = 30_000L
         const val TICK_MS = 100L
         const val TARGET_POOL = 10
+        const val ROUND_START_DELAY_MS = 500L
+        const val GUIDE_AUDIO_MAX_MS = 4_000L
         val PRAISE_POOL = listOf("praise_nice", "praise_great_job", "praise_well_done")
         val FINAL_PRAISE_POOL = listOf("praise_great_job", "praise_well_done", "praise_you_got_it")
     }
@@ -250,6 +262,7 @@ internal data class BubblePopUiState(
     val isRoundComplete: Boolean,
     val isGameComplete: Boolean,
     val roundStars: Int,
+    val isGuidePlaying: Boolean = false,
 ) {
     companion object {
         val Empty = BubblePopUiState(

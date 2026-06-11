@@ -30,9 +30,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -44,19 +42,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import kotlinx.coroutines.delay
-import me.ltthuc.kmp.core.repository.SfxController
-import me.ltthuc.kmp.core.ui.ads.BottomBannerAd
-import me.ltthuc.kmp.core.ui.ads.LearningInterstitial
-import me.ltthuc.kmp.core.ui.ads.RewardedSkipLauncher
-import me.ltthuc.kmp.core.ui.dialog.ParentalGateDialog
+import me.ltthuc.kmp.core.resource.Res
+import me.ltthuc.kmp.core.resource.lesson_complete_back_to_list
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
 import me.ltthuc.kmp.core.ui.screen.Destination
 import me.ltthuc.kmp.core.ui.theme.LocalNavBackStack
 import me.ltthuc.kmp.feature.learningpath.step.common.ConfettiCanvas
 import me.ltthuc.kmp.feature.learningpath.step.common.PuffySurface
 import me.ltthuc.kmp.feature.learningpath.step.common.StoryStyleCard
-import org.koin.compose.koinInject
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -72,45 +66,10 @@ internal fun LessonCompleteScreen(
 ) {
     val navBackStack = LocalNavBackStack.current
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val sfx: SfxController = koinInject()
-    var showParentalGate by remember { mutableStateOf(false) }
-    var showRewardedAd by remember { mutableStateOf(false) }
-    var bonusEarned by remember { mutableStateOf(false) }
-
-    LearningInterstitial()
-
-    if (showParentalGate) {
-        ParentalGateDialog(
-            onPass = {
-                showParentalGate = false
-                showRewardedAd = true
-            },
-            onDismiss = { showParentalGate = false },
-        )
-    }
-
-    if (showRewardedAd) {
-        RewardedSkipLauncher(
-            onRewardEarned = {
-                showRewardedAd = false
-                bonusEarned = true
-                sfx.playVoicePraise("praise_great_job")
-            },
-            onUnavailable = { showRewardedAd = false },
-        )
-    }
-
-    LaunchedEffect(bonusEarned) {
-        if (bonusEarned) {
-            delay(BONUS_OVERLAY_DURATION_MS)
-            bonusEarned = false
-        }
-    }
 
     Scaffold(
         modifier = modifier,
         containerColor = ScreenBg,
-        bottomBar = { BottomBannerAd() },
     ) { padding ->
         Box(modifier = Modifier.fillMaxSize().padding(padding)) {
             AsyncLoadContents(
@@ -132,11 +91,12 @@ internal fun LessonCompleteScreen(
                             ),
                         )
                     },
-                    onBonusClick = { showParentalGate = true },
+                    onBackToLessonsClick = {
+                        // Replace this completion screen with the unit's Lesson Map.
+                        if (navBackStack.isNotEmpty()) navBackStack.removeAt(navBackStack.lastIndex)
+                        navBackStack.add(Destination.Learning.LessonMap(levelId, unitId))
+                    },
                 )
-            }
-            if (bonusEarned) {
-                BonusEarnedOverlay()
             }
         }
     }
@@ -148,7 +108,7 @@ private fun LessonCompleteContent(
     currentEmoji: String?,
     nextLetter: String?,
     onNextLessonClick: () -> Unit,
-    onBonusClick: () -> Unit,
+    onBackToLessonsClick: () -> Unit,
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         ConfettiCanvas(modifier = Modifier.fillMaxSize())
@@ -201,74 +161,24 @@ private fun LessonCompleteContent(
                     onClick = onNextLessonClick,
                 )
                 Spacer(Modifier.height(12.dp))
-                BonusRewardButton(onClick = onBonusClick)
+                BackToLessonsButton(onClick = onBackToLessonsClick)
             }
         }
     }
 }
 
 @Composable
-private fun BonusRewardButton(onClick: () -> Unit) {
+private fun BackToLessonsButton(onClick: () -> Unit) {
     OutlinedButton(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(28.dp),
     ) {
         Text(
-            text = "🎁 Watch a fun reward",
+            text = stringResource(Res.string.lesson_complete_back_to_list),
             fontSize = 15.sp,
             fontWeight = FontWeight.SemiBold,
         )
-    }
-}
-
-@Composable
-private fun BonusEarnedOverlay() {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 32.dp),
-        contentAlignment = Alignment.Center,
-    ) {
-        val transition = rememberInfiniteTransition(label = "bonus-overlay")
-        val scale by transition.animateFloat(
-            initialValue = 1f,
-            targetValue = 1.15f,
-            animationSpec = infiniteRepeatable(
-                animation = tween(durationMillis = 500, easing = FastOutSlowInEasing),
-                repeatMode = RepeatMode.Reverse,
-            ),
-            label = "scale",
-        )
-        StoryStyleCard(aspectRatio = null) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 24.dp, vertical = 32.dp)
-                    .scale(scale),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                Text(
-                    text = "🎉",
-                    fontSize = 64.sp,
-                )
-                Spacer(Modifier.height(12.dp))
-                Text(
-                    text = "Awesome!",
-                    fontSize = 32.sp,
-                    fontWeight = FontWeight.ExtraBold,
-                    color = MaterialTheme.colorScheme.primary,
-                )
-                Spacer(Modifier.height(4.dp))
-                Text(
-                    text = "Bonus reward earned",
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    textAlign = TextAlign.Center,
-                )
-            }
-        }
     }
 }
 
@@ -339,4 +249,3 @@ private fun NextLetterButton(nextLetter: String?, onClick: () -> Unit) {
 private val ScreenBg = Color(0xFFFFF6E5)
 private const val BOUNCE_DURATION_MS = 700
 private const val BOUNCE_TARGET_SCALE = 1.18f
-private const val BONUS_OVERLAY_DURATION_MS = 2500L

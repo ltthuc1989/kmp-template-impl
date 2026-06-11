@@ -11,20 +11,26 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableSet
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
+import me.ltthuc.kmp.core.audio.AudioRef
+import me.ltthuc.kmp.core.audio.AudioState
+import me.ltthuc.kmp.core.audio.isActiveFor
 import me.ltthuc.kmp.core.model.PhonicsLesson
+import me.ltthuc.kmp.core.repository.AudioRepository
 import me.ltthuc.kmp.core.repository.SfxController
 import me.ltthuc.kmp.core.repository.UnitRepository
 import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.error_no_data
 import me.ltthuc.kmp.core.ui.screen.ScreenState
 import me.ltthuc.kmp.feature.learningpath.game.bubblepop.view.BUBBLE_TINT_PALETTE
+import me.ltthuc.kmp.feature.learningpath.step.common.wordRef
 import kotlin.random.Random
 
 /**
@@ -44,6 +50,7 @@ internal class SpellLettersViewModel(
     private val unitId: String,
     unitRepository: UnitRepository,
     private val sfxController: SfxController,
+    private val audioRepository: AudioRepository,
 ) : ViewModel() {
 
     private data class InternalState(
@@ -105,6 +112,8 @@ internal class SpellLettersViewModel(
         if (state.isComplete) return false
         val rounds = roundsFlow.value
         val round = rounds.getOrNull(state.currentRoundIndex) ?: return false
+        // Any-order fill: a tile drops into ANY still-empty slot as long as its letter matches that
+        // slot's letter — e.g. "cat" can be filled t / a / c in any order.
         val isMatch = slotIndex != null &&
             slotIndex in round.word.indices &&
             slotIndex !in state.filledSlots &&
@@ -141,10 +150,11 @@ internal class SpellLettersViewModel(
         if (newFilled.size >= round.word.length) {
             stateFlow.value = baseState.copy(filledSlots = newFilled)
             viewModelScope.launch {
-                delay(ROUND_HOLD_MS)
+                // Play the just-completed word's audio and wait for it to finish before advancing.
+                playWordAndAwait(round.wordRef)
                 val next = baseState.currentRoundIndex + 1
                 if (next >= rounds.size) {
-                    sfxController.playVoicePraise(COMPLETE_PRAISE_POOL.random())
+                    // Final round: auto-advance to next game (no completion praise / overlay).
                     stateFlow.value = stateFlow.value.copy(isComplete = true)
                 } else {
                     stateFlow.value = stateFlow.value.copy(
@@ -159,19 +169,29 @@ internal class SpellLettersViewModel(
         }
     }
 
+    private suspend fun playWordAndAwait(ref: AudioRef.Word?) {
+        if (ref == null) return
+        audioRepository.play(ref)
+        withTimeoutOrNull(AUDIO_MAX_MS) {
+            audioRepository.state.first { it.isActiveFor(ref) }
+            audioRepository.state.first { it is AudioState.Idle || it is AudioState.Error }
+        }
+    }
+
     private fun buildRounds(lessons: List<PhonicsLesson>): ImmutableList<SpellLettersRound> {
+        // Keep each word paired with its originating lesson so we can resolve the word audio ref.
         val pool = lessons.flatMap { lesson ->
             lesson.words.filter {
                 val w = it.word.lowercase()
                 w.length in MIN_LEN..MAX_LEN && w.toSet().size == w.length // unique letters only
-            }
+            }.map { lesson to it }
         }
         if (pool.size < ROUND_COUNT) {
             Napier.w(tag = TAG) { "Unit $unitId only has ${pool.size} unique-letter words for SpellLetters" }
         }
         val targets = pool.shuffled(Random.Default).take(ROUND_COUNT)
         if (targets.isEmpty()) return persistentListOf()
-        return targets.mapIndexed { idx, target ->
+        return targets.mapIndexed { idx, (lesson, target) ->
             val word = target.word.lowercase()
             val tint = BUBBLE_TINT_PALETTE[idx % BUBBLE_TINT_PALETTE.size]
             SpellLettersRound(
@@ -179,6 +199,7 @@ internal class SpellLettersViewModel(
                 emoji = target.emoji.orEmpty(),
                 tileOrder = word.toList().shuffled(Random.Default).toImmutableList(),
                 tint = tint,
+                wordRef = lesson.wordRef(target.word),
             )
         }.toImmutableList()
     }
@@ -186,12 +207,11 @@ internal class SpellLettersViewModel(
     private companion object {
         const val TAG = "SpellLettersViewModel"
         const val SUBSCRIPTION_TIMEOUT_MS = 5_000L
-        const val ROUND_HOLD_MS = 800L
+        const val AUDIO_MAX_MS = 6_000L
         const val ROUND_COUNT = 3
         const val WRONG_THRESHOLD = 5
         const val MIN_LEN = 3
         const val MAX_LEN = 4
-        val COMPLETE_PRAISE_POOL = listOf("praise_great_job", "praise_well_done", "praise_you_got_it")
     }
 }
 
@@ -201,6 +221,7 @@ internal data class SpellLettersRound(
     val emoji: String,
     val tileOrder: ImmutableList<Char>, // shuffled letters of `word`
     val tint: Color,
+    val wordRef: AudioRef.Word?,
 )
 
 @Immutable

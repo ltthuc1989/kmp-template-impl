@@ -102,8 +102,6 @@ private fun BubblePopContent(
                 stepSegments = stepSegments,
                 onClose = onClose,
                 onStepJump = onStepJump,
-                onNext = onNext,
-                nextEnabled = ui.isGameComplete,
                 showGuideText = false,
             )
         },
@@ -115,7 +113,7 @@ private fun BubblePopContent(
                 .background(brush = OceanBackground),
         ) {
             OceanDecorations()
-            if (ui.bubbles.isNotEmpty() && !ui.isRoundComplete && !ui.isGameComplete) {
+            if (ui.bubbles.isNotEmpty() && !ui.isRoundComplete && !ui.isGameComplete && !ui.isGuidePlaying) {
                 BubbleCanvas(
                     bubbles = ui.bubbles,
                     onBubbleTapped = onBubbleTapped,

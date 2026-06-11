@@ -1,11 +1,7 @@
 package me.ltthuc.kmp.feature.learningpath.step.common
 
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -25,7 +21,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
@@ -36,19 +31,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
@@ -57,7 +48,6 @@ import androidx.compose.ui.unit.sp
 import kotlinx.collections.immutable.ImmutableList
 import me.ltthuc.kmp.core.model.PhonicsLesson
 import me.ltthuc.kmp.core.resource.Res
-import me.ltthuc.kmp.core.resource.chant_next
 import me.ltthuc.kmp.core.resource.common_close
 import org.jetbrains.compose.resources.stringResource
 
@@ -80,15 +70,12 @@ internal fun StepHeader(
     stepSegments: ImmutableList<Int>,
     onClose: () -> Unit,
     onStepJump: (Int) -> Unit,
-    onNext: () -> Unit,
-    nextEnabled: Boolean,
     modifier: Modifier = Modifier,
     guideText: String = "",
     showGuideText: Boolean = true,
-    nextContentDescription: String? = null,
+    showSegments: Boolean = true,
     guideTrailing: (@Composable () -> Unit)? = null,
 ) {
-    val resolvedNextCd = nextContentDescription ?: stringResource(Res.string.chant_next)
     val showGuideRow = (showGuideText && guideText.isNotEmpty()) || guideTrailing != null
     Column(
         modifier = modifier
@@ -112,18 +99,16 @@ internal fun StepHeader(
                 )
             }
             Spacer(Modifier.width(4.dp))
-            StepSegmentRow(
-                currentStepIndex = currentStepIndex,
-                stepSegments = stepSegments,
-                onStepJump = onStepJump,
-                modifier = Modifier.weight(1f),
-            )
-            Spacer(Modifier.width(4.dp))
-            PlainNextButton(
-                onClick = onNext,
-                enabled = nextEnabled,
-                contentDescription = resolvedNextCd,
-            )
+            if (showSegments) {
+                StepSegmentRow(
+                    currentStepIndex = currentStepIndex,
+                    stepSegments = stepSegments,
+                    onStepJump = onStepJump,
+                    modifier = Modifier.weight(1f),
+                )
+            } else {
+                Spacer(Modifier.weight(1f))
+            }
         }
         if (showGuideRow) {
             Row(
@@ -149,48 +134,6 @@ internal fun StepHeader(
                 }
             }
         }
-    }
-}
-
-/**
- * Plain icon "Next / advance" button — no background, no shadow. Encodes state via:
- * - enabled = primary alpha 1.0, pulses scale 1.0 → 1.2 → 1.0 once when transitioning
- *   disabled → enabled, so the eye catches "you can move on now".
- * - disabled = primary alpha 0.30, still visible so the kid sees the goal.
- *
- * Tap target is the IconButton's default 48dp circle (invisible), comfortable for small fingers.
- */
-@Composable
-private fun PlainNextButton(
-    onClick: () -> Unit,
-    enabled: Boolean,
-    contentDescription: String,
-    modifier: Modifier = Modifier,
-) {
-    val scale = remember { Animatable(1f) }
-    LaunchedEffect(enabled) {
-        if (enabled) {
-            scale.animateTo(1.20f, animationSpec = tween(150, easing = FastOutSlowInEasing))
-            scale.animateTo(
-                1f,
-                animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
-            )
-        }
-    }
-    IconButton(
-        onClick = onClick,
-        enabled = enabled,
-        modifier = modifier
-            .size(44.dp)
-            .scale(scale.value)
-            .semantics { this.contentDescription = contentDescription },
-    ) {
-        Icon(
-            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.primary.copy(alpha = if (enabled) 1f else 0.30f),
-            modifier = Modifier.size(28.dp),
-        )
     }
 }
 
@@ -307,119 +250,6 @@ private fun StepSegment(
 }
 
 /**
- * Shared floating pill bottom bar showing letter progress in the unit.
- * Fixed across all 8 steps of a letter — only `currentIndex` updates when letter advances.
- */
-@Composable
-internal fun LetterStepperBar(
-    lessons: ImmutableList<PhonicsLesson>,
-    currentIndex: Int,
-    modifier: Modifier = Modifier,
-) {
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .navigationBarsPadding()
-            .padding(horizontal = 20.dp, vertical = 8.dp),
-    ) {
-        PuffySurface(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(48.dp),
-            containerColor = Color.White.copy(alpha = 0.85f),
-            shadowElevation = 28.dp,
-            shadowTint = MaterialTheme.colorScheme.primary,
-            shadowAlpha = 0.40f,
-            topHighlightHeight = 12.dp,
-            topHighlightAlpha = 0.6f,
-            bottomShadeHeight = 12.dp,
-            bottomShadeAlpha = 0.10f,
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp, vertical = 16.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                lessons.forEachIndexed { index, lesson ->
-                    val isDone = index < currentIndex
-                    val isCurrent = index == currentIndex
-                    StepperLetter(
-                        letterPair = lesson.letterPair(),
-                        isHighlighted = isDone || isCurrent,
-                    )
-                    if (index < lessons.lastIndex) {
-                        StepperConnector(
-                            isActive = isDone || isCurrent,
-                            modifier = Modifier
-                                .weight(1f)
-                                .padding(horizontal = 6.dp),
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun StepperLetter(
-    letterPair: String,
-    isHighlighted: Boolean,
-) {
-    PuffySurface(
-        modifier = Modifier.size(44.dp),
-        shape = CircleShape,
-        containerColor = if (isHighlighted) {
-            MaterialTheme.colorScheme.primary
-        } else {
-            MaterialTheme.colorScheme.primaryContainer
-        },
-        shadowElevation = if (isHighlighted) 8.dp else 4.dp,
-        shadowTint = if (isHighlighted) MaterialTheme.colorScheme.primary else Color.Black,
-        shadowAlpha = if (isHighlighted) 0.55f else 0.18f,
-        topHighlightHeight = 5.dp,
-        topHighlightAlpha = if (isHighlighted) 0.3f else 0.8f,
-        bottomShadeHeight = 5.dp,
-        bottomShadeAlpha = if (isHighlighted) 0.25f else 0.10f,
-    ) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center,
-        ) {
-            Text(
-                text = letterPair,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Black,
-                color = if (isHighlighted) {
-                    MaterialTheme.colorScheme.onPrimary
-                } else {
-                    MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
-                },
-            )
-        }
-    }
-}
-
-@Composable
-private fun StepperConnector(
-    isActive: Boolean,
-    modifier: Modifier = Modifier,
-) {
-    Box(
-        modifier = modifier
-            .height(4.dp)
-            .clip(CircleShape)
-            .background(
-                if (isActive) {
-                    MaterialTheme.colorScheme.primary
-                } else {
-                    MaterialTheme.colorScheme.primaryContainer
-                },
-            ),
-    )
-}
-
-/**
  * Replicates CSS multi-layer puffy box-shadow:
  * - Outer drop shadow via Modifier.shadow
  * - Inner top highlight: gradient strip (white → transparent)
@@ -481,9 +311,6 @@ internal fun PuffySurface(
         content()
     }
 }
-
-internal fun PhonicsLesson.letterPair(): String =
-    displayLetter.substringBefore(' ').ifEmpty { "?" }
 
 /**
  * Shared step navigation row (Previous + Next). Used by Chant, Vocabulary, ...
@@ -617,6 +444,9 @@ private fun StepNextButton(
     }
 }
 
+internal fun PhonicsLesson.letterPair(): String =
+    displayLetter.substringBefore(' ').ifEmpty { "?" }
+
 /**
  * Single contextual continue button for step screens — replaces StepNavRow's Previous+Next pair.
  * Full width, primary red filled (puffy 3D). Disabled state shows reduced shadow + gray.
@@ -637,44 +467,51 @@ internal fun StepContinueButton(
     } else {
         MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)
     }
-    PuffySurface(
+    Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(56.dp)
-            .clickable(
-                interactionSource = interaction,
-                indication = ripple(color = MaterialTheme.colorScheme.onPrimary),
-                enabled = enabled,
-                onClick = onClick,
-            ),
-        shape = CircleShape,
-        containerColor = containerColor,
-        shadowElevation = if (enabled) 14.dp else 6.dp,
-        shadowTint = MaterialTheme.colorScheme.primary,
-        shadowAlpha = if (enabled) 0.55f else 0.20f,
-        topHighlightHeight = 10.dp,
-        topHighlightAlpha = if (enabled) 0.3f else 0.15f,
-        bottomShadeHeight = 10.dp,
-        bottomShadeAlpha = if (enabled) 0.30f else 0.15f,
+            .navigationBarsPadding()
+            .padding(horizontal = 20.dp, vertical = 8.dp),
     ) {
-        Row(
-            modifier = Modifier.fillMaxSize(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center,
+        PuffySurface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp)
+                .clickable(
+                    interactionSource = interaction,
+                    indication = ripple(color = MaterialTheme.colorScheme.onPrimary),
+                    enabled = enabled,
+                    onClick = onClick,
+                ),
+            shape = CircleShape,
+            containerColor = containerColor,
+            shadowElevation = if (enabled) 14.dp else 6.dp,
+            shadowTint = MaterialTheme.colorScheme.primary,
+            shadowAlpha = if (enabled) 0.55f else 0.20f,
+            topHighlightHeight = 10.dp,
+            topHighlightAlpha = if (enabled) 0.3f else 0.15f,
+            bottomShadeHeight = 10.dp,
+            bottomShadeAlpha = if (enabled) 0.30f else 0.15f,
         ) {
-            Text(
-                text = label,
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onPrimary,
-            )
-            Spacer(Modifier.width(8.dp))
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onPrimary,
-                modifier = Modifier.size(20.dp),
-            )
+            Row(
+                modifier = Modifier.fillMaxSize(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center,
+            ) {
+                Text(
+                    text = label,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onPrimary,
+                )
+                Spacer(Modifier.width(8.dp))
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onPrimary,
+                    modifier = Modifier.size(20.dp),
+                )
+            }
         }
     }
 }

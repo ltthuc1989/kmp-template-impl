@@ -9,6 +9,8 @@ import kotlinx.coroutines.flow.map
 import me.ltthuc.kmp.core.datasource.db.dao.LearningProgressDao
 import me.ltthuc.kmp.core.datasource.db.dao.PhonicsLessonDao
 import me.ltthuc.kmp.core.datasource.db.dao.UnitDao
+import me.ltthuc.kmp.core.model.LessonCard
+import me.ltthuc.kmp.core.model.LessonStatus
 import me.ltthuc.kmp.core.model.PhonicsLesson
 import me.ltthuc.kmp.core.model.PhonicsUnit
 import me.ltthuc.kmp.core.model.UnitCard
@@ -21,6 +23,7 @@ class UnitRepository(
     private val unitCompletionRepository: UnitCompletionRepository,
     private val learningProgressDao: LearningProgressDao,
     private val appSettingRepository: AppSettingRepository,
+    private val lessonProgressRepository: LessonProgressRepository,
 ) {
     fun observeUnits(levelId: String): Flow<List<PhonicsUnit>> = unitDao.observeAll().map { all ->
         all.filter { it.levelId == levelId }.sortedBy { it.orderIndex }.map { it.toModel() }
@@ -32,6 +35,35 @@ class UnitRepository(
 
     fun observeLessons(unitId: String): Flow<List<PhonicsLesson>> =
         phonicsLessonDao.observeByUnit(unitId).map { lessons -> lessons.map { it.toModel() } }
+
+    /**
+     * Per-lesson lock state for the Lesson Map. First lesson is always Unlocked; each
+     * subsequent lesson unlocks only when the previous one has been completed at least once.
+     * Developer mode forces every lesson to Completed (so Story/Mini Games unlock too).
+     */
+    fun observeLessonCards(unitId: String): Flow<List<LessonCard>> = combine(
+        observeLessons(unitId),
+        lessonProgressRepository.observeByUnit(unitId),
+        learningProgressDao.observe(),
+        appSettingRepository.setting,
+    ) { lessons, progress, active, setting ->
+        val sorted = lessons.sortedBy { it.orderIndex }
+        val countById = progress.associateBy({ it.lessonId }, { it.completionCount })
+        sorted.mapIndexed { index, lesson ->
+            val count = countById[lesson.id] ?: 0
+            val isCompleted = count > 0
+            val isActive = active?.activeUnitId == unitId && active.activeLessonIndex == lesson.orderIndex
+            val prevCompleted = index == 0 || (countById[sorted[index - 1].id] ?: 0) > 0
+            val status = when {
+                setting.developerMode -> LessonStatus.Completed
+                isCompleted -> LessonStatus.Completed
+                isActive -> LessonStatus.Active
+                prevCompleted -> LessonStatus.Unlocked
+                else -> LessonStatus.Locked
+            }
+            LessonCard(lesson, status, count)
+        }
+    }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     fun observeUnitCards(levelId: String): Flow<List<UnitCard>> = observeUnits(levelId).flatMapLatest { units ->

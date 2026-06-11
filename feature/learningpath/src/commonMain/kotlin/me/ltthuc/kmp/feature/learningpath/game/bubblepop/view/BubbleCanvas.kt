@@ -293,8 +293,10 @@ private fun animatePopAndRespawn(
                     (widthPx - 2 * radiusPx).coerceAtLeast(0f),
                 y = heightPx + radiusPx,
             )
-            val upwardSpeed = -(BASE_UPWARD_PX_PER_S_MIN +
-                Random.nextFloat() * (BASE_UPWARD_PX_PER_S_MAX - BASE_UPWARD_PX_PER_S_MIN))
+            val upwardSpeed = -(
+                BASE_UPWARD_PX_PER_S_MIN +
+                    Random.nextFloat() * (BASE_UPWARD_PX_PER_S_MAX - BASE_UPWARD_PX_PER_S_MIN)
+                )
             rt.velocity = Offset(randomJitter(), upwardSpeed)
             rt.scale.snapTo(1f)
             rt.alpha.snapTo(1f)

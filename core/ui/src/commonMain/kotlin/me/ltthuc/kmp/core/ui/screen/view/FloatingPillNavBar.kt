@@ -17,14 +17,13 @@ import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -83,8 +82,6 @@ fun FloatingPillNavBar(
     ) {
         Surface(
             modifier = Modifier
-                .fillMaxWidth(fraction = 0.92f)
-                .widthIn(max = 512.dp)
                 .height(64.dp)
                 .shadow(
                     elevation = 12.dp,
@@ -101,13 +98,13 @@ fun FloatingPillNavBar(
         ) {
             Row(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(8.dp)
+                    .fillMaxHeight()
+                    .padding(horizontal = 12.dp, vertical = 8.dp)
                     .semantics {
                         role = Role.Tab
                         contentDescription = "Navigation"
                     },
-                horizontalArrangement = Arrangement.SpaceAround,
+                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 items.forEach { item ->

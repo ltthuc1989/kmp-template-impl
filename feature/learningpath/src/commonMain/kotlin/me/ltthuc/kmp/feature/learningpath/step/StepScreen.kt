@@ -20,14 +20,18 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import io.github.aakira.napier.Napier
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.launch
 import me.ltthuc.kmp.core.repository.LearningProgressRepository
+import me.ltthuc.kmp.core.repository.LessonProgressRepository
 import me.ltthuc.kmp.core.repository.LevelRepository
+import me.ltthuc.kmp.core.repository.UnitRepository
 import me.ltthuc.kmp.core.ui.screen.Destination
 import me.ltthuc.kmp.core.ui.theme.LocalNavBackStack
 import me.ltthuc.kmp.feature.learningpath.step.blending.BlendingScreen
@@ -58,7 +62,20 @@ internal fun StepScreen(
 ) {
     val navBackStack = LocalNavBackStack.current
     val progressRepository: LearningProgressRepository = koinInject()
+    val lessonProgressRepository: LessonProgressRepository = koinInject()
     val levelRepository: LevelRepository = koinInject()
+    val unitRepository: UnitRepository = koinInject()
+    val scope = rememberCoroutineScope()
+
+    // Current lesson's stable id, used to mark the lesson completed on the last step.
+    // StepScreen itself doesn't hold the lessons list (child step screens load them), so we
+    // observe them here. lessonIndex maps to the sorted-by-orderIndex position.
+    var currentLessonId by remember(unitId, lessonIndex) { mutableStateOf<String?>(null) }
+    LaunchedEffect(unitId, lessonIndex) {
+        unitRepository.observeLessons(unitId).collect { lessons ->
+            currentLessonId = lessons.sortedBy { it.orderIndex }.getOrNull(lessonIndex)?.id
+        }
+    }
 
     var visibleSteps by remember(levelId) { mutableStateOf(DEFAULT_VISIBLE_STEPS) }
     LaunchedEffect(levelId) {
@@ -76,10 +93,10 @@ internal fun StepScreen(
     val perLessonSteps = visibleSteps.size
     val lastVisibleStepIndex = visibleSteps.last()
     val isLastLesson = totalLessons > 0 && lessonIndex == totalLessons - 1
-    // Canonical step indices to render in the StepHeader segment row (e.g.
-    // [0,1,2,3,5,6] for L1 non-last lesson, [0,1,2,3,5,6,7] for L1 last lesson).
-    val stepSegments = remember(visibleSteps, isLastLesson) {
-        (if (isLastLesson) visibleSteps + STORY_SEGMENT_INDEX else visibleSteps).toImmutableList()
+    // Canonical step indices to render in the StepHeader segment row. The Story is no longer
+    // shown as a trailing segment — the last lesson's bar matches every other lesson's.
+    val stepSegments = remember(visibleSteps) {
+        visibleSteps.toImmutableList()
     }
 
     // Defensive: if user lands on a hidden step (e.g., resuming from old saved progress),
@@ -130,6 +147,13 @@ internal fun StepScreen(
             else ->
                 Destination.Learning.LessonComplete(levelId, unitId, lessonIndex)
         }
+        // Reaching the last visible step completes this lesson → record it so the Lesson Map
+        // unlocks the next lesson (and Story/Mini Games once every lesson is done).
+        if (stepIndex >= lastVisibleStepIndex) {
+            currentLessonId?.let { id ->
+                scope.launch { lessonProgressRepository.markCompleted(id, unitId) }
+            }
+        }
         Napier.d(tag = TAG) {
             "onNext advance: $levelId/$unitId lesson=$lessonIndex step=$stepIndex -> $next " +
                 "(navBackStack size=${navBackStack.size})"
@@ -158,16 +182,9 @@ internal fun StepScreen(
             navBackStack.removeAt(navBackStack.lastIndex)
         }
     }
-    val onPrevious: () -> Unit = {
-        if (navBackStack.size > 1) navBackStack.removeAt(navBackStack.size - 1)
-    }
     val onStepJump: (Int) -> Unit = { targetStep ->
         when {
             targetStep == stepIndex -> Unit
-            targetStep == STORY_SEGMENT_INDEX && isLastLesson -> {
-                if (navBackStack.isNotEmpty()) navBackStack.removeAt(navBackStack.lastIndex)
-                navBackStack.add(Destination.Learning.UnitStory(levelId, unitId))
-            }
             targetStep in visibleSteps -> {
                 if (navBackStack.isNotEmpty()) navBackStack.removeAt(navBackStack.lastIndex)
                 navBackStack.add(Destination.Learning.Step(levelId, unitId, lessonIndex, targetStep))
@@ -190,7 +207,6 @@ internal fun StepScreen(
             unitId = unitId,
             lessonIndex = lessonIndex,
             onClose = onClose,
-            onPrevious = onPrevious,
             onNext = onNext,
             onStepJump = onStepJump,
             stepSegments = stepSegments,
@@ -201,7 +217,6 @@ internal fun StepScreen(
             unitId = unitId,
             lessonIndex = lessonIndex,
             onClose = onClose,
-            onPrevious = onPrevious,
             onNext = onNext,
             onStepJump = onStepJump,
             modifier = modifier,
@@ -212,7 +227,6 @@ internal fun StepScreen(
             unitId = unitId,
             lessonIndex = lessonIndex,
             onClose = onClose,
-            onPrevious = onPrevious,
             onNext = onNext,
             onStepJump = onStepJump,
             stepSegments = stepSegments,
@@ -223,7 +237,6 @@ internal fun StepScreen(
             unitId = unitId,
             lessonIndex = lessonIndex,
             onClose = onClose,
-            onPrevious = onPrevious,
             onNext = onNext,
             onStepJump = onStepJump,
             stepSegments = stepSegments,
@@ -234,7 +247,6 @@ internal fun StepScreen(
             unitId = unitId,
             lessonIndex = lessonIndex,
             onClose = onClose,
-            onPrevious = onPrevious,
             onNext = onNext,
             onStepJump = onStepJump,
             stepSegments = stepSegments,
@@ -245,7 +257,6 @@ internal fun StepScreen(
             unitId = unitId,
             lessonIndex = lessonIndex,
             onClose = onClose,
-            onPrevious = onPrevious,
             onNext = onNext,
             onStepJump = onStepJump,
             stepSegments = stepSegments,

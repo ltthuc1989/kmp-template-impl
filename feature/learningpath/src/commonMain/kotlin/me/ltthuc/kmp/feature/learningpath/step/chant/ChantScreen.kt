@@ -56,11 +56,12 @@ import me.ltthuc.kmp.core.model.ChantMeta
 import me.ltthuc.kmp.core.model.PhonicsLesson
 import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.chant_listen_cd
+import me.ltthuc.kmp.core.resource.common_next
 import me.ltthuc.kmp.core.resource.step_guide_chant
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
-import me.ltthuc.kmp.feature.learningpath.step.common.LetterStepperBar
 import me.ltthuc.kmp.feature.learningpath.step.common.PageDotsRow
 import me.ltthuc.kmp.feature.learningpath.step.common.PulseRings
+import me.ltthuc.kmp.feature.learningpath.step.common.StepContinueButton
 import me.ltthuc.kmp.feature.learningpath.step.common.StepHeader
 import me.ltthuc.kmp.feature.learningpath.step.common.StoryStyleCard
 import me.ltthuc.kmp.feature.learningpath.step.common.chantRef
@@ -80,7 +81,6 @@ internal fun ChantScreen(
     unitId: String,
     lessonIndex: Int,
     onClose: () -> Unit,
-    onPrevious: () -> Unit,
     onNext: () -> Unit,
     onStepJump: (Int) -> Unit,
     stepSegments: ImmutableList<Int>,
@@ -108,13 +108,10 @@ internal fun ChantScreen(
         }
         ChantContent(
             currentLesson = currentLesson,
-            lessons = uiState.lessons,
-            currentIndex = safeIndex,
             audioState = audioState,
             chantMeta = chantMeta,
             onChantToggle = { viewModel.onChantToggle(currentLesson) },
             onClose = onClose,
-            onPrevious = onPrevious,
             onNext = onNext,
             onStepJump = onStepJump,
             stepSegments = stepSegments,
@@ -125,13 +122,10 @@ internal fun ChantScreen(
 @Composable
 private fun ChantContent(
     currentLesson: PhonicsLesson,
-    lessons: ImmutableList<PhonicsLesson>,
-    currentIndex: Int,
     audioState: AudioState,
     chantMeta: ChantMeta?,
     onChantToggle: () -> Unit,
     onClose: () -> Unit,
-    onPrevious: () -> Unit,
     onNext: () -> Unit,
     onStepJump: (Int) -> Unit,
     stepSegments: ImmutableList<Int>,
@@ -160,13 +154,11 @@ private fun ChantContent(
                 currentStepIndex = STEP_INDEX,
                 onClose = onClose,
                 onStepJump = onStepJump,
-                onNext = onNext,
-                nextEnabled = slideIndex >= CELEBRATION_SLIDE_INDEX,
                 stepSegments = stepSegments,
                 guideText = stringResource(Res.string.step_guide_chant),
                 guideTrailing = {
                     Box(
-                        modifier = Modifier.size(36.dp),
+                        modifier = Modifier.size(47.dp),
                         contentAlignment = Alignment.Center,
                     ) {
                         PulseRings(
@@ -175,13 +167,13 @@ private fun ChantContent(
                         )
                         IconButton(
                             onClick = onChantToggle,
-                            modifier = Modifier.size(32.dp),
+                            modifier = Modifier.size(42.dp),
                         ) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.VolumeUp,
                                 contentDescription = stringResource(Res.string.chant_listen_cd),
                                 tint = MaterialTheme.colorScheme.secondary,
-                                modifier = Modifier.size(20.dp),
+                                modifier = Modifier.size(26.dp),
                             )
                         }
                     }
@@ -189,9 +181,10 @@ private fun ChantContent(
             )
         },
         bottomBar = {
-            LetterStepperBar(
-                lessons = lessons,
-                currentIndex = currentIndex,
+            StepContinueButton(
+                label = stringResource(Res.string.common_next),
+                onClick = onNext,
+                enabled = slideIndex >= CELEBRATION_SLIDE_INDEX,
             )
         },
     ) { innerPadding ->

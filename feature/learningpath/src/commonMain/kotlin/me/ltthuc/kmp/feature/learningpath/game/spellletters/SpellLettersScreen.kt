@@ -15,6 +15,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
@@ -28,9 +29,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import me.ltthuc.kmp.core.resource.Res
-import me.ltthuc.kmp.core.resource.chant_next
-import me.ltthuc.kmp.core.resource.spell_letters_celebration_subtitle
-import me.ltthuc.kmp.core.resource.spell_letters_celebration_title
 import me.ltthuc.kmp.core.resource.spell_letters_guide
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
 import me.ltthuc.kmp.feature.learningpath.game.common.CreamBackground
@@ -39,8 +37,6 @@ import me.ltthuc.kmp.feature.learningpath.game.common.gameSegmentsFor
 import me.ltthuc.kmp.feature.learningpath.game.pickword.view.PicturePanel
 import me.ltthuc.kmp.feature.learningpath.game.spellletters.view.DraggableLetterTile
 import me.ltthuc.kmp.feature.learningpath.game.spellletters.view.WordSlot
-import me.ltthuc.kmp.feature.learningpath.step.common.ScoreFeedback
-import me.ltthuc.kmp.feature.learningpath.step.common.ScoreFeedbackOverlay
 import me.ltthuc.kmp.feature.learningpath.step.common.StepHeader
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -79,8 +75,6 @@ internal fun SpellLettersScreen(
                     stepSegments = stepSegments,
                     onClose = onClose,
                     onStepJump = onJumpToGame,
-                    onNext = onGameComplete,
-                    nextEnabled = ui.isComplete,
                     guideText = stringResource(Res.string.spell_letters_guide),
                 )
             },
@@ -108,15 +102,20 @@ private fun SpellLettersCanvas(
     val density = LocalDensity.current
     val snapRadiusPx = with(density) { SNAP_RADIUS_DP.dp.toPx() }
 
-    val slotCenters = remember { mutableStateMapOf<Int, Offset>() }
-    val matchedSnapTargets = remember { mutableStateMapOf<Char, Offset>() }
+    // Keyed by round so each new word starts with fresh empty maps (no inherited positions/snap
+    // targets). Using remember(round) instead of a clearing LaunchedEffect avoids a race where the
+    // clear ran AFTER the new slots reported their centers, leaving slotCenters empty → nothing
+    // droppable on round 2+.
+    val slotCenters = remember(ui.currentRoundIndex) { mutableStateMapOf<Int, Offset>() }
+    // matchedSnapTargets / usedTiles keyed by tile position in tileOrder (NOT by letter) so words
+    // with duplicate letters (e.g. "egg") track each physical tile independently.
+    val matchedSnapTargets = remember(ui.currentRoundIndex) { mutableStateMapOf<Int, Offset>() }
+    val usedTiles = remember(ui.currentRoundIndex) { mutableStateMapOf<Int, Boolean>() }
 
-    // On every round transition, wipe drag/snap state so the next word's tiles don't
-    // inherit positions/snap targets from the previous word (which made them auto-fly to
-    // remembered slot centers instead of resetting at the bottom scatter row).
-    androidx.compose.runtime.LaunchedEffect(ui.currentRoundIndex) {
-        slotCenters.clear()
-        matchedSnapTargets.clear()
+    // Auto-advance to the next game once the final word's audio has finished
+    // (isComplete is only set after playWordAndAwait completes in the ViewModel).
+    LaunchedEffect(ui.isComplete) {
+        if (ui.isComplete) onGameComplete()
     }
 
     Box(modifier = modifier) {
@@ -165,21 +164,20 @@ private fun SpellLettersCanvas(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(14.dp, Alignment.CenterHorizontally),
                 ) {
-                    round.tileOrder.forEach { letter ->
-                        val slotIdx = round.word.indexOfFirst { it.equals(letter, ignoreCase = true) }
-                        val isUsed = slotIdx in ui.filledSlots
+                    round.tileOrder.forEachIndexed { tileIdx, letter ->
                         DraggableLetterTile(
                             letter = letter,
                             tint = round.tint,
-                            isUsed = isUsed,
-                            snapTarget = matchedSnapTargets[letter],
+                            isUsed = usedTiles[tileIdx] == true,
+                            snapTarget = matchedSnapTargets[tileIdx],
                             onCenterPositioned = { /* origin captured internally */ },
                             onDragEnd = { center ->
                                 val nearest = nearestSlot(center, slotCenters, snapRadiusPx)
                                 val matched = onDrop(letter, nearest)
                                 if (matched && nearest != null) {
+                                    usedTiles[tileIdx] = true
                                     slotCenters[nearest]?.let { slot ->
-                                        matchedSnapTargets[letter] = slot
+                                        matchedSnapTargets[tileIdx] = slot
                                     }
                                 }
                                 matched
@@ -190,12 +188,6 @@ private fun SpellLettersCanvas(
             }
             Spacer(Modifier.height(20.dp))
         }
-
-        ScoreFeedbackOverlay(
-            feedback = buildOverlayFeedback(ui),
-            onDismiss = { /* tap-outside disabled */ },
-            onPrimary = onGameComplete,
-        )
     }
 }
 
@@ -209,18 +201,6 @@ private fun nearestSlot(
         .filter { (_, dist) -> dist <= radiusPx }
         .minByOrNull { it.second }
         ?.first
-}
-
-@Composable
-private fun buildOverlayFeedback(ui: SpellLettersUiState): ScoreFeedback? = if (ui.isComplete) {
-    ScoreFeedback.Success(
-        title = stringResource(Res.string.spell_letters_celebration_title),
-        subtitle = stringResource(Res.string.spell_letters_celebration_subtitle),
-        heroEmoji = "🎉",
-        primaryLabel = stringResource(Res.string.chant_next),
-    )
-} else {
-    null
 }
 
 private const val SNAP_RADIUS_DP = 80

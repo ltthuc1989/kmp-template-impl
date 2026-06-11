@@ -55,15 +55,11 @@ import kotlinx.coroutines.launch
 import me.ltthuc.kmp.core.model.LessonWord
 import me.ltthuc.kmp.core.model.PhonicsLesson
 import me.ltthuc.kmp.core.resource.Res
-import me.ltthuc.kmp.core.resource.identify_all_done_subtitle
-import me.ltthuc.kmp.core.resource.identify_all_done_title
-import me.ltthuc.kmp.core.resource.score_success_primary
+import me.ltthuc.kmp.core.resource.common_next
 import me.ltthuc.kmp.core.resource.step_guide_matching
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
-import me.ltthuc.kmp.feature.learningpath.step.common.LetterStepperBar
 import me.ltthuc.kmp.feature.learningpath.step.common.PuffySurface
-import me.ltthuc.kmp.feature.learningpath.step.common.ScoreFeedback
-import me.ltthuc.kmp.feature.learningpath.step.common.ScoreFeedbackOverlay
+import me.ltthuc.kmp.feature.learningpath.step.common.StepContinueButton
 import me.ltthuc.kmp.feature.learningpath.step.common.StepHeader
 import me.ltthuc.kmp.feature.learningpath.step.common.WordDisplayView
 import org.jetbrains.compose.resources.stringResource
@@ -78,7 +74,6 @@ internal fun MatchingScreen(
     unitId: String,
     lessonIndex: Int,
     onClose: () -> Unit,
-    onPrevious: () -> Unit,
     onNext: () -> Unit,
     onStepJump: (Int) -> Unit,
     stepSegments: ImmutableList<Int>,
@@ -101,13 +96,9 @@ internal fun MatchingScreen(
         val currentLesson = uiState.lessons[safeIndex]
         MatchingContent(
             currentLesson = currentLesson,
-            lessons = uiState.lessons,
-            currentIndex = safeIndex,
             onPlayWord = { word -> viewModel.onListenWord(currentLesson, word) },
             onPlaySfx = viewModel::playSfx,
-            onPlayVoice = viewModel::playVoicePraise,
             onClose = onClose,
-            onPrevious = onPrevious,
             onNext = onNext,
             onStepJump = onStepJump,
             stepSegments = stepSegments,
@@ -118,13 +109,9 @@ internal fun MatchingScreen(
 @Composable
 private fun MatchingContent(
     currentLesson: PhonicsLesson,
-    lessons: ImmutableList<PhonicsLesson>,
-    currentIndex: Int,
     onPlayWord: (word: String) -> Unit,
     onPlaySfx: (String) -> Unit,
-    onPlayVoice: (String) -> Unit,
     onClose: () -> Unit,
-    onPrevious: () -> Unit,
     onNext: () -> Unit,
     onStepJump: (Int) -> Unit,
     stepSegments: ImmutableList<Int>,
@@ -153,12 +140,6 @@ private fun MatchingContent(
     // Validated correct pairings (locked, can't redo).
     val validatedMatches = remember(currentLesson.id) { mutableStateMapOf<String, String>() }
     var wrongFlashTexts by remember(currentLesson.id) { mutableStateOf(emptySet<String>()) }
-    var finalOverlay by remember(currentLesson.id) { mutableStateOf<ScoreFeedback?>(null) }
-
-    val allDoneTitle = stringResource(Res.string.identify_all_done_title)
-    val allDoneSubtitle = stringResource(Res.string.identify_all_done_subtitle, totalPairs)
-    val successPrimary = stringResource(Res.string.score_success_primary)
-    val heroEmoji = vocab.firstOrNull()?.emoji.orEmpty().ifEmpty { "🎉" }
 
     val scope = rememberCoroutineScope()
 
@@ -168,21 +149,8 @@ private fun MatchingContent(
         val isCorrect = leftText.equals(rightText, ignoreCase = true)
         if (isCorrect) {
             validatedMatches[leftText] = rightText
-            // Khan-simple: chime + voice praise after delay on every correct match.
+            // Only the correct chime plays — no praise voice, no completion sound.
             onPlaySfx(SFX_CORRECT)
-            scope.launch {
-                delay(PRAISE_DELAY_MS)
-                onPlayVoice(MATCHING_PRAISE_POOL.random())
-            }
-            if (validatedMatches.size == totalPairs) {
-                onPlaySfx(SFX_LESSON_COMPLETE)
-                finalOverlay = ScoreFeedback.Success(
-                    title = allDoneTitle,
-                    subtitle = allDoneSubtitle,
-                    heroEmoji = heroEmoji,
-                    primaryLabel = successPrimary,
-                )
-            }
         } else {
             // Khan-simple: NO SFX on wrong. Visual shake + dashed line is the feedback.
             pendingMatches[leftText] = rightText
@@ -203,16 +171,15 @@ private fun MatchingContent(
                     currentStepIndex = STEP_INDEX,
                     onClose = onClose,
                     onStepJump = onStepJump,
-                    onNext = onNext,
-                    nextEnabled = validatedMatches.size == totalPairs && finalOverlay == null,
                     stepSegments = stepSegments,
                     guideText = stringResource(Res.string.step_guide_matching),
                 )
             },
             bottomBar = {
-                LetterStepperBar(
-                    lessons = lessons,
-                    currentIndex = currentIndex,
+                StepContinueButton(
+                    label = stringResource(Res.string.common_next),
+                    onClick = onNext,
+                    enabled = validatedMatches.size == totalPairs,
                 )
             },
         ) { innerPadding ->
@@ -243,15 +210,6 @@ private fun MatchingContent(
                 Spacer(Modifier.height(8.dp))
             }
         }
-
-        ScoreFeedbackOverlay(
-            feedback = finalOverlay,
-            onDismiss = { finalOverlay = null },
-            onPrimary = {
-                finalOverlay = null
-                onNext()
-            },
-        )
     }
 }
 
@@ -741,21 +699,10 @@ private data class DragLine(
     val end: Offset,
 )
 
-private fun Offset.distance(): Float = kotlin.math.sqrt(x * x + y * y)
-
 // -------- Constants --------
 
 private val DOT_SIZE = 14.dp
 private val ART_SIZE = 56.dp
-private const val DOT_HIT_RADIUS_PX = 70f
 private const val WRONG_FLASH_MS = 700L
 private const val AUTO_PLAY_DELAY_MS = 500L
 private const val SFX_CORRECT = "correct"
-private const val SFX_LESSON_COMPLETE = "lesson_complete"
-private const val PRAISE_DELAY_MS = 500L
-private val MATCHING_PRAISE_POOL = listOf(
-    "praise_great_job",
-    "praise_nice",
-    "praise_you_got_it",
-    "praise_well_done",
-)

@@ -22,6 +22,9 @@ from typing import Optional
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = Path("/Volumes/Entertainment/GeminiGenerator/opw_audio_project/data")
 CURRICULUM_JSON = REPO_ROOT / "core/resource/src/commonMain/composeResources/files/curriculum.json"
+# Manifest of words that use an AI-generated image instead of an emoji (no Unicode emoji exists).
+# Shared with opw_audio_project/scripts/generate_vocab_images.py. Columns: word,image,hint
+VOCAB_IMAGES_CSV = REPO_ROOT / "scripts" / "vocab_images.csv"
 
 LEVEL_META = {
     1: {"title": "The Alphabet", "ageRange": "3-5", "isPremium": False},
@@ -192,7 +195,7 @@ EMOJI_FALLBACK = {
     "zebra": "🦓",
     # L2 short-vowel words
     "ram": "🐏", "yam": "🍠", "dam": "🏞️",
-    "fan": "🌀", "man": "🧑", "pan": "🍳", "can": "🥫",
+    "fan": "🪭", "man": "🧑", "pan": "🍳", "can": "🥫",
     "dad": "👨", "pad": "📒", "bag": "👜", "rag": "🧹",
     "cap": "🧢", "map": "🗺️", "nap": "😴", "tap": "🚰",
     "bat": "🦇", "rat": "🐀", "hat": "👒", "mat": "🟫",
@@ -265,12 +268,12 @@ EMOJI_FALLBACK = {
     "giraffe": "🦒", "orange": "🍊", "giant": "🗿", "cage": "🪺",
     "jeans": "👖", "cheese": "🧀", "legs": "🦵",
     # L5 letter combinations
-    "car": "🚗", "farm": "🚜", "park": "🏞️", "star": "⭐",
+    "car": "🚗", "farm": "🏡", "park": "🏞️", "star": "⭐",
     "bird": "🐦", "girl": "👧", "nurse": "👩‍⚕️", "purple": "🟣",
     "sister": "👭", "doctor": "👨‍⚕️", "tractor": "🚜",
     "house": "🏠", "cow": "🐄", "brown": "🟫",
     "coin": "🪙", "soil": "🪴", "toy": "🧸", "boy": "👦",
-    "book": "📚", "foot": "🦶", "bush": "🌳", "pull": "🤜",
+    "book": "📚", "foot": "🦶", "bush": "🌿", "pull": "🤜",
     "sauce": "🥣", "august": "📅", "prawn": "🦐", "draw": "✏️",
     "ball": "⚽", "tall": "📏", "walk": "🚶",
     "horse": "🐴", "roar": "🦁", "board": "🪵",
@@ -284,7 +287,7 @@ EMOJI_FALLBACK = {
     "chicken": "🐔", "pencil": "✏️", "surprise": "🎁",
     "love": "❤️", "son": "👦", "honey": "🍯",
     "knife": "🔪", "knee": "🦵", "write": "✍️", "wrong": "❌",
-    "lamb": "🐑", "comb": "💇", "glove": "🧤", "live": "🎙️",
+    "lamb": "🐑", "comb": "🪮", "glove": "🧤", "live": "🎙️",
     "rhino": "🦏", "rhubarb": "🌱", "whistle": "🎽", "castle": "🏰",
     "picture": "🖼️", "nature": "🌿", "treasure": "💎", "measure": "📏",
     "station": "🚉", "competition": "🏆", "television": "📺", "excursion": "🗺️",
@@ -352,7 +355,61 @@ def emoji_for(word: str, old: dict[str, str]) -> Optional[str]:
     return old.get(key) or EMOJI_FALLBACK.get(key)
 
 
+def load_vocab_images() -> dict[str, str]:
+    """word(lower) -> image stem, from vocab_images.csv. Empty if manifest missing."""
+    mp: dict[str, str] = {}
+    if not VOCAB_IMAGES_CSV.exists():
+        return mp
+    with VOCAB_IMAGES_CSV.open(encoding="utf-8") as f:
+        for row in csv.DictReader(f):
+            w = (row.get("word") or "").strip().lower()
+            if w:
+                mp[w] = (row.get("image") or w).strip()
+    return mp
+
+
+def apply_image_display(entry: dict, vocab_images: dict[str, str]) -> bool:
+    """If `entry`'s word has a vocab image, set displays = [image, emoji-fallback].
+    Image first = preferred by WordDisplayView; emoji kept as a load-failure fallback.
+    Returns True if a display was applied."""
+    img = vocab_images.get(entry["word"].lower())
+    if not img:
+        return False
+    displays = [{"type": "image", "path": f"files/images/vocab/{img}.webp"}]
+    if entry.get("emoji"):
+        displays.append({"type": "emoji", "char": entry["emoji"]})
+    entry["displays"] = displays
+    return True
+
+
+def apply_images_only() -> int:
+    """Patch the EXISTING curriculum.json in place — inject image displays for manifest
+    words without doing a full regen (which would drop manual displays like apple's)."""
+    vocab_images = load_vocab_images()
+    if not vocab_images:
+        print(f"No manifest at {VOCAB_IMAGES_CSV}", file=sys.stderr)
+        return 1
+    data = json.loads(CURRICULUM_JSON.read_text(encoding="utf-8"))
+    count = 0
+    for lvl in data.get("levels", []):
+        for unit in lvl.get("units", []):
+            for lesson in unit.get("lessons", []):
+                for word in lesson.get("words", []):
+                    if apply_image_display(word, vocab_images):
+                        count += 1
+    CURRICULUM_JSON.write_text(
+        json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8",
+    )
+    print(f"Applied image displays to {count} word occurrences ({len(vocab_images)} manifest words)")
+    return 0
+
+
 def main() -> int:
+    if "--apply-images-only" in sys.argv:
+        return apply_images_only()
+
+    old_emoji = load_emoji_from_old_curriculum()
+    vocab_images = load_vocab_images()
     old_emoji = load_emoji_from_old_curriculum()
 
     levels = []
@@ -385,6 +442,7 @@ def main() -> int:
                     entry = {"word": w}
                     if e is not None:
                         entry["emoji"] = e
+                    apply_image_display(entry, vocab_images)
                     words.append(entry)
                 chant_texts = generate_chant_texts(lvl, row["stretched_word"], words)
                 lessons.append({

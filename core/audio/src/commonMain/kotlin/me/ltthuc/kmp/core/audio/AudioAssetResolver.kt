@@ -33,6 +33,8 @@ class AudioAssetResolver(
         is AudioRef.Sfx -> "files/sfx/${ref.name}.mp3"
         is AudioRef.Voice -> "files/sfx/voice/${ref.name}.mp3"
         is AudioRef.Music -> "files/sfx/music/${ref.name}.mp3"
+        is AudioRef.LetterSound -> "files/audio/phonemes/${ref.letter.lowercase()}.mp3"
+        is AudioRef.FindSound -> "files/audio/find_sound/${ref.letter.lowercase()}.mp3"
         is AudioRef.Story -> "files/audio/${storagePath(ref)}".takeIf { ref.storyId.startsWith(L1_STORY_PREFIX) }
         else -> "files/audio/${storagePath(ref)}".takeIf { ref.lessonFolder.startsWith(L1_BUNDLE_PREFIX) }
     }
@@ -49,6 +51,8 @@ class AudioAssetResolver(
         is AudioRef.Sfx -> "sfx/${ref.name}.mp3"
         is AudioRef.Voice -> "sfx/voice/${ref.name}.mp3"
         is AudioRef.Music -> "sfx/music/${ref.name}.mp3"
+        is AudioRef.LetterSound -> "phonemes/${ref.letter.lowercase()}.mp3"
+        is AudioRef.FindSound -> "find_sound/${ref.letter.lowercase()}.mp3"
     }
 
     /** "L1_S01" -> "level_1" */

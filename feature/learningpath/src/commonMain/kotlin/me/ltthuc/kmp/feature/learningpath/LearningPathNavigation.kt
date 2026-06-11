@@ -60,6 +60,13 @@ fun EntryProviderScope<NavKey>.learningEntry() {
             modifier = Modifier.fillMaxSize(),
         )
     }
+    entry<Destination.Learning.LessonMap> { dest ->
+        LessonMapScreen(
+            levelId = dest.levelId,
+            unitId = dest.unitId,
+            modifier = Modifier.fillMaxSize(),
+        )
+    }
     entry<Destination.Learning.BubblePopPreview> {
         BubblePopPreviewScreen(modifier = Modifier.fillMaxSize())
     }

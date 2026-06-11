@@ -78,29 +78,31 @@ internal fun SettingScreen(
                 )
             }
 
-            item {
-                SettingSwitchItem(
-                    title = "Sound effects",
-                    description = "Chime when you tap and on correct answers.",
-                    value = setting.sfxEnabled,
-                    onValueChanged = viewModel::setSfxEnabled,
-                )
-            }
-            item {
-                SettingSwitchItem(
-                    title = "Voice praise",
-                    description = "\"Great job!\", \"Try again!\". Does not affect letter sounds.",
-                    value = setting.voiceEnabled,
-                    onValueChanged = viewModel::setVoiceEnabled,
-                )
-            }
-            item {
-                SettingSwitchItem(
-                    title = "Background music",
-                    description = "Soft music loop on menu screens.",
-                    value = setting.musicEnabled,
-                    onValueChanged = viewModel::setMusicEnabled,
-                )
+            if (setting.developerMode) {
+                item {
+                    SettingSwitchItem(
+                        title = "Sound effects",
+                        description = "Chime when you tap and on correct answers.",
+                        value = setting.sfxEnabled,
+                        onValueChanged = viewModel::setSfxEnabled,
+                    )
+                }
+                item {
+                    SettingSwitchItem(
+                        title = "Voice praise",
+                        description = "\"Great job!\", \"Try again!\". Does not affect letter sounds.",
+                        value = setting.voiceEnabled,
+                        onValueChanged = viewModel::setVoiceEnabled,
+                    )
+                }
+                item {
+                    SettingSwitchItem(
+                        title = "Background music",
+                        description = "Soft music loop on menu screens.",
+                        value = setting.musicEnabled,
+                        onValueChanged = viewModel::setMusicEnabled,
+                    )
+                }
             }
 
             item {
