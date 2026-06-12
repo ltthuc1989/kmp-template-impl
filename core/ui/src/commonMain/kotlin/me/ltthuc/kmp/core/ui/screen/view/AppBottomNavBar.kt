@@ -70,8 +70,14 @@ fun AppBottomNavBar(
         onItemSelected = { item ->
             val target = AppBottomNavTab.entries.firstOrNull { it.key == item.key } ?: return@FloatingPillNavBar
             if (target == currentTab) return@FloatingPillNavBar
+            // Settings is gated behind a parental gate; push the gate instead of Settings itself.
+            val destination = if (target == AppBottomNavTab.Settings) {
+                Destination.Setting.Gate
+            } else {
+                target.destination
+            }
             navBackStack.clear()
-            navBackStack.add(target.destination)
+            navBackStack.add(destination)
         },
     )
 }

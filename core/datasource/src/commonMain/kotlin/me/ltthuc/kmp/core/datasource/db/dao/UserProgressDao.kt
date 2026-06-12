@@ -25,4 +25,7 @@ interface UserProgressDao {
 
     @Query("DELETE FROM user_progress WHERE unitId = :unitId")
     suspend fun deleteByUnit(unitId: String)
+
+    @Query("DELETE FROM user_progress")
+    suspend fun deleteAll()
 }

@@ -1,9 +1,12 @@
 package me.ltthuc.kmp.core.repository
 
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import me.ltthuc.kmp.core.datasource.db.DatabaseSeeder
 import me.ltthuc.kmp.core.datasource.db.dao.LearningProgressDao
@@ -26,11 +29,12 @@ class LevelRepository(
     private val learningProgressDao: LearningProgressDao,
     private val seeder: DatabaseSeeder,
     private val appSettingRepository: AppSettingRepository,
+    private val dispatcher: CoroutineDispatcher,
 ) {
-    suspend fun getVisibleSteps(levelId: String): List<Int> {
+    suspend fun getVisibleSteps(levelId: String): List<Int> = withContext(dispatcher) {
         seeder.seedIfEmpty()
-        val raw = levelDao.findById(levelId)?.visibleStepsJson ?: return DEFAULT_VISIBLE_STEPS
-        return runCatching {
+        val raw = levelDao.findById(levelId)?.visibleStepsJson ?: return@withContext DEFAULT_VISIBLE_STEPS
+        runCatching {
             visibleStepsJson.decodeFromString<List<Int>>(raw)
                 .filter { it in 0..6 }
                 .ifEmpty { DEFAULT_VISIBLE_STEPS }
@@ -46,7 +50,7 @@ class LevelRepository(
         buildLevelCards(levels, units, progress, setting.hasPrivilege)
     }.onStart {
         seeder.seedIfEmpty()
-    }
+    }.flowOn(dispatcher)
 
     fun observeLevel(levelId: String): Flow<Level?> = levelDao.observeAll().map { all ->
         all.firstOrNull { it.id == levelId }?.toModel()

@@ -97,6 +97,9 @@ sealed interface Destination : NavKey {
 
         @Serializable
         data object License : Setting
+
+        @Serializable
+        data object Gate : Setting
     }
 
     companion object {
@@ -121,6 +124,7 @@ sealed interface Destination : NavKey {
                     subclass(Review::class, Review.serializer())
                     subclass(Setting.Root::class, Setting.Root.serializer())
                     subclass(Setting.License::class, Setting.License.serializer())
+                    subclass(Setting.Gate::class, Setting.Gate.serializer())
                 }
             }
         }

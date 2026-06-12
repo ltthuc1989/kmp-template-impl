@@ -9,6 +9,7 @@ import me.ltthuc.kmp.core.repository.ChantMetaRepository
 import me.ltthuc.kmp.core.repository.LearningProgressRepository
 import me.ltthuc.kmp.core.repository.LessonProgressRepository
 import me.ltthuc.kmp.core.repository.LevelRepository
+import me.ltthuc.kmp.core.repository.ProgressResetRepository
 import me.ltthuc.kmp.core.repository.SfxController
 import me.ltthuc.kmp.core.repository.StoryRepository
 import me.ltthuc.kmp.core.repository.UnitCompletionRepository
@@ -25,6 +26,7 @@ val repositoryModule = module {
     singleOf(::LearningProgressRepository)
     singleOf(::LessonProgressRepository)
     singleOf(::LevelRepository)
+    singleOf(::ProgressResetRepository)
     singleOf(::StoryRepository)
     singleOf(::UnitCompletionRepository)
     singleOf(::UnitRepository)

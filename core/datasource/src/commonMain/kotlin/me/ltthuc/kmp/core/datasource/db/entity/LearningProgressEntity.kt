@@ -17,5 +17,17 @@ data class LearningProgressEntity(
 ) {
     companion object {
         const val SINGLETON_ID = 0
+
+        /**
+         * First-install / post-reset state: user lands on L1 → only L1U1 is Unlocked, no
+         * completions yet. Used by [DatabaseSeeder] and the global progress reset.
+         */
+        fun initial() = LearningProgressEntity(
+            activeLevelId = "L1",
+            activeUnitId = "L1U1",
+            activeLessonIndex = 0,
+            activeStepIndex = 0,
+            unitProgressPercent = 0,
+        )
     }
 }

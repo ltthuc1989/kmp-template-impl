@@ -149,8 +149,12 @@ private fun MatchingContent(
         val isCorrect = leftText.equals(rightText, ignoreCase = true)
         if (isCorrect) {
             validatedMatches[leftText] = rightText
-            // Only the correct chime plays — no praise voice, no completion sound.
+            // Correct chime, then the matched word so the kid hears what they got right.
             onPlaySfx(SFX_CORRECT)
+            scope.launch {
+                delay(CORRECT_WORD_DELAY_MS)
+                onPlayWord(rightText)
+            }
         } else {
             // Khan-simple: NO SFX on wrong. Visual shake + dashed line is the feedback.
             pendingMatches[leftText] = rightText
@@ -705,4 +709,5 @@ private val DOT_SIZE = 14.dp
 private val ART_SIZE = 56.dp
 private const val WRONG_FLASH_MS = 700L
 private const val AUTO_PLAY_DELAY_MS = 500L
+private const val CORRECT_WORD_DELAY_MS = 400L
 private const val SFX_CORRECT = "correct"

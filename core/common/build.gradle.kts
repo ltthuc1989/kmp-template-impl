@@ -24,6 +24,7 @@ kotlin {
 
             api(libs.bundles.firebase)
             api(libs.koin.android)
+            implementation(libs.play.review)
         }
     }
 }

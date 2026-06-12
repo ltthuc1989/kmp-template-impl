@@ -23,7 +23,7 @@ import me.ltthuc.kmp.core.ui.screen.view.LoadingView
 fun <T> AsyncLoadContents(
     screenState: ScreenState<T>,
     modifier: Modifier = Modifier,
-    containerColor: Color = MaterialTheme.colorScheme.surface,
+    containerColor: Color = MaterialTheme.colorScheme.background,
     cornerShape: RoundedCornerShape = RoundedCornerShape(0.dp),
     retryAction: (() -> Unit)? = null,
     terminate: (() -> Unit)? = null,
@@ -48,9 +48,7 @@ fun <T> AsyncLoadContents(
 
             is ScreenState.Loading -> {
                 LoadingView(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(Color.Black.copy(alpha = 0.2f)),
+                    modifier = Modifier.fillMaxWidth(),
                     message = state.message,
                 )
             }
@@ -67,4 +65,4 @@ fun <T> AsyncLoadContents(
     }
 }
 
-private const val FADE_DURATION_MS = 50
+private const val FADE_DURATION_MS = 200

@@ -30,6 +30,8 @@ class UserProgressRepository(
         )
     }
 
+    suspend fun resetAll() = userProgressDao.deleteAll()
+
     private companion object {
         const val MAX_STARS_PER_STEP = 3
     }

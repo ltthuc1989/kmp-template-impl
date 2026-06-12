@@ -1,10 +1,12 @@
 package me.ltthuc.kmp.core.repository
 
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import me.ltthuc.kmp.core.datasource.db.dao.LearningProgressDao
 import me.ltthuc.kmp.core.datasource.db.dao.PhonicsLessonDao
@@ -24,17 +26,20 @@ class UnitRepository(
     private val learningProgressDao: LearningProgressDao,
     private val appSettingRepository: AppSettingRepository,
     private val lessonProgressRepository: LessonProgressRepository,
+    private val dispatcher: CoroutineDispatcher,
 ) {
     fun observeUnits(levelId: String): Flow<List<PhonicsUnit>> = unitDao.observeAll().map { all ->
         all.filter { it.levelId == levelId }.sortedBy { it.orderIndex }.map { it.toModel() }
-    }
+    }.flowOn(dispatcher)
 
     fun observeUnit(unitId: String): Flow<PhonicsUnit?> = unitDao.observeAll().map { all ->
         all.firstOrNull { it.id == unitId }?.toModel()
-    }
+    }.flowOn(dispatcher)
 
+    // toModel() parses each lesson's words/chant JSON — keep it off the UI collector.
     fun observeLessons(unitId: String): Flow<List<PhonicsLesson>> =
         phonicsLessonDao.observeByUnit(unitId).map { lessons -> lessons.map { it.toModel() } }
+            .flowOn(dispatcher)
 
     /**
      * Per-lesson lock state for the Lesson Map. First lesson is always Unlocked; each

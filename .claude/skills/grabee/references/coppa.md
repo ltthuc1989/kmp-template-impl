@@ -75,10 +75,13 @@ allow write: if request.resource.data.keys().hasOnly(
 Code Kotlin cũng phải validate trước khi gọi Firestore — defense in depth.
 
 ### 6. Parental gate trước action nguy hiểm
-- Settings → external link (privacy policy, terms) → **math gate trước** ("What is 5+7?").
-- Parent dashboard → math gate trước.
+Gate hiện tại = **number-pad spell-out-the-digits gate** (Duolingo style): show 4 random digits dạng chữ ("ZERO, FIVE, EIGHT, ONE"), adult phải tap đúng thứ tự trên number pad. Mạnh hơn math gate cũ (trẻ chưa đọc/sắp xếp được chữ số viết bằng chữ). Composable: `ParentalGateScreen` trong `core:ui/dialog` (full-screen, themed brand colors).
+- **Settings tab** → gate trước (push `Destination.Setting.Gate`, pass → `Setting.Root`).
+- Settings → external link (privacy policy, terms) → gate trước.
+- Parent dashboard → gate trước.
+- Premium level unlock + paywall navigation → gate trước (Home + Setting upgrade).
 - Subscription purchase → standard app store auth (đã có).
-- Restore SyncCode → math gate trước (chống trẻ vô tình đè data).
+- Restore SyncCode → gate trước (chống trẻ vô tình đè data).
 
 ---
 
@@ -141,32 +144,19 @@ analytics.logEvent("level_complete", mapOf(
 
 ### Parental Gate
 
+Full-screen Duolingo-style number-pad gate. Source of truth: `core/ui/src/commonMain/kotlin/me/ltthuc/kmp/core/ui/dialog/ParentalGateScreen.kt`.
+
 ```kotlin
-@Composable
-fun ParentalGateDialog(onPass: () -> Unit, onDismiss: () -> Unit) {
-    val a = remember { Random.nextInt(2, 9) }
-    val b = remember { Random.nextInt(2, 9) }
-    val correct = a + b
-    var input by remember { mutableStateOf("") }
-    AlertDialog(
-        title = { Text(stringResource(Res.string.parental_gate_title)) },
-        text = {
-            Column {
-                Text(stringResource(Res.string.parental_gate_question, a, b))
-                OutlinedTextField(value = input, onValueChange = { input = it.filter(Char::isDigit) })
-            }
-        },
-        confirmButton = {
-            TextButton(
-                enabled = input.toIntOrNull() == correct,
-                onClick = onPass,
-            ) { Text(stringResource(Res.string.action_continue)) }
-        },
-        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(Res.string.action_cancel)) } },
-        onDismissRequest = onDismiss,
-    )
-}
+ParentalGateScreen(
+    onPass = { /* proceed to gated action */ },
+    onDismiss = { /* cancel / back */ },
+)
 ```
+
+- Rolls 4 random digits once (`rememberSaveable` — không re-roll khi recompose/rotate).
+- Hiển thị digits dạng chữ (`digitWordRes(d)` → `digit_word_0..9`, localizable), adult tap đúng thứ tự trên number pad (`PuffySurface` keys, brand `colorScheme.primary`).
+- Sai → clear progress + shake. Đủ 4 đúng → `onPass` (fire một lần qua `locked` flag).
+- Dùng ở 3 nơi: nav-entry `Destination.Setting.Gate`, Home premium-unlock overlay, Setting upgrade overlay.
 
 ---
 
@@ -174,8 +164,10 @@ fun ParentalGateDialog(onPass: () -> Unit, onDismiss: () -> Unit) {
 
 EN (`values/strings.xml`):
 ```xml
-<string name="parental_gate_title">For parents only</string>
-<string name="parental_gate_question">What is %1$d + %2$d?</string>
+<string name="parental_gate_title">Hi, grown-ups!</string>
+<string name="parental_gate_subtitle">Please enter the following numbers:</string>
+<string name="parental_gate_backspace">Delete</string>
+<!-- digit_word_0..9: Zero, One, Two, ... Nine -->
 <string name="profile_nickname_hint">Pick a fun nickname (optional)</string>
 <string name="profile_synccode_explain">Save this code to keep your progress on a new device.</string>
 <string name="voice_permission_denied">Need microphone to score your voice. Open Settings → Privacy → Microphone.</string>
@@ -209,7 +201,7 @@ Trước khi `git commit` code đụng audio/profile/firestore/analytics:
 - [ ] Firestore write có whitelist field (Kotlin side + security rules).
 - [ ] Analytics event không chứa userId, nickname, deviceId.
 - [ ] Math gate trước parent dashboard + external link + restore syncCode.
-- [ ] String keys cho consent/privacy/parental có trong cả EN + JA.
+- [ ] String keys cho consent/privacy/parental có trong cả EN (+ VN khi thêm locale).
 - [ ] AdMob `RequestConfiguration` có TFCD + TFUA + MAX_AD_CONTENT_RATING_G (grep `setTagForChildDirectedTreatment`).
 - [ ] AppLovin `setIsAgeRestrictedUser(true, ...)` (grep).
 - [ ] Mọi ad render check `isPremium` flag trước.

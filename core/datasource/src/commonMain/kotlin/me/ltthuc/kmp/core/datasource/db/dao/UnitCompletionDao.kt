@@ -19,4 +19,7 @@ interface UnitCompletionDao {
 
     @Query("DELETE FROM unit_completion WHERE unitId = :unitId")
     suspend fun deleteByUnit(unitId: String)
+
+    @Query("DELETE FROM unit_completion")
+    suspend fun deleteAll()
 }

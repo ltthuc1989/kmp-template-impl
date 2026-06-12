@@ -1,16 +1,21 @@
 package me.ltthuc.kmp.core.datasource.db
 
 import io.github.aakira.napier.Napier
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import me.ltthuc.kmp.core.datasource.db.entity.LearningProgressEntity
 import me.ltthuc.kmp.core.datasource.db.entity.UserProgressEntity
 import me.ltthuc.kmp.core.resource.Res
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 
-class DatabaseSeeder(private val database: GrabeeDatabase) {
+class DatabaseSeeder(
+    private val database: GrabeeDatabase,
+    private val dispatcher: CoroutineDispatcher,
+) {
 
     @OptIn(ExperimentalResourceApi::class)
-    suspend fun seedIfEmpty() {
+    suspend fun seedIfEmpty() = withContext(dispatcher) {
         val bytes = Res.readBytes(CURRICULUM_RESOURCE_PATH)
         val jsonStr = bytes.decodeToString()
         val curriculum = seedJson.decodeFromString<CurriculumDto>(jsonStr)
@@ -27,7 +32,7 @@ class DatabaseSeeder(private val database: GrabeeDatabase) {
             existingUnits >= expectedUnits &&
             existingLessons >= expectedLessons
         ) {
-            return
+            return@withContext
         }
 
         if (existingLevels > 0 || existingUnits > 0 || existingLessons > 0) {
@@ -59,13 +64,7 @@ class DatabaseSeeder(private val database: GrabeeDatabase) {
         // First-install state: user lands on L1 → only L1U1 is Unlocked, no completions yet.
         // Sequential gating in [UnitRepository.buildUnitCards] keeps L1U2+ Locked until
         // L1U1's completionCount > 0 (user reaches UnitCompleteScreen).
-        val SEED_PROGRESS = LearningProgressEntity(
-            activeLevelId = "L1",
-            activeUnitId = "L1U1",
-            activeLessonIndex = 0,
-            activeStepIndex = 0,
-            unitProgressPercent = 0,
-        )
+        val SEED_PROGRESS = LearningProgressEntity.initial()
 
         val SEED_USER_PROGRESS = emptyList<UserProgressEntity>()
     }

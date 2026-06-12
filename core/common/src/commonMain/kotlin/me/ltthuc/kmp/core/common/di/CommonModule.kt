@@ -9,4 +9,6 @@ import org.koin.dsl.module
 val commonModule = module {
     single { formatter }
     single<CoroutineDispatcher> { Dispatchers.IO }
+
+    includes(platformModule)
 }

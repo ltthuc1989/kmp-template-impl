@@ -17,7 +17,7 @@ val dataSourceModule = module {
     single { get<GrabeeDatabase>().userProgressDao() }
     single { get<GrabeeDatabase>().unitCompletionDao() }
     single { get<GrabeeDatabase>().lessonProgressDao() }
-    single { DatabaseSeeder(get()) }
+    single { DatabaseSeeder(get(), get()) }
 
     includes(dataSourcePlatformModule)
 }

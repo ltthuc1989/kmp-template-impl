@@ -59,7 +59,7 @@ import me.ltthuc.kmp.core.resource.home_title
 import me.ltthuc.kmp.core.resource.home_unit_label
 import me.ltthuc.kmp.core.resource.level_card_coming_soon
 import me.ltthuc.kmp.core.ui.ads.BottomBannerAd
-import me.ltthuc.kmp.core.ui.dialog.ParentalGateDialog
+import me.ltthuc.kmp.core.ui.dialog.ParentalGateScreen
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
 import me.ltthuc.kmp.core.ui.screen.Destination
 import me.ltthuc.kmp.core.ui.theme.LocalNavBackStack
@@ -75,41 +75,44 @@ internal fun HomeScreen(
     val navBackStack = LocalNavBackStack.current
     var showParentalGate by remember { mutableStateOf(false) }
 
-    if (showParentalGate) {
-        ParentalGateDialog(
-            onPass = {
-                showParentalGate = false
-                navBackStack.add(Destination.Paywall(Destination.Paywall.Source.LEVEL_LOCKED))
-            },
-            onDismiss = { showParentalGate = false },
-        )
-    }
-
-    HomeScreenContent(
-        modifier = modifier,
-        content = {
-            AsyncLoadContents(
-                modifier = Modifier.fillMaxSize(),
-                screenState = screenState,
-            ) { uiState ->
-                LevelList(
-                    levels = uiState.levels,
+    Box(modifier = modifier.fillMaxSize()) {
+        HomeScreenContent(
+            modifier = Modifier.fillMaxSize(),
+            content = {
+                AsyncLoadContents(
                     modifier = Modifier.fillMaxSize(),
-                    contentPadding = it,
-                    onLevelClick = { levelCard ->
-                        val status = levelCard.status
-                        when {
-                            status is LevelStatus.Locked && status.isPremiumRequired ->
-                                if (MONETIZATION_ENABLED) showParentalGate = true else Unit
-                            status is LevelStatus.ComingSoon -> Unit
-                            status !is LevelStatus.Locked ->
-                                navBackStack.add(Destination.Learning.UnitSelection(levelCard.level.id))
-                        }
-                    },
-                )
-            }
-        },
-    )
+                    screenState = screenState,
+                ) { uiState ->
+                    LevelList(
+                        levels = uiState.levels,
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = it,
+                        onLevelClick = { levelCard ->
+                            val status = levelCard.status
+                            when {
+                                status is LevelStatus.Locked && status.isPremiumRequired ->
+                                    if (MONETIZATION_ENABLED) showParentalGate = true else Unit
+                                status is LevelStatus.ComingSoon -> Unit
+                                status !is LevelStatus.Locked ->
+                                    navBackStack.add(Destination.Learning.UnitSelection(levelCard.level.id))
+                            }
+                        },
+                    )
+                }
+            },
+        )
+
+        if (showParentalGate) {
+            ParentalGateScreen(
+                modifier = Modifier.fillMaxSize(),
+                onPass = {
+                    showParentalGate = false
+                    navBackStack.add(Destination.Paywall(Destination.Paywall.Source.LEVEL_LOCKED))
+                },
+                onDismiss = { showParentalGate = false },
+            )
+        }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

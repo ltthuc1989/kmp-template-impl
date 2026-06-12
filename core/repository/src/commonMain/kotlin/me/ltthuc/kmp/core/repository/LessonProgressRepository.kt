@@ -26,4 +26,6 @@ class LessonProgressRepository(
     }
 
     suspend fun reset(unitId: String) = dao.deleteByUnit(unitId)
+
+    suspend fun resetAll() = dao.deleteAll()
 }

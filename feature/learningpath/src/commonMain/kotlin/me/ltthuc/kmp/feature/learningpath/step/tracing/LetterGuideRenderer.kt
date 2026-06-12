@@ -45,6 +45,19 @@ import kotlin.math.roundToInt
 import kotlin.math.sin
 
 /**
+ * Memo for parsed stroke paths. `parsePathString(...).toPath()` is pure CPU work that depends only
+ * on the (constant) svgPath string, yet [drawLetterGuide]/[drawGhostLetter] run every draw frame
+ * during the trim animation — re-parsing 52 letters' paths 60×/s is wasted main-thread work.
+ * Letter paths come from a fixed table (≤52 letters × a few strokes), so the cache stays tiny.
+ * The cached [Path] is only ever read (copied via `addPath`), never mutated, and drawing is
+ * single-threaded on the UI thread, so a plain map is safe here.
+ */
+private val parsedStrokePathCache = mutableMapOf<String, Path>()
+
+private fun strokePath(svgPath: String): Path =
+    parsedStrokePathCache.getOrPut(svgPath) { PathParser().parsePathString(svgPath).toPath() }
+
+/**
  * Renders a [LetterGuide] into a [DrawScope] with 4 layers per stroke:
  *   1. Soft container halo (gives the guide a tactile "pillow" look).
  *   2. Dashed center line showing the intended trace path.
@@ -72,8 +85,7 @@ internal fun DrawScope.drawLetterGuide(
     val minLenForArrow = strokeWidthPx * 1.5f
 
     val scaledPaths = guide.strokes.map { stroke ->
-        val raw = PathParser().parsePathString(stroke.svgPath).toPath()
-        layout.transformPath(raw)
+        layout.transformPath(strokePath(stroke.svgPath))
     }
 
     // Auto-detect per-stroke "inset" needed so the arrow (tip + wings) does NOT collide with
@@ -370,8 +382,7 @@ internal fun DrawScope.drawGhostLetter(
     drawIntoCanvas { canvas ->
         canvas.saveLayer(bounds, layerPaint)
         guide.strokes.forEach { stroke ->
-            val raw = PathParser().parsePathString(stroke.svgPath).toPath()
-            val scaled = layout.transformPath(raw)
+            val scaled = layout.transformPath(strokePath(stroke.svgPath))
             drawPath(
                 scaled,
                 color = opaqueColor,

@@ -29,4 +29,7 @@ class LearningProgressRepository(
             ),
         )
     }
+
+    /** Restores the active position to first-install state (L1U1, lesson 0, step 0, 0%). */
+    suspend fun reset() = learningProgressDao.upsert(LearningProgressEntity.initial())
 }

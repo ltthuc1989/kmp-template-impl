@@ -1,6 +1,8 @@
 package me.ltthuc.kmp.core.repository
 
 import io.github.aakira.napier.Napier
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
@@ -15,12 +17,12 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
  * `stories/<id>/scene_<N>.mp3` audio files. Stories are static reference data —
  * not stored in Room, parsed on demand and cached by caller if needed.
  */
-class StoryRepository {
+class StoryRepository(private val dispatcher: CoroutineDispatcher) {
 
     @OptIn(ExperimentalResourceApi::class)
-    suspend fun loadStories(level: Int): List<Story> {
+    suspend fun loadStories(level: Int): List<Story> = withContext(dispatcher) {
         val path = "files/stories/level_$level.json"
-        return runCatching {
+        runCatching {
             val bytes = Res.readBytes(path)
             val list = jsonParser.decodeFromString<List<StoryDto>>(bytes.decodeToString())
             list.map { it.toModel(level) }

@@ -8,6 +8,7 @@ import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.setting_paywall_description
 import me.ltthuc.kmp.core.resource.setting_paywall_title
 import me.ltthuc.kmp.core.resource.setting_paywall_upgrade
+import me.ltthuc.kmp.feature.setting.components.SettingCard
 import me.ltthuc.kmp.feature.setting.components.SettingTextItem
 import me.ltthuc.kmp.feature.setting.components.SettingTitleItem
 
@@ -22,11 +23,13 @@ internal fun SettingPaywallSection(
             text = Res.string.setting_paywall_title,
         )
 
-        SettingTextItem(
-            modifier = Modifier.fillMaxWidth(),
-            title = Res.string.setting_paywall_upgrade,
-            description = Res.string.setting_paywall_description,
-            onClick = onUpgradeClicked,
-        )
+        SettingCard {
+            SettingTextItem(
+                modifier = Modifier.fillMaxWidth(),
+                title = Res.string.setting_paywall_upgrade,
+                description = Res.string.setting_paywall_description,
+                onClick = onUpgradeClicked,
+            )
+        }
     }
 }

@@ -13,6 +13,8 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.TextUnit
 import io.github.aakira.napier.Napier
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import me.ltthuc.kmp.core.model.LessonWord
 import me.ltthuc.kmp.core.model.WordDisplay
 import me.ltthuc.kmp.core.resource.Res
@@ -50,8 +52,11 @@ internal fun WordDisplayView(
     // null = still loading; Result captures success/failure so we can tell "loading" from "failed".
     val loadResult: Result<ImageBitmap>? = if (imagePath != null) {
         produceState<Result<ImageBitmap>?>(initialValue = null, imagePath) {
-            value = runCatching { Res.readBytes(imagePath).decodeToImageBitmap() }
-                .onFailure { Napier.w(tag = TAG) { "No vocab image at $imagePath, falling back to emoji" } }
+            // Decode off the Main recompose dispatcher — decodeToImageBitmap() is synchronous CPU work.
+            value = withContext(Dispatchers.Default) {
+                runCatching { Res.readBytes(imagePath).decodeToImageBitmap() }
+                    .onFailure { Napier.w(tag = TAG) { "No vocab image at $imagePath, falling back to emoji" } }
+            }
         }.value
     } else {
         null

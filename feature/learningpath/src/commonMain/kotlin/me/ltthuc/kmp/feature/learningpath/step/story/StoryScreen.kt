@@ -53,9 +53,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.aakira.napier.Napier
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import me.ltthuc.kmp.core.audio.AudioState
 import me.ltthuc.kmp.core.audio.isActive
 import me.ltthuc.kmp.core.model.Story
@@ -372,9 +374,12 @@ private fun StorySceneCard(scene: StoryScene) {
     val imagePath = scene.imagePathLandscape
     val bitmap: ImageBitmap? = if (imagePath != null) {
         produceState<ImageBitmap?>(initialValue = null, imagePath) {
-            value = runCatching { Res.readBytes(imagePath).decodeToImageBitmap() }
-                .onFailure { Napier.w(tag = TAG) { "No image at $imagePath, falling back to emoji" } }
-                .getOrNull()
+            // Decode off the Main recompose dispatcher — decodeToImageBitmap() is synchronous CPU work.
+            value = withContext(Dispatchers.Default) {
+                runCatching { Res.readBytes(imagePath).decodeToImageBitmap() }
+                    .onFailure { Napier.w(tag = TAG) { "No image at $imagePath, falling back to emoji" } }
+                    .getOrNull()
+            }
         }.value
     } else {
         null

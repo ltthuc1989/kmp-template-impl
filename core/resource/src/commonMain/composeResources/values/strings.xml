@@ -4,6 +4,7 @@
     <!-- Common -->
     <string name="common_ok">OK</string>
     <string name="common_cancel">Cancel</string>
+    <string name="common_confirm">Confirm</string>
     <string name="common_apply">Apply</string>
     <string name="common_allow">Allow</string>
     <string name="common_denied">Denied</string>
@@ -125,6 +126,15 @@
     <string name="setting_palette_playful">Playful</string>
     <string name="setting_palette_fluid">Professional</string>
     <string name="setting_general">General</string>
+    <string name="setting_sound_effects">Sound effects</string>
+    <string name="setting_support_title">Support</string>
+    <string name="setting_support_feedback">Give feedback</string>
+    <string name="setting_support_share">Share app</string>
+    <string name="setting_support_rate">Rate app</string>
+    <string name="setting_reset_progress">Reset progress</string>
+    <string name="setting_reset_confirm_title">Reset progress?</string>
+    <string name="setting_reset_confirm_message">This will erase all your learning progress and start over from Level 1. This cannot be undone.</string>
+    <string name="setting_share_message">I am learning to read with ABC Phonics Kids! 🎉</string>
     <string name="setting_information">Information</string>
     <string name="setting_information_app_version">App Version</string>
     <string name="setting_other">Other</string>
@@ -178,10 +188,19 @@
     <string name="paywall_error_no_subscription_to_restore">No restorable purchases found.</string>
 
     <!-- Parental Gate (kids COPPA protection) -->
-    <string name="parental_gate_title">For parents only</string>
-    <string name="parental_gate_question">What is %1$d + %2$d?</string>
-    <string name="parental_gate_hint">Answer to continue</string>
-    <string name="parental_gate_error">Try again</string>
+    <string name="parental_gate_title">Hi, grown-ups!</string>
+    <string name="parental_gate_subtitle">Please enter the following numbers:</string>
+    <string name="parental_gate_backspace">Delete</string>
+    <string name="digit_word_0">Zero</string>
+    <string name="digit_word_1">One</string>
+    <string name="digit_word_2">Two</string>
+    <string name="digit_word_3">Three</string>
+    <string name="digit_word_4">Four</string>
+    <string name="digit_word_5">Five</string>
+    <string name="digit_word_6">Six</string>
+    <string name="digit_word_7">Seven</string>
+    <string name="digit_word_8">Eight</string>
+    <string name="digit_word_9">Nine</string>
 
     <!-- Learning Path: Sound Intro step -->
     <string name="sound_intro_title">Sound Intro</string>

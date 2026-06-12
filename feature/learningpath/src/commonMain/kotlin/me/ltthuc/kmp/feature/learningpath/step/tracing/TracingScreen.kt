@@ -564,6 +564,6 @@ private const val GUIDE_CARD_STROKE_WIDTH_PX = 22f
 private const val GUIDE_CARD_DASH_WIDTH_PX = 3f
 private const val GUIDE_MS_PER_STROKE = 1200
 private const val PRACTICE_CORNER_DP = 24
-private const val GHOST_STROKE_FRACTION = 0.14f
+private const val GHOST_STROKE_FRACTION = 0.10f
 private const val PRACTICE_GRID_CELL_PX = 60f
 private const val PRACTICE_INK_WIDTH_PX = 18f

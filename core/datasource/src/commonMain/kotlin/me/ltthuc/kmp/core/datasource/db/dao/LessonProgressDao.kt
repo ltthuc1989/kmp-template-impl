@@ -19,4 +19,7 @@ interface LessonProgressDao {
 
     @Query("DELETE FROM lesson_progress WHERE unitId = :unitId")
     suspend fun deleteByUnit(unitId: String)
+
+    @Query("DELETE FROM lesson_progress")
+    suspend fun deleteAll()
 }

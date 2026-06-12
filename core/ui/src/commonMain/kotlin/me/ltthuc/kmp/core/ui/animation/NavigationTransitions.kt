@@ -21,11 +21,11 @@ object NavigationTransitions {
 
     // Duration (ms)
     private const val ENTER_DURATION = 400
-    private const val EXIT_DURATION = 200
-    private const val FADE_DURATION = 150
+    private const val EXIT_DURATION = 250
+    private const val FADE_DURATION = 250
 
-    // スライド量 (画面幅の25%)
-    private const val SLIDE_DISTANCE_RATIO = 0.25f
+    // スライド量 (画面幅の12%) — alpha 主体のソフトな前進感
+    private const val SLIDE_DISTANCE_RATIO = 0.12f
 
     /**
      * 前進遷移（次の画面へ進む）

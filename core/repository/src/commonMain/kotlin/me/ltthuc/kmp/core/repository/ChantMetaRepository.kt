@@ -1,6 +1,8 @@
 package me.ltthuc.kmp.core.repository
 
 import io.github.aakira.napier.Napier
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
@@ -11,7 +13,7 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 
 private const val NUM_REPS = 3
 
-class ChantMetaRepository {
+class ChantMetaRepository(private val dispatcher: CoroutineDispatcher) {
     private val cache = mutableMapOf<Int, List<ChantMetaDto>>()
 
     suspend fun metaFor(level: Int, lessonId: String, orderedWords: List<String>): ChantMeta? {
@@ -43,9 +45,9 @@ class ChantMetaRepository {
     }
 
     @OptIn(ExperimentalResourceApi::class)
-    private suspend fun loadLevel(level: Int): List<ChantMetaDto> {
+    private suspend fun loadLevel(level: Int): List<ChantMetaDto> = withContext(dispatcher) {
         val path = "files/chant_meta/level_$level.json"
-        return runCatching {
+        runCatching {
             val bytes = Res.readBytes(path)
             jsonParser.decodeFromString<List<ChantMetaDto>>(bytes.decodeToString())
         }.onFailure {

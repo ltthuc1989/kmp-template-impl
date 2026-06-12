@@ -14,6 +14,7 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.vinceglb.filekit.FileKit
 import io.github.vinceglb.filekit.dialogs.init
+import me.ltthuc.kmp.core.common.share.AndroidActivityHolder
 import me.ltthuc.kmp.core.model.Theme
 import me.ltthuc.kmp.core.ui.theme.shouldUseDarkTheme
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -52,5 +53,17 @@ class MainActivity : ComponentActivity() {
         }
 
         FileKit.init(this)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        AndroidActivityHolder.current = this
+    }
+
+    override fun onDestroy() {
+        if (AndroidActivityHolder.current === this) {
+            AndroidActivityHolder.current = null
+        }
+        super.onDestroy()
     }
 }

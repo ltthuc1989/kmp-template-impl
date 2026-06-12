@@ -18,12 +18,12 @@ internal fun SettingTitleItem(
     Text(
         modifier = modifier.padding(
             top = 24.dp,
-            bottom = 12.dp,
+            bottom = 8.dp,
             start = 24.dp,
             end = 24.dp,
         ),
         text = stringResource(text).uppercase(),
         style = MaterialTheme.typography.bodyMedium.bold(),
-        color = MaterialTheme.colorScheme.primary,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
 }

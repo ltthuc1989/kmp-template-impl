@@ -65,7 +65,6 @@ import me.ltthuc.kmp.core.resource.common_next
 import me.ltthuc.kmp.core.resource.identify_listen_cd
 import me.ltthuc.kmp.core.resource.step_guide_identify
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
-import me.ltthuc.kmp.feature.learningpath.step.common.ConfettiCanvas
 import me.ltthuc.kmp.feature.learningpath.step.common.PuffySurface
 import me.ltthuc.kmp.feature.learningpath.step.common.PulseRings
 import me.ltthuc.kmp.feature.learningpath.step.common.StepContinueButton
@@ -164,8 +163,11 @@ private fun IdentifyContent(
     val sfx = koinInject<SfxController>()
 
     // Auto-play target word on round change (and on first entering the step). Grid alpha
-    // follows audio state.
+    // follows audio state. The leading delay lets the previous step's audioRepository.stop()
+    // (run in its DisposableEffect dispose) finish before we kick off ours — without it the
+    // play() call here races against the stop() and gets cancelled.
     LaunchedEffect(currentLesson.id, roundIndex) {
+        delay(AUTO_PLAY_DELAY_MS)
         onPlayWord(target.text)
     }
 
@@ -285,11 +287,6 @@ private fun IdentifyContent(
                 Spacer(Modifier.weight(1f, fill = true))
                 Spacer(Modifier.height(8.dp))
             }
-        }
-
-        // Completion: celebratory confetti only (no popup). Next button is enabled separately.
-        if (allRoundsCompleted) {
-            ConfettiCanvas(modifier = Modifier.fillMaxSize())
         }
     }
 }
@@ -508,6 +505,7 @@ private const val COLUMNS = 2
 private val CARD_HEIGHT = 120.dp
 private const val OPTIONS_COUNT = 6
 private const val CORRECT_CELEBRATION_MS = 800L
+private const val AUTO_PLAY_DELAY_MS = 500L
 private const val HINT_AFTER_WRONGS = 2
 private const val MAX_WRONG_BEFORE_REVEAL = 3
 
