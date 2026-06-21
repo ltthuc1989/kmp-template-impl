@@ -72,7 +72,9 @@ internal fun StepHeader(
     onStepJump: (Int) -> Unit,
     modifier: Modifier = Modifier,
     guideText: String = "",
-    showGuideText: Boolean = true,
+    // Default hidden: the spoken voice prompt now delivers the instruction, so the text row
+    // is redundant. Pass `true` explicitly to bring it back for a specific screen.
+    showGuideText: Boolean = false,
     showSegments: Boolean = true,
     guideTrailing: (@Composable () -> Unit)? = null,
 ) {
@@ -114,7 +116,7 @@ internal fun StepHeader(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 20.dp, vertical = 2.dp),
+                    .padding(horizontal = 20.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center,
             ) {

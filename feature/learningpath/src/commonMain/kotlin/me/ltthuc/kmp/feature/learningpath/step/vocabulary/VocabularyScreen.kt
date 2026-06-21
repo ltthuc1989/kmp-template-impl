@@ -54,6 +54,7 @@ import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.common_next
 import me.ltthuc.kmp.core.resource.step_guide_vocabulary
 import me.ltthuc.kmp.core.resource.vocabulary_listen_cd
+import me.ltthuc.kmp.core.ui.audio.ScreenVoicePrompt
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
 import me.ltthuc.kmp.feature.learningpath.step.common.StepContinueButton
 import me.ltthuc.kmp.feature.learningpath.step.common.StepHeader
@@ -80,6 +81,8 @@ internal fun VocabularyScreen(
 ) {
     val screenState by viewModel.screenState.collectAsStateWithLifecycle()
     val audioState by viewModel.audioState.collectAsStateWithLifecycle()
+
+    ScreenVoicePrompt("vp_step_vocab")
 
     DisposableEffect(viewModel) {
         onDispose { viewModel.onLeaveScreen() }

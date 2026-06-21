@@ -29,14 +29,6 @@ fun EntryProviderScope<NavKey>.learningEntry() {
             modifier = Modifier.fillMaxSize(),
         )
     }
-    entry<Destination.Learning.UnitComplete> { dest ->
-        UnitCompleteScreen(
-            levelId = dest.levelId,
-            unitId = dest.unitId,
-            starsEarned = dest.starsEarned,
-            modifier = Modifier.fillMaxSize(),
-        )
-    }
     entry<Destination.Learning.LessonComplete> { dest ->
         LessonCompleteScreen(
             levelId = dest.levelId,

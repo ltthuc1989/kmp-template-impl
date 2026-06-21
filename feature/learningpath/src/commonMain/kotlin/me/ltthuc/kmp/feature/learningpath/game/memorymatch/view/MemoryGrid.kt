@@ -10,6 +10,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.layout.boundsInWindow
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableSet
@@ -31,6 +34,7 @@ internal fun MemoryGrid(
     enabled: Boolean,
     onCardTap: (Int) -> Unit,
     modifier: Modifier = Modifier,
+    onCardPositioned: (id: Int, centerInWindow: Offset) -> Unit = { _, _ -> },
 ) {
     val rows = cards.chunked(COLUMN_COUNT)
     Column(
@@ -54,7 +58,10 @@ internal fun MemoryGrid(
                         onTap = { onCardTap(card.id) },
                         modifier = Modifier
                             .weight(1f)
-                            .aspectRatio(1f),
+                            .aspectRatio(1f)
+                            .onGloballyPositioned {
+                                onCardPositioned(card.id, it.boundsInWindow().center)
+                            },
                     )
                 }
                 // Pad last row if odd card count (e.g. 5 cards → 1 phantom slot).

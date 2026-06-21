@@ -29,8 +29,20 @@ class LevelRepository(
     private val learningProgressDao: LearningProgressDao,
     private val seeder: DatabaseSeeder,
     private val appSettingRepository: AppSettingRepository,
+    private val unitCompletionRepository: UnitCompletionRepository,
     private val dispatcher: CoroutineDispatcher,
 ) {
+    /** True once every unit of [levelId] has been completed at least once. */
+    fun observeIsLevelComplete(levelId: String): Flow<Boolean> = combine(
+        unitDao.observeAll(),
+        unitCompletionRepository.observeAll(),
+    ) { units, completions ->
+        val ids = units.filter { it.levelId == levelId }.map { it.id }
+        ids.isNotEmpty() && ids.all { id ->
+            (completions.firstOrNull { it.unitId == id }?.completionCount ?: 0) > 0
+        }
+    }.flowOn(dispatcher)
+
     suspend fun getVisibleSteps(levelId: String): List<Int> = withContext(dispatcher) {
         seeder.seedIfEmpty()
         val raw = levelDao.findById(levelId)?.visibleStepsJson ?: return@withContext DEFAULT_VISIBLE_STEPS
@@ -46,8 +58,8 @@ class LevelRepository(
         unitDao.observeAll(),
         learningProgressDao.observe(),
         appSettingRepository.setting,
-    ) { levels, units, progress, setting ->
-        buildLevelCards(levels, units, progress, setting.hasPrivilege)
+    ) { levels, units, progress, _ ->
+        buildLevelCards(levels, units, progress)
     }.onStart {
         seeder.seedIfEmpty()
     }.flowOn(dispatcher)
@@ -72,31 +84,21 @@ class LevelRepository(
         levels: List<LevelEntity>,
         units: List<UnitEntity>,
         progress: LearningProgressEntity?,
-        hasPrivilege: Boolean,
     ): List<LevelCard> {
         val unitsByLevel = units.groupBy { it.levelId }
-        val activeOrderIndex = progress?.let { active ->
-            levels.firstOrNull { it.id == active.activeLevelId }?.orderIndex
-        }
 
+        // Per-level monetization model: every level is enterable from the start so its free sample
+        // unit(s) can be played. Access to paid units is gated per-unit in UnitRepository, not here —
+        // so there is no level-level Locked/ComingSoon/prerequisite anymore. The only distinction is
+        // whether a level is the one currently in progress (Active) or not (ReadyToStart).
         return levels.sortedBy { it.orderIndex }.map { entity ->
             val level = entity.toModel()
-            val prerequisite = levels.firstOrNull { it.orderIndex == entity.orderIndex - 1 }?.toModel()
             val status = when {
-                // V1: L2-L5 are flagged isPremium but have no real content yet.
-                // Show ComingSoon (not Locked-premium) to avoid selling something we don't ship.
-                // Revert to Locked(isPremiumRequired=true) when L2 content ships.
+                // L2-L5 (isPremium = no content shipped yet) show ComingSoon until their content lands.
                 entity.isPremium -> LevelStatus.ComingSoon
-                progress != null && entity.id == progress.activeLevelId -> activeStatus(
-                    entity = entity,
-                    progress = progress,
-                    unitsByLevel = unitsByLevel,
-                )
-                activeOrderIndex != null && entity.orderIndex == activeOrderIndex + 1 -> {
-                    LevelStatus.ReadyToStart
-                }
-                hasPrivilege -> LevelStatus.ReadyToStart
-                else -> LevelStatus.Locked(prerequisiteLevel = prerequisite)
+                progress != null && entity.id == progress.activeLevelId ->
+                    activeStatus(entity = entity, progress = progress, unitsByLevel = unitsByLevel)
+                else -> LevelStatus.ReadyToStart
             }
             LevelCard(level = level, status = status)
         }

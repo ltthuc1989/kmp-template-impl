@@ -26,6 +26,8 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.collections.immutable.toImmutableList
+import kotlinx.collections.immutable.toImmutableSet
 import me.ltthuc.kmp.core.model.MONETIZATION_ENABLED
 import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.common_cancel
@@ -43,6 +45,7 @@ import me.ltthuc.kmp.feature.setting.components.SettingActionButton
 import me.ltthuc.kmp.feature.setting.components.SettingTopAppBar
 import me.ltthuc.kmp.feature.setting.components.section.SettingGeneralSection
 import me.ltthuc.kmp.feature.setting.components.section.SettingOthersSection
+import me.ltthuc.kmp.feature.setting.components.section.SettingParentControlSection
 import me.ltthuc.kmp.feature.setting.components.section.SettingPaywallSection
 import me.ltthuc.kmp.feature.setting.components.section.SettingSupportSection
 import org.jetbrains.compose.resources.stringResource
@@ -58,11 +61,14 @@ internal fun SettingScreen(
     val navBackStack = LocalNavBackStack.current
     val uriHandler = LocalUriHandler.current
     val setting by viewModel.setting.collectAsStateWithLifecycle()
+    val levels by viewModel.levels.collectAsStateWithLifecycle()
     val shareMessage = stringResource(Res.string.setting_share_message)
 
     var showParentalGate by remember { mutableStateOf(false) }
     var showResetGate by remember { mutableStateOf(false) }
     var showResetConfirm by remember { mutableStateOf(false) }
+    // Parent-control action (open all / lock / buy) deferred until the parental gate passes.
+    var pendingParentAction by remember { mutableStateOf<(() -> Unit)?>(null) }
 
     val isRootTab = navBackStack.size <= 1
 
@@ -86,6 +92,8 @@ internal fun SettingScreen(
                         modifier = Modifier.fillMaxWidth(),
                         sfxEnabled = setting.sfxEnabled,
                         onSfxEnabledChanged = viewModel::setSfxEnabled,
+                        language = setting.language,
+                        onLanguageChanged = viewModel::setLanguage,
                     )
                 }
 
@@ -103,6 +111,30 @@ internal fun SettingScreen(
                         SettingPaywallSection(
                             modifier = Modifier.fillMaxWidth(),
                             onUpgradeClicked = { showParentalGate = true },
+                        )
+                    }
+                }
+
+                if ((MONETIZATION_ENABLED || setting.developerMode) && levels.isNotEmpty()) {
+                    item {
+                        SettingParentControlSection(
+                            modifier = Modifier.fillMaxWidth(),
+                            levels = levels.toImmutableList(),
+                            ownedLevelIds = setting.ownedLevelIds.toImmutableSet(),
+                            manualUnlockedLevelIds = setting.manualUnlockedLevelIds.toImmutableSet(),
+                            onOpenAll = { levelId ->
+                                pendingParentAction = { viewModel.openLevelFully(levelId) }
+                            },
+                            onLock = { levelId ->
+                                pendingParentAction = { viewModel.lockLevelSequential(levelId) }
+                            },
+                            onBuy = { levelId ->
+                                pendingParentAction = {
+                                    navBackStack.add(
+                                        Destination.Paywall(Destination.Paywall.Source.SETTINGS, levelId),
+                                    )
+                                }
+                            },
                         )
                     }
                 }
@@ -160,6 +192,18 @@ internal fun SettingScreen(
                     navBackStack.add(Destination.Paywall(Destination.Paywall.Source.SETTINGS))
                 },
                 onDismiss = { showParentalGate = false },
+            )
+        }
+
+        if (pendingParentAction != null) {
+            ParentalGateScreen(
+                modifier = Modifier.fillMaxSize(),
+                onPass = {
+                    val action = pendingParentAction
+                    pendingParentAction = null
+                    action?.invoke()
+                },
+                onDismiss = { pendingParentAction = null },
             )
         }
 

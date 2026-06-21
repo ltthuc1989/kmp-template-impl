@@ -9,17 +9,18 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import me.ltthuc.kmp.core.billing.model.ProductInfo
 import me.ltthuc.kmp.core.billing.model.PurchaseResult
 import me.ltthuc.kmp.core.billing.model.SubscriptionPlan
 import me.ltthuc.kmp.core.common.suspendRunCatching
 import me.ltthuc.kmp.core.repository.BillingRepository
-import me.ltthuc.kmp.core.repository.ProductInfo
 import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.error_network
 import me.ltthuc.kmp.core.ui.screen.ScreenState
 
 class PaywallViewModel(
     private val billingRepository: BillingRepository,
+    private val levelId: String?,
 ) : ViewModel() {
 
     private val _screenState = MutableStateFlow<ScreenState<PaywallUiState>>(ScreenState.Loading())
@@ -28,7 +29,9 @@ class PaywallViewModel(
     private val _purchaseState = MutableStateFlow<PurchaseUiState>(PurchaseUiState.Idle)
     val purchaseState: StateFlow<PurchaseUiState> = _purchaseState.asStateFlow()
 
-    private val _selectedPlan = MutableStateFlow(SubscriptionPlan.YEARLY)
+    // Defaults to the level product; updated to the actual fetched product in [fetch].
+    private val _selectedPlan =
+        MutableStateFlow(SubscriptionPlan.forLevel(levelId.orEmpty()) ?: SubscriptionPlan.LEVEL_1)
     val selectedPlan: StateFlow<SubscriptionPlan> = _selectedPlan.asStateFlow()
 
     private var products: List<ProductInfo> = emptyList()
@@ -41,11 +44,10 @@ class PaywallViewModel(
         viewModelScope.launch {
             _screenState.value = ScreenState.Loading()
             _screenState.value = suspendRunCatching {
-                val fetchedProducts = billingRepository.getProducts() ?: emptyList()
-                // v1.0 ships Monthly + Yearly only; Lifetime deferred per PRD §4.6.
-                val displayedProducts = fetchedProducts.filter { it.plan != SubscriptionPlan.LIFETIME }
-                products = displayedProducts
-                PaywallUiState(products = displayedProducts.toImmutableList())
+                val fetched = billingRepository.getProductsForLevel(levelId)
+                products = fetched
+                fetched.firstOrNull()?.let { _selectedPlan.value = it.plan }
+                PaywallUiState(products = fetched.toImmutableList())
             }.fold(
                 onSuccess = { ScreenState.Idle(it) },
                 onFailure = { ScreenState.Error(Res.string.error_network) },

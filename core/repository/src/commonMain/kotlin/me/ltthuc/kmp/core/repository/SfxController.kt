@@ -36,6 +36,10 @@ class SfxController(
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     private var loadJob: Job? = null
 
+    // Id of the screen prompt currently playing (null = none). Lets [stopPrompt] avoid
+    // cutting a newer screen's prompt when the previous screen disposes.
+    private var currentPromptId: String? = null
+
     private val sfxEnabled = MutableStateFlow(true)
     private val voiceEnabled = MutableStateFlow(true)
     private val musicEnabled = MutableStateFlow(true)
@@ -71,6 +75,28 @@ class SfxController(
         play(AudioRef.Voice(name))
     }
 
+    /**
+     * Spoken UI guidance prompt ("Let's trace the letter!") played once on screen entry.
+     * Gated by [voiceEnabled] like praise — never used for lesson curriculum audio.
+     * [lang] is the effective UI locale ("en" / "vi").
+     */
+    fun playPrompt(promptId: String, lang: String) {
+        if (globalMuted.value || !voiceEnabled.value) return
+        play(AudioRef.Prompt(promptId, lang))
+        currentPromptId = promptId
+    }
+
+    /**
+     * Stops the screen prompt with [promptId] — but only if it is still the one playing.
+     * Called when a screen leaves, so its prompt never bleeds into the next screen, while
+     * a newer screen's prompt (which already replaced [currentPromptId]) is left untouched.
+     */
+    fun stopPrompt(promptId: String) {
+        if (currentPromptId != promptId) return
+        currentPromptId = null
+        stop()
+    }
+
     /** Background music loop. No-op until BGM assets ship (phase 1.1). */
     fun playMusic(name: String) {
         if (globalMuted.value || !musicEnabled.value) return
@@ -88,6 +114,7 @@ class SfxController(
     }
 
     private fun play(ref: AudioRef) {
+        currentPromptId = null
         loadJob?.cancel()
         player.stop()
         loadJob = scope.launch {

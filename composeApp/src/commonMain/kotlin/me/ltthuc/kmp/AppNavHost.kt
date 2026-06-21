@@ -10,6 +10,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -17,6 +18,8 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
+import me.ltthuc.kmp.core.model.AppSetting
+import me.ltthuc.kmp.core.repository.AppSettingRepository
 import me.ltthuc.kmp.core.ui.animation.NavigationTransitions
 import me.ltthuc.kmp.core.ui.screen.Destination
 import me.ltthuc.kmp.core.ui.screen.view.AppBottomNavBar
@@ -30,18 +33,41 @@ import me.ltthuc.kmp.feature.onboarding.onboardingEntry
 import me.ltthuc.kmp.feature.review.reviewEntry
 import me.ltthuc.kmp.feature.setting.oss.settingLicenseEntry
 import me.ltthuc.kmp.feature.setting.settingEntry
+import org.koin.compose.koinInject
 
 @Composable
 internal fun AppNavHost(
-    startDestination: Destination,
+    startDestinations: List<Destination>,
     modifier: Modifier = Modifier,
 ) {
-    val navBackStack = rememberNavBackStack(Destination.config, startDestination)
+    val navBackStack = rememberNavBackStack(Destination.config, *startDestinations.toTypedArray())
 
     CompositionLocalProvider(
         LocalNavBackStack provides navBackStack,
     ) {
         val currentTab = navBackStack.lastOrNull().toBottomNavTabOrNull()
+
+        // Persist the last screen so a relaunch restores the right place (Lesson Map / Unit list /
+        // Level list) instead of always restarting. Steps/Story/Games resolve to their Lesson Map.
+        val appSettingRepository = koinInject<AppSettingRepository>()
+        val topDestination = navBackStack.lastOrNull()
+        LaunchedEffect(topDestination) {
+            when (val top = topDestination) {
+                Destination.Home ->
+                    appSettingRepository.setLastScreen(AppSetting.LastScreen.LEVEL_LIST, "", "")
+                is Destination.Learning.UnitSelection ->
+                    appSettingRepository.setLastScreen(AppSetting.LastScreen.UNIT_LIST, top.levelId, "")
+                is Destination.Learning.LessonMap ->
+                    appSettingRepository.setLastScreen(AppSetting.LastScreen.LESSON_MAP, top.levelId, top.unitId)
+                is Destination.Learning.Step ->
+                    appSettingRepository.setLastScreen(AppSetting.LastScreen.LESSON_MAP, top.levelId, top.unitId)
+                is Destination.Learning.UnitStory ->
+                    appSettingRepository.setLastScreen(AppSetting.LastScreen.LESSON_MAP, top.levelId, top.unitId)
+                is Destination.Learning.UnitGame ->
+                    appSettingRepository.setLastScreen(AppSetting.LastScreen.LESSON_MAP, top.levelId, top.unitId)
+                else -> Unit
+            }
+        }
 
         Scaffold(
             modifier = modifier,
@@ -85,6 +111,6 @@ internal fun AppNavHost(
 
 private fun NavKey?.toBottomNavTabOrNull(): AppBottomNavTab? = when (this) {
     Destination.Home -> AppBottomNavTab.Home
-    Destination.Setting.Root -> AppBottomNavTab.Settings
+    // Settings is reached from the top-bar gear, not a bottom tab — no bottom nav on that screen.
     else -> null
 }

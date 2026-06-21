@@ -31,7 +31,12 @@ fun GrabeeTheme(
         isDark = isDark,
     )
 
+    // Kid-facing screens render in English (immersion); only the parent screens override their text
+    // locale back to [appLang]. Audio/voice prompts follow [appLang] everywhere via LocalAppLanguage.
+    val appLang = resolveAppLanguage(appSetting.language, LocalAppLocale.deviceTag)
     CompositionLocalProvider(
+        LocalAppLocale provides "en",
+        LocalAppLanguage provides appLang,
         LocalAppSetting provides appSetting,
         LocalAppConfig provides appConfig,
     ) {

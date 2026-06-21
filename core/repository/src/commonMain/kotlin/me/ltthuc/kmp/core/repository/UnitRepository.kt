@@ -11,8 +11,10 @@ import kotlinx.coroutines.flow.map
 import me.ltthuc.kmp.core.datasource.db.dao.LearningProgressDao
 import me.ltthuc.kmp.core.datasource.db.dao.PhonicsLessonDao
 import me.ltthuc.kmp.core.datasource.db.dao.UnitDao
+import me.ltthuc.kmp.core.model.FREE_UNITS_PER_LEVEL
 import me.ltthuc.kmp.core.model.LessonCard
 import me.ltthuc.kmp.core.model.LessonStatus
+import me.ltthuc.kmp.core.model.MONETIZATION_ENABLED
 import me.ltthuc.kmp.core.model.PhonicsLesson
 import me.ltthuc.kmp.core.model.PhonicsUnit
 import me.ltthuc.kmp.core.model.UnitCard
@@ -80,7 +82,13 @@ class UnitRepository(
                 learningProgressDao.observe(),
                 appSettingRepository.setting,
             ) { signals, progress, setting ->
-                buildUnitCards(signals, progress?.activeUnitId, setting.developerMode)
+                buildUnitCards(
+                    signals = signals,
+                    activeUnitId = progress?.activeUnitId,
+                    developerMode = setting.developerMode,
+                    levelOwned = setting.isLevelOwned(levelId),
+                    levelOpenedFully = setting.isLevelOpenedFully(levelId),
+                )
             }
         }
     }
@@ -109,25 +117,30 @@ class UnitRepository(
         signals: List<UnitSignal>,
         activeUnitId: String?,
         developerMode: Boolean,
+        levelOwned: Boolean,
+        levelOpenedFully: Boolean,
     ): List<UnitCard> {
         val sorted = signals.sortedBy { it.unit.orderIndex }
-        // Sequential gating: first unit in a level is always Unlocked (entry point);
-        // each subsequent unit unlocks only when the previous one has been completed
-        // (user reached UnitCompleteScreen at least once → completionCount > 0).
-        // Developer mode bypasses gating entirely: every unit is forced to Completed
-        // so UnitSelectionScreen opens the LessonSelectorSheet on tap, letting QA jump
-        // directly to any lesson or Story without playing through prerequisites.
+        // Two independent gates compose here:
+        //   • sequential  — a unit unlocks only when the previous one is completed
+        //   • paywall     — paid units (orderIndex >= FREE_UNITS_PER_LEVEL) require owning the level
+        //
+        // The first FREE_UNITS_PER_LEVEL unit(s) are free samples → sequential only, never paywalled.
+        // For paid units: not owned (with monetization on) → PremiumLocked (paywall wins the display).
+        // Owned + parent "open all" (levelOpenedFully) → drop the sequential gate. Owned otherwise →
+        // still sequential (buying removes the paywall, not the pedagogy). Developer mode forces every
+        // unit to Completed so QA can jump to any lesson/Story via the LessonSelectorSheet.
         return sorted.mapIndexed { index, signal ->
-            val isActive = signal.unit.id == activeUnitId
-            val isCompleted = signal.completionCount > 0
-            val prevCompleted = index == 0 || sorted[index - 1].completionCount > 0
-            val status = when {
-                developerMode -> UnitStatus.Completed
-                isCompleted -> UnitStatus.Completed
-                isActive -> UnitStatus.Active
-                prevCompleted -> UnitStatus.Unlocked
-                else -> UnitStatus.Locked
-            }
+            val status = decideUnitStatus(
+                index = index,
+                isActive = signal.unit.id == activeUnitId,
+                isCompleted = signal.completionCount > 0,
+                prevCompleted = index == 0 || sorted[index - 1].completionCount > 0,
+                developerMode = developerMode,
+                levelOwned = levelOwned,
+                levelOpenedFully = levelOpenedFully,
+                monetizationEnabled = MONETIZATION_ENABLED,
+            )
             UnitCard(
                 unit = signal.unit,
                 status = status,
@@ -142,4 +155,35 @@ class UnitRepository(
         val completionCount: Int,
         val previewLetters: List<UnitLetterPreview>,
     )
+}
+
+/**
+ * Pure per-unit gating decision (extracted for unit testing). [monetizationEnabled] is a parameter
+ * — not the global const — so tests can exercise the paywall path. See the two-gate model in
+ * [UnitRepository] for the rationale.
+ */
+internal fun decideUnitStatus(
+    index: Int,
+    isActive: Boolean,
+    isCompleted: Boolean,
+    prevCompleted: Boolean,
+    developerMode: Boolean,
+    levelOwned: Boolean,
+    levelOpenedFully: Boolean,
+    monetizationEnabled: Boolean,
+    freeUnitsPerLevel: Int = FREE_UNITS_PER_LEVEL,
+): UnitStatus {
+    val sequential = when {
+        isCompleted -> UnitStatus.Completed
+        isActive -> UnitStatus.Active
+        prevCompleted -> UnitStatus.Unlocked
+        else -> UnitStatus.Locked
+    }
+    return when {
+        developerMode -> UnitStatus.Completed
+        index < freeUnitsPerLevel -> sequential
+        !levelOwned && monetizationEnabled -> UnitStatus.PremiumLocked
+        levelOpenedFully -> if (isCompleted) UnitStatus.Completed else UnitStatus.Unlocked
+        else -> sequential
+    }
 }

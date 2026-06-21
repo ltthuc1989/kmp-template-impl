@@ -58,12 +58,16 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import me.ltthuc.kmp.core.audio.AudioRef
 import me.ltthuc.kmp.core.audio.AudioState
 import me.ltthuc.kmp.core.audio.isActive
 import me.ltthuc.kmp.core.model.Story
 import me.ltthuc.kmp.core.model.StoryScene
+import me.ltthuc.kmp.core.repository.AudioRepository
 import me.ltthuc.kmp.core.repository.LearningProgressRepository
+import me.ltthuc.kmp.core.repository.LessonProgressRepository
 import me.ltthuc.kmp.core.repository.LevelRepository
+import me.ltthuc.kmp.core.repository.playAndAwait
 import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.common_next
 import me.ltthuc.kmp.core.resource.step_guide_story
@@ -72,7 +76,9 @@ import me.ltthuc.kmp.core.resource.story_next_page_cd
 import me.ltthuc.kmp.core.resource.story_previous_page_cd
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
 import me.ltthuc.kmp.core.ui.screen.Destination
+import me.ltthuc.kmp.core.ui.theme.LocalAppLanguage
 import me.ltthuc.kmp.core.ui.theme.LocalNavBackStack
+import me.ltthuc.kmp.feature.learningpath.STORY_PROGRESS_ID
 import me.ltthuc.kmp.feature.learningpath.step.DEFAULT_VISIBLE_STEPS
 import me.ltthuc.kmp.feature.learningpath.step.STORY_SEGMENT_INDEX
 import me.ltthuc.kmp.feature.learningpath.step.common.KaraokeText
@@ -100,7 +106,9 @@ internal fun StoryScreen(
 ) {
     val navBackStack = LocalNavBackStack.current
     val progressRepository: LearningProgressRepository = koinInject()
+    val storyProgressRepository: LessonProgressRepository = koinInject()
     val levelRepository: LevelRepository = koinInject()
+    val storyScope = rememberCoroutineScope()
     val screenState by viewModel.screenState.collectAsStateWithLifecycle()
     val audioState by viewModel.audioState.collectAsStateWithLifecycle()
 
@@ -148,6 +156,8 @@ internal fun StoryScreen(
             }
         }
         val onNext: () -> Unit = {
+            // Đánh dấu đã đọc xong story → Mini Games mở khoá trên Lesson Map.
+            storyScope.launch { storyProgressRepository.markCompleted(STORY_PROGRESS_ID, unitId) }
             navBackStack.add(Destination.Learning.UnitGame(levelId, unitId, gameIndex = 0))
         }
         val onStepJump: (Int) -> Unit = { targetStep ->
@@ -196,9 +206,17 @@ private fun StoryContent(
     val pagerState = rememberPagerState(pageCount = { pageCount })
     val currentPage by remember { derivedStateOf { pagerState.currentPage.coerceIn(0, scenes.lastIndex) } }
     val scope = rememberCoroutineScope()
+    val audioRepository = koinInject<AudioRepository>()
+    val lang = LocalAppLanguage.current
+    var guidePlayed by remember(story.id) { mutableStateOf(false) }
 
     // Auto-play scene audio when user swipes/lands on a new page (including first entry).
+    // On first entry, play the spoken guide first, then the scene narration (no overlap).
     LaunchedEffect(currentPage) {
+        if (currentPage == 0 && !guidePlayed) {
+            guidePlayed = true
+            audioRepository.playAndAwait(AudioRef.Prompt("vp_step_story", lang), STORY_GUIDE_MAX_MS)
+        }
         onPageChange(currentPage)
     }
 
@@ -238,7 +256,7 @@ private fun StoryContent(
                 guideText = stringResource(Res.string.step_guide_story),
                 guideTrailing = {
                     Box(
-                        modifier = Modifier.size(36.dp),
+                        modifier = Modifier.size(48.dp),
                         contentAlignment = Alignment.Center,
                     ) {
                         PulseRings(
@@ -247,13 +265,13 @@ private fun StoryContent(
                         )
                         IconButton(
                             onClick = onListen,
-                            modifier = Modifier.size(32.dp),
+                            modifier = Modifier.size(48.dp),
                         ) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.VolumeUp,
                                 contentDescription = stringResource(Res.string.story_audio_cd),
                                 tint = MaterialTheme.colorScheme.secondary,
-                                modifier = Modifier.size(20.dp),
+                                modifier = Modifier.size(34.dp),
                             )
                         }
                     }
@@ -455,3 +473,4 @@ private fun ChevronButton(
 
 private const val CHEVRON_SIZE_DP = 48
 private const val AUTO_ADVANCE_DELAY_MS = 800L
+private const val STORY_GUIDE_MAX_MS = 6_000L

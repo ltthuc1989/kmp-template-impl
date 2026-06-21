@@ -8,6 +8,8 @@ plugins {
 
 android {
     namespace = "me.ltthuc.kmp.core.billing"
+    // Needed for BuildConfig.DEBUG (drives fake-vs-real billing per build type).
+    buildFeatures.buildConfig = true
 }
 
 kotlin {
@@ -17,6 +19,10 @@ kotlin {
             implementation(project(":core:model"))
 
             api(libs.bundles.purchase)
+        }
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+            implementation(libs.kotlinx.coroutines.test)
         }
     }
 }

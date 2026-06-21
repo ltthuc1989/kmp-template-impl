@@ -63,6 +63,7 @@ import me.ltthuc.kmp.core.resource.identify_all_done_subtitle
 import me.ltthuc.kmp.core.resource.identify_all_done_title
 import me.ltthuc.kmp.core.resource.score_success_primary
 import me.ltthuc.kmp.core.resource.step_guide_blending
+import me.ltthuc.kmp.core.ui.audio.ScreenVoicePrompt
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
 import me.ltthuc.kmp.feature.learningpath.step.common.PuffySurface
 import me.ltthuc.kmp.feature.learningpath.step.common.ScoreFeedback
@@ -88,6 +89,8 @@ internal fun BlendingScreen(
     viewModel: BlendingViewModel = koinViewModel(key = unitId) { parametersOf(unitId) },
 ) {
     val screenState by viewModel.screenState.collectAsStateWithLifecycle()
+
+    ScreenVoicePrompt("vp_step_blend")
 
     DisposableEffect(viewModel) {
         onDispose { viewModel.onLeaveScreen() }

@@ -1,10 +1,8 @@
 package me.ltthuc.kmp.core.repository
 
-import androidx.compose.runtime.Stable
-import com.revenuecat.purchases.kmp.models.Package
-import com.revenuecat.purchases.kmp.models.StoreProduct
 import kotlinx.coroutines.flow.Flow
 import me.ltthuc.kmp.core.billing.BillingDataSource
+import me.ltthuc.kmp.core.billing.model.ProductInfo
 import me.ltthuc.kmp.core.billing.model.PurchaseResult
 import me.ltthuc.kmp.core.billing.model.SubscriptionPlan
 import me.ltthuc.kmp.core.billing.model.SubscriptionState
@@ -19,127 +17,45 @@ class BillingRepository(
         billingDataSource.configure()
     }
 
-    suspend fun getProducts(): List<ProductInfo>? {
-        val offerings = billingDataSource.getOfferings() ?: return null
-        val currentOffering = offerings.current ?: return null
-
-        return buildList {
-            currentOffering.monthly?.let { pkg ->
-                add(
-                    ProductInfo(
-                        plan = SubscriptionPlan.MONTHLY,
-                        product = pkg.storeProduct,
-                        packageToPurchase = pkg,
-                    ),
-                )
-            }
-            currentOffering.annual?.let { pkg ->
-                add(
-                    ProductInfo(
-                        plan = SubscriptionPlan.YEARLY,
-                        product = pkg.storeProduct,
-                        packageToPurchase = pkg,
-                    ),
-                )
-            }
-            currentOffering.lifetime?.let { pkg ->
-                add(
-                    ProductInfo(
-                        plan = SubscriptionPlan.LIFETIME,
-                        product = pkg.storeProduct,
-                        packageToPurchase = pkg,
-                    ),
-                )
-            }
-        }
+    /**
+     * Products to show on a level-context paywall. Phase 1 ships only Level 1, so we sell just the
+     * single level (no bundle — we don't advertise levels that don't exist yet). Re-add
+     * [SubscriptionPlan.BUNDLE] here when L2+ content ships.
+     */
+    suspend fun getProductsForLevel(levelId: String?): List<ProductInfo> {
+        val plan = levelId?.let { SubscriptionPlan.forLevel(it) } ?: return emptyList()
+        return billingDataSource.getProducts(listOf(plan))
     }
 
+    suspend fun getProducts(): List<ProductInfo> =
+        billingDataSource.getProducts(SubscriptionPlan.entries)
+
     suspend fun purchase(productInfo: ProductInfo): PurchaseResult {
-        val result = billingDataSource.purchasePackage(productInfo.packageToPurchase)
-
-        if (result == PurchaseResult.Success) {
-            syncPlusMode()
-        }
-
+        val result = billingDataSource.purchasePlan(productInfo.plan)
+        if (result == PurchaseResult.Success) syncOwnedLevels()
         return result
     }
 
     suspend fun restorePurchases(): PurchaseResult {
-        // 返金済み購入がデバイスに残っている場合に備え、先に同期する
-        billingDataSource.syncPurchases()
-
         val result = billingDataSource.restorePurchases()
-
-        if (result == PurchaseResult.Success) {
-            syncPlusMode()
-            return result
-        }
-
-        // syncPurchases / restorePurchases が返金済みトークンで失敗しても、
-        // サーバー側に有効なサブスクリプションが存在する可能性がある。
-        // getCustomerInfo でサーバーの最新状態を取得して plusMode を同期する。
-        billingDataSource.getCustomerInfo() ?: return result
-        val isPremiumNow = billingDataSource.getCurrentSubscriptionState().isPremium
-        appSettingRepository.setPlusMode(isPremiumNow)
-
-        return if (isPremiumNow) PurchaseResult.Success else result
+        if (result == PurchaseResult.Success) syncOwnedLevels()
+        return result
     }
 
-    fun isPremium(): Boolean {
-        return billingDataSource.getCurrentSubscriptionState().isPremium
+    fun isPremium(): Boolean = billingDataSource.getCurrentSubscriptionState().isPremium
+
+    fun ownedLevelIds(): Set<String> = billingDataSource.getCurrentOwnedLevelIds()
+
+    fun isLevelOwned(levelId: String): Boolean = levelId in ownedLevelIds()
+
+    /** Re-reads ownership from the store and syncs it into AppSetting (offline source of truth). */
+    suspend fun verifySubscriptionStatus() {
+        billingDataSource.refresh()
+        syncOwnedLevels()
     }
 
-    fun getCurrentSubscriptionState(): SubscriptionState {
-        return billingDataSource.getCurrentSubscriptionState()
+    private suspend fun syncOwnedLevels() {
+        appSettingRepository.setOwnedLevelIds(billingDataSource.getCurrentOwnedLevelIds())
+        appSettingRepository.setPlusMode(billingDataSource.getCurrentSubscriptionState().isPremium)
     }
-
-    /**
-     * RevenueCat の最新の CustomerInfo を取得し、plusMode を同期する。
-     * 失効を検出した場合は syncPurchases で Google Play の購入状態も同期する。
-     *
-     * @return plusMode が true から false に変わった場合は true を返す
-     */
-    suspend fun verifySubscriptionStatus(): Boolean {
-        billingDataSource.getCustomerInfo() ?: return false
-
-        val wasPremium = appSettingRepository.setting.value.plusMode
-        val isPremiumNow = billingDataSource.getCurrentSubscriptionState().isPremium
-
-        appSettingRepository.setPlusMode(isPremiumNow)
-
-        if (wasPremium && !isPremiumNow) {
-            // 返金済み購入がデバイスに残るのを防ぐため、Google Play と同期する
-            billingDataSource.syncPurchases()
-            return true
-        }
-
-        return false
-    }
-
-    private suspend fun syncPlusMode() {
-        val isPremium = billingDataSource.getCurrentSubscriptionState().isPremium
-        appSettingRepository.setPlusMode(isPremium)
-    }
-}
-
-/**
- * RevenueCat から取得したプロダクト情報を保持するデータクラス。
- *
- * @param plan サブスクリプションプラン
- * @param product RevenueCat のストアプロダクト
- * @param packageToPurchase 購入用パッケージ
- */
-@Stable
-data class ProductInfo(
-    val plan: SubscriptionPlan,
-    val product: StoreProduct,
-    val packageToPurchase: Package,
-) {
-    val priceString: String get() = product.price.formatted
-    val periodString: String
-        get() = when (plan) {
-            SubscriptionPlan.MONTHLY -> "月"
-            SubscriptionPlan.YEARLY -> "年"
-            SubscriptionPlan.LIFETIME -> "買い切り"
-        }
 }

@@ -16,13 +16,19 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.coroutines.delay
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.boundsInWindow
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -30,8 +36,12 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.spell_letters_guide
+import me.ltthuc.kmp.core.ui.audio.ScreenVoicePrompt
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
 import me.ltthuc.kmp.feature.learningpath.game.common.CreamBackground
+import me.ltthuc.kmp.feature.learningpath.game.common.GUIDE_IDLE_MS
+import me.ltthuc.kmp.feature.learningpath.game.common.GameHandGuide
+import me.ltthuc.kmp.feature.learningpath.game.common.HandStep
 import me.ltthuc.kmp.feature.learningpath.game.common.ReadingTextDark
 import me.ltthuc.kmp.feature.learningpath.game.common.gameSegmentsFor
 import me.ltthuc.kmp.feature.learningpath.game.pickword.view.PicturePanel
@@ -60,6 +70,8 @@ internal fun SpellLettersScreen(
 ) {
     val screenState by viewModel.screenState.collectAsStateWithLifecycle()
     val stepSegments = remember(totalGames) { gameSegmentsFor(totalGames) }
+
+    ScreenVoicePrompt("vp_game_spell")
 
     AsyncLoadContents(
         modifier = modifier.fillMaxSize(),
@@ -111,14 +123,31 @@ private fun SpellLettersCanvas(
     // with duplicate letters (e.g. "egg") track each physical tile independently.
     val matchedSnapTargets = remember(ui.currentRoundIndex) { mutableStateMapOf<Int, Offset>() }
     val usedTiles = remember(ui.currentRoundIndex) { mutableStateMapOf<Int, Boolean>() }
+    val tileOrigins = remember(ui.currentRoundIndex) { mutableStateMapOf<Int, Offset>() }
+
+    // Idle 5s → hand guide demos dragging a tile into the first empty slot. Only on the FIRST round
+    // (teach the drag once); later rounds get no hand. A drop re-arms it within round 0.
+    var boxOrigin by remember { mutableStateOf(Offset.Zero) }
+    var interactionTick by remember { mutableStateOf(0) }
+    var showHint by remember { mutableStateOf(false) }
+    LaunchedEffect(interactionTick, ui.currentRoundIndex, ui.isComplete) {
+        showHint = false
+        if (!ui.isComplete && ui.currentRoundIndex == 0) {
+            delay(GUIDE_IDLE_MS)
+            showHint = true
+        }
+    }
 
     // Auto-advance to the next game once the final word's audio has finished
     // (isComplete is only set after playWordAndAwait completes in the ViewModel).
     LaunchedEffect(ui.isComplete) {
-        if (ui.isComplete) onGameComplete()
+        if (ui.isComplete) {
+            delay(1_000L)
+            onGameComplete()
+        }
     }
 
-    Box(modifier = modifier) {
+    Box(modifier = modifier.onGloballyPositioned { boxOrigin = it.boundsInWindow().topLeft }) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -170,8 +199,9 @@ private fun SpellLettersCanvas(
                             tint = round.tint,
                             isUsed = usedTiles[tileIdx] == true,
                             snapTarget = matchedSnapTargets[tileIdx],
-                            onCenterPositioned = { /* origin captured internally */ },
+                            onCenterPositioned = { tileOrigins[tileIdx] = it },
                             onDragEnd = { center ->
+                                interactionTick++
                                 val nearest = nearestSlot(center, slotCenters, snapRadiusPx)
                                 val matched = onDrop(letter, nearest)
                                 if (matched && nearest != null) {
@@ -188,6 +218,25 @@ private fun SpellLettersCanvas(
             }
             Spacer(Modifier.height(20.dp))
         }
+
+        // Hand guide: drag the needed tile into the first empty slot.
+        val firstEmpty = ui.currentRound.word.indices.firstOrNull { it !in ui.filledSlots }
+        val needed = firstEmpty?.let { ui.currentRound.word[it] }
+        val tileIdx = if (needed != null) {
+            ui.currentRound.tileOrder.indices.firstOrNull { i ->
+                ui.currentRound.tileOrder[i].equals(needed, ignoreCase = true) && usedTiles[i] != true
+            }
+        } else {
+            null
+        }
+        val from = tileIdx?.let { tileOrigins[it] }
+        val to = firstEmpty?.let { slotCenters[it] }
+        val steps = if (from != null && to != null) {
+            persistentListOf(HandStep.Drag(from - boxOrigin, to - boxOrigin))
+        } else {
+            persistentListOf()
+        }
+        GameHandGuide(isVisible = showHint && steps.isNotEmpty(), steps = steps)
     }
 }
 

@@ -8,6 +8,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -16,6 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.coroutines.delay
 import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.bubble_game_celebration_subtitle
 import me.ltthuc.kmp.core.resource.bubble_game_celebration_title
@@ -93,6 +95,13 @@ private fun BubblePopContent(
     onAdvance: () -> Unit,
     onNext: () -> Unit,
 ) {
+    // Game finished → wait 1s → auto-advance to next game (no popup/effect).
+    LaunchedEffect(ui.isGameComplete) {
+        if (ui.isGameComplete) {
+            delay(1_000L)
+            onNext()
+        }
+    }
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         containerColor = MaterialTheme.colorScheme.background,
@@ -133,7 +142,7 @@ private fun BubblePopContent(
             ScoreFeedbackOverlay(
                 feedback = buildOverlayFeedback(ui),
                 onDismiss = { /* tap-outside disabled — force primary action */ },
-                onPrimary = if (ui.isGameComplete) onNext else onAdvance,
+                onPrimary = onAdvance,
             )
         }
     }
@@ -141,13 +150,8 @@ private fun BubblePopContent(
 
 @Composable
 private fun buildOverlayFeedback(ui: BubblePopUiState): ScoreFeedback? = when {
-    ui.isGameComplete -> ScoreFeedback.Success(
-        title = stringResource(Res.string.bubble_game_celebration_title),
-        subtitle = stringResource(Res.string.bubble_game_celebration_subtitle),
-        heroEmoji = "🎉",
-        primaryLabel = stringResource(Res.string.chant_next),
-    )
-    ui.isRoundComplete -> {
+    // Game finished → no popup (auto-advances after 1s). Only the mid-game round recap shows.
+    ui.isRoundComplete && !ui.isGameComplete -> {
         val perfect = ui.popCount >= ui.targetPool
         val title = stringResource(
             if (perfect) Res.string.bubble_game_lightning_fast else Res.string.bubble_game_time_up,

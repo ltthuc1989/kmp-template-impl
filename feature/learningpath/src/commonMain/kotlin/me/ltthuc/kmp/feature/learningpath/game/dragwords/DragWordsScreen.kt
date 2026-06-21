@@ -15,20 +15,30 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.coroutines.delay
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.boundsInWindow
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.drag_words_guide
+import me.ltthuc.kmp.core.ui.audio.ScreenVoicePrompt
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
 import me.ltthuc.kmp.feature.learningpath.game.common.CreamBackground
+import me.ltthuc.kmp.feature.learningpath.game.common.GUIDE_IDLE_MS
+import me.ltthuc.kmp.feature.learningpath.game.common.GameHandGuide
+import me.ltthuc.kmp.feature.learningpath.game.common.HandStep
 import me.ltthuc.kmp.feature.learningpath.game.common.gameSegmentsFor
 import me.ltthuc.kmp.feature.learningpath.game.dragwords.view.DraggableWord
 import me.ltthuc.kmp.feature.learningpath.game.dragwords.view.PictureSlot
@@ -63,6 +73,8 @@ internal fun DragWordsScreen(
 ) {
     val screenState by viewModel.screenState.collectAsStateWithLifecycle()
     val stepSegments = remember(totalGames) { gameSegmentsFor(totalGames) }
+
+    ScreenVoicePrompt("vp_game_drag")
 
     AsyncLoadContents(
         modifier = modifier.fillMaxSize(),
@@ -107,14 +119,31 @@ private fun DragWordsCanvas(
 
     val pictureCenters = remember { mutableStateMapOf<Int, Offset>() }
     val matchedSnapTargets = remember { mutableStateMapOf<Int, Offset>() }
+    val wordOrigins = remember { mutableStateMapOf<Int, Offset>() }
+
+    // Idle 5s → hand guide demos dragging a word onto its matching picture. Only BEFORE the first
+    // drop (teach the drag once); after the kid starts matching, no more hand.
+    var boxOrigin by remember { mutableStateOf(Offset.Zero) }
+    var interactionTick by remember { mutableStateOf(0) }
+    var showHint by remember { mutableStateOf(false) }
+    LaunchedEffect(interactionTick, ui.isComplete) {
+        showHint = false
+        if (!ui.isComplete && interactionTick == 0) {
+            delay(GUIDE_IDLE_MS)
+            showHint = true
+        }
+    }
 
     // Auto-advance to the next game once the final word's audio has finished
     // (isComplete is only set after playWordAndAwait completes in the ViewModel).
     LaunchedEffect(ui.isComplete) {
-        if (ui.isComplete) onGameComplete()
+        if (ui.isComplete) {
+            delay(1_000L)
+            onGameComplete()
+        }
     }
 
-    Box(modifier = modifier) {
+    Box(modifier = modifier.onGloballyPositioned { boxOrigin = it.boundsInWindow().topLeft }) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -160,8 +189,9 @@ private fun DragWordsCanvas(
                                 tint = item.tint,
                                 isUsed = isUsed,
                                 snapTarget = matchedSnapTargets[item.id],
-                                onCenterPositioned = { /* origin captured internally */ },
+                                onCenterPositioned = { wordOrigins[item.id] = it },
                                 onDragEnd = { center ->
+                                    interactionTick++
                                     val nearest = nearestPicture(center, pictureCenters, snapRadiusPx)
                                     val matched = onDrop(item.id, nearest)
                                     if (matched && nearest != null) {
@@ -183,6 +213,17 @@ private fun DragWordsCanvas(
             }
             Spacer(Modifier.height(16.dp))
         }
+
+        // Hand guide: drag the first unmatched word onto its matching picture (same id).
+        val firstUnmatched = ui.items.firstOrNull { it.id !in ui.matchedWordIndices }
+        val from = firstUnmatched?.let { wordOrigins[it.id] }
+        val to = firstUnmatched?.let { pictureCenters[it.id] }
+        val steps = if (from != null && to != null) {
+            persistentListOf(HandStep.Drag(from - boxOrigin, to - boxOrigin))
+        } else {
+            persistentListOf()
+        }
+        GameHandGuide(isVisible = showHint && steps.isNotEmpty(), steps = steps)
     }
 }
 

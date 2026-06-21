@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "641570800809",
-    "project_id": "grabee-368d2",
-    "storage_bucket": "grabee-368d2.firebasestorage.app"
+    "project_number": "70173684124",
+    "project_id": "abc-phonics-kids",
+    "storage_bucket": "abc-phonics-kids.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:641570800809:android:2714f74ff59ce9a39a95b8",
+        "mobilesdk_app_id": "1:70173684124:android:191f02663404082e9b1859",
         "android_client_info": {
-          "package_name": "me.ltthuc.kmp"
+          "package_name": "com.beely.phonicskids"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCE_LfdTA3kvfQhaZVMj4PjNJDQzt-oDGY"
+          "current_key": "AIzaSyBJnOEba4dNgWyNxgvb2w_vRDP2VV2ETys"
         }
       ],
       "services": {
@@ -26,15 +26,15 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:641570800809:android:2714f74ff59ce9a39a95b8",
+        "mobilesdk_app_id": "1:70173684124:android:191f02663404082e9b1859",
         "android_client_info": {
-          "package_name": "me.ltthuc.kmp.debug"
+          "package_name": "com.beely.phonicskids.debug"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCE_LfdTA3kvfQhaZVMj4PjNJDQzt-oDGY"
+          "current_key": "AIzaSyBJnOEba4dNgWyNxgvb2w_vRDP2VV2ETys"
         }
       ],
       "services": {

@@ -25,15 +25,13 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.ImmutableList
+import me.ltthuc.kmp.core.billing.model.ProductInfo
 import me.ltthuc.kmp.core.billing.model.SubscriptionPlan
-import me.ltthuc.kmp.core.repository.ProductInfo
 import me.ltthuc.kmp.core.resource.Res
-import me.ltthuc.kmp.core.resource.paywall_plan_lifetime
-import me.ltthuc.kmp.core.resource.paywall_plan_lifetime_badge
-import me.ltthuc.kmp.core.resource.paywall_plan_monthly
-import me.ltthuc.kmp.core.resource.paywall_plan_monthly_badge
-import me.ltthuc.kmp.core.resource.paywall_plan_yearly
-import me.ltthuc.kmp.core.resource.paywall_plan_yearly_badge
+import me.ltthuc.kmp.core.resource.paywall_plan_bundle_badge
+import me.ltthuc.kmp.core.resource.paywall_plan_bundle_label
+import me.ltthuc.kmp.core.resource.paywall_plan_level_badge
+import me.ltthuc.kmp.core.resource.paywall_plan_level_label
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -107,10 +105,10 @@ private fun PaywallPlanCard(
             verticalArrangement = Arrangement.spacedBy(6.dp),
         ) {
             Surface(
-                color = when (product.plan) {
-                    SubscriptionPlan.LIFETIME -> MaterialTheme.colorScheme.primary
-                    SubscriptionPlan.YEARLY -> MaterialTheme.colorScheme.tertiary
-                    SubscriptionPlan.MONTHLY -> MaterialTheme.colorScheme.secondary
+                color = if (product.isBundle) {
+                    MaterialTheme.colorScheme.primary
+                } else {
+                    MaterialTheme.colorScheme.secondary
                 },
                 shape = RoundedCornerShape(4.dp),
             ) {
@@ -119,25 +117,25 @@ private fun PaywallPlanCard(
                         horizontal = 6.dp,
                         vertical = 2.dp,
                     ),
-                    text = when (product.plan) {
-                        SubscriptionPlan.MONTHLY -> stringResource(Res.string.paywall_plan_monthly_badge)
-                        SubscriptionPlan.YEARLY -> stringResource(Res.string.paywall_plan_yearly_badge)
-                        SubscriptionPlan.LIFETIME -> stringResource(Res.string.paywall_plan_lifetime_badge)
+                    text = if (product.isBundle) {
+                        stringResource(Res.string.paywall_plan_bundle_badge)
+                    } else {
+                        stringResource(Res.string.paywall_plan_level_badge)
                     },
                     style = MaterialTheme.typography.labelSmall,
-                    color = when (product.plan) {
-                        SubscriptionPlan.LIFETIME -> MaterialTheme.colorScheme.onPrimary
-                        SubscriptionPlan.YEARLY -> MaterialTheme.colorScheme.onTertiary
-                        SubscriptionPlan.MONTHLY -> MaterialTheme.colorScheme.onSecondary
+                    color = if (product.isBundle) {
+                        MaterialTheme.colorScheme.onPrimary
+                    } else {
+                        MaterialTheme.colorScheme.onSecondary
                     },
                 )
             }
 
             Text(
-                text = when (product.plan) {
-                    SubscriptionPlan.MONTHLY -> stringResource(Res.string.paywall_plan_monthly)
-                    SubscriptionPlan.YEARLY -> stringResource(Res.string.paywall_plan_yearly)
-                    SubscriptionPlan.LIFETIME -> stringResource(Res.string.paywall_plan_lifetime)
+                text = if (product.isBundle) {
+                    stringResource(Res.string.paywall_plan_bundle_label)
+                } else {
+                    stringResource(Res.string.paywall_plan_level_label)
                 },
                 style = MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.Medium,

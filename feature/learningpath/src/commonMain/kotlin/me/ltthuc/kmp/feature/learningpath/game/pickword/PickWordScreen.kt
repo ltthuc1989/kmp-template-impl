@@ -17,19 +17,31 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.coroutines.delay
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.boundsInWindow
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.pick_word_guide
+import me.ltthuc.kmp.core.ui.audio.ScreenVoicePrompt
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
 import me.ltthuc.kmp.feature.learningpath.game.common.CreamBackground
+import me.ltthuc.kmp.feature.learningpath.game.common.GUIDE_IDLE_MS
+import me.ltthuc.kmp.feature.learningpath.game.common.GameHandGuide
+import me.ltthuc.kmp.feature.learningpath.game.common.HandStep
 import me.ltthuc.kmp.feature.learningpath.game.common.ReadingTextDark
 import me.ltthuc.kmp.feature.learningpath.game.common.gameSegmentsFor
 import me.ltthuc.kmp.feature.learningpath.game.pickword.view.AnswerSlot
@@ -61,6 +73,8 @@ internal fun PickWordScreen(
     val screenState by viewModel.screenState.collectAsStateWithLifecycle()
     val stepSegments = remember(totalGames) { gameSegmentsFor(totalGames) }
 
+    ScreenVoicePrompt("vp_game_pick")
+
     AsyncLoadContents(
         modifier = modifier.fillMaxSize(),
         screenState = screenState,
@@ -68,8 +82,26 @@ internal fun PickWordScreen(
     ) { ui ->
         // Auto-advance to the next game once the final round's word audio has finished.
         LaunchedEffect(ui.isComplete) {
-            if (ui.isComplete) onGameComplete()
+            if (ui.isComplete) {
+                delay(1_000L)
+                onGameComplete()
+            }
         }
+
+        // Idle 5s → hand guide points at the correct word. Only on the FIRST round (teach the
+        // mechanic once); later rounds get no hand. A wrong tap re-arms it within round 0.
+        val wordCenters = remember { mutableStateMapOf<String, Offset>() }
+        var boxOrigin by remember { mutableStateOf(Offset.Zero) }
+        var interactionTick by remember { mutableStateOf(0) }
+        var showHint by remember { mutableStateOf(false) }
+        LaunchedEffect(interactionTick, ui.currentRoundIndex, ui.isComplete) {
+            showHint = false
+            if (!ui.isComplete && ui.currentRoundIndex == 0) {
+                delay(GUIDE_IDLE_MS)
+                showHint = true
+            }
+        }
+
         Scaffold(
             modifier = Modifier.fillMaxSize(),
             containerColor = MaterialTheme.colorScheme.background,
@@ -87,7 +119,8 @@ internal fun PickWordScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding)
-                    .background(CreamBackground),
+                    .background(CreamBackground)
+                    .onGloballyPositioned { boxOrigin = it.boundsInWindow().topLeft },
             ) {
                 Column(
                     modifier = Modifier
@@ -123,17 +156,35 @@ internal fun PickWordScreen(
                             val tint = if (idx == 0) round.tint else round.tint.copy(alpha = 0.75f)
                             // shakeKey changes when wrong pick equals this word — triggers shake.
                             val isWrongPick = ui.lastWrongPick == word
-                            PickWordChoice(
-                                word = word,
-                                tint = tint,
-                                enabled = !ui.isResolving && !ui.isComplete,
-                                shakeKey = if (isWrongPick) ui.currentRoundIndex * 100 + idx + 1 else 0,
-                                onClick = { viewModel.onWordTapped(word) },
-                            )
+                            Box(
+                                modifier = Modifier.onGloballyPositioned {
+                                    wordCenters[word] = it.boundsInWindow().center
+                                },
+                            ) {
+                                PickWordChoice(
+                                    word = word,
+                                    tint = tint,
+                                    enabled = !ui.isResolving && !ui.isComplete,
+                                    shakeKey = if (isWrongPick) ui.currentRoundIndex * 100 + idx + 1 else 0,
+                                    onClick = {
+                                        interactionTick++
+                                        viewModel.onWordTapped(word)
+                                    },
+                                )
+                            }
                         }
                     }
                     Spacer(Modifier.height(20.dp))
                 }
+
+                val targetCenter = wordCenters[ui.currentRound.targetWord]
+                val steps = targetCenter
+                    ?.let { persistentListOf(HandStep.Tap(it - boxOrigin)) }
+                    ?: persistentListOf()
+                GameHandGuide(
+                    isVisible = showHint && !ui.isResolving && steps.isNotEmpty(),
+                    steps = steps,
+                )
             }
         }
     }

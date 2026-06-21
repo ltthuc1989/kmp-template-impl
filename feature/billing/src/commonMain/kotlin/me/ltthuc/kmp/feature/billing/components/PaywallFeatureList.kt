@@ -14,8 +14,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.HighQuality
-import androidx.compose.material.icons.filled.NoPhotography
-import androidx.compose.material.icons.filled.Support
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -28,10 +26,6 @@ import androidx.compose.ui.unit.dp
 import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.paywall_feature_high_quality
 import me.ltthuc.kmp.core.resource.paywall_feature_high_quality_desc
-import me.ltthuc.kmp.core.resource.paywall_feature_no_ads
-import me.ltthuc.kmp.core.resource.paywall_feature_no_ads_desc
-import me.ltthuc.kmp.core.resource.paywall_feature_priority_support
-import me.ltthuc.kmp.core.resource.paywall_feature_priority_support_desc
 import me.ltthuc.kmp.core.resource.paywall_feature_unlimited_downloads
 import me.ltthuc.kmp.core.resource.paywall_feature_unlimited_downloads_desc
 import org.jetbrains.compose.resources.stringResource
@@ -43,8 +37,6 @@ internal fun PaywallFeatureList(
     val features = listOf(
         Triple(Icons.Default.Download, Res.string.paywall_feature_unlimited_downloads, Res.string.paywall_feature_unlimited_downloads_desc),
         Triple(Icons.Default.HighQuality, Res.string.paywall_feature_high_quality, Res.string.paywall_feature_high_quality_desc),
-        Triple(Icons.Default.NoPhotography, Res.string.paywall_feature_no_ads, Res.string.paywall_feature_no_ads_desc),
-        Triple(Icons.Default.Support, Res.string.paywall_feature_priority_support, Res.string.paywall_feature_priority_support_desc),
     )
 
     Column(

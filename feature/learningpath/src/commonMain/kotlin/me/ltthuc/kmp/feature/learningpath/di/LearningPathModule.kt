@@ -3,7 +3,6 @@ package me.ltthuc.kmp.feature.learningpath.di
 import me.ltthuc.kmp.feature.learningpath.LessonCompleteViewModel
 import me.ltthuc.kmp.feature.learningpath.LessonMapViewModel
 import me.ltthuc.kmp.feature.learningpath.LevelCompleteViewModel
-import me.ltthuc.kmp.feature.learningpath.UnitCompleteViewModel
 import me.ltthuc.kmp.feature.learningpath.UnitSelectionViewModel
 import me.ltthuc.kmp.feature.learningpath.game.bubblepop.BubblePopViewModel
 import me.ltthuc.kmp.feature.learningpath.game.dragwords.DragWordsViewModel
@@ -24,7 +23,6 @@ import org.koin.dsl.module
 
 val learningPathModule = module {
     viewModel { params -> UnitSelectionViewModel(levelId = params.get(), get(), get()) }
-    viewModel { params -> UnitCompleteViewModel(unitId = params.get(), get(), get(), get()) }
     viewModel { params -> LevelCompleteViewModel(levelId = params.get(), get(), get()) }
     viewModel { params ->
         LessonCompleteViewModel(

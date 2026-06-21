@@ -2,6 +2,7 @@ package me.ltthuc.kmp.feature.learningpath.step.tracing
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -44,37 +46,43 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.geometry.isSpecified
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.PathMeasure
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlin.math.roundToInt
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import me.ltthuc.kmp.core.audio.AudioRef
 import me.ltthuc.kmp.core.model.PhonicsLesson
+import me.ltthuc.kmp.core.repository.AudioRepository
 import me.ltthuc.kmp.core.repository.SfxController
+import me.ltthuc.kmp.core.repository.playAndAwait
 import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.common_next
-import me.ltthuc.kmp.core.resource.score_fail_primary
-import me.ltthuc.kmp.core.resource.score_fail_title
 import me.ltthuc.kmp.core.resource.score_success_primary
 import me.ltthuc.kmp.core.resource.score_success_title
 import me.ltthuc.kmp.core.resource.step_guide_tracing
 import me.ltthuc.kmp.core.resource.tracing_draw_here
-import me.ltthuc.kmp.core.resource.tracing_fail_subtitle
 import me.ltthuc.kmp.core.resource.tracing_score_excellent
 import me.ltthuc.kmp.core.resource.tracing_score_good
 import me.ltthuc.kmp.core.resource.tracing_score_very_good
+import me.ltthuc.kmp.core.ui.audio.ScreenVoicePrompt
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
+import me.ltthuc.kmp.core.ui.theme.LocalAppLanguage
+import me.ltthuc.kmp.feature.learningpath.step.common.ConfettiCanvas
 import me.ltthuc.kmp.feature.learningpath.step.common.PuffySurface
-import me.ltthuc.kmp.feature.learningpath.step.common.ScoreFeedback
-import me.ltthuc.kmp.feature.learningpath.step.common.ScoreFeedbackOverlay
 import me.ltthuc.kmp.feature.learningpath.step.common.StepContinueButton
 import me.ltthuc.kmp.feature.learningpath.step.common.StepHeader
 import org.jetbrains.compose.resources.stringResource
@@ -97,6 +105,8 @@ internal fun TracingScreen(
     viewModel: TracingViewModel = koinViewModel(key = unitId) { parametersOf(unitId) },
 ) {
     val screenState by viewModel.screenState.collectAsStateWithLifecycle()
+
+    ScreenVoicePrompt("vp_step_trace")
 
     AsyncLoadContents(
         modifier = modifier.fillMaxSize(),
@@ -125,12 +135,15 @@ private fun TracingContent(
     val letterChar = currentLesson.displayLetter.firstOrNull() ?: 'A'
     var isUppercase by remember(currentLesson.id) { mutableStateOf(true) }
     val guide = remember(letterChar, isUppercase) { LetterPaths.get(letterChar, isUppercase) }
-    var result by remember(currentLesson.id) { mutableStateOf<TracingResult?>(null) }
+    var celebrating by remember(currentLesson.id) { mutableStateOf(false) }
     // Count failed attempts for this lesson — after MAX_FAIL_ATTEMPTS, the fail overlay's button
     // lets the kid move on instead of retrying forever.
     var failCount by remember(currentLesson.id) { mutableStateOf(0) }
     val sfx = koinInject<SfxController>()
+    val audioRepository = koinInject<AudioRepository>()
+    val lang = LocalAppLanguage.current
     val tracingScope = rememberCoroutineScope()
+    var navigated by remember(currentLesson.id) { mutableStateOf(false) }
 
     // State owned here so Next can read current strokes for scoring.
     val userStrokes = remember(currentLesson.id, isUppercase) {
@@ -152,19 +165,24 @@ private fun TracingContent(
             guide = guide,
             canvasSize = size,
         )
-        val percent = (raw * 100).toInt().coerceIn(0, 100)
         val passed = raw >= TracingScorer.PASS_THRESHOLD
-        result = TracingResult(percent = percent, passed = passed)
-        // Khan-simple feedback: success → chime + voice praise; fail → voice "try_again" only.
         if (passed) {
+            // Vẽ đúng: KHÔNG popup — chỉ confetti + audio chúc mừng → tự về Lesson Map.
+            celebrating = true
             sfx.playSfx("correct")
             tracingScope.launch {
                 delay(TRACING_PRAISE_DELAY_MS)
-                sfx.playVoicePraise(TRACING_PRAISE_POOL.random())
+                audioRepository.playAndAwait(AudioRef.Prompt("vp_lesson_done", lang), CONGRATS_MAX_MS)
+                if (!navigated) {
+                    navigated = true
+                    onNext()
+                }
             }
         } else {
             failCount += 1
-            sfx.playVoicePraise("try_again")
+            // Vẽ sai: không popup, chỉ nhắc audio "thử lại" rồi cho vẽ lại.
+            sfx.playPrompt("vp_wrong", lang)
+            resetCanvas()
         }
     }
 
@@ -190,7 +208,7 @@ private fun TracingContent(
                         if (failCount >= MAX_FAIL_ATTEMPTS) onNext() else submitForScoring()
                     },
                     enabled = (failCount >= MAX_FAIL_ATTEMPTS) ||
-                        (userStrokes.isNotEmpty() && result == null),
+                        (userStrokes.isNotEmpty() && !celebrating),
                 )
             },
         ) { innerPadding ->
@@ -227,47 +245,12 @@ private fun TracingContent(
             }
         }
 
-        val feedback = result?.let { r ->
-            if (r.passed) {
-                val tierLabel = when {
-                    r.percent >= EXCELLENT_THRESHOLD -> stringResource(Res.string.tracing_score_excellent)
-                    r.percent >= VERY_GOOD_THRESHOLD -> stringResource(Res.string.tracing_score_very_good)
-                    else -> stringResource(Res.string.tracing_score_good)
-                }
-                ScoreFeedback.Success(
-                    title = stringResource(Res.string.score_success_title),
-                    subtitle = tierLabel,
-                    heroEmoji = "🎉",
-                    primaryLabel = stringResource(Res.string.score_success_primary),
-                )
-            } else {
-                ScoreFeedback.Fail(
-                    title = stringResource(Res.string.score_fail_title),
-                    subtitle = stringResource(Res.string.tracing_fail_subtitle),
-                    heroEmoji = "😔",
-                    primaryLabel = stringResource(Res.string.score_fail_primary),
-                    secondaryLabel = null,
-                )
-            }
+        // Confetti effect (KHÔNG popup card) trong lúc phát audio chúc mừng trước khi tự chuyển màn.
+        if (celebrating) {
+            ConfettiCanvas(modifier = Modifier.fillMaxSize())
         }
-        ScoreFeedbackOverlay(
-            feedback = feedback,
-            onDismiss = { result = null },
-            onPrimary = {
-                val wasSuccess = result?.passed == true
-                result = null
-                if (wasSuccess) {
-                    onNext()
-                } else {
-                    resetCanvas()
-                }
-            },
-        )
     }
 }
-
-@androidx.compose.runtime.Immutable
-private data class TracingResult(val percent: Int, val passed: Boolean)
 
 @Composable
 private fun CaseToggle(
@@ -426,10 +409,23 @@ private fun PracticeCanvas(
     val ghostColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.45f)
     val gridColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.05f)
 
+    // Idle 5s with an empty canvas → a 👆 traces the letter to show the kid what to do. Any stroke
+    // (userStrokes grows) or a reset re-arms the timer; drawing hides the hand immediately.
+    var canvasSizePx by remember { mutableStateOf(Size.Zero) }
+    var showHand by remember { mutableStateOf(false) }
+    LaunchedEffect(resetSignal, userStrokes.size) {
+        showHand = false
+        if (userStrokes.isEmpty()) {
+            delay(GUIDE_IDLE_MS)
+            showHand = true
+        }
+    }
+
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(PRACTICE_CORNER_DP.dp))
-            .background(Color.White),
+            .background(Color.White)
+            .onSizeChanged { canvasSizePx = Size(it.width.toFloat(), it.height.toFloat()) },
     ) {
         Canvas(
             modifier = Modifier
@@ -545,18 +541,73 @@ private fun PracticeCanvas(
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
+
+        if (showHand && canvasSizePx != Size.Zero) {
+            TracingIdleHand(guide = guide, canvasSize = canvasSizePx)
+        }
     }
+}
+
+/**
+ * A 👆 that loops along the letter's strokes (same scaled paths as the rendered guide), shown on the
+ * practice canvas after the kid has been idle. Positioned in the canvas's pixel coordinate space.
+ */
+@Composable
+private fun TracingIdleHand(guide: LetterGuide, canvasSize: Size) {
+    val measures = remember(guide, canvasSize) {
+        scaledGuidePaths(guide, canvasSize).map { PathMeasure().apply { setPath(it, false) } }
+    }
+    val lengths = remember(measures) { measures.map { it.length } }
+    val total = lengths.sum()
+    if (total <= 0f) return
+
+    val progress = remember(guide, canvasSize) { Animatable(0f) }
+    // Trace the letter exactly once, then disappear — no looping.
+    var finished by remember(guide, canvasSize) { mutableStateOf(false) }
+    LaunchedEffect(guide, canvasSize) {
+        progress.snapTo(0f)
+        progress.animateTo(
+            targetValue = 1f,
+            animationSpec = tween(
+                durationMillis = (measures.size * TRACE_HAND_MS_PER_STROKE)
+                    .coerceAtLeast(TRACE_HAND_MS_PER_STROKE),
+                easing = LinearEasing,
+            ),
+        )
+        finished = true
+    }
+    if (finished) return
+
+    // Map the global 0..1 progress onto the concatenated strokes and read the point there.
+    var remaining = progress.value * total
+    var point = Offset.Zero
+    for (i in measures.indices) {
+        if (remaining <= lengths[i] || i == measures.lastIndex) {
+            val p = measures[i].getPosition(remaining.coerceIn(0f, lengths[i]))
+            if (p.isSpecified) point = p
+            break
+        }
+        remaining -= lengths[i]
+    }
+
+    Text(
+        text = "👆",
+        fontSize = TRACE_HAND_FONT_SP.sp,
+        modifier = Modifier.offset {
+            // Nudge so the fingertip (top-center of the emoji) lands on the path point.
+            IntOffset(
+                x = (point.x - TRACE_HAND_FONT_SP.dp.toPx() / 2f).roundToInt(),
+                y = point.y.roundToInt(),
+            )
+        },
+    )
 }
 
 private const val EXCELLENT_THRESHOLD = 95
 private const val VERY_GOOD_THRESHOLD = 85
 private const val MAX_FAIL_ATTEMPTS = 3
 private const val TRACING_PRAISE_DELAY_MS = 500L
-private val TRACING_PRAISE_POOL = listOf(
-    "praise_great_job",
-    "praise_nice",
-    "praise_well_done",
-)
+private const val CONGRATS_MAX_MS = 6_000L
 private const val GUIDE_CARD_HEIGHT_DP = 210
 private const val GUIDE_CARD_CORNER_DP = 24
 private const val GUIDE_CARD_PADDING_DP = 20
@@ -566,4 +617,8 @@ private const val GUIDE_MS_PER_STROKE = 1200
 private const val PRACTICE_CORNER_DP = 24
 private const val GHOST_STROKE_FRACTION = 0.10f
 private const val PRACTICE_GRID_CELL_PX = 60f
+// Idle delay before the tracing guide hand appears — same 5s beat as the mini-games.
+private const val GUIDE_IDLE_MS = 5_000L
+private const val TRACE_HAND_MS_PER_STROKE = 1100
+private const val TRACE_HAND_FONT_SP = 40
 private const val PRACTICE_INK_WIDTH_PX = 18f

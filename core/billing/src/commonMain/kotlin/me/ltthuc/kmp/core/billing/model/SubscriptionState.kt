@@ -2,39 +2,31 @@ package me.ltthuc.kmp.core.billing.model
 
 import androidx.compose.runtime.Stable
 import kotlinx.serialization.Serializable
-import kotlin.time.Instant
 
 /**
- * サブスクリプションの状態を表す sealed interface。
- * ロード中・無料・プレミアムの3状態を持つ。
+ * Billing/ownership state. Per-level model uses one-time purchases, so there is no expiry/renewal —
+ * `Premium` simply carries the set of owned level ids (derived from active RevenueCat entitlements).
  */
 @Stable
 @Serializable
 sealed interface SubscriptionState {
-    /** 課金情報を読み込み中 */
+    /** Loading customer info. */
     @Serializable
     data object Loading : SubscriptionState
 
-    /** 無料ユーザー */
+    /** No active purchase. */
     @Serializable
     data object Free : SubscriptionState
 
-    /**
-     * プレミアムユーザー。
-     *
-     * @param plan 契約中のプラン
-     * @param expiresAt サブスクリプションの有効期限（lifetime の場合は null）
-     * @param willRenew 自動更新されるか（lifetime の場合は false）
-     * @param originalPurchaseDate 初回購入日
-     */
+    /** Owns at least one level (or the bundle → all five). */
     @Serializable
     data class Premium(
-        val plan: SubscriptionPlan,
-        val expiresAt: Instant?,
-        val willRenew: Boolean,
-        val originalPurchaseDate: Instant?,
+        override val ownedLevelIds: Set<String>,
     ) : SubscriptionState
 
     val isPremium: Boolean
         get() = this is Premium
+
+    val ownedLevelIds: Set<String>
+        get() = emptySet()
 }

@@ -30,7 +30,7 @@ class AndroidApplicationPlugin : Plugin<Project> {
                 buildFeatures.viewBinding = true
 
                 defaultConfig {
-                    applicationId = "me.ltthuc.kmp"
+                    applicationId = "com.beely.phonicskids"
 
                     versionName = libs.version("versionName")
                     versionCode = libs.version("versionCode").toInt()

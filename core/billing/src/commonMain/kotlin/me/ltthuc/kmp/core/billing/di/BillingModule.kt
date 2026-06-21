@@ -1,9 +1,13 @@
 package me.ltthuc.kmp.core.billing.di
 
 import me.ltthuc.kmp.core.billing.BillingDataSource
-import org.koin.core.module.dsl.singleOf
+import me.ltthuc.kmp.core.billing.FakeBillingDataSource
+import me.ltthuc.kmp.core.billing.RevenueCatBillingDataSource
+import me.ltthuc.kmp.core.billing.USE_FAKE_BILLING
 import org.koin.dsl.module
 
 val billingModule = module {
-    singleOf(::BillingDataSource)
+    single<BillingDataSource> {
+        if (USE_FAKE_BILLING) FakeBillingDataSource() else RevenueCatBillingDataSource(get())
+    }
 }

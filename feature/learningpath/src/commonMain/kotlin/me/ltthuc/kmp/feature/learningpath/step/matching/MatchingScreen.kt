@@ -57,6 +57,7 @@ import me.ltthuc.kmp.core.model.PhonicsLesson
 import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.common_next
 import me.ltthuc.kmp.core.resource.step_guide_matching
+import me.ltthuc.kmp.core.ui.audio.ScreenVoicePrompt
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
 import me.ltthuc.kmp.feature.learningpath.step.common.PuffySurface
 import me.ltthuc.kmp.feature.learningpath.step.common.StepContinueButton
@@ -82,6 +83,8 @@ internal fun MatchingScreen(
     viewModel: MatchingViewModel = koinViewModel(key = unitId) { parametersOf(unitId) },
 ) {
     val screenState by viewModel.screenState.collectAsStateWithLifecycle()
+
+    ScreenVoicePrompt("vp_step_match")
 
     DisposableEffect(viewModel) {
         onDispose { viewModel.onLeaveScreen() }
@@ -119,11 +122,8 @@ private fun MatchingContent(
     val vocab = remember(currentLesson.id) {
         currentLesson.words.toImmutableList()
     }
-    // Auto-play first vocab word on enter to teach kid the "tap to listen" affordance.
-    LaunchedEffect(currentLesson.id) {
-        kotlinx.coroutines.delay(AUTO_PLAY_DELAY_MS)
-        vocab.firstOrNull()?.let { onPlayWord(it.text) }
-    }
+    // No auto-play on enter: the spoken guide (vp_step_match) already tells the kid what to do.
+    // Kid taps a word to hear it.
     val rightOrder = remember(currentLesson.id) {
         vocab.shuffled(Random(currentLesson.id.hashCode())).toImmutableList()
     }
@@ -708,6 +708,5 @@ private data class DragLine(
 private val DOT_SIZE = 14.dp
 private val ART_SIZE = 56.dp
 private const val WRONG_FLASH_MS = 700L
-private const val AUTO_PLAY_DELAY_MS = 500L
 private const val CORRECT_WORD_DELAY_MS = 400L
 private const val SFX_CORRECT = "correct"

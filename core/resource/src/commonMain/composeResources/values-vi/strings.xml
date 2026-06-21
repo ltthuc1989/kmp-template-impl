@@ -1,0 +1,372 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Common -->
+    <string name="common_ok">OK</string>
+    <string name="common_cancel">Hủy</string>
+    <string name="common_confirm">Xác nhận</string>
+    <string name="common_apply">Áp dụng</string>
+    <string name="common_allow">Cho phép</string>
+    <string name="common_denied">Từ chối</string>
+    <string name="common_retry">Thử lại</string>
+    <string name="common_reload">Tải lại</string>
+    <string name="common_back">Quay lại</string>
+    <string name="common_close">Đóng</string>
+    <string name="step_home_action">Về bài học</string>
+    <string name="common_next">Tiếp</string>
+    <string name="common_finish">Xong</string>
+    <string name="common_skip">Bỏ qua</string>
+    <string name="common_loading">Đang tải…</string>
+    <string name="common_caution">Lưu ý</string>
+    <string name="common_error">Lỗi</string>
+    <string name="common_warning">Cảnh báo</string>
+    <string name="common_save">Lưu</string>
+    <string name="common_unknown">Không rõ</string>
+    <string name="common_details">Chi tiết</string>
+    <string name="common_delete">Xóa</string>
+    <string name="common_completed">Hoàn thành</string>
+
+    <!-- Common Error -->
+    <string name="error_copy_to_clipboard">Sao chép nội dung lỗi</string>
+    <string name="error_executed">Đã xảy ra lỗi</string>
+    <string name="error_unknown">Đã xảy ra lỗi không xác định</string>
+    <string name="error_download">Tải xuống thất bại</string>
+    <string name="error_no_data">Không có dữ liệu</string>
+    <string name="error_network">Đã xảy ra lỗi mạng</string>
+    <string name="error_network_description">Vui lòng kiểm tra kết nối và thử lại.</string>
+    <string name="error_paging">Không thể tải thêm</string>
+    <string name="error_developing_feature">Tính năng này đang được phát triển</string>
+    <string name="error_billing">Không lấy được thông tin mua hàng</string>
+    <string name="error_ad_load_failed">Không tải được quảng cáo</string>
+    <string name="error_ad_load_failed_description">Chúng tôi hiển thị quảng cáo để duy trì chất lượng dịch vụ.</string>
+    <string name="error_no_available_this_device">Tính năng này không khả dụng trên thiết bị này</string>
+
+    <!-- Common Unit -->
+    <string name="unit_day_before">%1$d ngày trước</string>
+    <string name="unit_hour_before">%1$d giờ trước</string>
+    <string name="unit_minute_before">%1$d phút trước</string>
+    <string name="unit_second_before">%1$d giây trước</string>
+    <string name="unit_favorite">%1$d lượt thích</string>
+    <string name="unit_tag">%1$d mục</string>
+    <string name="unit_jpy">¥%1$d</string>
+    <string name="unit_year">Năm</string>
+    <string name="unit_month">Tháng</string>
+    <string name="unit_day">Ngày</string>
+    <string name="unit_sheet">mục</string>
+
+    <!-- Platform -->
+    <string name="platform_x">X (Twitter)</string>
+    <string name="platform_pixiv">Pixiv</string>
+
+    <!-- Media -->
+    <string name="media_type_image">Hình ảnh</string>
+    <string name="media_type_video">Video</string>
+    <string name="media_type_animated_gif">GIF</string>
+
+    <!-- Home -->
+    <string name="home_title">Hành trình tiếng Anh</string>
+    <string name="home_level_1_title">Bảng chữ cái</string>
+    <string name="home_level_2_title">Nguyên âm ngắn</string>
+    <string name="home_level_3_title">Nguyên âm dài</string>
+    <string name="home_level_4_title">Tổ hợp &amp; ghép âm</string>
+    <string name="home_level_5_title">Mẫu nâng cao</string>
+    <string name="home_unit_label">Bài %1$d: %2$s</string>
+    <string name="home_badge_active">ĐANG HỌC</string>
+    <string name="home_badge_ready">Sẵn sàng bắt đầu</string>
+    <string name="home_badge_locked">Đã khóa</string>
+    <string name="home_badge_locked_unlock_after">Mở khóa sau %1$s</string>
+    <string name="home_progress_label">Tiến độ</string>
+    <string name="home_start_button">Bắt đầu</string>
+    <string name="home_level_free_locked">1 miễn phí · %1$d đã khóa</string>
+    <string name="home_unlock_bundle">Mở khóa cả 5 cấp độ — $20</string>
+    <string name="unit_free_label">Miễn phí</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">Trang chủ</string>
+    <string name="nav_settings">Cài đặt</string>
+
+    <!-- Review -->
+    <string name="review_title">Ôn tập</string>
+    <string name="review_coming_soon">Sắp ra mắt</string>
+    <string name="review_coming_soon_description">Chúng tôi đang chuẩn bị các hoạt động ôn tập để củng cố những gì bé đã học. Hãy đón chờ nhé!</string>
+
+    <!-- Download -->
+    <string name="download_title">Tải xuống</string>
+    <string name="download_select_all">Chọn tất cả</string>
+    <string name="download_button">Tải %1$s tệp</string>
+    <string name="download_progress_title">Đang tải xuống</string>
+    <string name="download_progress_count">%1$d / %2$d</string>
+    <string name="download_progress_status_waiting">Đang chờ</string>
+    <string name="download_progress_status_downloading">Đang tải…</string>
+    <string name="download_progress_status_transcoding">Đang chuyển mã…</string>
+    <string name="download_progress_status_saving">Đang lưu…</string>
+    <string name="download_progress_status_completed">Hoàn thành</string>
+    <string name="download_progress_status_failed">Thất bại</string>
+    <string name="download_failure_title">Kết quả tải xuống</string>
+    <string name="download_failure_summary">%1$d thành công, %2$d thất bại</string>
+    <string name="download_failure_item">Không tải được tệp %1$s</string>
+    <string name="download_no_media">Không tìm thấy tệp nào để tải từ URL này.</string>
+    <string name="download_error_invalid_url">Định dạng URL không hợp lệ.</string>
+    <string name="download_error_post_not_found">Không tìm thấy bài viết hoặc đã bị xóa.</string>
+    <string name="download_error_private_post">Bài viết này ở chế độ riêng tư và không thể truy cập.</string>
+    <string name="download_error_rate_limited">Quá nhiều yêu cầu. Vui lòng thử lại sau.</string>
+    <string name="download_error_parse">Không phân tích được phản hồi. API nền tảng có thể đã thay đổi.</string>
+    <string name="download_error_restricted_content">Nội dung này bị hạn chế (R-18/NSFW) và không thể truy cập.</string>
+    <string name="download_error_login_required">Cần đăng nhập để truy cập nội dung này.</string>
+    <string name="download_storage_permission_required">Cần quyền truy cập bộ nhớ</string>
+    <string name="download_storage_permission_settings">Vui lòng cấp quyền bộ nhớ trong Cài đặt.</string>
+
+    <!-- Setting -->
+    <string name="setting_title">Cài đặt</string>
+    <string name="setting_theme">Giao diện</string>
+    <string name="setting_theme_app">Giao diện ứng dụng</string>
+    <string name="setting_theme_app_description">Chọn màu giao diện ứng dụng.</string>
+    <string name="setting_theme_app_auto">Hệ thống</string>
+    <string name="setting_theme_app_light">Sáng</string>
+    <string name="setting_theme_app_dark">Tối</string>
+    <string name="setting_palette">Bảng màu</string>
+    <string name="setting_palette_description">Chọn bảng màu ứng dụng.</string>
+    <string name="setting_palette_playful">Vui nhộn</string>
+    <string name="setting_palette_fluid">Chuyên nghiệp</string>
+    <string name="setting_general">Chung</string>
+    <string name="setting_language">Ngôn ngữ</string>
+    <string name="setting_language_description">Chọn ngôn ngữ ứng dụng.</string>
+    <string name="language_system">Hệ thống</string>
+    <string name="language_english">English</string>
+    <string name="language_vietnamese">Tiếng Việt</string>
+    <string name="setting_sound_effects">Hiệu ứng âm thanh</string>
+    <string name="setting_support_title">Hỗ trợ</string>
+    <string name="setting_support_feedback">Gửi phản hồi</string>
+    <string name="setting_support_share">Chia sẻ ứng dụng</string>
+    <string name="setting_support_rate">Đánh giá ứng dụng</string>
+    <string name="setting_reset_progress">Đặt lại tiến độ</string>
+    <string name="setting_reset_confirm_title">Đặt lại tiến độ?</string>
+    <string name="setting_reset_confirm_message">Thao tác này sẽ xóa toàn bộ tiến độ học tập và bắt đầu lại từ Cấp độ 1. Không thể hoàn tác.</string>
+    <string name="setting_share_message">Bé nhà mình đang học đọc với ABC Phonics Kids! 🎉</string>
+    <string name="setting_information">Thông tin</string>
+    <string name="setting_information_app_version">Phiên bản ứng dụng</string>
+    <string name="setting_other">Khác</string>
+    <string name="setting_other_team_of_service">Điều khoản dịch vụ</string>
+    <string name="setting_other_privacy_policy">Chính sách bảo mật</string>
+    <string name="setting_other_open_source_license">Giấy phép mã nguồn mở</string>
+    <string name="setting_other_open_source_license_description">Xem giấy phép của các thư viện OSS.</string>
+    <string name="setting_other_developer_mode">Chế độ nhà phát triển</string>
+    <string name="setting_other_developer_mode_description">[Cảnh báo] Đừng bật chế độ này nếu bạn không phải nhà phát triển.</string>
+    <string name="setting_other_developer_mode_dialog_title">Chế độ nhà phát triển</string>
+    <string name="setting_other_developer_mode_dialog_description">Bạn đang cố bật chế độ này. Vui lòng nhập mã PIN của nhà phát triển.\n\n[Cảnh báo] Khi bật chế độ này, bạn sẽ không nhận được hỗ trợ.</string>
+
+    <!-- Setting Paywall -->
+    <string name="setting_paywall_title">Pro</string>
+    <string name="setting_paywall_upgrade">Nâng cấp lên Grabee Pro</string>
+    <string name="setting_paywall_description">Mở khóa tất cả tính năng gồm tải xuống không giới hạn, chất lượng cao và không quảng cáo.</string>
+    <string name="setting_paywall_download_limit">Lượt tải còn lại</string>
+    <string name="setting_paywall_download_limit_description">Còn %1$d lượt</string>
+
+    <!-- Setting Parent Control: open/lock sequential gate per owned level -->
+    <string name="setting_parent_control_title">Phụ huynh · Mở khóa thứ tự học</string>
+    <string name="setting_parent_control_open">Mở tất cả</string>
+    <string name="setting_parent_control_lock">Khóa</string>
+    <string name="setting_parent_control_buy">Mở khóa $5</string>
+    <string name="setting_parent_control_opened_label">Đã mở tất cả bài</string>
+    <string name="setting_parent_control_sequential_label">Theo thứ tự</string>
+    <string name="setting_parent_control_not_owned_label">Chưa mua</string>
+
+    <!-- Download Limit -->
+    <string name="download_limit_title">Giới hạn tải xuống</string>
+    <string name="download_limit_message">Bản miễn phí có số lượt tải giới hạn.\nNâng cấp lên Grabee Pro để tải không giới hạn.</string>
+    <string name="download_limit_upgrade">Nâng cấp lên Pro</string>
+    <string name="download_limit_watch_ad">Xem quảng cáo để có thêm lượt tải</string>
+    <string name="download_limit_watch_ad_description">Giới hạn hiện tại là %1$d. Xem quảng cáo để có thêm +%2$d lượt tải.</string>
+    <string name="download_limit_watch_ad_loading">Đang tải quảng cáo…</string>
+
+    <!-- Paywall -->
+    <string name="paywall_title">ABC Phonics Kids Pro</string>
+    <string name="paywall_subtitle">Mở khóa toàn bộ Cấp độ 1 — dành cho bé 3–8 tuổi.</string>
+    <string name="paywall_feature_unlimited_downloads">Mở khóa toàn bộ Cấp độ 1</string>
+    <string name="paywall_feature_unlimited_downloads_desc">Tất cả 8 bài của Cấp độ 1.</string>
+    <string name="paywall_feature_high_quality">Chế độ ngoại tuyến</string>
+    <string name="paywall_feature_high_quality_desc">Học mọi nơi — không cần internet.</string>
+    <string name="paywall_feature_no_ads">Không quảng cáo</string>
+    <string name="paywall_feature_no_ads_desc">Không gian sạch sẽ, không xao nhãng cho bé.</string>
+    <string name="paywall_feature_priority_support">Hỗ trợ ưu tiên</string>
+    <string name="paywall_feature_priority_support_desc">Chúng tôi trả lời câu hỏi của phụ huynh trước.</string>
+    <string name="paywall_plan_monthly">Hàng tháng</string>
+    <string name="paywall_plan_monthly_badge">Gói tháng</string>
+    <string name="paywall_plan_yearly">Hàng năm</string>
+    <string name="paywall_plan_yearly_badge">Đáng giá nhất</string>
+    <string name="paywall_plan_lifetime">Trọn đời</string>
+    <string name="paywall_plan_lifetime_badge">Mãi mãi</string>
+    <!-- Per-level paywall: single level vs full bundle -->
+    <string name="paywall_plan_level_label">Cấp độ này</string>
+    <string name="paywall_plan_level_badge">Lẻ</string>
+    <string name="paywall_plan_bundle_label">Cả 5 cấp độ</string>
+    <string name="paywall_plan_bundle_badge">Đáng giá nhất</string>
+    <string name="paywall_subscribe">Mở khóa</string>
+    <string name="paywall_trial_note">Mua một lần — sở hữu mãi mãi. Không thuê bao.</string>
+    <string name="paywall_restore">Khôi phục giao dịch</string>
+    <string name="paywall_terms">Điều khoản dịch vụ</string>
+    <string name="paywall_privacy">Chính sách bảo mật</string>
+    <string name="paywall_error_purchase_failed">Mua hàng thất bại.</string>
+    <string name="paywall_error_no_subscription_to_restore">Không tìm thấy giao dịch nào để khôi phục.</string>
+
+    <!-- Parental Gate (kids COPPA protection) -->
+    <string name="parental_gate_title">Chào ba mẹ!</string>
+    <string name="parental_gate_subtitle">Vui lòng nhập các số sau:</string>
+    <string name="parental_gate_backspace">Xóa</string>
+    <string name="digit_word_0">Không</string>
+    <string name="digit_word_1">Một</string>
+    <string name="digit_word_2">Hai</string>
+    <string name="digit_word_3">Ba</string>
+    <string name="digit_word_4">Bốn</string>
+    <string name="digit_word_5">Năm</string>
+    <string name="digit_word_6">Sáu</string>
+    <string name="digit_word_7">Bảy</string>
+    <string name="digit_word_8">Tám</string>
+    <string name="digit_word_9">Chín</string>
+
+    <!-- Learning Path: Sound Intro step -->
+    <string name="sound_intro_title">Làm quen âm</string>
+    <string name="sound_intro_word_example">như trong %1$s</string>
+    <string name="sound_intro_listen">Nghe âm</string>
+    <string name="sound_intro_can_you_say">Bé nói được \"%1$s\" không?</string>
+    <string name="sound_intro_next_lesson">Bài tiếp theo</string>
+
+    <!-- Learning Path: Chant step -->
+    <string name="chant_title">Bài vè</string>
+    <string name="chant_listen_cd">Nghe bài vè</string>
+    <string name="chant_previous">Trước</string>
+    <string name="chant_next">Tiếp</string>
+
+    <!-- Learning Path: Vocabulary step -->
+    <string name="vocabulary_title">Từ vựng</string>
+    <string name="vocabulary_listen_cd">Nghe</string>
+    <string name="vocabulary_mic_cd">Ghi âm giọng nói</string>
+    <string name="vocabulary_previous_cd">Từ trước</string>
+    <string name="vocabulary_next_cd">Từ tiếp theo</string>
+
+    <!-- Learning Path: Identify step -->
+    <string name="identify_title">Nhận biết</string>
+    <string name="identify_listen_cd">Nghe từ</string>
+    <string name="identify_round_progress">Vòng %1$d / %2$d</string>
+    <string name="identify_all_done_title">Giỏi lắm!</string>
+    <string name="identify_all_done_subtitle">Bé đã tìm được tất cả %1$d từ!</string>
+    <string name="identify_all_done_soft_subtitle">Gần được rồi — cố lên nhé!</string>
+
+    <!-- Learning Path: Blending step -->
+    <string name="blending_title">Ghép âm</string>
+    <string name="blending_word_progress">Từ %1$d / %2$d</string>
+
+    <!-- Learning Path: Matching step -->
+    <string name="matching_title">Nối hình</string>
+
+    <!-- Story (step 7) -->
+    <string name="story_title">Câu chuyện</string>
+    <string name="story_letter_title">Câu chuyện chữ %1$s%2$s</string>
+    <string name="story_page_sentence">Chữ %1$s trong %2$s!</string>
+    <string name="story_audio_cd">Phát lời kể</string>
+    <string name="story_previous_page_cd">Trang trước</string>
+    <string name="story_next_page_cd">Trang sau</string>
+
+    <!-- Game flow (after Story) — shared chrome + per-game strings -->
+    <string name="game_flow_title">Giờ chơi nào!</string>
+
+    <!-- PickWord (game 2 — pick correct word for picture) -->
+    <string name="pick_word_guide">Chạm vào từ khớp với hình</string>
+    <string name="pick_word_celebration_title">Chọn từ giỏi!</string>
+    <string name="pick_word_celebration_subtitle">Bé đã ghép đúng mọi từ!</string>
+
+    <!-- FillLetter (game 3 — tap missing letter to complete word) -->
+    <string name="fill_letter_guide">Chạm vào chữ còn thiếu</string>
+    <string name="fill_letter_celebration_title">Thám tử chữ cái!</string>
+    <string name="fill_letter_celebration_subtitle">Mọi chữ đã đúng chỗ!</string>
+
+    <!-- SpellLetters (game 4 — tap letters to spell the word) -->
+    <string name="spell_letters_guide">Chạm các chữ để xếp thành từ</string>
+    <string name="spell_letters_celebration_title">Ngôi sao đánh vần!</string>
+    <string name="spell_letters_celebration_subtitle">Đã xếp xong mọi từ!</string>
+
+    <!-- DragWords (game 5 — match each word to its picture) -->
+    <string name="drag_words_guide">Chạm một từ, rồi chạm hình tương ứng</string>
+    <string name="drag_words_celebration_title">Ghép từ thành công!</string>
+    <string name="drag_words_celebration_subtitle">Mọi từ đã tìm thấy hình của mình!</string>
+
+
+    <!-- Memory Match (game 1) -->
+    <string name="memory_match_title">Lật hình trí nhớ</string>
+    <string name="memory_match_guide">Chạm hai thẻ để tìm cặp</string>
+    <string name="memory_match_complete_title">Đã ghép hết!</string>
+    <string name="memory_match_complete_subtitle">Trí nhớ tuyệt vời!</string>
+
+    <!-- Bubble Pop v5 — 30s arcade round, tier stars -->
+    <string name="bubble_game_find_letter">Tìm chữ %1$s</string>
+    <string name="bubble_game_time_up">Hết giờ!</string>
+    <string name="bubble_game_lightning_fast">Nhanh như chớp!</string>
+    <string name="bubble_game_round_score">Bé tìm được %1$d / %2$d chữ</string>
+
+    <!-- Bubble Pop game (step 8 — after Story) -->
+    <string name="bubble_game_title">Bóng nước</string>
+    <string name="bubble_game_guide">Chạm bong bóng có chữ khớp</string>
+    <string name="bubble_game_listen_cd">Phát âm chữ cái</string>
+    <string name="bubble_game_round_label">Vòng %1$d / %2$d</string>
+    <string name="bubble_game_round_complete_title">Tuyệt vời!</string>
+    <string name="bubble_game_round_complete_subtitle">Bé đã tìm hết chữ %1$s!</string>
+    <string name="bubble_game_celebration_title">Xong hết rồi!</string>
+    <string name="bubble_game_celebration_subtitle">Giỏi lắm, nhà vô địch phonics!</string>
+
+    <!-- Tracing (step 6) -->
+    <string name="tracing_title">Tô chữ</string>
+    <string name="tracing_draw_here">Vẽ ở đây</string>
+    <string name="tracing_case_upper">ABC</string>
+    <string name="tracing_case_lower">abc</string>
+    <string name="tracing_score_good">Tốt lắm!</string>
+    <string name="tracing_score_very_good">Rất tốt!</string>
+    <string name="tracing_score_excellent">Xuất sắc!</string>
+    <string name="tracing_fail_subtitle">Chưa đúng lắm — hãy đi theo nét nhé!</string>
+    <string name="tracing_watch_ad_to_pass">Xem quảng cáo để qua</string>
+
+    <!-- Step guide texts (shown below toolbar on each step screen) -->
+    <string name="step_guide_sound_intro">Nghe và lặp lại âm</string>
+    <string name="step_guide_chant">Nghe và hát theo</string>
+    <string name="step_guide_vocabulary">Chạm từng hình để nghe</string>
+    <string name="step_guide_identify">Chạm hình tương ứng</string>
+    <string name="step_guide_blending">Kéo dài và ghép các âm</string>
+    <string name="step_guide_matching">Nối các cặp</string>
+    <string name="step_guide_tracing">Tô theo nét chữ</string>
+    <string name="step_guide_story">Nghe câu chuyện</string>
+
+    <!-- Lesson selector sheet -->
+    <string name="lesson_sheet_lesson_label">Bài %1$d: %2$s</string>
+    <string name="lesson_sheet_story_label">Câu chuyện</string>
+    <string name="lesson_map_games_label">Trò chơi nhỏ</string>
+    <string name="lesson_complete_back_to_list">Về danh sách bài</string>
+
+    <!-- Level complete celebration screen (all units in a level done) -->
+    <string name="level_complete_title">Bé làm được rồi! 🎉</string>
+    <string name="level_complete_subtitle">Bé đã hoàn thành %1$s</string>
+    <string name="level_complete_letter_count">%1$d chữ cái ✨</string>
+    <string name="level_complete_parent_thanks">Cảm ơn ba mẹ đã đồng hành. Cấp độ 2 sắp ra mắt!</string>
+    <string name="level_complete_replay">Chơi lại cấp độ này</string>
+    <string name="level_complete_go_home">Về trang chủ</string>
+    <string name="level_card_coming_soon">Sắp ra mắt ✨</string>
+
+    <!-- Score feedback (reusable across step screens) -->
+    <string name="score_success_title">Giỏi lắm!</string>
+    <string name="score_success_subtitle">Bé phát âm rất chuẩn!</string>
+    <string name="score_success_primary">Tiếp tục nào!</string>
+    <string name="score_fail_title">Ôi!</string>
+    <string name="score_fail_subtitle">Đừng lo, bé làm được mà!</string>
+    <string name="score_fail_primary">Thử lại</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_language_title">Chọn ngôn ngữ</string>
+    <string name="onboarding_title">Học tiếng Anh</string>
+    <string name="onboarding_get_started">Bắt đầu</string>
+    <string name="onboarding_page1_title">Chào mừng!</string>
+    <string name="onboarding_page1_subtitle">Bắt đầu hành trình phonics tiếng Anh</string>
+    <string name="onboarding_page2_title">Học âm</string>
+    <string name="onboarding_page2_subtitle">Thành thạo chữ cái và âm của chúng</string>
+    <string name="onboarding_page3_title">Chơi &amp; Học</string>
+    <string name="onboarding_page3_subtitle">Thành thạo chữ cái qua trò chơi vui</string>
+    <string name="onboarding_page4_title">Giờ kể chuyện</string>
+    <string name="onboarding_page4_subtitle">Thưởng thức câu chuyện vui ở cuối mỗi chữ cái</string>
+</resources>

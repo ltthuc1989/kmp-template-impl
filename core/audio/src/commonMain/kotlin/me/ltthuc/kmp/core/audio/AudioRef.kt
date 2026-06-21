@@ -74,4 +74,14 @@ sealed interface AudioRef {
     data class Music(val name: String) : AudioRef {
         override val lessonFolder: String get() = "sfx/music"
     }
+
+    /**
+     * Spoken UI guidance prompt ("Let's trace the letter!"), bundled at
+     * `files/sfx/prompts/<lang>/<promptId>.mp3`. Localized: [lang] is the effective UI
+     * language code ("en" / "vi"). Played once on screen entry; gated by the voice toggle
+     * like [Voice]. [promptId] is the screen/action key (e.g. "vp_step_trace").
+     */
+    data class Prompt(val promptId: String, val lang: String) : AudioRef {
+        override val lessonFolder: String get() = "prompts"
+    }
 }

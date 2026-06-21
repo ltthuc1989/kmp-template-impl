@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import io.github.aakira.napier.Napier
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
@@ -22,9 +21,7 @@ internal class HomeViewModel(
     levelRepository: LevelRepository,
 ) : ViewModel() {
 
-    private val levelCards: Flow<List<LevelCard>> = levelRepository.observeLevelCards()
-
-    val screenState: StateFlow<ScreenState<HomeUiState>> = levelCards
+    val screenState: StateFlow<ScreenState<HomeUiState>> = levelRepository.observeLevelCards()
         .map<List<LevelCard>, ScreenState<HomeUiState>> { cards ->
             ScreenState.Idle(HomeUiState(levels = cards.toImmutableList()))
         }

@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -53,14 +54,24 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.collections.immutable.ImmutableList
+import me.ltthuc.kmp.core.model.FREE_UNITS_PER_LEVEL
+import me.ltthuc.kmp.core.model.MONETIZATION_ENABLED
 import me.ltthuc.kmp.core.model.UnitCard
 import me.ltthuc.kmp.core.model.UnitLetterPreview
 import me.ltthuc.kmp.core.model.UnitStatus
+import me.ltthuc.kmp.core.repository.SfxController
+import me.ltthuc.kmp.feature.learningpath.step.common.PulseRings
+import me.ltthuc.kmp.core.resource.Res
+import me.ltthuc.kmp.core.resource.unit_free_label
 import me.ltthuc.kmp.core.ui.ads.BottomBannerAd
+import me.ltthuc.kmp.core.ui.components.PuffySurface
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
 import me.ltthuc.kmp.core.ui.screen.Destination
 import me.ltthuc.kmp.core.ui.screen.ScreenState
+import me.ltthuc.kmp.core.ui.theme.LocalAppLanguage
 import me.ltthuc.kmp.core.ui.theme.LocalNavBackStack
+import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -79,48 +90,63 @@ internal fun UnitSelectionScreen(
 ) {
     val screenState by viewModel.screenState.collectAsStateWithLifecycle()
     val navBackStack = LocalNavBackStack.current
+    val sfx: SfxController = koinInject()
+    val lang = LocalAppLanguage.current
 
     val isStartDestination = navBackStack.size == 1
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
-    Scaffold(
-        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        containerColor = ScreenBg,
-        topBar = {
-            val uiState = (screenState as? ScreenState.Idle)?.data
-            UnitTopBar(
-                title = uiState?.let { "Book ${it.level.number}: ${it.level.title}" }.orEmpty(),
-                showBackButton = !isStartDestination,
-                onBack = { if (navBackStack.size > 1) navBackStack.removeAt(navBackStack.size - 1) },
-                onSettings = { navBackStack.add(Destination.Setting.Root) },
-                scrollBehavior = scrollBehavior,
-            )
-        },
-        bottomBar = { BottomBannerAd() },
-    ) { innerPadding ->
-        AsyncLoadContents(
-            modifier = Modifier.fillMaxSize(),
-            screenState = screenState,
-        ) { uiState ->
-            UnitSelectionList(
-                units = uiState.units,
-                contentPadding = PaddingValues(
-                    top = innerPadding.calculateTopPadding() + 12.dp,
-                    bottom = innerPadding.calculateBottomPadding() + 12.dp,
-                    start = 16.dp,
-                    end = 16.dp,
-                ),
-                onUnitClick = { card ->
-                    when (card.status) {
-                        UnitStatus.Locked -> Unit
-                        // Any unlocked/active/completed unit opens the full-screen Lesson Map,
-                        // which handles per-lesson lock state and resume/replay.
-                        UnitStatus.Completed,
-                        UnitStatus.Active,
-                        UnitStatus.Unlocked,
-                        -> navBackStack.add(Destination.Learning.LessonMap(levelId, card.unit.id))
-                    }
-                },
-            )
+    Box(modifier = modifier.fillMaxSize()) {
+        Scaffold(
+            modifier = Modifier.fillMaxSize().nestedScroll(scrollBehavior.nestedScrollConnection),
+            containerColor = ScreenBg,
+            topBar = {
+                val uiState = (screenState as? ScreenState.Idle)?.data
+                UnitTopBar(
+                    title = uiState?.let { "Book ${it.level.number}: ${it.level.title}" }.orEmpty(),
+                    showBackButton = !isStartDestination,
+                    onBack = { if (navBackStack.size > 1) navBackStack.removeAt(navBackStack.size - 1) },
+                    onSettings = { navBackStack.add(Destination.Setting.Root) },
+                    scrollBehavior = scrollBehavior,
+                )
+            },
+            bottomBar = { BottomBannerAd() },
+        ) { innerPadding ->
+            AsyncLoadContents(
+                modifier = Modifier.fillMaxSize(),
+                screenState = screenState,
+            ) { uiState ->
+                UnitSelectionList(
+                    units = uiState.units,
+                    contentPadding = PaddingValues(
+                        top = innerPadding.calculateTopPadding() + 12.dp,
+                        bottom = innerPadding.calculateBottomPadding() + 12.dp,
+                        start = 16.dp,
+                        end = 16.dp,
+                    ),
+                    onUnitClick = { card ->
+                        when (card.status) {
+                            // Sequential lock (level already paid, but an earlier unit isn't finished —
+                            // or a not-yet-reached free unit) → speak the "finish the previous one" guide.
+                            UnitStatus.Locked -> sfx.playPrompt("vp_locked", lang)
+                            // Paid unit not owned → open the features/paywall screen directly (kid-safe
+                            // marketing). The parental gate appears on the purchase button there.
+                            UnitStatus.PremiumLocked -> navBackStack.add(
+                                Destination.Paywall(
+                                    source = Destination.Paywall.Source.UNIT_LOCKED,
+                                    levelId = levelId,
+                                    gatedAlready = false,
+                                ),
+                            )
+                            // Any unlocked/active/completed unit opens the full-screen Lesson Map,
+                            // which handles per-lesson lock state and resume/replay.
+                            UnitStatus.Completed,
+                            UnitStatus.Active,
+                            UnitStatus.Unlocked,
+                            -> navBackStack.add(Destination.Learning.LessonMap(levelId, card.unit.id))
+                        }
+                    },
+                )
+            }
         }
     }
 }
@@ -275,33 +301,96 @@ private fun UnitTopBar(
 
 @Composable
 private fun UnitNumberBadge(status: UnitStatus, unitNumber: Int) {
-    val label = unitNumber.toString().padStart(2, '0')
-    val base = Modifier.size(UnitBadgeSize).clip(CircleShape)
-    val styled = when (status) {
-        UnitStatus.Completed -> base.background(AccentRed)
-        UnitStatus.Active -> base.background(Color.White).border(2.dp, AccentRed, CircleShape)
-        UnitStatus.Unlocked -> base.background(Color.White).border(1.5.dp, SoftPink, CircleShape)
-        UnitStatus.Locked -> base.background(LockedGray)
+    val isFreeZone = MONETIZATION_ENABLED && unitNumber <= FREE_UNITS_PER_LEVEL
+    val isLocked = status == UnitStatus.Locked || status == UnitStatus.PremiumLocked
+    val onRed = status == UnitStatus.Active ||
+        status == UnitStatus.Unlocked ||
+        status == UnitStatus.Completed
+
+    val container = when {
+        onRed -> AccentRed
+        isFreeZone && isLocked -> SoftPink
+        isLocked -> LockedGray
+        else -> Color.White
     }
-    Box(modifier = styled, contentAlignment = Alignment.Center) {
-        when (status) {
-            UnitStatus.Completed -> Icon(
-                imageVector = Icons.Filled.Check,
-                contentDescription = null,
-                tint = Color.White,
-                modifier = Modifier.size(16.dp),
-            )
-            UnitStatus.Locked -> Icon(
+
+    // Outer box (not clipped) so the small lock badge can overhang the circle's corner.
+    Box(contentAlignment = Alignment.Center) {
+        // Ripple pulse on the active unit's circle. Smaller maxScale so the rings stay within the
+        // timeline column and don't bleed into the card to the right.
+        PulseRings(
+            isActive = status == UnitStatus.Active || status == UnitStatus.Unlocked,
+            ringColor = AccentRed,
+            maxScale = TIMELINE_PULSE_MAX_SCALE,
+        )
+        PuffySurface(
+            shape = CircleShape,
+            containerColor = container,
+            shadowElevation = 8.dp,
+            shadowTint = if (onRed || (isFreeZone && isLocked)) AccentRed else LockedTextGray,
+            shadowAlpha = 0.40f,
+            topHighlightHeight = 14.dp,
+            topHighlightAlpha = 0.55f,
+            bottomShadeHeight = 14.dp,
+            bottomShadeAlpha = 0.16f,
+            modifier = Modifier.size(UnitBadgeSize),
+        ) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                when {
+                    status == UnitStatus.Completed -> Icon(
+                        imageVector = Icons.Filled.Check,
+                        contentDescription = null,
+                        tint = Color.White,
+                        modifier = Modifier.size(20.dp),
+                    )
+                    isFreeZone -> Text(
+                        text = stringResource(Res.string.unit_free_label),
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = if (onRed) Color.White else Color.White.copy(alpha = 0.95f),
+                    )
+                    isLocked -> Icon(
+                        imageVector = Icons.Filled.Lock,
+                        contentDescription = null,
+                        tint = LockedTextGray,
+                        modifier = Modifier.size(18.dp),
+                    )
+                    else -> Text(
+                        text = unitNumber.toString().padStart(2, '0'),
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = if (onRed) Color.White else AccentRed,
+                    )
+                }
+            }
+        }
+        // Monkey-style small lock badge on a free-but-still-sequential-locked node.
+        if (isFreeZone && isLocked) {
+            BadgeLock(modifier = Modifier.align(Alignment.BottomEnd).offset(x = 4.dp, y = 4.dp))
+        }
+    }
+}
+
+@Composable
+private fun BadgeLock(modifier: Modifier = Modifier) {
+    PuffySurface(
+        shape = CircleShape,
+        containerColor = Color.White,
+        shadowElevation = 4.dp,
+        shadowTint = LockedTextGray,
+        shadowAlpha = 0.35f,
+        topHighlightHeight = 6.dp,
+        topHighlightAlpha = 0.7f,
+        bottomShadeHeight = 6.dp,
+        bottomShadeAlpha = 0.06f,
+        modifier = modifier.size(20.dp),
+    ) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Icon(
                 imageVector = Icons.Filled.Lock,
                 contentDescription = null,
                 tint = LockedTextGray,
-                modifier = Modifier.size(14.dp),
-            )
-            UnitStatus.Active, UnitStatus.Unlocked -> Text(
-                text = label,
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Bold,
-                color = AccentRed,
+                modifier = Modifier.size(11.dp),
             )
         }
     }
@@ -313,7 +402,10 @@ private fun UnitCardItem(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val isLocked = card.status == UnitStatus.Locked
+    // Sequential lock = greyed + not clickable; premium lock = greyed but tappable (opens paywall).
+    val isSequentialLocked = card.status == UnitStatus.Locked
+    val isPremiumLocked = card.status == UnitStatus.PremiumLocked
+    val isLocked = isSequentialLocked || isPremiumLocked
     val containerColor = if (isLocked) {
         MaterialTheme.colorScheme.surfaceContainerLow
     } else {
@@ -328,7 +420,9 @@ private fun UnitCardItem(
 
     ElevatedCard(
         onClick = onClick,
-        enabled = !isLocked,
+        // Always tappable: a sequential-locked tap plays the spoken guide instead of navigating.
+        // PremiumLocked taps still open the paywall. Dim visuals are driven by isLocked below.
+        enabled = true,
         modifier = modifier
             .fillMaxWidth()
             .defaultMinSize(minHeight = CardMinHeight)
@@ -339,8 +433,8 @@ private fun UnitCardItem(
             disabledContainerColor = containerColor,
         ),
         elevation = CardDefaults.elevatedCardElevation(
-            defaultElevation = if (isLocked) 0.dp else 3.dp,
-            disabledElevation = 0.dp,
+            defaultElevation = if (isLocked) 5.dp else 10.dp,
+            disabledElevation = 5.dp,
         ),
     ) {
         Box(modifier = Modifier.fillMaxWidth()) {
@@ -441,6 +535,20 @@ private fun ActionPlayButton(status: UnitStatus) {
                 modifier = Modifier.size(18.dp),
             )
         }
+        UnitStatus.PremiumLocked -> Box(
+            modifier = Modifier
+                .size(PlayButtonSize)
+                .clip(CircleShape)
+                .background(LockedGray),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Lock,
+                contentDescription = "Locked – purchase to unlock",
+                tint = LockedTextGray,
+                modifier = Modifier.size(16.dp),
+            )
+        }
         UnitStatus.Locked -> Spacer(Modifier.size(PlayButtonSize))
     }
 }
@@ -467,9 +575,12 @@ private fun ThemeChip(
     }
 }
 
-private val UnitBadgeSize = 32.dp
+// Keep the pulse rings inside the 56dp timeline column (48dp badge → ~65dp) so they don't
+// overlap the unit card 12dp to the right.
+private const val TIMELINE_PULSE_MAX_SCALE = 1.35f
+private val UnitBadgeSize = 48.dp
 private val PlayButtonSize = 34.dp
-private val TimelineColumnWidth = 36.dp
+private val TimelineColumnWidth = 56.dp
 private val ConnectorStrokeWidth = 2.dp
 private val CardVerticalPadding = 6.dp
 private val CardMinHeight = 76.dp

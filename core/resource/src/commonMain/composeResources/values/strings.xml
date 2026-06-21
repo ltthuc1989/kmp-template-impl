@@ -77,6 +77,9 @@
     <string name="home_badge_locked_unlock_after">Unlock after %1$s</string>
     <string name="home_progress_label">Progress</string>
     <string name="home_start_button">Start</string>
+    <string name="home_level_free_locked">1 free · %1$d locked</string>
+    <string name="home_unlock_bundle">Unlock all 5 levels — $20</string>
+    <string name="unit_free_label">Free</string>
 
     <!-- Navigation -->
     <string name="nav_home">Home</string>
@@ -126,6 +129,11 @@
     <string name="setting_palette_playful">Playful</string>
     <string name="setting_palette_fluid">Professional</string>
     <string name="setting_general">General</string>
+    <string name="setting_language">Language</string>
+    <string name="setting_language_description">Choose the app language.</string>
+    <string name="language_system">System</string>
+    <string name="language_english">English</string>
+    <string name="language_vietnamese">Tiếng Việt</string>
     <string name="setting_sound_effects">Sound effects</string>
     <string name="setting_support_title">Support</string>
     <string name="setting_support_feedback">Give feedback</string>
@@ -154,6 +162,15 @@
     <string name="setting_paywall_download_limit">Remaining Downloads</string>
     <string name="setting_paywall_download_limit_description">%1$d remaining</string>
 
+    <!-- Setting Parent Control: open/lock sequential gate per owned level -->
+    <string name="setting_parent_control_title">Parent · Unlock learning order</string>
+    <string name="setting_parent_control_open">Open all</string>
+    <string name="setting_parent_control_lock">Lock</string>
+    <string name="setting_parent_control_buy">Unlock $5</string>
+    <string name="setting_parent_control_opened_label">All units open</string>
+    <string name="setting_parent_control_sequential_label">In order</string>
+    <string name="setting_parent_control_not_owned_label">Not purchased</string>
+
     <!-- Download Limit -->
     <string name="download_limit_title">Download Limit</string>
     <string name="download_limit_message">The free version has a limited number of downloads.\nUpgrade to Grabee Pro for unlimited downloads.</string>
@@ -164,9 +181,9 @@
 
     <!-- Paywall -->
     <string name="paywall_title">ABC Phonics Kids Pro</string>
-    <string name="paywall_subtitle">Unlock all 5 levels and remove ads — built for kids 3–8.</string>
-    <string name="paywall_feature_unlimited_downloads">All 5 Levels Unlocked</string>
-    <string name="paywall_feature_unlimited_downloads_desc">36 units, 500+ words, 12 stories across Levels 2–5.</string>
+    <string name="paywall_subtitle">Unlock all of Level 1 — built for kids 3–8.</string>
+    <string name="paywall_feature_unlimited_downloads">Unlock all of Level 1</string>
+    <string name="paywall_feature_unlimited_downloads_desc">All 8 units of Level 1.</string>
     <string name="paywall_feature_high_quality">Offline Mode</string>
     <string name="paywall_feature_high_quality_desc">Learn anywhere — no internet needed.</string>
     <string name="paywall_feature_no_ads">No Ads</string>
@@ -179,8 +196,13 @@
     <string name="paywall_plan_yearly_badge">Best Value</string>
     <string name="paywall_plan_lifetime">Lifetime</string>
     <string name="paywall_plan_lifetime_badge">Forever</string>
-    <string name="paywall_subscribe">Subscribe</string>
-    <string name="paywall_trial_note">Includes 7-day free trial. Cancel anytime.</string>
+    <!-- Per-level paywall: single level vs full bundle -->
+    <string name="paywall_plan_level_label">This level</string>
+    <string name="paywall_plan_level_badge">Single</string>
+    <string name="paywall_plan_bundle_label">All 5 levels</string>
+    <string name="paywall_plan_bundle_badge">Best value</string>
+    <string name="paywall_subscribe">Unlock</string>
+    <string name="paywall_trial_note">One-time purchase — yours forever. No subscription.</string>
     <string name="paywall_restore">Restore Purchase</string>
     <string name="paywall_terms">Terms of Service</string>
     <string name="paywall_privacy">Privacy Policy</string>
@@ -318,14 +340,6 @@
     <string name="lesson_map_games_label">Mini Games</string>
     <string name="lesson_complete_back_to_list">Back to lessons</string>
 
-    <!-- Unit complete celebration screen -->
-    <string name="unit_complete_title">Great job!</string>
-    <string name="unit_complete_subtitle">%1$s Complete!</string>
-    <string name="unit_complete_first_badge">✨ First completion!</string>
-    <string name="unit_complete_next_button">Next: %1$s</string>
-    <string name="unit_complete_choose_letter">Pick another letter</string>
-    <string name="unit_complete_level_done">🎓 Level complete!</string>
-
     <!-- Level complete celebration screen (all units in a level done) -->
     <string name="level_complete_title">You did it! 🎉</string>
     <string name="level_complete_subtitle">You finished %1$s</string>
@@ -344,6 +358,7 @@
     <string name="score_fail_primary">Retry</string>
 
     <!-- Onboarding -->
+    <string name="onboarding_language_title">Choose your language</string>
     <string name="onboarding_title">Learn English</string>
     <string name="onboarding_get_started">Get Started</string>
     <string name="onboarding_page1_title">Welcome!</string>

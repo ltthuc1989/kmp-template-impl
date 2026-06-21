@@ -55,16 +55,20 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import me.ltthuc.kmp.core.audio.AudioRef
 import me.ltthuc.kmp.core.audio.AudioState
 import me.ltthuc.kmp.core.audio.isActiveFor
 import me.ltthuc.kmp.core.model.LessonWord
 import me.ltthuc.kmp.core.model.PhonicsLesson
+import me.ltthuc.kmp.core.repository.AudioRepository
 import me.ltthuc.kmp.core.repository.SfxController
+import me.ltthuc.kmp.core.repository.playAndAwait
 import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.common_next
 import me.ltthuc.kmp.core.resource.identify_listen_cd
 import me.ltthuc.kmp.core.resource.step_guide_identify
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
+import me.ltthuc.kmp.core.ui.theme.LocalAppLanguage
 import me.ltthuc.kmp.feature.learningpath.step.common.PuffySurface
 import me.ltthuc.kmp.feature.learningpath.step.common.PulseRings
 import me.ltthuc.kmp.feature.learningpath.step.common.StepContinueButton
@@ -161,13 +165,21 @@ private fun IdentifyContent(
 
     val scope = rememberCoroutineScope()
     val sfx = koinInject<SfxController>()
+    val audioRepository = koinInject<AudioRepository>()
+    val lang = LocalAppLanguage.current
 
-    // Auto-play target word on round change (and on first entering the step). Grid alpha
-    // follows audio state. The leading delay lets the previous step's audioRepository.stop()
-    // (run in its DisposableEffect dispose) finish before we kick off ours — without it the
-    // play() call here races against the stop() and gets cancelled.
+    // First entry plays the spoken guide ("Listen, then tap the right picture"), then the target
+    // word. Later rounds just play the word (after a short delay that lets the previous step's
+    // audioRepository.stop() finish so our play() doesn't get cancelled).
     LaunchedEffect(currentLesson.id, roundIndex) {
+        // The leading delay is required on EVERY branch: when we arrive from the previous
+        // step its DisposableEffect runs audioRepository.stop() in dispose, and the guide
+        // shares that same channel. Without the beat, play() races the outgoing stop() and
+        // gets cancelled — the guide goes silent on first entry. (Was the missing-guide bug.)
         delay(AUTO_PLAY_DELAY_MS)
+        if (roundIndex == 0) {
+            audioRepository.playAndAwait(AudioRef.Prompt("vp_step_identify", lang), IDENTIFY_GUIDE_MAX_MS)
+        }
         onPlayWord(target.text)
     }
 
@@ -506,10 +518,11 @@ private val CARD_HEIGHT = 120.dp
 private const val OPTIONS_COUNT = 6
 private const val CORRECT_CELEBRATION_MS = 800L
 private const val AUTO_PLAY_DELAY_MS = 500L
+private const val IDENTIFY_GUIDE_MAX_MS = 6_000L
 private const val HINT_AFTER_WRONGS = 2
 private const val MAX_WRONG_BEFORE_REVEAL = 3
 
 // Header listen icon — ~30% larger than the original 36/32/20dp.
-private const val LISTEN_BOX_DP = 47
-private const val LISTEN_BUTTON_DP = 42
-private const val LISTEN_ICON_DP = 26
+private const val LISTEN_BOX_DP = 48
+private const val LISTEN_BUTTON_DP = 48
+private const val LISTEN_ICON_DP = 34

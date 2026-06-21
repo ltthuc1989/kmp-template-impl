@@ -28,15 +28,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.collections.immutable.ImmutableList
+import me.ltthuc.kmp.core.audio.AudioRef
 import me.ltthuc.kmp.core.audio.AudioState
 import me.ltthuc.kmp.core.audio.isActiveFor
 import me.ltthuc.kmp.core.model.LessonWord
 import me.ltthuc.kmp.core.model.PhonicsLesson
+import me.ltthuc.kmp.core.repository.AudioRepository
+import me.ltthuc.kmp.core.repository.playAndAwait
 import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.common_next
 import me.ltthuc.kmp.core.resource.sound_intro_listen
 import me.ltthuc.kmp.core.resource.step_guide_sound_intro
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
+import me.ltthuc.kmp.core.ui.theme.LocalAppLanguage
 import me.ltthuc.kmp.feature.learningpath.step.common.PulseRings
 import me.ltthuc.kmp.feature.learningpath.step.common.StepContinueButton
 import me.ltthuc.kmp.feature.learningpath.step.common.StepHeader
@@ -45,10 +49,12 @@ import me.ltthuc.kmp.feature.learningpath.step.common.WordDisplayView
 import me.ltthuc.kmp.feature.learningpath.step.common.letterPair
 import me.ltthuc.kmp.feature.learningpath.step.common.soundIntroRef
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 private const val STEP_INDEX = 0
+private const val SOUND_GUIDE_MAX_MS = 6_000L
 
 @Composable
 internal fun SoundIntroScreen(
@@ -64,6 +70,8 @@ internal fun SoundIntroScreen(
 ) {
     val screenState by viewModel.screenState.collectAsStateWithLifecycle()
     val audioState by viewModel.audioState.collectAsStateWithLifecycle()
+    val audioRepository = koinInject<AudioRepository>()
+    val lang = LocalAppLanguage.current
 
     DisposableEffect(viewModel) {
         onDispose { viewModel.onLeaveScreen() }
@@ -76,6 +84,11 @@ internal fun SoundIntroScreen(
         LaunchedEffect(uiState.lessons.size) { onLessonsLoaded(uiState.lessons.size) }
         val safeIndex = lessonIndex.coerceIn(0, uiState.lessons.lastIndex)
         val currentLesson = uiState.lessons[safeIndex]
+        // Phát guide nói trước, guide xong thì tự động phát audio sound của chữ.
+        LaunchedEffect(currentLesson.id) {
+            audioRepository.playAndAwait(AudioRef.Prompt("vp_step_sound", lang), SOUND_GUIDE_MAX_MS)
+            viewModel.onListenToggle(currentLesson)
+        }
         SoundIntroContent(
             currentLesson = currentLesson,
             audioState = audioState,
@@ -116,29 +129,6 @@ private fun SoundIntroContent(
                 onClose = onClose,
                 onStepJump = onStepJump,
                 stepSegments = stepSegments,
-                guideText = stringResource(Res.string.step_guide_sound_intro),
-                guideTrailing = {
-                    Box(
-                        modifier = Modifier.size(47.dp),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        PulseRings(
-                            isActive = isPlaying,
-                            ringColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.4f),
-                        )
-                        IconButton(
-                            onClick = onListen,
-                            modifier = Modifier.size(42.dp),
-                        ) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.VolumeUp,
-                                contentDescription = stringResource(Res.string.sound_intro_listen),
-                                tint = MaterialTheme.colorScheme.secondary,
-                                modifier = Modifier.size(26.dp),
-                            )
-                        }
-                    }
-                },
             )
         },
         bottomBar = {
@@ -156,6 +146,28 @@ private fun SoundIntroContent(
                 .padding(horizontal = 20.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
+            // Audio (listen) button sits on top of the letter, +30% size.
+            Box(
+                modifier = Modifier.size(48.dp),
+                contentAlignment = Alignment.Center,
+            ) {
+                PulseRings(
+                    isActive = isPlaying,
+                    ringColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.4f),
+                )
+                IconButton(
+                    onClick = onListen,
+                    modifier = Modifier.size(48.dp),
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.VolumeUp,
+                        contentDescription = stringResource(Res.string.sound_intro_listen),
+                        tint = MaterialTheme.colorScheme.secondary,
+                        modifier = Modifier.size(34.dp),
+                    )
+                }
+            }
+            Spacer(Modifier.height(8.dp))
             Text(
                 text = currentLesson.letterPair(),
                 fontSize = 54.sp,

@@ -46,6 +46,7 @@ import me.ltthuc.kmp.core.resource.common_back
 import me.ltthuc.kmp.core.resource.parental_gate_backspace
 import me.ltthuc.kmp.core.resource.parental_gate_subtitle
 import me.ltthuc.kmp.core.resource.parental_gate_title
+import me.ltthuc.kmp.core.ui.audio.ScreenVoicePrompt
 import me.ltthuc.kmp.core.ui.components.PuffySurface
 import me.ltthuc.kmp.core.ui.theme.bold
 import me.ltthuc.kmp.core.ui.theme.extraBold
@@ -81,6 +82,8 @@ fun ParentalGateScreen(
     var locked by remember { mutableStateOf(false) }
 
     val digitWords = (0..9).map { stringResource(digitWordRes(it)) }
+
+    ScreenVoicePrompt("vp_parent_handoff")
 
     Box(
         modifier = modifier

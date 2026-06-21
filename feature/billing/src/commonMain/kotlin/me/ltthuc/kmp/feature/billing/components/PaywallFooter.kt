@@ -2,7 +2,6 @@ package me.ltthuc.kmp.feature.billing.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
@@ -19,10 +18,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import me.ltthuc.kmp.core.resource.Res
-import me.ltthuc.kmp.core.resource.paywall_privacy
 import me.ltthuc.kmp.core.resource.paywall_restore
 import me.ltthuc.kmp.core.resource.paywall_subscribe
-import me.ltthuc.kmp.core.resource.paywall_terms
 import me.ltthuc.kmp.core.resource.paywall_trial_note
 import org.jetbrains.compose.resources.stringResource
 
@@ -31,8 +28,6 @@ internal fun PaywallFooter(
     isLoading: Boolean,
     onPurchaseClicked: () -> Unit,
     onRestoreClicked: () -> Unit,
-    onTermsClicked: () -> Unit,
-    onPrivacyClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -77,31 +72,6 @@ internal fun PaywallFooter(
             enabled = !isLoading,
         ) {
             Text(text = stringResource(Res.string.paywall_restore))
-        }
-
-        Row(
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            TextButton(onClick = onTermsClicked) {
-                Text(
-                    text = stringResource(Res.string.paywall_terms),
-                    style = MaterialTheme.typography.labelSmall,
-                )
-            }
-
-            Text(
-                text = "|",
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.outline,
-            )
-
-            TextButton(onClick = onPrivacyClicked) {
-                Text(
-                    text = stringResource(Res.string.paywall_privacy),
-                    style = MaterialTheme.typography.labelSmall,
-                )
-            }
         }
     }
 }

@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import me.ltthuc.kmp.core.model.PhonicsLesson
+import me.ltthuc.kmp.core.audio.AudioRef
 import me.ltthuc.kmp.core.repository.AudioRepository
 import me.ltthuc.kmp.core.repository.SfxController
 import me.ltthuc.kmp.core.repository.UnitRepository
@@ -26,7 +27,6 @@ import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.error_no_data
 import me.ltthuc.kmp.core.ui.screen.ScreenState
 import me.ltthuc.kmp.feature.learningpath.game.bubblepop.view.BUBBLE_TINT_PALETTE
-import me.ltthuc.kmp.feature.learningpath.step.common.soundIntroRef
 import kotlin.random.Random
 
 /**
@@ -117,17 +117,8 @@ internal class MemoryMatchViewModel(
     }
 
     private fun playLetterSound(letter: String) {
-        val lesson = lessonsFlow.value.firstOrNull {
-            it.letter.equals(letter, ignoreCase = true)
-        } ?: run {
-            Napier.v(tag = TAG) { "No lesson for letter '$letter' — skipping audio" }
-            return
-        }
-        val ref = lesson.soundIntroRef() ?: run {
-            Napier.w(tag = TAG) { "No SoundIntro ref for lesson ${lesson.id}" }
-            return
-        }
-        audioRepository.play(ref)
+        // Short letter phoneme from files/audio/phonemes/<letter>.mp3 (not the long sound-intro).
+        audioRepository.play(AudioRef.LetterSound(letter))
     }
 
     private fun resolvePair(pair: ImmutableList<Int>) {
@@ -141,9 +132,6 @@ internal class MemoryMatchViewModel(
             if (a != null && b != null && a.pairKey == b.pairKey) {
                 matchedIds.value = matchedIds.value + a.id + b.id
                 sfxController.playSfx("correct")
-                if (matchedIds.value.size == cards.size) {
-                    sfxController.playVoicePraise(COMPLETE_PRAISE_POOL.random())
-                }
                 selectedIds.value = persistentListOf()
                 isResolving.value = false
             } else {
@@ -181,7 +169,6 @@ internal class MemoryMatchViewModel(
         const val MISMATCH_RESOLUTION_MS = 700L
         const val MAX_PAIRS = 3
         const val MIN_PAIRS = 2
-        val COMPLETE_PRAISE_POOL = listOf("praise_great_job", "praise_well_done", "praise_you_got_it")
     }
 }
 

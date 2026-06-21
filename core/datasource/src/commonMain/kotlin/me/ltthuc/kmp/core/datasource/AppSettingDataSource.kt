@@ -10,11 +10,14 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.builtins.SetSerializer
+import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
 import me.ltthuc.kmp.core.datasource.helper.PreferenceHelper
 import me.ltthuc.kmp.core.datasource.helper.deserialize
 import me.ltthuc.kmp.core.model.AppSetting
 import me.ltthuc.kmp.core.model.AppThemePalette
+import me.ltthuc.kmp.core.model.Language
 import me.ltthuc.kmp.core.model.Theme
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -61,6 +64,14 @@ class AppSettingDataSource(
         }
     }
 
+    suspend fun setLanguage(language: Language) = withContext(ioDispatcher) {
+        if (setting.first().language == language) return@withContext
+
+        preference.edit {
+            it[stringPreferencesKey(AppSetting::language.name)] = language.name
+        }
+    }
+
     suspend fun setAppThemePalette(palette: AppThemePalette) = withContext(ioDispatcher) {
         if (setting.first().appThemePalette == palette) return@withContext
 
@@ -74,6 +85,22 @@ class AppSettingDataSource(
 
         preference.edit {
             it[booleanPreferencesKey(AppSetting::plusMode.name)] = plusMode
+        }
+    }
+
+    suspend fun setOwnedLevelIds(ids: Set<String>) = withContext(ioDispatcher) {
+        if (setting.first().ownedLevelIds == ids) return@withContext
+        preference.edit {
+            it[stringPreferencesKey(AppSetting::ownedLevelIds.name)] =
+                formatter.encodeToString(SetSerializer(String.serializer()), ids)
+        }
+    }
+
+    suspend fun setManualUnlockedLevelIds(ids: Set<String>) = withContext(ioDispatcher) {
+        if (setting.first().manualUnlockedLevelIds == ids) return@withContext
+        preference.edit {
+            it[stringPreferencesKey(AppSetting::manualUnlockedLevelIds.name)] =
+                formatter.encodeToString(SetSerializer(String.serializer()), ids)
         }
     }
 
@@ -119,5 +146,21 @@ class AppSettingDataSource(
     suspend fun setGlobalMuted(value: Boolean) = withContext(ioDispatcher) {
         if (setting.first().globalMuted == value) return@withContext
         preference.edit { it[booleanPreferencesKey(AppSetting::globalMuted.name)] = value }
+    }
+
+    suspend fun setLastScreen(
+        screen: AppSetting.LastScreen,
+        levelId: String,
+        unitId: String,
+    ) = withContext(ioDispatcher) {
+        val cur = setting.first()
+        if (cur.lastScreen == screen && cur.lastLevelId == levelId && cur.lastUnitId == unitId) {
+            return@withContext
+        }
+        preference.edit {
+            it[stringPreferencesKey(AppSetting::lastScreen.name)] = screen.name
+            it[stringPreferencesKey(AppSetting::lastLevelId.name)] = levelId
+            it[stringPreferencesKey(AppSetting::lastUnitId.name)] = unitId
+        }
     }
 }

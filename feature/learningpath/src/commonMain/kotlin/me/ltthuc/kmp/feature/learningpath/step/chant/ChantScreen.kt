@@ -32,6 +32,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -50,15 +51,19 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.delay
+import me.ltthuc.kmp.core.audio.AudioRef
 import me.ltthuc.kmp.core.audio.AudioState
 import me.ltthuc.kmp.core.audio.isActiveFor
 import me.ltthuc.kmp.core.model.ChantMeta
 import me.ltthuc.kmp.core.model.PhonicsLesson
+import me.ltthuc.kmp.core.repository.AudioRepository
+import me.ltthuc.kmp.core.repository.playAndAwait
 import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.chant_listen_cd
 import me.ltthuc.kmp.core.resource.common_next
 import me.ltthuc.kmp.core.resource.step_guide_chant
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
+import me.ltthuc.kmp.core.ui.theme.LocalAppLanguage
 import me.ltthuc.kmp.feature.learningpath.step.common.PageDotsRow
 import me.ltthuc.kmp.feature.learningpath.step.common.PulseRings
 import me.ltthuc.kmp.feature.learningpath.step.common.StepContinueButton
@@ -66,12 +71,15 @@ import me.ltthuc.kmp.feature.learningpath.step.common.StepHeader
 import me.ltthuc.kmp.feature.learningpath.step.common.StoryStyleCard
 import me.ltthuc.kmp.feature.learningpath.step.common.chantRef
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 import kotlin.math.abs
 import kotlin.math.min
 
 private const val STEP_INDEX = 1
+private const val CHANT_GUIDE_MAX_MS = 6_000L
+private const val ENTRY_AUDIO_DELAY_MS = 500L
 private const val TOTAL_SLIDES = 5
 private const val CELEBRATION_SLIDE_INDEX = 4
 private const val SLIDE_DURATION_MS = 2_500L
@@ -91,6 +99,8 @@ internal fun ChantScreen(
     val screenState by viewModel.screenState.collectAsStateWithLifecycle()
 
     val audioState by viewModel.audioState.collectAsStateWithLifecycle()
+    val audioRepository = koinInject<AudioRepository>()
+    val lang = LocalAppLanguage.current
 
     DisposableEffect(viewModel) {
         onDispose { viewModel.onLeaveScreen() }
@@ -103,6 +113,12 @@ internal fun ChantScreen(
         LaunchedEffect(uiState.lessons.size) { onLessonsLoaded(uiState.lessons.size) }
         val safeIndex = lessonIndex.coerceIn(0, uiState.lessons.lastIndex)
         val currentLesson = uiState.lessons[safeIndex]
+        // Chờ stop() của màn trước xong (tránh race huỷ guide) → phát guide → tự phát chant.
+        LaunchedEffect(currentLesson.id) {
+            delay(ENTRY_AUDIO_DELAY_MS)
+            audioRepository.playAndAwait(AudioRef.Prompt("vp_step_chant", lang), CHANT_GUIDE_MAX_MS)
+            viewModel.onChantToggle(currentLesson)
+        }
         val chantMeta by produceState<ChantMeta?>(initialValue = null, key1 = currentLesson.id) {
             value = viewModel.loadChantMeta(currentLesson)
         }
@@ -134,6 +150,15 @@ private fun ChantContent(
     val chantRef = remember(currentLesson.id) { currentLesson.chantRef() }
     val isChanting = chantRef != null && audioState.isActiveFor(chantRef)
 
+    // Next is enabled only after the chant audio has actually finished playing (not just when
+    // the celebration slide appears on a timer).
+    var chantStarted by remember(currentLesson.id) { mutableStateOf(false) }
+    var chantFinished by remember(currentLesson.id) { mutableStateOf(false) }
+    LaunchedEffect(isChanting, audioState) {
+        if (isChanting) chantStarted = true
+        if (chantStarted && audioState is AudioState.Idle) chantFinished = true
+    }
+
     // Reset slide to 0 when chant starts fresh (i.e. transitions to playing while at celebration).
     LaunchedEffect(isChanting) {
         if (isChanting && slideIndex == CELEBRATION_SLIDE_INDEX) slideIndex = 0
@@ -158,7 +183,7 @@ private fun ChantContent(
                 guideText = stringResource(Res.string.step_guide_chant),
                 guideTrailing = {
                     Box(
-                        modifier = Modifier.size(47.dp),
+                        modifier = Modifier.size(48.dp),
                         contentAlignment = Alignment.Center,
                     ) {
                         PulseRings(
@@ -167,13 +192,13 @@ private fun ChantContent(
                         )
                         IconButton(
                             onClick = onChantToggle,
-                            modifier = Modifier.size(42.dp),
+                            modifier = Modifier.size(48.dp),
                         ) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.VolumeUp,
                                 contentDescription = stringResource(Res.string.chant_listen_cd),
                                 tint = MaterialTheme.colorScheme.secondary,
-                                modifier = Modifier.size(26.dp),
+                                modifier = Modifier.size(34.dp),
                             )
                         }
                     }
@@ -184,7 +209,7 @@ private fun ChantContent(
             StepContinueButton(
                 label = stringResource(Res.string.common_next),
                 onClick = onNext,
-                enabled = slideIndex >= CELEBRATION_SLIDE_INDEX,
+                enabled = chantFinished,
             )
         },
     ) { innerPadding ->

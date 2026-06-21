@@ -58,6 +58,15 @@ private fun strokePath(svgPath: String): Path =
     parsedStrokePathCache.getOrPut(svgPath) { PathParser().parsePathString(svgPath).toPath() }
 
 /**
+ * Per-stroke paths scaled to [canvasSize], in draw order. Same scaling [drawLetterGuide] uses, so an
+ * overlay (e.g. the idle guide hand) can ride exactly along the rendered guide via [PathMeasure].
+ */
+internal fun scaledGuidePaths(guide: LetterGuide, canvasSize: Size): List<Path> {
+    val layout = GuideLayout.forCanvas(canvasSize)
+    return guide.strokes.map { layout.transformPath(strokePath(it.svgPath)) }
+}
+
+/**
  * Renders a [LetterGuide] into a [DrawScope] with 4 layers per stroke:
  *   1. Soft container halo (gives the guide a tactile "pillow" look).
  *   2. Dashed center line showing the intended trace path.

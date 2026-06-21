@@ -44,6 +44,7 @@ import me.ltthuc.kmp.core.resource.onboarding_page3_subtitle
 import me.ltthuc.kmp.core.resource.onboarding_page3_title
 import me.ltthuc.kmp.core.resource.onboarding_page4_subtitle
 import me.ltthuc.kmp.core.resource.onboarding_page4_title
+import me.ltthuc.kmp.core.ui.audio.ScreenVoicePrompt
 import me.ltthuc.kmp.core.ui.screen.Destination
 import me.ltthuc.kmp.core.ui.theme.LocalNavBackStack
 import me.ltthuc.kmp.feature.onboarding.components.OnboardingPage
@@ -65,6 +66,8 @@ internal fun OnboardingScreen(
     val scope = rememberCoroutineScope()
 
     val pages = remember { onboardingPages() }
+
+    ScreenVoicePrompt("vp_welcome")
 
     val completeAndGoHome: () -> Unit = {
         viewModel.completeOnboarding()

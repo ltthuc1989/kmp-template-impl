@@ -86,7 +86,7 @@ tasks.register<Exec>("installAndLaunchDebug") {
     dependsOn("installDebug")
     val adbPath = "${android.sdkDirectory}/platform-tools/adb"
     // -e = target the running emulator only (ignore physical USB devices)
-    commandLine(adbPath, "-e", "shell", "am", "start", "-n", "me.ltthuc.kmp.debug/me.ltthuc.kmp.MainActivity")
+    commandLine(adbPath, "-e", "shell", "am", "start", "-n", "com.beely.phonicskids.debug/me.ltthuc.kmp.MainActivity")
 }
 
 kotlin {

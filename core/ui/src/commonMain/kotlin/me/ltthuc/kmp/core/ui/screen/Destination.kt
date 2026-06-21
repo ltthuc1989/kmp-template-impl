@@ -20,11 +20,19 @@ sealed interface Destination : NavKey {
     data class Download(val url: String) : Destination
 
     @Serializable
-    data class Paywall(val source: String) : Destination {
+    data class Paywall(
+        val source: String,
+        val levelId: String? = null,
+        // True if the parental gate was already passed before navigating here (e.g. via the Pro
+        // icon) → the purchase button skips a second gate. False (default, e.g. tapping a locked
+        // unit) → the purchase button shows the parental gate first.
+        val gatedAlready: Boolean = false,
+    ) : Destination {
         object Source {
             const val SETTINGS = "settings"
             const val LEVEL_LOCKED = "level_locked"
             const val LEVEL1_COMPLETE = "level1_complete"
+            const val UNIT_LOCKED = "unit_locked"
         }
     }
 
@@ -39,13 +47,6 @@ sealed interface Destination : NavKey {
             val unitId: String,
             val lessonIndex: Int,
             val stepIndex: Int,
-        ) : Learning
-
-        @Serializable
-        data class UnitComplete(
-            val levelId: String,
-            val unitId: String,
-            val starsEarned: Int,
         ) : Learning
 
         @Serializable
@@ -112,7 +113,6 @@ sealed interface Destination : NavKey {
                     subclass(Paywall::class, Paywall.serializer())
                     subclass(Learning.UnitSelection::class, Learning.UnitSelection.serializer())
                     subclass(Learning.Step::class, Learning.Step.serializer())
-                    subclass(Learning.UnitComplete::class, Learning.UnitComplete.serializer())
                     subclass(Learning.LessonComplete::class, Learning.LessonComplete.serializer())
                     subclass(Learning.UnitStory::class, Learning.UnitStory.serializer())
                     subclass(Learning.UnitGame::class, Learning.UnitGame.serializer())
