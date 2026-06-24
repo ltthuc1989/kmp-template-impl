@@ -25,6 +25,7 @@ import me.ltthuc.kmp.core.ui.screen.Destination
 import me.ltthuc.kmp.core.ui.screen.view.AppBottomNavBar
 import me.ltthuc.kmp.core.ui.screen.view.AppBottomNavTab
 import me.ltthuc.kmp.core.ui.theme.AppDimensions
+import me.ltthuc.kmp.core.ui.theme.LocalAppLocale
 import me.ltthuc.kmp.core.ui.theme.LocalNavBackStack
 import me.ltthuc.kmp.feature.billing.paywallEntry
 import me.ltthuc.kmp.feature.home.homeEntry
@@ -86,24 +87,30 @@ internal fun AppNavHost(
                     .padding(innerPadding),
                 contentAlignment = Alignment.TopCenter,
             ) {
-                NavDisplay(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .widthIn(max = AppDimensions.ContentMaxWidth),
-                    backStack = navBackStack,
-                    entryProvider = entryProvider {
-                        homeEntry()
-                        paywallEntry()
-                        settingEntry()
-                        settingLicenseEntry()
-                        learningEntry()
-                        onboardingEntry()
-                        reviewEntry()
-                    },
-                    transitionSpec = { NavigationTransitions.forwardTransition },
-                    popTransitionSpec = { NavigationTransitions.backwardTransition },
-                    predictivePopTransitionSpec = { NavigationTransitions.backwardTransition },
-                )
+                // Kid screens are always English. Re-providing "en" here re-runs the locale
+                // side-effect on every navigation, so returning from Settings (which overrides the
+                // locale to the chosen language) resets kid screens back to English. Parent entries
+                // (Settings/Paywall/Onboarding) override back to LocalAppLanguage inside their entries.
+                CompositionLocalProvider(LocalAppLocale provides "en") {
+                    NavDisplay(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .widthIn(max = AppDimensions.ContentMaxWidth),
+                        backStack = navBackStack,
+                        entryProvider = entryProvider {
+                            homeEntry()
+                            paywallEntry()
+                            settingEntry()
+                            settingLicenseEntry()
+                            learningEntry()
+                            onboardingEntry()
+                            reviewEntry()
+                        },
+                        transitionSpec = { NavigationTransitions.forwardTransition },
+                        popTransitionSpec = { NavigationTransitions.backwardTransition },
+                        predictivePopTransitionSpec = { NavigationTransitions.backwardTransition },
+                    )
+                }
             }
         }
     }

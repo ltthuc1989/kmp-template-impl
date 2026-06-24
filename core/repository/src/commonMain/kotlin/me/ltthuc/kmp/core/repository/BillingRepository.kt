@@ -30,10 +30,27 @@ class BillingRepository(
     suspend fun getProducts(): List<ProductInfo> =
         billingDataSource.getProducts(SubscriptionPlan.entries)
 
+    /**
+     * Localized unlock price per level (levelId → priceString) for UI that shows a price without
+     * touching billing types. Empty for levels the store has no product for. Real price comes from
+     * the store; in debug/fake billing it's a placeholder.
+     */
+    suspend fun getLevelPrices(): Map<String, String> =
+        getProducts().mapNotNull { product -> product.plan.levelId?.let { it to product.priceString } }.toMap()
+
     suspend fun purchase(productInfo: ProductInfo): PurchaseResult {
         val result = billingDataSource.purchasePlan(productInfo.plan)
         if (result == PurchaseResult.Success) syncOwnedLevels()
         return result
+    }
+
+    /**
+     * Buy a level directly (one product, no paywall) and return true once it's owned. Used by the
+     * Settings "Unlock" entry where the parent already decided — hides billing types from callers.
+     */
+    suspend fun purchaseLevel(levelId: String): Boolean {
+        val product = getProductsForLevel(levelId).firstOrNull() ?: return false
+        return purchase(product) == PurchaseResult.Success && isLevelOwned(levelId)
     }
 
     suspend fun restorePurchases(): PurchaseResult {
@@ -41,6 +58,9 @@ class BillingRepository(
         if (result == PurchaseResult.Success) syncOwnedLevels()
         return result
     }
+
+    /** Restore + sync; returns true on success. Hides the billing-specific result type from callers. */
+    suspend fun restore(): Boolean = restorePurchases() == PurchaseResult.Success
 
     fun isPremium(): Boolean = billingDataSource.getCurrentSubscriptionState().isPremium
 

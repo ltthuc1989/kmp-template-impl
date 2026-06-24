@@ -11,7 +11,11 @@ import me.ltthuc.kmp.core.billing.model.SubscriptionState
 /**
  * In-memory billing for local testing (and unit tests). Purchases succeed instantly and grant
  * ownership without any store call: a level grants that level, the bundle grants all five.
- * Selected via [FAKE_BILLING]. Hardcoded prices mirror the planned store prices.
+ * Selected via [USE_FAKE_BILLING] in DEBUG builds only.
+ *
+ * The prices below are **DEBUG-ONLY placeholders** so the paywall has something to show when there
+ * is no store connection. The real, localized price comes from Play Console via RevenueCat in
+ * release builds (see `RevenueCatBillingDataSource`); change the real price there, not here.
  */
 class FakeBillingDataSource(
     private val levelPrice: String = "$6.99",

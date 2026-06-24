@@ -35,7 +35,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -57,8 +61,11 @@ import me.ltthuc.kmp.core.resource.home_title
 import me.ltthuc.kmp.core.resource.home_unit_label
 import me.ltthuc.kmp.core.resource.level_card_coming_soon
 import me.ltthuc.kmp.core.ui.ads.BottomBannerAd
+import me.ltthuc.kmp.core.ui.dialog.ParentalGateScreen
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
 import me.ltthuc.kmp.core.ui.screen.Destination
+import me.ltthuc.kmp.core.ui.theme.LocalAppLanguage
+import me.ltthuc.kmp.core.ui.theme.LocalAppLocale
 import me.ltthuc.kmp.core.ui.theme.LocalNavBackStack
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -70,26 +77,45 @@ internal fun HomeScreen(
 ) {
     val screenState by viewModel.screenState.collectAsStateWithLifecycle()
     val navBackStack = LocalNavBackStack.current
+    val lang = LocalAppLanguage.current
+    // Settings sits behind a parental gate; show it in-place so the Home backstack is kept.
+    var showSettingsGate by remember { mutableStateOf(false) }
 
-    HomeScreenContent(
-        modifier = modifier.fillMaxSize(),
-        onSettings = { navBackStack.add(Destination.Setting.Root) },
-        content = {
-            AsyncLoadContents(
-                modifier = Modifier.fillMaxSize(),
-                screenState = screenState,
-            ) { uiState ->
-                LevelList(
-                    levels = uiState.levels,
+    Box(modifier = modifier.fillMaxSize()) {
+        HomeScreenContent(
+            modifier = Modifier.fillMaxSize(),
+            onSettings = { showSettingsGate = true },
+            content = {
+                AsyncLoadContents(
                     modifier = Modifier.fillMaxSize(),
-                    contentPadding = it,
-                    onLevelClick = { levelCard ->
-                        navBackStack.add(Destination.Learning.UnitSelection(levelCard.level.id))
+                    screenState = screenState,
+                ) { uiState ->
+                    LevelList(
+                        levels = uiState.levels,
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = it,
+                        onLevelClick = { levelCard ->
+                            navBackStack.add(Destination.Learning.UnitSelection(levelCard.level.id))
+                        },
+                    )
+                }
+            },
+        )
+
+        // Parental gate before Settings. Shown in the parent's language (kid screens are forced EN).
+        if (showSettingsGate) {
+            CompositionLocalProvider(LocalAppLocale provides lang) {
+                ParentalGateScreen(
+                    modifier = Modifier.fillMaxSize(),
+                    onPass = {
+                        showSettingsGate = false
+                        navBackStack.add(Destination.Setting.Root)
                     },
+                    onDismiss = { showSettingsGate = false },
                 )
             }
-        },
-    )
+        }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

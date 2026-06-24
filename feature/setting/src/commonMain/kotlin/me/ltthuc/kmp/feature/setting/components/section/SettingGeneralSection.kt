@@ -21,18 +21,14 @@ import me.ltthuc.kmp.core.resource.language_vietnamese
 import me.ltthuc.kmp.core.resource.setting_general
 import me.ltthuc.kmp.core.resource.setting_language
 import me.ltthuc.kmp.core.resource.setting_language_description
-import me.ltthuc.kmp.core.resource.setting_sound_effects
 import me.ltthuc.kmp.core.ui.screen.view.SegmentedTabRow
 import me.ltthuc.kmp.feature.setting.components.SettingCard
-import me.ltthuc.kmp.feature.setting.components.SettingSwitchItem
 import me.ltthuc.kmp.feature.setting.components.SettingTextItem
 import me.ltthuc.kmp.feature.setting.components.SettingTitleItem
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun SettingGeneralSection(
-    sfxEnabled: Boolean,
-    onSfxEnabledChanged: (Boolean) -> Unit,
     language: Language,
     onLanguageChanged: (Language) -> Unit,
     modifier: Modifier = Modifier,
@@ -44,14 +40,6 @@ internal fun SettingGeneralSection(
         )
 
         SettingCard {
-            SettingSwitchItem(
-                modifier = Modifier.fillMaxWidth(),
-                title = Res.string.setting_sound_effects,
-                description = null,
-                value = sfxEnabled,
-                onValueChanged = onSfxEnabledChanged,
-            )
-
             val languages = Language.entries
             var currentIndex by remember(language) { mutableStateOf(languages.indexOf(language)) }
             SettingTextItem(

@@ -5,9 +5,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -16,32 +18,32 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.ImmutableSet
 import me.ltthuc.kmp.core.model.Level
 import me.ltthuc.kmp.core.resource.Res
+import me.ltthuc.kmp.core.resource.paywall_restore
 import me.ltthuc.kmp.core.resource.setting_parent_control_buy
-import me.ltthuc.kmp.core.resource.setting_parent_control_lock
+import me.ltthuc.kmp.core.resource.setting_parent_control_buy_plain
 import me.ltthuc.kmp.core.resource.setting_parent_control_not_owned_label
-import me.ltthuc.kmp.core.resource.setting_parent_control_open
-import me.ltthuc.kmp.core.resource.setting_parent_control_opened_label
-import me.ltthuc.kmp.core.resource.setting_parent_control_sequential_label
 import me.ltthuc.kmp.core.resource.setting_parent_control_title
+import me.ltthuc.kmp.core.resource.setting_unlocked_label
 import me.ltthuc.kmp.feature.setting.components.SettingCard
 import me.ltthuc.kmp.feature.setting.components.SettingTitleItem
 import org.jetbrains.compose.resources.stringResource
 
 /**
- * Parent control to flip an OWNED level between the sequential learning gate and "all units open".
- * Never bypasses the paywall: a not-yet-purchased level only offers the buy action (→ paywall).
+ * Premium section: shows each sellable level's purchase state. A not-yet-owned level offers the buy
+ * action (→ paywall); an owned level just shows "Unlocked" (one-time purchase — never re-locked).
+ * A Restore action recovers purchases on a new device / reinstall (store-account based).
  */
 @Composable
 internal fun SettingParentControlSection(
     levels: ImmutableList<Level>,
     ownedLevelIds: ImmutableSet<String>,
-    manualUnlockedLevelIds: ImmutableSet<String>,
-    onOpenAll: (levelId: String) -> Unit,
-    onLock: (levelId: String) -> Unit,
+    levelPrices: ImmutableMap<String, String>,
     onBuy: (levelId: String) -> Unit,
+    onRestore: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier) {
@@ -52,26 +54,30 @@ internal fun SettingParentControlSection(
         SettingCard {
             levels.forEachIndexed { index, level ->
                 if (index > 0) HorizontalDivider()
-                ParentControlRow(
+                LevelPurchaseRow(
                     level = level,
                     owned = level.id in ownedLevelIds,
-                    openedFully = level.id in manualUnlockedLevelIds,
-                    onOpenAll = { onOpenAll(level.id) },
-                    onLock = { onLock(level.id) },
+                    price = levelPrices[level.id],
                     onBuy = { onBuy(level.id) },
                 )
             }
+        }
+        TextButton(
+            onClick = onRestore,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+        ) {
+            Text(stringResource(Res.string.paywall_restore))
         }
     }
 }
 
 @Composable
-private fun ParentControlRow(
+private fun LevelPurchaseRow(
     level: Level,
     owned: Boolean,
-    openedFully: Boolean,
-    onOpenAll: () -> Unit,
-    onLock: () -> Unit,
+    price: String?,
     onBuy: () -> Unit,
 ) {
     Row(
@@ -88,26 +94,31 @@ private fun ParentControlRow(
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.onSurface,
             )
-            val statusLabel = when {
-                !owned -> stringResource(Res.string.setting_parent_control_not_owned_label)
-                openedFully -> stringResource(Res.string.setting_parent_control_opened_label)
-                else -> stringResource(Res.string.setting_parent_control_sequential_label)
-            }
             Text(
-                text = statusLabel,
+                text = if (owned) {
+                    stringResource(Res.string.setting_unlocked_label)
+                } else {
+                    stringResource(Res.string.setting_parent_control_not_owned_label)
+                },
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
-        when {
-            !owned -> TextButton(onClick = onBuy) {
-                Text(stringResource(Res.string.setting_parent_control_buy))
-            }
-            openedFully -> OutlinedButton(onClick = onLock) {
-                Text(stringResource(Res.string.setting_parent_control_lock))
-            }
-            else -> OutlinedButton(onClick = onOpenAll) {
-                Text(stringResource(Res.string.setting_parent_control_open))
+        if (owned) {
+            Icon(
+                imageVector = Icons.Filled.CheckCircle,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+            )
+        } else {
+            TextButton(onClick = onBuy) {
+                Text(
+                    if (price != null) {
+                        stringResource(Res.string.setting_parent_control_buy, price)
+                    } else {
+                        stringResource(Res.string.setting_parent_control_buy_plain)
+                    },
+                )
             }
         }
     }

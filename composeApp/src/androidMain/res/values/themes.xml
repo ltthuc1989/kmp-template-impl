@@ -6,7 +6,9 @@
     </style>
 
     <style name="PlatformAdjusted.Theme.Matsumo" parent="NightAdjusted.Theme.Matsumo">
-        <item name="android:statusBarColor">#000</item>
+        <!-- Edge-to-edge: content draws behind the status bar. An opaque color here flashes black
+             during scroll/relayout, so keep it transparent (runtime enableEdgeToEdge matches this). -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
 
     <!-- The final theme we use -->

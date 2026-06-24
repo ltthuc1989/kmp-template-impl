@@ -41,7 +41,11 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -65,10 +69,12 @@ import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.unit_free_label
 import me.ltthuc.kmp.core.ui.ads.BottomBannerAd
 import me.ltthuc.kmp.core.ui.components.PuffySurface
+import me.ltthuc.kmp.core.ui.dialog.ParentalGateScreen
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
 import me.ltthuc.kmp.core.ui.screen.Destination
 import me.ltthuc.kmp.core.ui.screen.ScreenState
 import me.ltthuc.kmp.core.ui.theme.LocalAppLanguage
+import me.ltthuc.kmp.core.ui.theme.LocalAppLocale
 import me.ltthuc.kmp.core.ui.theme.LocalNavBackStack
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
@@ -92,6 +98,8 @@ internal fun UnitSelectionScreen(
     val navBackStack = LocalNavBackStack.current
     val sfx: SfxController = koinInject()
     val lang = LocalAppLanguage.current
+    // Settings sits behind a parental gate; show it in-place so the backstack (→ unit list) is kept.
+    var showSettingsGate by remember { mutableStateOf(false) }
 
     val isStartDestination = navBackStack.size == 1
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
@@ -105,7 +113,7 @@ internal fun UnitSelectionScreen(
                     title = uiState?.let { "Book ${it.level.number}: ${it.level.title}" }.orEmpty(),
                     showBackButton = !isStartDestination,
                     onBack = { if (navBackStack.size > 1) navBackStack.removeAt(navBackStack.size - 1) },
-                    onSettings = { navBackStack.add(Destination.Setting.Root) },
+                    onSettings = { showSettingsGate = true },
                     scrollBehavior = scrollBehavior,
                 )
             },
@@ -145,6 +153,20 @@ internal fun UnitSelectionScreen(
                             -> navBackStack.add(Destination.Learning.LessonMap(levelId, card.unit.id))
                         }
                     },
+                )
+            }
+        }
+
+        // Parental gate before Settings. Shown in the parent's language (kid screens are forced EN).
+        if (showSettingsGate) {
+            CompositionLocalProvider(LocalAppLocale provides lang) {
+                ParentalGateScreen(
+                    modifier = Modifier.fillMaxSize(),
+                    onPass = {
+                        showSettingsGate = false
+                        navBackStack.add(Destination.Setting.Root)
+                    },
+                    onDismiss = { showSettingsGate = false },
                 )
             }
         }
@@ -292,9 +314,12 @@ private fun UnitTopBar(
                 )
             }
         },
+        // See-through bar: zero-alpha but pink-based (NOT Color.Transparent, which is transparent
+        // black). Both states share alpha 0, so the cross-fade stays fully transparent — content
+        // shows through and there's no black flash on scroll.
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = Color.Transparent,
-            scrolledContainerColor = ScreenBg,
+            containerColor = ScreenBg.copy(alpha = 0f),
+            scrolledContainerColor = ScreenBg.copy(alpha = 0f),
         ),
     )
 }

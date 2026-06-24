@@ -27,6 +27,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.collections.immutable.toImmutableSet
 import me.ltthuc.kmp.core.model.MONETIZATION_ENABLED
 import me.ltthuc.kmp.core.resource.Res
@@ -39,6 +40,7 @@ import me.ltthuc.kmp.core.resource.setting_reset_confirm_title
 import me.ltthuc.kmp.core.resource.setting_reset_progress
 import me.ltthuc.kmp.core.resource.setting_share_message
 import me.ltthuc.kmp.core.ui.dialog.ParentalGateScreen
+import me.ltthuc.kmp.core.ui.isDebugBuild
 import me.ltthuc.kmp.core.ui.screen.Destination
 import me.ltthuc.kmp.core.ui.theme.LocalNavBackStack
 import me.ltthuc.kmp.feature.setting.components.SettingActionButton
@@ -46,12 +48,13 @@ import me.ltthuc.kmp.feature.setting.components.SettingTopAppBar
 import me.ltthuc.kmp.feature.setting.components.section.SettingGeneralSection
 import me.ltthuc.kmp.feature.setting.components.section.SettingOthersSection
 import me.ltthuc.kmp.feature.setting.components.section.SettingParentControlSection
-import me.ltthuc.kmp.feature.setting.components.section.SettingPaywallSection
 import me.ltthuc.kmp.feature.setting.components.section.SettingSupportSection
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
-private const val SUPPORT_URL = "https://ltthuc1989.github.io/phonics-kids/"
+private const val PRIVACY_URL = "https://abc-phonics-kids.web.app/privacy"
+private const val TERMS_URL = "https://abc-phonics-kids.web.app/terms"
+private const val SUPPORT_URL = "https://abc-phonics-kids.web.app/"
 
 @Composable
 internal fun SettingScreen(
@@ -62,9 +65,9 @@ internal fun SettingScreen(
     val uriHandler = LocalUriHandler.current
     val setting by viewModel.setting.collectAsStateWithLifecycle()
     val levels by viewModel.levels.collectAsStateWithLifecycle()
+    val levelPrices by viewModel.levelPrices.collectAsStateWithLifecycle()
     val shareMessage = stringResource(Res.string.setting_share_message)
 
-    var showParentalGate by remember { mutableStateOf(false) }
     var showResetGate by remember { mutableStateOf(false) }
     var showResetConfirm by remember { mutableStateOf(false) }
     // Parent-control action (open all / lock / buy) deferred until the parental gate passes.
@@ -90,8 +93,6 @@ internal fun SettingScreen(
                 item {
                     SettingGeneralSection(
                         modifier = Modifier.fillMaxWidth(),
-                        sfxEnabled = setting.sfxEnabled,
-                        onSfxEnabledChanged = viewModel::setSfxEnabled,
                         language = setting.language,
                         onLanguageChanged = viewModel::setLanguage,
                     )
@@ -106,60 +107,49 @@ internal fun SettingScreen(
                     )
                 }
 
-                if (MONETIZATION_ENABLED && (!setting.plusMode || setting.developerMode)) {
-                    item {
-                        SettingPaywallSection(
-                            modifier = Modifier.fillMaxWidth(),
-                            onUpgradeClicked = { showParentalGate = true },
-                        )
-                    }
-                }
-
                 if ((MONETIZATION_ENABLED || setting.developerMode) && levels.isNotEmpty()) {
                     item {
                         SettingParentControlSection(
                             modifier = Modifier.fillMaxWidth(),
-                            levels = levels.toImmutableList(),
+                            // App ships only Level 1 → only that level is sellable here.
+                            levels = levels.filter { it.number == 1 }.toImmutableList(),
                             ownedLevelIds = setting.ownedLevelIds.toImmutableSet(),
-                            manualUnlockedLevelIds = setting.manualUnlockedLevelIds.toImmutableSet(),
-                            onOpenAll = { levelId ->
-                                pendingParentAction = { viewModel.openLevelFully(levelId) }
-                            },
-                            onLock = { levelId ->
-                                pendingParentAction = { viewModel.lockLevelSequential(levelId) }
-                            },
+                            levelPrices = levelPrices.toImmutableMap(),
                             onBuy = { levelId ->
-                                pendingParentAction = {
-                                    navBackStack.add(
-                                        Destination.Paywall(Destination.Paywall.Source.SETTINGS, levelId),
-                                    )
-                                }
+                                // Parent already decided here → one gate (kid-safe), then buy directly
+                                // (store payment sheet). No intermediate paywall / second unlock.
+                                pendingParentAction = { viewModel.purchaseLevel(levelId) }
                             },
+                            onRestore = viewModel::restorePurchases,
                         )
                     }
                 }
 
-                item {
-                    SettingOthersSection(
-                        modifier = Modifier.fillMaxWidth(),
-                        setting = setting,
-                        onOpenSourceLicenseClicked = {
-                            navBackStack.add(Destination.Setting.License)
-                        },
-                        onDeveloperModeChanged = viewModel::setDeveloperMode,
-                        onShowSpeakButtonChanged = viewModel::setShowSpeakButton,
-                        onThemeChanged = viewModel::setTheme,
-                        onPaletteChanged = viewModel::setAppThemePalette,
-                        onLetterGuideDebugClicked = {
-                            navBackStack.add(Destination.Learning.TracingGuideDebug)
-                        },
-                        onBubblePopPreviewClicked = {
-                            navBackStack.add(Destination.Learning.BubblePopPreview)
-                        },
-                        onMemoryMatchPreviewClicked = {
-                            navBackStack.add(Destination.Learning.MemoryMatchPreview)
-                        },
-                    )
+                // Dev/diagnostics section (Developer Mode, theme/palette, QA previews, OSS license):
+                // debug builds only — never shown to end users in release.
+                if (isDebugBuild) {
+                    item {
+                        SettingOthersSection(
+                            modifier = Modifier.fillMaxWidth(),
+                            setting = setting,
+                            onOpenSourceLicenseClicked = {
+                                navBackStack.add(Destination.Setting.License)
+                            },
+                            onDeveloperModeChanged = viewModel::setDeveloperMode,
+                            onShowSpeakButtonChanged = viewModel::setShowSpeakButton,
+                            onThemeChanged = viewModel::setTheme,
+                            onPaletteChanged = viewModel::setAppThemePalette,
+                            onLetterGuideDebugClicked = {
+                                navBackStack.add(Destination.Learning.TracingGuideDebug)
+                            },
+                            onBubblePopPreviewClicked = {
+                                navBackStack.add(Destination.Learning.BubblePopPreview)
+                            },
+                            onMemoryMatchPreviewClicked = {
+                                navBackStack.add(Destination.Learning.MemoryMatchPreview)
+                            },
+                        )
+                    }
                 }
 
                 item {
@@ -177,22 +167,11 @@ internal fun SettingScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 24.dp),
-                        onTerms = { uriHandler.openUri(SUPPORT_URL) },
-                        onPrivacy = { uriHandler.openUri(SUPPORT_URL) },
+                        onTerms = { uriHandler.openUri(TERMS_URL) },
+                        onPrivacy = { uriHandler.openUri(PRIVACY_URL) },
                     )
                 }
             }
-        }
-
-        if (showParentalGate) {
-            ParentalGateScreen(
-                modifier = Modifier.fillMaxSize(),
-                onPass = {
-                    showParentalGate = false
-                    navBackStack.add(Destination.Paywall(Destination.Paywall.Source.SETTINGS))
-                },
-                onDismiss = { showParentalGate = false },
-            )
         }
 
         if (pendingParentAction != null) {

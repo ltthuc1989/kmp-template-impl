@@ -5,6 +5,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 import me.ltthuc.kmp.core.ui.screen.Destination
+import me.ltthuc.kmp.core.ui.theme.ForceEnglishLocale
 import me.ltthuc.kmp.core.ui.theme.LocalNavBackStack
 import me.ltthuc.kmp.feature.learningpath.game.GameFlowScreen
 import me.ltthuc.kmp.feature.learningpath.game.bubblepop.preview.BubblePopPreviewScreen
@@ -13,69 +14,92 @@ import me.ltthuc.kmp.feature.learningpath.step.StepScreen
 import me.ltthuc.kmp.feature.learningpath.step.story.StoryScreen
 import me.ltthuc.kmp.feature.learningpath.step.tracing.LetterGuideDebugScreen
 
+// All learning screens are kid-facing → text forced to English ([ForceEnglishLocale]), regardless of
+// the chosen app language. Resets the locale on entry so returning from a parent screen (which switched
+// to the user's language) doesn't leak that language onto kid screens.
 fun EntryProviderScope<NavKey>.learningEntry() {
     entry<Destination.Learning.UnitSelection> { dest ->
-        UnitSelectionScreen(
-            levelId = dest.levelId,
-            modifier = Modifier.fillMaxSize(),
-        )
+        ForceEnglishLocale {
+            UnitSelectionScreen(
+                levelId = dest.levelId,
+                modifier = Modifier.fillMaxSize(),
+            )
+        }
     }
     entry<Destination.Learning.Step> { dest ->
-        StepScreen(
-            levelId = dest.levelId,
-            unitId = dest.unitId,
-            lessonIndex = dest.lessonIndex,
-            stepIndex = dest.stepIndex,
-            modifier = Modifier.fillMaxSize(),
-        )
+        ForceEnglishLocale {
+            StepScreen(
+                levelId = dest.levelId,
+                unitId = dest.unitId,
+                lessonIndex = dest.lessonIndex,
+                stepIndex = dest.stepIndex,
+                modifier = Modifier.fillMaxSize(),
+            )
+        }
     }
     entry<Destination.Learning.LessonComplete> { dest ->
-        LessonCompleteScreen(
-            levelId = dest.levelId,
-            unitId = dest.unitId,
-            lessonIndex = dest.lessonIndex,
-            modifier = Modifier.fillMaxSize(),
-        )
+        ForceEnglishLocale {
+            LessonCompleteScreen(
+                levelId = dest.levelId,
+                unitId = dest.unitId,
+                lessonIndex = dest.lessonIndex,
+                modifier = Modifier.fillMaxSize(),
+            )
+        }
     }
     entry<Destination.Learning.UnitStory> { dest ->
-        StoryScreen(
-            levelId = dest.levelId,
-            unitId = dest.unitId,
-            modifier = Modifier.fillMaxSize(),
-        )
+        ForceEnglishLocale {
+            StoryScreen(
+                levelId = dest.levelId,
+                unitId = dest.unitId,
+                modifier = Modifier.fillMaxSize(),
+            )
+        }
     }
     entry<Destination.Learning.UnitGame> { dest ->
-        GameFlowScreen(
-            levelId = dest.levelId,
-            unitId = dest.unitId,
-            gameIndex = dest.gameIndex,
-            modifier = Modifier.fillMaxSize(),
-        )
+        ForceEnglishLocale {
+            GameFlowScreen(
+                levelId = dest.levelId,
+                unitId = dest.unitId,
+                gameIndex = dest.gameIndex,
+                modifier = Modifier.fillMaxSize(),
+            )
+        }
     }
     entry<Destination.Learning.LessonMap> { dest ->
-        LessonMapScreen(
-            levelId = dest.levelId,
-            unitId = dest.unitId,
-            modifier = Modifier.fillMaxSize(),
-        )
+        ForceEnglishLocale {
+            LessonMapScreen(
+                levelId = dest.levelId,
+                unitId = dest.unitId,
+                modifier = Modifier.fillMaxSize(),
+            )
+        }
     }
     entry<Destination.Learning.BubblePopPreview> {
-        BubblePopPreviewScreen(modifier = Modifier.fillMaxSize())
+        ForceEnglishLocale {
+            BubblePopPreviewScreen(modifier = Modifier.fillMaxSize())
+        }
     }
     entry<Destination.Learning.MemoryMatchPreview> {
-        MemoryMatchPreviewScreen(modifier = Modifier.fillMaxSize())
+        ForceEnglishLocale {
+            MemoryMatchPreviewScreen(modifier = Modifier.fillMaxSize())
+        }
     }
     entry<Destination.Learning.LevelComplete> { dest ->
-        LevelCompleteScreen(
-            levelId = dest.levelId,
-            modifier = Modifier.fillMaxSize(),
-        )
+        ForceEnglishLocale {
+            LevelCompleteScreen(
+                levelId = dest.levelId,
+                modifier = Modifier.fillMaxSize(),
+            )
+        }
     }
     entry<Destination.Learning.TracingGuideDebug> {
         val navBackStack = LocalNavBackStack.current
-        LetterGuideDebugScreen(
-            onBack = { navBackStack.removeAt(navBackStack.lastIndex) },
-            modifier = Modifier.fillMaxSize(),
-        )
+        ForceEnglishLocale {
+            LetterGuideDebugScreen(
+                onBack = { navBackStack.removeAt(navBackStack.lastIndex) },
+                modifier = Modifier.fillMaxSize(),
+            )
+        }
     }
 }

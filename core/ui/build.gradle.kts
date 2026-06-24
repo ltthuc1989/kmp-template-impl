@@ -9,6 +9,8 @@ plugins {
 
 android {
     namespace = "me.ltthuc.kmp.core.ui"
+    // Needed for BuildConfig.DEBUG (drives debug-only UI like the dev/Others settings section).
+    buildFeatures.buildConfig = true
 }
 
 kotlin {

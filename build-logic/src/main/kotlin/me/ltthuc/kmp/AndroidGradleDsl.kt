@@ -38,10 +38,15 @@ fun Project.setupAndroid() {
             testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         }
 
+        // ABI splits produce multiple APKs, which conflicts with building an App Bundle
+        // (https://issuetracker.google.com/402800800). Disable splits for bundle tasks so
+        // `bundleRelease` works; APK builds (`assemble*`) keep per-ABI + universal APKs.
+        val buildingBundle = gradle.startParameter.taskNames.any { it.contains("bundle", ignoreCase = true) }
+
         splits {
             abi {
-                isEnable = true
-                isUniversalApk = true
+                isEnable = !buildingBundle
+                isUniversalApk = !buildingBundle
 
                 reset()
                 include("x86", "x86_64", "armeabi-v7a", "arm64-v8a")

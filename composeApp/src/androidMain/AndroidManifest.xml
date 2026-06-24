@@ -7,6 +7,15 @@
             android:name="android.permission.WRITE_EXTERNAL_STORAGE"
             android:maxSdkVersion="28"/>
 
+    <!-- COPPA/Families: prevent Firebase Analytics from collecting the Advertising ID -->
+    <uses-permission
+            android:name="com.google.android.gms.permission.AD_ID"
+            tools:node="remove"/>
+    <!-- Android 13+ Privacy Sandbox Ad ID (AdServices) — remove for child-directed app -->
+    <uses-permission
+            android:name="android.permission.ACCESS_ADSERVICES_AD_ID"
+            tools:node="remove"/>
+
     <application
         android:name=".GrabeeApplication"
         android:allowBackup="true"
@@ -22,6 +31,18 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Matsumo"
         tools:targetApi="tiramisu">
+
+        <!-- COPPA/Families: disable Ad ID collection + ad personalization for child-directed analytics -->
+        <meta-data
+            android:name="google_analytics_adid_collection_enabled"
+            android:value="false" />
+        <meta-data
+            android:name="google_analytics_default_allow_ad_personalization_signals"
+            android:value="false" />
+        <meta-data
+            android:name="google_analytics_default_allow_ad_user_data"
+            android:value="false" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

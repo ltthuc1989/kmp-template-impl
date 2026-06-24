@@ -2,8 +2,10 @@ package me.ltthuc.kmp.feature.setting
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -15,6 +17,7 @@ import me.ltthuc.kmp.core.model.Language
 import me.ltthuc.kmp.core.model.Level
 import me.ltthuc.kmp.core.model.Theme
 import me.ltthuc.kmp.core.repository.AppSettingRepository
+import me.ltthuc.kmp.core.repository.BillingRepository
 import me.ltthuc.kmp.core.repository.LevelRepository
 import me.ltthuc.kmp.core.repository.ProgressResetRepository
 
@@ -24,6 +27,7 @@ class SettingViewModel(
     private val reviewer: Reviewer,
     private val progressResetRepository: ProgressResetRepository,
     private val levelRepository: LevelRepository,
+    private val billingRepository: BillingRepository,
 ) : ViewModel() {
     val setting = repository.setting
 
@@ -31,6 +35,17 @@ class SettingViewModel(
     val levels: StateFlow<List<Level>> = levelRepository.observeLevelCards()
         .map { cards -> cards.map { it.level } }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    /** Real localized unlock price per level (levelId → priceString) from the store / fake billing. */
+    private val _levelPrices = MutableStateFlow<Map<String, String>>(emptyMap())
+    val levelPrices: StateFlow<Map<String, String>> = _levelPrices.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            _levelPrices.value = runCatching { billingRepository.getLevelPrices() }
+                .getOrDefault(emptyMap())
+        }
+    }
 
     fun setTheme(theme: Theme) {
         viewModelScope.launch {
@@ -84,17 +99,14 @@ class SettingViewModel(
         reviewer.requestReview()
     }
 
-    /** Parent control: open every unit of an owned [levelId] at once (skip the sequential gate). */
-    fun openLevelFully(levelId: String) {
-        viewModelScope.launch { repository.addManualUnlock(levelId) }
+    /** Buys [levelId] directly (no paywall) — opens the store payment sheet; ownership syncs reactively. */
+    fun purchaseLevel(levelId: String) {
+        viewModelScope.launch { billingRepository.purchaseLevel(levelId) }
     }
 
-    /** Parent control: re-lock an owned [levelId] back to the sequential gate and reset its progress. */
-    fun lockLevelSequential(levelId: String) {
-        viewModelScope.launch {
-            repository.removeManualUnlock(levelId)
-            progressResetRepository.resetLevel(levelId)
-        }
+    /** Restores previously purchased levels from the store (account-based; no re-charge). */
+    fun restorePurchases() {
+        viewModelScope.launch { billingRepository.restore() }
     }
 
     /** Wipes all local learning progress, then invokes [onDone] on completion. */

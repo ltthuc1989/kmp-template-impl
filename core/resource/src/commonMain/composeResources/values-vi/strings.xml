@@ -162,14 +162,12 @@
     <string name="setting_paywall_download_limit">Lượt tải còn lại</string>
     <string name="setting_paywall_download_limit_description">Còn %1$d lượt</string>
 
-    <!-- Setting Parent Control: open/lock sequential gate per owned level -->
-    <string name="setting_parent_control_title">Phụ huynh · Mở khóa thứ tự học</string>
-    <string name="setting_parent_control_open">Mở tất cả</string>
-    <string name="setting_parent_control_lock">Khóa</string>
-    <string name="setting_parent_control_buy">Mở khóa $5</string>
-    <string name="setting_parent_control_opened_label">Đã mở tất cả bài</string>
-    <string name="setting_parent_control_sequential_label">Theo thứ tự</string>
+    <!-- Setting Premium: per-level purchase state + restore -->
+    <string name="setting_parent_control_title">Premium</string>
+    <string name="setting_parent_control_buy">Mở khóa %1$s</string>
+    <string name="setting_parent_control_buy_plain">Mở khóa</string>
     <string name="setting_parent_control_not_owned_label">Chưa mua</string>
+    <string name="setting_unlocked_label">Đã mở khóa</string>
 
     <!-- Download Limit -->
     <string name="download_limit_title">Giới hạn tải xuống</string>
