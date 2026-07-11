@@ -145,12 +145,12 @@ internal fun LessonMapScreen(
                         )
                     }
                 },
-                // See-through bar: zero-alpha but surface-based (NOT Color.Transparent, which is
-                // transparent black). Both states share alpha 0, so the cross-fade stays fully
-                // transparent — content shows through and there's no black flash on scroll.
+                // Opaque surface (same as the screen background) so it hides content scrolling under
+                // the status bar — but invisible since it matches the bg. Both states use the same
+                // opaque color, so the cross-fade never lerps through transparent-black → no flash.
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0f),
-                    scrolledContainerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0f),
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    scrolledContainerColor = MaterialTheme.colorScheme.surface,
                 ),
             )
         },

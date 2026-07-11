@@ -81,7 +81,6 @@ import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
-private val ScreenBg = Color(0xFFFCE4E7)
 private val AccentRed = Color(0xFFE63946)
 private val SoftPink = Color(0xFFF7B4BC)
 private val LockedGray = Color(0xFFE4E7EB)
@@ -106,7 +105,8 @@ internal fun UnitSelectionScreen(
     Box(modifier = modifier.fillMaxSize()) {
         Scaffold(
             modifier = Modifier.fillMaxSize().nestedScroll(scrollBehavior.nestedScrollConnection),
-            containerColor = ScreenBg,
+            // Match the Lesson Map background (surface), so the two list screens look identical.
+            containerColor = MaterialTheme.colorScheme.surface,
             topBar = {
                 val uiState = (screenState as? ScreenState.Idle)?.data
                 UnitTopBar(
@@ -122,6 +122,9 @@ internal fun UnitSelectionScreen(
             AsyncLoadContents(
                 modifier = Modifier.fillMaxSize(),
                 screenState = screenState,
+                // Transparent so the Scaffold surface background shows through instead of being
+                // painted over by AsyncLoadContents' default background (matches LessonMapScreen).
+                containerColor = Color.Transparent,
             ) { uiState ->
                 UnitSelectionList(
                     units = uiState.units,
@@ -314,12 +317,12 @@ private fun UnitTopBar(
                 )
             }
         },
-        // See-through bar: zero-alpha but pink-based (NOT Color.Transparent, which is transparent
-        // black). Both states share alpha 0, so the cross-fade stays fully transparent — content
-        // shows through and there's no black flash on scroll.
+        // Opaque surface (same as the screen background) so it hides content scrolling under the
+        // status bar — but invisible since it matches the bg. Both states use the same opaque color,
+        // so the cross-fade never lerps through transparent-black → no black flash on scroll.
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = ScreenBg.copy(alpha = 0f),
-            scrolledContainerColor = ScreenBg.copy(alpha = 0f),
+            containerColor = MaterialTheme.colorScheme.surface,
+            scrolledContainerColor = MaterialTheme.colorScheme.surface,
         ),
     )
 }

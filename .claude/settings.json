@@ -26,5 +26,19 @@
     "additionalDirectories": [
       "/tmp"
     ]
+  },
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "./gradlew :composeApp:installDebug 2>&1 | tail -3; true",
+            "statusMessage": "Auto build + install (gradle)…",
+            "timeout": 600
+          }
+        ]
+      }
+    ]
   }
 }

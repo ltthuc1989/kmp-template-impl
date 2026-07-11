@@ -37,7 +37,7 @@ import kotlinx.coroutines.launch
  * How long a screen waits with no user action before showing its idle guide hand. Shared so every
  * mini-game (and any other idle hint) uses the same beat.
  */
-const val GUIDE_IDLE_MS = 5_000L
+const val GUIDE_IDLE_MS = 10_000L
 
 /** One demo gesture for [GameHandGuide]. */
 sealed interface HandStep {

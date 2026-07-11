@@ -60,7 +60,6 @@ internal fun GameFlowScreen(
     val progressRepository: LearningProgressRepository = koinInject()
     val unitCompletionRepository: UnitCompletionRepository = koinInject()
     val levelRepository: LevelRepository = koinInject()
-    val sfx: SfxController = koinInject()
     val audioRepository: AudioRepository = koinInject()
     val lang = LocalAppLanguage.current
     val games = DEFAULT_UNIT_GAMES
@@ -81,7 +80,7 @@ internal fun GameFlowScreen(
         if (!finishing) return@LaunchedEffect
         // Mark the unit done first so the next unit unlocks even if the user leaves mid-audio.
         unitCompletionRepository.markCompleted(unitId)
-        sfx.playSfx("lesson_complete")
+        // No finish chime — go straight to the congrats voice prompt below.
         delay(CELEBRATE_PRAISE_DELAY_MS)
         audioRepository.playAndAwait(AudioRef.Prompt("vp_lesson_done", lang), CONGRATS_MAX_MS)
         if (nextUnit == null) {
