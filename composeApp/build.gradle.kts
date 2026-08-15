@@ -138,17 +138,17 @@ buildkonfig {
         setField("PURCHASE_ANDROID_API_KEY")
         setField("PURCHASE_IOS_API_KEY")
 
-        setField("FIREBASE_STORAGE_BUCKET", "grabee-368d2.firebasestorage.app")
+        // Must match composeApp/google-services.json — the Firebase SDK is configured for the
+        // abc-phonics-kids project, so pointing content at any other bucket publishes into a
+        // project the app does not use. (Was grabee-368d2, left over from the template.)
+        val storageBucket = localProperties.getProperty("FIREBASE_STORAGE_BUCKET")
+            ?: "abc-phonics-kids.firebasestorage.app"
+        setField("FIREBASE_STORAGE_BUCKET", storageBucket)
 
         // Root of the downloadable content tree. Paths under it are `<hash>/<logical path>`
         // and never change once published, so any CDN works — point this at Cloudflare R2 or
         // a Cloud CDN host and nothing in the app has to change. The bucket/prefix must
         // allow public reads; see scripts/publish_content.py.
-        setField(
-            "CONTENT_CDN_BASE_URL",
-            "https://storage.googleapis.com/" +
-                (localProperties.getProperty("FIREBASE_STORAGE_BUCKET") ?: "grabee-368d2.firebasestorage.app") +
-                "/content",
-        )
+        setField("CONTENT_CDN_BASE_URL", "https://storage.googleapis.com/$storageBucket/content")
     }
 }

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Debug-only: lets the app fetch content packs from a plain-HTTP server on the dev
+  machine (python3 -m http.server) so the download flow can be exercised without a
+  real CDN. Release builds keep cleartext blocked — the real CDN is HTTPS.
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <application
+        android:usesCleartextTraffic="true"
+        tools:replace="android:usesCleartextTraffic" />
+</manifest>
