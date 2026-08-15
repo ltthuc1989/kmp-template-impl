@@ -362,4 +362,22 @@
     <string name="onboarding_page3_subtitle">Master letters through fun games</string>
     <string name="onboarding_page4_title">Story Time</string>
     <string name="onboarding_page4_subtitle">Enjoy a fun story at the end of each letter</string>
+
+    <!-- Content pack download (parent-facing: follows the app language) -->
+    <string name="content_download_title">Lesson content</string>
+    <string name="content_download_message">This level needs %1$s of audio and pictures before it can be used offline.</string>
+    <string name="content_download_action">Download %1$s</string>
+    <string name="content_download_later">Not now</string>
+    <string name="content_download_progress">%1$d of %2$d files</string>
+    <string name="content_download_ready_title">Ready to learn</string>
+    <string name="content_download_ready_message">Everything is on this device. It works without internet.</string>
+    <string name="content_download_failed_title">Download stopped</string>
+    <string name="content_download_failed_message">Check the connection and try again. Finished files are kept.</string>
+    <string name="content_download_retry">Try again</string>
+    <string name="content_download_done">Done</string>
+    <string name="setting_storage_title">Storage</string>
+    <string name="setting_storage_downloaded">%1$s downloaded</string>
+    <string name="setting_storage_not_downloaded">Not downloaded</string>
+    <string name="setting_storage_delete">Delete downloaded content</string>
+    <string name="setting_storage_delete_confirm">Delete the downloaded lessons for this level? You can download them again any time — your purchase is not affected.</string>
 </resources>

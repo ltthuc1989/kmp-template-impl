@@ -105,6 +105,7 @@ kotlin {
             implementation(project(":feature:home"))
             implementation(project(":feature:setting"))
             implementation(project(":feature:billing"))
+            implementation(project(":feature:download"))
             implementation(project(":feature:learningpath"))
             implementation(project(":feature:onboarding"))
             implementation(project(":feature:review"))
@@ -138,17 +139,17 @@ buildkonfig {
         setField("PURCHASE_ANDROID_API_KEY")
         setField("PURCHASE_IOS_API_KEY")
 
-        // Must match composeApp/google-services.json — the Firebase SDK is configured for the
-        // abc-phonics-kids project, so pointing content at any other bucket publishes into a
-        // project the app does not use. (Was grabee-368d2, left over from the template.)
-        val storageBucket = localProperties.getProperty("FIREBASE_STORAGE_BUCKET")
-            ?: "abc-phonics-kids.firebasestorage.app"
-        setField("FIREBASE_STORAGE_BUCKET", storageBucket)
-
-        // Root of the downloadable content tree. Paths under it are `<hash>/<logical path>`
-        // and never change once published, so any CDN works — point this at Cloudflare R2 or
-        // a Cloud CDN host and nothing in the app has to change. The bucket/prefix must
-        // allow public reads; see scripts/publish_content.py.
-        setField("CONTENT_CDN_BASE_URL", "https://storage.googleapis.com/$storageBucket/content")
+        // Root of the downloadable content tree, served straight off Cloud Storage. Paths under
+        // it are `<hash>/<logical path>` and never change once published, so any host works —
+        // point this at Cloudflare R2 or a Cloud CDN edge and nothing in the app changes.
+        //
+        // Bucket `abc-phonics-kids-content` (project abc-phonics-kids, asia-southeast1, closest
+        // region to the launch markets) is public-read and holds nothing but lesson media. Deploy
+        // with scripts/publish_content.py. Override in local.properties to test against a local
+        // server: CONTENT_CDN_BASE_URL=http://10.0.2.2:8000/content
+        setField(
+            "CONTENT_CDN_BASE_URL",
+            "https://storage.googleapis.com/abc-phonics-kids-content/content",
+        )
     }
 }

@@ -28,6 +28,7 @@ import me.ltthuc.kmp.core.ui.theme.AppDimensions
 import me.ltthuc.kmp.core.ui.theme.LocalAppLocale
 import me.ltthuc.kmp.core.ui.theme.LocalNavBackStack
 import me.ltthuc.kmp.feature.billing.paywallEntry
+import me.ltthuc.kmp.feature.download.downloadEntry
 import me.ltthuc.kmp.feature.home.homeEntry
 import me.ltthuc.kmp.feature.learningpath.learningEntry
 import me.ltthuc.kmp.feature.onboarding.onboardingEntry
@@ -105,6 +106,7 @@ internal fun AppNavHost(
                             learningEntry()
                             onboardingEntry()
                             reviewEntry()
+                            downloadEntry()
                         },
                         transitionSpec = { NavigationTransitions.forwardTransition },
                         popTransitionSpec = { NavigationTransitions.backwardTransition },

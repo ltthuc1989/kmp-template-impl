@@ -17,7 +17,8 @@ sealed interface Destination : NavKey {
     data object Onboarding : Destination
 
     @Serializable
-    data class Download(val url: String) : Destination
+    /** Content-pack download for a level, e.g. after unlocking it. */
+    data class Download(val levelId: String) : Destination
 
     @Serializable
     data class Paywall(

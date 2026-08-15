@@ -45,6 +45,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -58,11 +59,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.coroutines.launch
 import me.ltthuc.kmp.core.model.FREE_UNITS_PER_LEVEL
 import me.ltthuc.kmp.core.model.MONETIZATION_ENABLED
 import me.ltthuc.kmp.core.model.UnitCard
 import me.ltthuc.kmp.core.model.UnitLetterPreview
 import me.ltthuc.kmp.core.model.UnitStatus
+import me.ltthuc.kmp.core.repository.ContentPackRepository
+import me.ltthuc.kmp.core.repository.PackState
 import me.ltthuc.kmp.core.repository.SfxController
 import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.unit_free_label
@@ -96,6 +100,8 @@ internal fun UnitSelectionScreen(
     val screenState by viewModel.screenState.collectAsStateWithLifecycle()
     val navBackStack = LocalNavBackStack.current
     val sfx: SfxController = koinInject()
+    val packRepository: ContentPackRepository = koinInject()
+    val unitScope = rememberCoroutineScope()
     val lang = LocalAppLanguage.current
     // Settings sits behind a parental gate; show it in-place so the backstack (→ unit list) is kept.
     var showSettingsGate by remember { mutableStateOf(false) }
@@ -149,11 +155,27 @@ internal fun UnitSelectionScreen(
                                 ),
                             )
                             // Any unlocked/active/completed unit opens the full-screen Lesson Map,
-                            // which handles per-lesson lock state and resume/replay.
+                            // which handles per-lesson lock state and resume/replay — unless its
+                            // audio and pictures are still on the CDN, in which case fetching them
+                            // comes first. Checked per tap rather than on entry so a child browsing
+                            // the unit list is never interrupted by a download prompt.
                             UnitStatus.Completed,
                             UnitStatus.Active,
                             UnitStatus.Unlocked,
-                            -> navBackStack.add(Destination.Learning.LessonMap(levelId, card.unit.id))
+                            -> unitScope.launch {
+                                val packId = card.unit.id
+                                val ready = when (packRepository.refresh(packId)) {
+                                    PackState.Bundled, PackState.Ready -> true
+                                    else -> false
+                                }
+                                navBackStack.add(
+                                    if (ready) {
+                                        Destination.Learning.LessonMap(levelId, packId)
+                                    } else {
+                                        Destination.Download(levelId)
+                                    },
+                                )
+                            }
                         }
                     },
                 )
