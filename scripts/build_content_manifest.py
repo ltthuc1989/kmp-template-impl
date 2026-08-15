@@ -6,12 +6,13 @@ Sinh core/resource/.../composeResources/files/content_manifest.json:
 mỗi asset có hash nội dung, dung lượng, và thuộc pack nào.
 
 Pack là ĐƠN VỊ TẢI, chia theo UNIT chứ không theo level — vì
-FREE_UNITS_PER_LEVEL = 2 nên 2 unit đầu mỗi level là hàng miễn phí,
-phải nằm sẵn trong APK để chơi được lúc offline.
+FREE_UNITS_PER_LEVEL unit đầu của MỌI level là hàng miễn phí và phải
+nằm sẵn trong APK để chơi được lúc offline. Level 1 KHÔNG miễn phí:
+nó cũng là sản phẩm $5 như L2-L5, chỉ 2 unit đầu là mở.
 
-  core          → ship trong APK: toàn bộ L1, 2 unit đầu mỗi level,
-                  sfx/prompt, phoneme/rime/find_*, ảnh vocab, JSON
-  L2U3 … L5U8   → tải khi LevelAccess cho phép mở level đó
+  core          → ship trong APK: 2 unit đầu mỗi level, sfx/prompt,
+                  phoneme/rime/find_*, ảnh vocab, JSON
+  L1U3 … L5U8   → tải khi LevelAccess cho phép mở level đó
 
 Story đi theo unit nó nối sau (`after_unit` trong stories/level_N.json),
 cả audio narration lẫn ảnh scene.
@@ -40,8 +41,21 @@ BASE = Path(__file__).resolve().parent.parent
 RES_FILES = BASE / "core/resource/src/commonMain/composeResources/files"
 MANIFEST = RES_FILES / "content_manifest.json"
 
-# Phải khớp FREE_UNITS_PER_LEVEL trong core/model/.../MonetizationConfig.kt
-FREE_UNITS_PER_LEVEL = 2
+MONETIZATION_CONFIG = BASE / "core/model/src/commonMain/kotlin/me/ltthuc/kmp/core/model/MonetizationConfig.kt"
+
+
+def free_units_per_level() -> int:
+    """Đọc thẳng từ MonetizationConfig.kt thay vì chép lại số.
+
+    Hai nơi cùng giữ một con số thì sớm muộn cũng lệch, mà lệch ở đây là lỗi câm:
+    manifest ship nhầm unit trả tiền vào APK, hoặc tệ hơn là đẩy unit miễn phí ra
+    CDN khiến người chưa mua không học được lúc offline.
+    """
+    match = re.search(r"const\s+val\s+FREE_UNITS_PER_LEVEL\s*=\s*(\d+)", MONETIZATION_CONFIG.read_text())
+    if not match:
+        raise SystemExit(f"Không đọc được FREE_UNITS_PER_LEVEL trong {MONETIZATION_CONFIG}")
+    return int(match.group(1))
+
 
 CORE_PACK = "core"
 HASH_LEN = 10
@@ -55,13 +69,26 @@ STORY_DIR_RE = re.compile(r"^(?:audio|images)/level_(\d+)/stories/([A-Za-z0-9_]+
 
 
 def load_units() -> dict[tuple[int, int], dict]:
-    """(level number, unit number) -> {'id', 'free'}"""
+    """(level number, unit number) -> {'id', 'free'}
+
+    Free = đúng luật của decideUnitStatus() trong UnitRepository.kt:
+
+        index < freeUnitsPerLevel   -> mở
+        !levelOwned && monetization -> PremiumLocked
+
+    tức chỉ FREE_UNITS_PER_LEVEL unit đầu mỗi level là miễn phí, và luật này áp
+    cho MỌI level —
+    Level 1 cũng là sản phẩm bán $5 (SubscriptionPlan.LEVEL_1). KHÔNG dùng cờ
+    `isPremium` trong curriculum.json: cờ đó chỉ điều khiển trạng thái ComingSoon
+    ở màn chọn level, không phải paywall, và lấy nhầm nó thì 6 unit trả tiền của
+    Level 1 bị ship vào APK.
+    """
+    free_units = free_units_per_level()
     curriculum = json.loads((RES_FILES / "curriculum.json").read_text())
     units = {}
     for level in curriculum["levels"]:
-        premium = level.get("isPremium", False)
         for unit in level["units"]:
-            free = not premium or unit["orderIndex"] < FREE_UNITS_PER_LEVEL
+            free = unit["orderIndex"] < free_units
             units[(level["number"], unit["number"])] = {"id": unit["id"], "free": free}
     return units
 

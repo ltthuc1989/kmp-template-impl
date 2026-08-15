@@ -2,19 +2,49 @@
   "version": 1,
   "hashLength": 10,
   "packs": {
+    "L1U3": {
+      "files": 26,
+      "bytes": 1320217,
+      "bundled": true
+    },
+    "L1U4": {
+      "files": 26,
+      "bytes": 1248235,
+      "bundled": true
+    },
+    "L1U5": {
+      "files": 26,
+      "bytes": 1449140,
+      "bundled": true
+    },
+    "L1U6": {
+      "files": 26,
+      "bytes": 1532266,
+      "bundled": true
+    },
+    "L1U7": {
+      "files": 32,
+      "bytes": 1772362,
+      "bundled": true
+    },
+    "L1U8": {
+      "files": 32,
+      "bytes": 1845227,
+      "bundled": true
+    },
     "L2U3": {
       "files": 50,
-      "bytes": 1571683,
+      "bytes": 1575331,
       "bundled": true
     },
     "L2U4": {
       "files": 50,
-      "bytes": 1654763,
+      "bytes": 1629515,
       "bundled": true
     },
     "L2U5": {
       "files": 51,
-      "bytes": 1525578,
+      "bytes": 1524522,
       "bundled": true
     },
     "L2U6": {
@@ -24,7 +54,7 @@
     },
     "L2U7": {
       "files": 50,
-      "bytes": 1531814,
+      "bytes": 1531046,
       "bundled": true
     },
     "L2U8": {
@@ -33,8 +63,8 @@
       "bundled": true
     },
     "core": {
-      "files": 474,
-      "bytes": 17342739,
+      "files": 306,
+      "bytes": 8176732,
       "bundled": true
     }
   },
