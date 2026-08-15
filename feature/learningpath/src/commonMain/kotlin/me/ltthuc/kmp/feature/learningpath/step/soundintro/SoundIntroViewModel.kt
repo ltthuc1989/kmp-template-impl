@@ -19,7 +19,7 @@ import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.error_network
 import me.ltthuc.kmp.core.resource.error_no_data
 import me.ltthuc.kmp.core.ui.screen.ScreenState
-import me.ltthuc.kmp.feature.learningpath.step.common.soundIntroRef
+import me.ltthuc.kmp.feature.learningpath.step.common.step0Refs
 
 internal class SoundIntroViewModel(
     private val unitId: String,
@@ -48,16 +48,27 @@ internal class SoundIntroViewModel(
 
     val audioState: StateFlow<AudioState> = audioRepository.state
 
+    /**
+     * Bật/tắt phần nghe của lesson.
+     *
+     * Level 1 là một file dạy dài; Level 2+ là chuỗi 4-6 file (guide vần + từng từ)
+     * phát nối tiếp — xem [step0Refs]. Vì cả hai đều là "một danh sách", chỗ này chỉ
+     * cần so ref đang phát có thuộc danh sách của lesson hay không, thay vì so bằng
+     * một ref duy nhất như trước.
+     */
     fun onListenToggle(lesson: PhonicsLesson) {
-        val ref = lesson.soundIntroRef() ?: run {
-            Napier.w(tag = TAG) { "No SoundIntro audio ref for lesson ${lesson.id}" }
+        val refs = lesson.step0Refs()
+        if (refs.isEmpty()) {
+            Napier.w(tag = TAG) { "No step-0 audio refs for lesson ${lesson.id}" }
             return
         }
         when (val current = audioRepository.state.value) {
-            is AudioState.Playing -> if (current.ref == ref) audioRepository.stop() else audioRepository.play(ref)
-            is AudioState.Paused -> if (current.ref == ref) audioRepository.resume() else audioRepository.play(ref)
-            is AudioState.Loading -> if (current.ref != ref) audioRepository.play(ref)
-            else -> audioRepository.play(ref)
+            is AudioState.Playing ->
+                if (current.ref in refs) audioRepository.stop() else audioRepository.playAll(refs)
+            is AudioState.Paused ->
+                if (current.ref in refs) audioRepository.resume() else audioRepository.playAll(refs)
+            is AudioState.Loading -> if (current.ref !in refs) audioRepository.playAll(refs)
+            else -> audioRepository.playAll(refs)
         }
     }
 

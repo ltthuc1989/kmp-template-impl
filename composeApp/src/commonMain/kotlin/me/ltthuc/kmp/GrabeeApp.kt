@@ -49,6 +49,10 @@ internal fun GrabeeApp(
             val level = setting.lastLevelId.ifBlank { "L1" }
             val starts: List<Destination> = when {
                 !setting.hasSeenOnboarding -> listOf(Destination.Onboarding)
+                // Developer mode ships every level, so start on the level list. Without this the
+                // ship-L1-first rule below pins the app to the L1 unit map and there is no way to
+                // reach L2+ at all — back from the unit map exits the app.
+                setting.developerMode -> listOf(Destination.Home)
                 setting.lastScreen == AppSetting.LastScreen.LEVEL_LIST -> listOf(Destination.Home)
                 setting.lastScreen == AppSetting.LastScreen.UNIT_LIST ->
                     listOf(Destination.Learning.UnitSelection(level))

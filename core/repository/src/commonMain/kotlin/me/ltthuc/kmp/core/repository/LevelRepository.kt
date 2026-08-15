@@ -21,7 +21,14 @@ import me.ltthuc.kmp.core.model.LevelStatus
 import me.ltthuc.kmp.core.model.PhonicsUnit
 
 private val visibleStepsJson = Json { ignoreUnknownKeys = true }
-private val DEFAULT_VISIBLE_STEPS = (0..6).toList()
+
+// Step 4 (Blending) was retired and its screen deleted; the index stays reserved so saved
+// progress keeps its meaning, but no level may render it. Anything outside this set is dropped.
+private val DEFAULT_VISIBLE_STEPS = listOf(0, 1, 2, 3, 5, 6)
+
+// Premium levels whose content has shipped and so are enterable now (per-unit paywall still applies
+// in UnitRepository). Other premium levels stay "Coming soon" until their content lands.
+private val LAUNCHED_PREMIUM_LEVELS = setOf("L2")
 
 class LevelRepository(
     private val levelDao: LevelDao,
@@ -44,11 +51,11 @@ class LevelRepository(
     }.flowOn(dispatcher)
 
     suspend fun getVisibleSteps(levelId: String): List<Int> = withContext(dispatcher) {
-        seeder.seedIfEmpty()
+        seeder.syncCurriculum()
         val raw = levelDao.findById(levelId)?.visibleStepsJson ?: return@withContext DEFAULT_VISIBLE_STEPS
         runCatching {
             visibleStepsJson.decodeFromString<List<Int>>(raw)
-                .filter { it in 0..6 }
+                .filter { it in DEFAULT_VISIBLE_STEPS }
                 .ifEmpty { DEFAULT_VISIBLE_STEPS }
         }.getOrDefault(DEFAULT_VISIBLE_STEPS)
     }
@@ -61,7 +68,7 @@ class LevelRepository(
     ) { levels, units, progress, _ ->
         buildLevelCards(levels, units, progress)
     }.onStart {
-        seeder.seedIfEmpty()
+        seeder.syncCurriculum()
     }.flowOn(dispatcher)
 
     fun observeLevel(levelId: String): Flow<Level?> = levelDao.observeAll().map { all ->
@@ -94,8 +101,9 @@ class LevelRepository(
         return levels.sortedBy { it.orderIndex }.map { entity ->
             val level = entity.toModel()
             val status = when {
-                // L2-L5 (isPremium = no content shipped yet) show ComingSoon until their content lands.
-                entity.isPremium -> LevelStatus.ComingSoon
+                // Premium levels stay ComingSoon until their content ships (see LAUNCHED_PREMIUM_LEVELS).
+                // L2 has launched, so it falls through to the normal ReadyToStart/Active flow below.
+                entity.isPremium && entity.id !in LAUNCHED_PREMIUM_LEVELS -> LevelStatus.ComingSoon
                 progress != null && entity.id == progress.activeLevelId ->
                     activeStatus(entity = entity, progress = progress, unitsByLevel = unitsByLevel)
                 else -> LevelStatus.ReadyToStart

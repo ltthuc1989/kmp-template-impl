@@ -5,9 +5,11 @@ import me.ltthuc.kmp.core.audio.di.AudioPlayerSfx
 import me.ltthuc.kmp.core.repository.AppSettingRepository
 import me.ltthuc.kmp.core.repository.AudioRepository
 import me.ltthuc.kmp.core.repository.BillingRepository
+import me.ltthuc.kmp.core.repository.BlendMetaRepository
 import me.ltthuc.kmp.core.repository.ChantMetaRepository
 import me.ltthuc.kmp.core.repository.LearningProgressRepository
 import me.ltthuc.kmp.core.repository.LessonProgressRepository
+import me.ltthuc.kmp.core.repository.LevelAccess
 import me.ltthuc.kmp.core.repository.LevelRepository
 import me.ltthuc.kmp.core.repository.ProgressResetRepository
 import me.ltthuc.kmp.core.repository.SfxController
@@ -23,8 +25,10 @@ val repositoryModule = module {
     singleOf(::AudioRepository)
     singleOf(::BillingRepository)
     singleOf(::ChantMetaRepository)
+    singleOf(::BlendMetaRepository)
     singleOf(::LearningProgressRepository)
     singleOf(::LessonProgressRepository)
+    singleOf(::LevelAccess)
     singleOf(::LevelRepository)
     singleOf(::ProgressResetRepository)
     singleOf(::StoryRepository)
@@ -35,7 +39,7 @@ val repositoryModule = module {
         SfxController(
             player = get<AudioPlayer>(AudioPlayerSfx),
             resolver = get(),
-            cache = get(),
+            locator = get(),
         )
     }
 }

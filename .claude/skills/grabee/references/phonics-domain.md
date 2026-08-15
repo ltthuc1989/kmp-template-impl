@@ -12,11 +12,11 @@ Domain reference cho `/grabee` khi sinh code liên quan phonics learning flow.
 |---|---|---|
 | **Level** | 1 trong 5 group lớn theo độ khó (Alphabet, Short Vowels, Long Vowels, Blends, Advanced) | `LevelEntity`, `Destination.Learning.LevelSelection` |
 | **Unit** | 9 unit/level. Mỗi unit dạy 1 cluster letter/sound/family | `UnitEntity`, `Destination.Learning.UnitSelection(levelId)` |
-| **Step** | 8 steps/unit (sound-intro, chant, vocabulary, identify, blending, matching, tracing, story) | sub-screens trong `feature:learningpath`, `Destination.Learning.Step(levelId, unitId, stepIndex)` |
+| **Step** | 7 steps/unit (sound-intro/vowel-blend, chant, vocabulary, identify, matching, tracing, story). Index 4 (blending) đã retire | sub-screens trong `feature:learningpath`, `Destination.Learning.Step(levelId, unitId, stepIndex)` |
 | **Word** | 1 từ vựng có image + audio + IPA + sentence | `WordEntity` |
 | **Star** | 0-3 stars/step dựa trên performance (voice score, accuracy) | field `starsEarned` trong `UserProgressEntity` |
 | **Phonics Friend** | Character mascot per letter (Angry Apple, Big Bear, ...) | reference image asset, không là entity riêng |
-| **Blending** | Ghép sound thành word (c-a-t → cat) | step type `blending` |
+| **Blending** | Ghép sound thành word (c-a-t → cat) | dạy ở step 0 `vowelblend` (L2+); step type `blending` cũ đã xoá |
 | **Tracing** | Vẽ letter bằng ngón tay trên canvas | step type `tracing` |
 | **SyncCode** | 6-digit code cho cross-device backup, KHÔNG phải account | `ProfileEntity.syncCode` |
 

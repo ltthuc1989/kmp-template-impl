@@ -59,7 +59,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlin.math.roundToInt
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.delay
@@ -71,13 +70,8 @@ import me.ltthuc.kmp.core.repository.SfxController
 import me.ltthuc.kmp.core.repository.playAndAwait
 import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.common_next
-import me.ltthuc.kmp.core.resource.score_success_primary
-import me.ltthuc.kmp.core.resource.score_success_title
 import me.ltthuc.kmp.core.resource.step_guide_tracing
 import me.ltthuc.kmp.core.resource.tracing_draw_here
-import me.ltthuc.kmp.core.resource.tracing_score_excellent
-import me.ltthuc.kmp.core.resource.tracing_score_good
-import me.ltthuc.kmp.core.resource.tracing_score_very_good
 import me.ltthuc.kmp.core.ui.audio.ScreenVoicePrompt
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
 import me.ltthuc.kmp.core.ui.theme.LocalAppLanguage
@@ -89,6 +83,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
+import kotlin.math.roundToInt
 
 private const val STEP_INDEX = 6
 
@@ -617,6 +612,7 @@ private const val GUIDE_MS_PER_STROKE = 1200
 private const val PRACTICE_CORNER_DP = 24
 private const val GHOST_STROKE_FRACTION = 0.10f
 private const val PRACTICE_GRID_CELL_PX = 60f
+
 // Idle delay before the tracing guide hand appears — same 5s beat as the mini-games.
 private const val GUIDE_IDLE_MS = 5_000L
 private const val TRACE_HAND_MS_PER_STROKE = 1100

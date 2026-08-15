@@ -53,7 +53,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import me.ltthuc.kmp.core.model.LessonCard
 import me.ltthuc.kmp.core.model.LessonStatus
-import me.ltthuc.kmp.feature.learningpath.step.common.PulseRings
 import me.ltthuc.kmp.core.repository.LessonProgressRepository
 import me.ltthuc.kmp.core.repository.LevelRepository
 import me.ltthuc.kmp.core.repository.SfxController
@@ -68,6 +67,7 @@ import me.ltthuc.kmp.core.ui.screen.Destination
 import me.ltthuc.kmp.core.ui.screen.ScreenState
 import me.ltthuc.kmp.core.ui.theme.LocalAppLanguage
 import me.ltthuc.kmp.core.ui.theme.LocalNavBackStack
+import me.ltthuc.kmp.feature.learningpath.step.common.PulseRings
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
@@ -79,6 +79,7 @@ private val LockedTextGraySheet = Color(0xFF9AA3AF)
 private val LessonBadgeSize = 48.dp
 private val LessonTimelineWidth = 56.dp
 private val ConnectorStroke = 2.dp
+
 // Keep the pulse rings inside the timeline column so they don't overlap the lesson card.
 private const val TIMELINE_PULSE_MAX_SCALE = 1.35f
 private const val LOCKED_ROW_ALPHA = 0.5f

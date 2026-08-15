@@ -34,23 +34,31 @@ import me.ltthuc.kmp.core.repository.LevelRepository
 import me.ltthuc.kmp.core.repository.UnitRepository
 import me.ltthuc.kmp.core.ui.screen.Destination
 import me.ltthuc.kmp.core.ui.theme.LocalNavBackStack
-import me.ltthuc.kmp.feature.learningpath.step.blending.BlendingScreen
 import me.ltthuc.kmp.feature.learningpath.step.chant.ChantScreen
 import me.ltthuc.kmp.feature.learningpath.step.identify.IdentifyScreen
 import me.ltthuc.kmp.feature.learningpath.step.matching.MatchingScreen
 import me.ltthuc.kmp.feature.learningpath.step.soundintro.SoundIntroScreen
 import me.ltthuc.kmp.feature.learningpath.step.tracing.TracingScreen
 import me.ltthuc.kmp.feature.learningpath.step.vocabulary.VocabularyScreen
+import me.ltthuc.kmp.feature.learningpath.step.vowelblend.VowelBlendScreen
+import me.ltthuc.kmp.feature.learningpath.step.wordtracing.WordTracingScreen
 import org.koin.compose.koinInject
 
 // Canonical step screens (0..6); each level may hide some via LevelEntity.visibleStepsJson.
 // Story (the per-unit story screen) lives at unit-level only — appears as an extra trailing
 // segment on the last lesson and as a standalone destination after the last visible step.
 // STORY_SEGMENT_INDEX is a sentinel that comes after all canonical step indices.
+//
+// Index 4 (Blending) was retired — no level ships it, and its screen was deleted. The index
+// itself stays reserved so saved progress and STORY_SEGMENT_INDEX keep their meaning.
 internal const val MAX_STEP_INDEX = 6
 internal const val STORY_SEGMENT_INDEX = MAX_STEP_INDEX + 1 // = 7
-internal val DEFAULT_VISIBLE_STEPS = (0..MAX_STEP_INDEX).toList()
+internal val DEFAULT_VISIBLE_STEPS = listOf(0, 1, 2, 3, 5, 6)
 private const val TAG = "StepScreen"
+
+// L1 is the alphabet level (uses the SoundIntro Step 1). Every other level (L2+) teaches blending,
+// so its Step 1 uses the vowel-blend screen instead.
+private const val ALPHABET_LEVEL_ID = "L1"
 
 @Composable
 internal fun StepScreen(
@@ -193,16 +201,29 @@ internal fun StepScreen(
     }
 
     when (stepIndex) {
-        0 -> SoundIntroScreen(
-            unitId = unitId,
-            lessonIndex = lessonIndex,
-            onClose = onClose,
-            onNext = onNext,
-            onStepJump = onStepJump,
-            stepSegments = stepSegments,
-            onLessonsLoaded = onLessonsLoaded,
-            modifier = modifier,
-        )
+        0 -> if (levelId != ALPHABET_LEVEL_ID) {
+            VowelBlendScreen(
+                unitId = unitId,
+                lessonIndex = lessonIndex,
+                onClose = onClose,
+                onNext = onNext,
+                onStepJump = onStepJump,
+                stepSegments = stepSegments,
+                onLessonsLoaded = onLessonsLoaded,
+                modifier = modifier,
+            )
+        } else {
+            SoundIntroScreen(
+                unitId = unitId,
+                lessonIndex = lessonIndex,
+                onClose = onClose,
+                onNext = onNext,
+                onStepJump = onStepJump,
+                stepSegments = stepSegments,
+                onLessonsLoaded = onLessonsLoaded,
+                modifier = modifier,
+            )
+        }
         1 -> ChantScreen(
             unitId = unitId,
             lessonIndex = lessonIndex,
@@ -233,16 +254,6 @@ internal fun StepScreen(
             onLessonsLoaded = onLessonsLoaded,
             modifier = modifier,
         )
-        4 -> BlendingScreen(
-            unitId = unitId,
-            lessonIndex = lessonIndex,
-            onClose = onClose,
-            onNext = onNext,
-            onStepJump = onStepJump,
-            stepSegments = stepSegments,
-            onLessonsLoaded = onLessonsLoaded,
-            modifier = modifier,
-        )
         5 -> MatchingScreen(
             unitId = unitId,
             lessonIndex = lessonIndex,
@@ -253,16 +264,31 @@ internal fun StepScreen(
             onLessonsLoaded = onLessonsLoaded,
             modifier = modifier,
         )
-        6 -> TracingScreen(
-            unitId = unitId,
-            lessonIndex = lessonIndex,
-            onClose = onClose,
-            onNext = onTracingComplete,
-            onStepJump = onStepJump,
-            stepSegments = stepSegments,
-            onLessonsLoaded = onLessonsLoaded,
-            modifier = modifier,
-        )
+        6 -> if (levelId != ALPHABET_LEVEL_ID) {
+            // Level 2+ traces whole words (Duolingo-style), letter-by-letter across the lesson's
+            // words. Level 1 keeps the single-letter TracingScreen.
+            WordTracingScreen(
+                unitId = unitId,
+                lessonIndex = lessonIndex,
+                onClose = onClose,
+                onNext = onTracingComplete,
+                onStepJump = onStepJump,
+                stepSegments = stepSegments,
+                onLessonsLoaded = onLessonsLoaded,
+                modifier = modifier,
+            )
+        } else {
+            TracingScreen(
+                unitId = unitId,
+                lessonIndex = lessonIndex,
+                onClose = onClose,
+                onNext = onTracingComplete,
+                onStepJump = onStepJump,
+                stepSegments = stepSegments,
+                onLessonsLoaded = onLessonsLoaded,
+                modifier = modifier,
+            )
+        }
         else -> StepStubScreen(
             stepIndex = stepIndex,
             lessonIndex = lessonIndex,
@@ -316,7 +342,6 @@ private fun stepName(stepIndex: Int): String = when (stepIndex) {
     1 -> "Chant"
     2 -> "Vocabulary"
     3 -> "Identify"
-    4 -> "Blending"
     5 -> "Matching"
     6 -> "Tracing"
     else -> "Unknown Step $stepIndex"

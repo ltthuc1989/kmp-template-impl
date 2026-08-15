@@ -38,7 +38,6 @@ import me.ltthuc.kmp.core.repository.playAndAwait
 import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.common_next
 import me.ltthuc.kmp.core.resource.sound_intro_listen
-import me.ltthuc.kmp.core.resource.step_guide_sound_intro
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
 import me.ltthuc.kmp.core.ui.theme.LocalAppLanguage
 import me.ltthuc.kmp.feature.learningpath.step.common.PulseRings
@@ -47,7 +46,7 @@ import me.ltthuc.kmp.feature.learningpath.step.common.StepHeader
 import me.ltthuc.kmp.feature.learningpath.step.common.StoryStyleCard
 import me.ltthuc.kmp.feature.learningpath.step.common.WordDisplayView
 import me.ltthuc.kmp.feature.learningpath.step.common.letterPair
-import me.ltthuc.kmp.feature.learningpath.step.common.soundIntroRef
+import me.ltthuc.kmp.feature.learningpath.step.common.step0Refs
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
@@ -112,8 +111,10 @@ private fun SoundIntroContent(
     stepSegments: ImmutableList<Int>,
 ) {
     val featuredWord = currentLesson.words.firstOrNull()
-    val ref = remember(currentLesson.id) { currentLesson.soundIntroRef() }
-    val isPlaying = ref != null && audioState.isActiveFor(ref)
+    // Level 2+ phát một chuỗi nhiều file, nên "đang phát" là ref hiện tại thuộc chuỗi
+    // của lesson — không so được bằng một ref duy nhất.
+    val refs = remember(currentLesson.id) { currentLesson.step0Refs() }
+    val isPlaying = refs.any { audioState.isActiveFor(it) }
 
     // Gate Next button: kid must tap Listen at least once before advancing.
     var hasStartedListening by remember(currentLesson.id) { mutableStateOf(false) }

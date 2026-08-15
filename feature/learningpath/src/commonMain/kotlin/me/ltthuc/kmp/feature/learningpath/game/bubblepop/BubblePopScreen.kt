@@ -19,8 +19,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.delay
 import me.ltthuc.kmp.core.resource.Res
-import me.ltthuc.kmp.core.resource.bubble_game_celebration_subtitle
-import me.ltthuc.kmp.core.resource.bubble_game_celebration_title
 import me.ltthuc.kmp.core.resource.bubble_game_lightning_fast
 import me.ltthuc.kmp.core.resource.bubble_game_round_score
 import me.ltthuc.kmp.core.resource.bubble_game_time_up

@@ -18,6 +18,7 @@ kotlin {
             implementation(project(":core:datasource"))
             implementation(project(":core:billing"))
             implementation(project(":core:audio"))
+            api(project(":core:content"))
             implementation(project(":core:resource"))
 
             implementation(libs.bundles.ktor)

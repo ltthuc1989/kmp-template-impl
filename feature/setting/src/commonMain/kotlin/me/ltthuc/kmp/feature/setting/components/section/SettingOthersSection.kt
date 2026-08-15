@@ -50,6 +50,7 @@ internal fun SettingOthersSection(
     onLetterGuideDebugClicked: () -> Unit,
     onBubblePopPreviewClicked: () -> Unit,
     onMemoryMatchPreviewClicked: () -> Unit,
+    onLevelListClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var isShowDeveloperModeDialog by remember { mutableStateOf(false) }
@@ -112,6 +113,14 @@ internal fun SettingOthersSection(
                     title = "Memory Match Preview",
                     description = "Dev: test card flip + match animations standalone",
                     onClick = onMemoryMatchPreviewClicked,
+                )
+                // The shipping build pins users to the L1 unit map until L1 is complete, so the
+                // 5-level list is otherwise unreachable — and with it every L2+ screen.
+                SettingTextItem(
+                    modifier = Modifier.fillMaxWidth(),
+                    title = "Level list",
+                    description = "Dev: open the 5-level map to reach L2+ without finishing L1",
+                    onClick = onLevelListClicked,
                 )
             }
         }

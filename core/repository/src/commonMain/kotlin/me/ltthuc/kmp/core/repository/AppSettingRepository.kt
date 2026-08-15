@@ -31,6 +31,12 @@ class AppSettingRepository(
     /** Dev/test helper: drop all owned levels so the paywall flow can be retried. */
     suspend fun clearOwnedLevels() = dataSource.setOwnedLevelIds(emptySet())
 
+    suspend fun addAdUnlock(levelId: String) =
+        dataSource.setAdUnlockedLevelIds(setting.value.adUnlockedLevelIds + levelId)
+
+    suspend fun removeAdUnlock(levelId: String) =
+        dataSource.setAdUnlockedLevelIds(setting.value.adUnlockedLevelIds - levelId)
+
     suspend fun addManualUnlock(levelId: String) =
         dataSource.setManualUnlockedLevelIds(setting.value.manualUnlockedLevelIds + levelId)
 

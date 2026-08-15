@@ -104,6 +104,14 @@ class AppSettingDataSource(
         }
     }
 
+    suspend fun setAdUnlockedLevelIds(ids: Set<String>) = withContext(ioDispatcher) {
+        if (setting.first().adUnlockedLevelIds == ids) return@withContext
+        preference.edit {
+            it[stringPreferencesKey(AppSetting::adUnlockedLevelIds.name)] =
+                formatter.encodeToString(SetSerializer(String.serializer()), ids)
+        }
+    }
+
     suspend fun setDeveloperMode(developerMode: Boolean) = withContext(ioDispatcher) {
         if (setting.first().developerMode == developerMode) return@withContext
 

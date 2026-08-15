@@ -2,9 +2,6 @@ package me.ltthuc.kmp.feature.learningpath.step.story
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -16,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.ChevronLeft
@@ -26,7 +22,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -39,11 +34,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -70,10 +61,10 @@ import me.ltthuc.kmp.core.repository.LevelRepository
 import me.ltthuc.kmp.core.repository.playAndAwait
 import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.common_next
+import me.ltthuc.kmp.core.resource.slide_next_cd
+import me.ltthuc.kmp.core.resource.slide_previous_cd
 import me.ltthuc.kmp.core.resource.step_guide_story
 import me.ltthuc.kmp.core.resource.story_audio_cd
-import me.ltthuc.kmp.core.resource.story_next_page_cd
-import me.ltthuc.kmp.core.resource.story_previous_page_cd
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
 import me.ltthuc.kmp.core.ui.screen.Destination
 import me.ltthuc.kmp.core.ui.theme.LocalAppLanguage
@@ -84,6 +75,7 @@ import me.ltthuc.kmp.feature.learningpath.step.STORY_SEGMENT_INDEX
 import me.ltthuc.kmp.feature.learningpath.step.common.KaraokeText
 import me.ltthuc.kmp.feature.learningpath.step.common.PageDotsRow
 import me.ltthuc.kmp.feature.learningpath.step.common.PulseRings
+import me.ltthuc.kmp.feature.learningpath.step.common.StepChevronButton
 import me.ltthuc.kmp.feature.learningpath.step.common.StepContinueButton
 import me.ltthuc.kmp.feature.learningpath.step.common.StepHeader
 import me.ltthuc.kmp.feature.learningpath.step.common.StoryStyleCard
@@ -365,18 +357,18 @@ private fun StorySceneImagePager(
             }
         }
 
-        ChevronButton(
+        StepChevronButton(
             icon = Icons.Filled.ChevronLeft,
-            contentDescription = stringResource(Res.string.story_previous_page_cd),
+            contentDescription = stringResource(Res.string.slide_previous_cd),
             enabled = canPrev,
             onClick = onPreviousPage,
             modifier = Modifier
                 .align(Alignment.CenterStart)
                 .padding(start = 4.dp),
         )
-        ChevronButton(
+        StepChevronButton(
             icon = Icons.Filled.ChevronRight,
-            contentDescription = stringResource(Res.string.story_next_page_cd),
+            contentDescription = stringResource(Res.string.slide_next_cd),
             enabled = canNext,
             onClick = onNextPage,
             modifier = Modifier
@@ -432,45 +424,5 @@ private fun sceneEmoji(name: String): String = when (name.lowercase()) {
     else -> "🎬"
 }
 
-@Composable
-private fun ChevronButton(
-    icon: ImageVector,
-    contentDescription: String,
-    enabled: Boolean,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val tint = if (enabled) {
-        MaterialTheme.colorScheme.primary
-    } else {
-        MaterialTheme.colorScheme.primary.copy(alpha = 0.35f)
-    }
-    val borderColor = MaterialTheme.colorScheme.surfaceContainerHigh
-    val interaction = remember { MutableInteractionSource() }
-    Box(
-        modifier = modifier
-            .size(CHEVRON_SIZE_DP.dp)
-            .shadow(elevation = 8.dp, shape = CircleShape)
-            .clip(CircleShape)
-            .background(Color.White.copy(alpha = 0.9f))
-            .border(width = 1.dp, color = borderColor, shape = CircleShape)
-            .clickable(
-                enabled = enabled,
-                interactionSource = interaction,
-                indication = ripple(),
-                onClick = onClick,
-            ),
-        contentAlignment = Alignment.Center,
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = contentDescription,
-            tint = tint,
-            modifier = Modifier.size(28.dp),
-        )
-    }
-}
-
-private const val CHEVRON_SIZE_DP = 48
 private const val AUTO_ADVANCE_DELAY_MS = 800L
 private const val STORY_GUIDE_MAX_MS = 6_000L

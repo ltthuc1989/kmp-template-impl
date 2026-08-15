@@ -40,6 +40,8 @@ class ChantMetaRepository(private val dispatcher: CoroutineDispatcher) {
             startMs = dto.startMs,
             speedMs = dto.speedMs,
             edgeSpeedMs = edgeSpeed,
+            slideMs = dto.slideMs?.coerceIn(MIN_SLIDE_MS, MAX_SLIDE_MS),
+            slideStartsMs = dto.slideStartsMs?.takeIf { it.isValidSlideStarts() },
             wordTimings = timings,
         )
     }
@@ -61,10 +63,36 @@ class ChantMetaRepository(private val dispatcher: CoroutineDispatcher) {
         @SerialName("start_ms") val startMs: Long = 10000,
         @SerialName("speed_ms") val speedMs: Long = 800,
         @SerialName("edge_speed_ms") val edgeSpeedMs: Long? = null,
+        /** Bỏ trống = màn hình dùng mặc định. Level 1 không khai, giữ nhịp cũ. */
+        @SerialName("slide_ms") val slideMs: Long? = null,
+        /** 4 mốc kết thúc của 4 thẻ từ, tính từ lúc audio bắt đầu. Ưu tiên hơn slide_ms. */
+        @SerialName("slide_starts_ms") val slideStartsMs: List<Long>? = null,
     )
+
+    /**
+     * Đủ 4 mốc, tăng dần, và mỗi thẻ nằm trong [MIN_SLIDE_MS]..[MAX_SLIDE_MS].
+     * Danh sách hỏng bị bỏ qua để rơi về `slide_ms` — thà nhịp đều còn hơn một thẻ
+     * đứng im vô hạn hoặc nhấp nháy vì số ghi sai tay.
+     */
+    private fun List<Long>.isValidSlideStarts(): Boolean {
+        if (size != WORD_SLIDES) return false
+        var previous = 0L
+        for (mark in this) {
+            if (mark - previous !in MIN_SLIDE_MS..MAX_SLIDE_MS) return false
+            previous = mark
+        }
+        return true
+    }
 
     private companion object {
         const val TAG = "ChantMetaRepository"
+
+        // Chặn hai đầu: một con số hỏng trong JSON không được phép làm thẻ đứng im
+        // (quá dài) hay nhấp nháy (quá ngắn) — trẻ không có cách nào thoát khỏi đó.
+        const val MIN_SLIDE_MS = 800L
+        const val MAX_SLIDE_MS = 8_000L
+        const val WORD_SLIDES = 4
+
         val jsonParser = Json { ignoreUnknownKeys = true }
     }
 }

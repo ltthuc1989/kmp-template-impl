@@ -16,7 +16,6 @@ import me.ltthuc.kmp.core.audio.AudioRef
 import me.ltthuc.kmp.core.repository.AudioRepository
 import me.ltthuc.kmp.core.repository.LearningProgressRepository
 import me.ltthuc.kmp.core.repository.LevelRepository
-import me.ltthuc.kmp.core.repository.SfxController
 import me.ltthuc.kmp.core.repository.UnitCompletionRepository
 import me.ltthuc.kmp.core.repository.playAndAwait
 import me.ltthuc.kmp.core.ui.screen.Destination
@@ -145,62 +144,62 @@ internal fun GameFlowScreen(
     }
 
     Box(modifier = modifier.fillMaxSize()) {
-    when (currentGame) {
-        UnitGame.BUBBLE_POP -> BubblePopScreen(
-            unitId = unitId,
-            gameIndex = clampedIndex,
-            totalGames = totalGames,
-            onClose = onClose,
-            onJumpToGame = onJumpToGame,
-            onGameComplete = onGameComplete,
-            modifier = Modifier.fillMaxSize(),
-        )
-        UnitGame.MEMORY_MATCH -> MemoryMatchScreen(
-            unitId = unitId,
-            gameIndex = clampedIndex,
-            totalGames = totalGames,
-            onClose = onClose,
-            onJumpToGame = onJumpToGame,
-            onGameComplete = onGameComplete,
-            modifier = Modifier.fillMaxSize(),
-        )
-        UnitGame.PICK_WORD -> PickWordScreen(
-            unitId = unitId,
-            gameIndex = clampedIndex,
-            totalGames = totalGames,
-            onClose = onClose,
-            onJumpToGame = onJumpToGame,
-            onGameComplete = onGameComplete,
-            modifier = Modifier.fillMaxSize(),
-        )
-        UnitGame.FILL_LETTER -> FillLetterScreen(
-            unitId = unitId,
-            gameIndex = clampedIndex,
-            totalGames = totalGames,
-            onClose = onClose,
-            onJumpToGame = onJumpToGame,
-            onGameComplete = onGameComplete,
-            modifier = Modifier.fillMaxSize(),
-        )
-        UnitGame.SPELL_LETTERS -> SpellLettersScreen(
-            unitId = unitId,
-            gameIndex = clampedIndex,
-            totalGames = totalGames,
-            onClose = onClose,
-            onJumpToGame = onJumpToGame,
-            onGameComplete = onGameComplete,
-            modifier = Modifier.fillMaxSize(),
-        )
-        UnitGame.DRAG_WORDS -> DragWordsScreen(
-            unitId = unitId,
-            gameIndex = clampedIndex,
-            totalGames = totalGames,
-            onClose = onClose,
-            onJumpToGame = onJumpToGame,
-            onGameComplete = onGameComplete,
-            modifier = Modifier.fillMaxSize(),
-        )
-    }
+        when (currentGame) {
+            UnitGame.BUBBLE_POP -> BubblePopScreen(
+                unitId = unitId,
+                gameIndex = clampedIndex,
+                totalGames = totalGames,
+                onClose = onClose,
+                onJumpToGame = onJumpToGame,
+                onGameComplete = onGameComplete,
+                modifier = Modifier.fillMaxSize(),
+            )
+            UnitGame.MEMORY_MATCH -> MemoryMatchScreen(
+                unitId = unitId,
+                gameIndex = clampedIndex,
+                totalGames = totalGames,
+                onClose = onClose,
+                onJumpToGame = onJumpToGame,
+                onGameComplete = onGameComplete,
+                modifier = Modifier.fillMaxSize(),
+            )
+            UnitGame.PICK_WORD -> PickWordScreen(
+                unitId = unitId,
+                gameIndex = clampedIndex,
+                totalGames = totalGames,
+                onClose = onClose,
+                onJumpToGame = onJumpToGame,
+                onGameComplete = onGameComplete,
+                modifier = Modifier.fillMaxSize(),
+            )
+            UnitGame.FILL_LETTER -> FillLetterScreen(
+                unitId = unitId,
+                gameIndex = clampedIndex,
+                totalGames = totalGames,
+                onClose = onClose,
+                onJumpToGame = onJumpToGame,
+                onGameComplete = onGameComplete,
+                modifier = Modifier.fillMaxSize(),
+            )
+            UnitGame.SPELL_LETTERS -> SpellLettersScreen(
+                unitId = unitId,
+                gameIndex = clampedIndex,
+                totalGames = totalGames,
+                onClose = onClose,
+                onJumpToGame = onJumpToGame,
+                onGameComplete = onGameComplete,
+                modifier = Modifier.fillMaxSize(),
+            )
+            UnitGame.DRAG_WORDS -> DragWordsScreen(
+                unitId = unitId,
+                gameIndex = clampedIndex,
+                totalGames = totalGames,
+                onClose = onClose,
+                onJumpToGame = onJumpToGame,
+                onGameComplete = onGameComplete,
+                modifier = Modifier.fillMaxSize(),
+            )
+        }
 
         // Confetti rain over the game while the congrats audio plays, before we auto-leave.
         if (finishing) {

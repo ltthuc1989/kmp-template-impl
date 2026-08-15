@@ -1,9 +1,10 @@
 [
   {
     "lesson_id": "L1U01_A_apple",
-    "start_ms": 10000,
-    "speed_ms": 800,
-    "edge_speed_ms": 800
+    "start_ms": 8832,
+    "speed_ms": 829,
+    "edge_speed_ms": 600,
+    "slide_ms": 2708
   },
   {
     "lesson_id": "L1U01_B_bear",
@@ -43,9 +44,10 @@
   },
   {
     "lesson_id": "L1U03_H_horse",
-    "start_ms": 10000,
-    "speed_ms": 800,
-    "edge_speed_ms": 800
+    "start_ms": 8039,
+    "speed_ms": 903,
+    "edge_speed_ms": 600,
+    "slide_ms": 2509
   },
   {
     "lesson_id": "L1U03_I_insect",

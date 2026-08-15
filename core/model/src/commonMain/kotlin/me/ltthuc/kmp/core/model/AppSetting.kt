@@ -13,10 +13,17 @@ data class AppSetting(
     val developerMode: Boolean,
     // Levels the user actually owns via purchase (per-level $5 or full bundle $20).
     // Synced from RevenueCat entitlements; persisted for offline access.
+    // One of several access sources — ask LevelAccess, never this set, when deciding
+    // whether a level may be opened.
     val ownedLevelIds: Set<String> = emptySet(),
     // Levels a parent has chosen to open fully (skip the sequential gate). Only takes effect
     // on levels that are also owned — it NEVER bypasses the paywall.
     val manualUnlockedLevelIds: Set<String> = emptySet(),
+    // Levels opened without paying — e.g. a parent-gated rewarded ad, a promo code, a referral.
+    // Nothing writes this yet; it exists so that switching monetization model later is a change
+    // to who writes the set, not a change to everything that reads "may this level be opened".
+    // Read through LevelAccess, never directly. See also [isLevelOwned] for the purchase source.
+    val adUnlockedLevelIds: Set<String> = emptySet(),
     val hasSeenOnboarding: Boolean,
     val practiceRoundMultiplier: Float = 1f,
     val showSpeakButton: Boolean = false,
@@ -34,17 +41,6 @@ data class AppSetting(
     val lastUnitId: String = "",
 ) {
     val hasPrivilege get() = plusMode || developerMode
-
-    /** True if the user may access the paid units of [levelId] (purchased the level, owns the
-     * bundle → all levels in [ownedLevelIds], or is in developer mode). Note: `plusMode` is NOT
-     * consulted here — owning one level must not unlock the others. */
-    fun isLevelOwned(levelId: String): Boolean =
-        developerMode || levelId in ownedLevelIds
-
-    /** True if every unit of [levelId] should open at once (sequential gate removed). Only an
-     * OWNED level can be opened fully — this never unlocks a level the user has not paid for. */
-    fun isLevelOpenedFully(levelId: String): Boolean =
-        developerMode || (isLevelOwned(levelId) && levelId in manualUnlockedLevelIds)
 
     /** Which screen the user was last on — used to restore the right backstack on app relaunch. */
     enum class LastScreen { NONE, LEVEL_LIST, UNIT_LIST, LESSON_MAP }

@@ -64,7 +64,6 @@ import me.ltthuc.kmp.core.model.UnitCard
 import me.ltthuc.kmp.core.model.UnitLetterPreview
 import me.ltthuc.kmp.core.model.UnitStatus
 import me.ltthuc.kmp.core.repository.SfxController
-import me.ltthuc.kmp.feature.learningpath.step.common.PulseRings
 import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.unit_free_label
 import me.ltthuc.kmp.core.ui.ads.BottomBannerAd
@@ -76,6 +75,7 @@ import me.ltthuc.kmp.core.ui.screen.ScreenState
 import me.ltthuc.kmp.core.ui.theme.LocalAppLanguage
 import me.ltthuc.kmp.core.ui.theme.LocalAppLocale
 import me.ltthuc.kmp.core.ui.theme.LocalNavBackStack
+import me.ltthuc.kmp.feature.learningpath.step.common.PulseRings
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
@@ -498,7 +498,9 @@ private fun UnitCardItem(
                     Box(
                         modifier = Modifier
                             .align(Alignment.TopEnd)
-                            .padding(top = 8.dp, end = 12.dp),
+                            // Inset past the action button so the chip never sits on the
+                            // check/play circle.
+                            .padding(top = 6.dp, end = ChipEndInset),
                     ) {
                         ThemeChip(label = theme)
                     }
@@ -588,17 +590,21 @@ private fun ThemeChip(
 ) {
     Box(
         modifier = modifier
-            .height(24.dp)
+            .height(18.dp)
             .clip(CircleShape)
             .background(MaterialTheme.colorScheme.secondaryContainer)
-            .padding(horizontal = 12.dp),
+            .padding(horizontal = 7.dp),
         contentAlignment = Alignment.Center,
     ) {
         Text(
             text = label,
-            fontSize = 11.sp,
+            fontSize = 10.sp,
+            // Tight line height so the pill hugs the glyphs instead of the default 1.4× box.
+            lineHeight = 10.sp,
             fontWeight = FontWeight.SemiBold,
             color = MaterialTheme.colorScheme.onSecondaryContainer,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
         )
     }
 }
@@ -613,3 +619,7 @@ private val ConnectorStrokeWidth = 2.dp
 private val CardVerticalPadding = 6.dp
 private val CardMinHeight = 76.dp
 private val CardCornerRadius = 20.dp
+
+// Card end padding (14) + play/check button (34) + a small gap, so the theme chip lands to the
+// left of the action button instead of over it.
+private val ChipEndInset = 14.dp + PlayButtonSize + 6.dp

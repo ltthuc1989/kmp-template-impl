@@ -250,10 +250,6 @@
     <string name="identify_all_done_subtitle">You found all %1$d words!</string>
     <string name="identify_all_done_soft_subtitle">Almost — keep practicing!</string>
 
-    <!-- Learning Path: Blending step -->
-    <string name="blending_title">Blending</string>
-    <string name="blending_word_progress">Word %1$d of %2$d</string>
-
     <!-- Learning Path: Matching step -->
     <string name="matching_title">Matching</string>
 
@@ -262,8 +258,8 @@
     <string name="story_letter_title">The %1$s%2$s Story</string>
     <string name="story_page_sentence">%1$s is for %2$s!</string>
     <string name="story_audio_cd">Play narration</string>
-    <string name="story_previous_page_cd">Previous page</string>
-    <string name="story_next_page_cd">Next page</string>
+    <string name="slide_previous_cd">Previous page</string>
+    <string name="slide_next_cd">Next page</string>
 
     <!-- Game flow (after Story) — shared chrome + per-game strings -->
     <string name="game_flow_title">Time to Play!</string>
@@ -327,7 +323,6 @@
     <string name="step_guide_chant">Listen and sing along</string>
     <string name="step_guide_vocabulary">Tap each picture to listen</string>
     <string name="step_guide_identify">Tap the matching picture</string>
-    <string name="step_guide_blending">Stretch and blend the sounds</string>
     <string name="step_guide_matching">Match the pairs</string>
     <string name="step_guide_tracing">Trace along the letter</string>
     <string name="step_guide_story">Listen to the story</string>

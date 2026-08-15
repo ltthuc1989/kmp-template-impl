@@ -27,6 +27,7 @@ class UnitRepository(
     private val unitCompletionRepository: UnitCompletionRepository,
     private val learningProgressDao: LearningProgressDao,
     private val appSettingRepository: AppSettingRepository,
+    private val levelAccess: LevelAccess,
     private val lessonProgressRepository: LessonProgressRepository,
     private val dispatcher: CoroutineDispatcher,
 ) {
@@ -86,8 +87,8 @@ class UnitRepository(
                     signals = signals,
                     activeUnitId = progress?.activeUnitId,
                     developerMode = setting.developerMode,
-                    levelOwned = setting.isLevelOwned(levelId),
-                    levelOpenedFully = setting.isLevelOpenedFully(levelId),
+                    levelOwned = levelAccess.canOpenPaidUnits(setting, levelId),
+                    levelOpenedFully = levelAccess.isOpenedFully(setting, levelId),
                 )
             }
         }

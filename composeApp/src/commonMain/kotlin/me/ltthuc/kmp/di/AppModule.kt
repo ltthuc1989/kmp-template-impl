@@ -6,7 +6,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.SupervisorJob
 import me.ltthuc.kmp.BuildKonfig
-import me.ltthuc.kmp.core.audio.di.AudioConfig
+import me.ltthuc.kmp.core.content.di.ContentConfig
 import me.ltthuc.kmp.core.model.AppConfig
 import org.koin.core.module.Module
 import org.koin.dsl.module
@@ -30,7 +30,7 @@ val appModule = module {
         )
     }
 
-    single { AudioConfig(storageBucket = BuildKonfig.FIREBASE_STORAGE_BUCKET) }
+    single { ContentConfig(cdnBaseUrl = BuildKonfig.CONTENT_CDN_BASE_URL) }
 
     includes(appModulePlatform)
 }

@@ -132,9 +132,20 @@ private fun CardFrontFace(
             ),
         contentAlignment = Alignment.Center,
     ) {
+        // Mặt thẻ có thể là chữ cái ("A"), vần ("am"), TỪ ("ram") hoặc emoji. Cỡ chữ phải
+        // suy từ độ dài, không để cố định 64sp — từ 3 ký tự ở cỡ đó tràn khỏi thẻ vuông,
+        // đúng lỗi đã gặp ở bong bóng.
+        val fontSizeSp = when {
+            letter.length <= 1 -> 64f
+            letter.length == 2 -> 52f
+            else -> (150f / letter.length).coerceAtLeast(24f)
+        }
         Text(
             text = letter,
-            fontSize = 64.sp,
+            fontSize = fontSizeSp.sp,
+            lineHeight = (fontSizeSp * 1.1f).sp,
+            maxLines = 1,
+            softWrap = false,
             fontWeight = FontWeight.Black,
             color = if (isMatched) Color(0xFF0E5562) else MaterialTheme.colorScheme.onSurface,
         )

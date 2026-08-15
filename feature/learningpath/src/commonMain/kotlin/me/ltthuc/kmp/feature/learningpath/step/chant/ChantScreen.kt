@@ -82,7 +82,16 @@ private const val CHANT_GUIDE_MAX_MS = 6_000L
 private const val ENTRY_AUDIO_DELAY_MS = 500L
 private const val TOTAL_SLIDES = 5
 private const val CELEBRATION_SLIDE_INDEX = 4
-private const val SLIDE_DURATION_MS = 2_500L
+
+/**
+ * Thời lượng mỗi thẻ từ khi lesson không khai `slide_ms` trong `chant_meta/level_<n>.json`.
+ * Bốn thẻ × 2.5s = thẻ celebration vào ở giây thứ 10 — con số Level 1 đang chạy.
+ *
+ * Level 2 khai `slide_ms` riêng vì đuôi chant của mỗi file vào một mốc khác nhau
+ * (đo được 6.8s–14.2s); để cứng 2.5s thì thẻ celebration hiện trước lúc audio đọc
+ * tới danh sách từ, nốt ♪ nhảy trong khi chưa có tiếng nào khớp.
+ */
+private const val DEFAULT_SLIDE_DURATION_MS = 2_500L
 
 @Composable
 internal fun ChantScreen(
@@ -164,10 +173,15 @@ private fun ChantContent(
         if (isChanting && slideIndex == CELEBRATION_SLIDE_INDEX) slideIndex = 0
     }
 
+    // Thời lượng từng thẻ từ, ưu tiên mốc đo riêng cho từng câu dạy.
+    val slideDurations = remember(chantMeta) { chantMeta.toSlideDurations() }
+
     // Auto-advance slides 0..3 while chanting; final celebration slide stays put.
-    LaunchedEffect(currentLesson.id, slideIndex, isChanting) {
+    // `slideDurations` nằm trong key: metadata nạp bất đồng bộ, tới trễ thì nhịp mới
+    // phải được áp ngay cho thẻ đang hiện chứ không đợi hết thẻ.
+    LaunchedEffect(currentLesson.id, slideIndex, isChanting, slideDurations) {
         if (isChanting && slideIndex < CELEBRATION_SLIDE_INDEX) {
-            delay(SLIDE_DURATION_MS)
+            delay(slideDurations.getOrElse(slideIndex) { DEFAULT_SLIDE_DURATION_MS })
             slideIndex = (slideIndex + 1).coerceAtMost(CELEBRATION_SLIDE_INDEX)
         }
     }
@@ -338,6 +352,22 @@ private fun ChantText(chant: String, isChanting: Boolean) {
         textAlign = TextAlign.Center,
         lineHeight = LINE_HEIGHT_SP.sp,
     )
+}
+
+/**
+ * Thời lượng của 4 thẻ từ, theo thứ tự ưu tiên:
+ *
+ *   1. `slide_starts_ms` — mốc đo riêng từng câu dạy, khớp audio sát nhất
+ *   2. `slide_ms`        — một nhịp đều cho cả 4 thẻ
+ *   3. [DEFAULT_SLIDE_DURATION_MS] — đường của Level 1
+ *
+ * Mốc trong metadata là điểm KẾT THÚC tính từ lúc audio bắt đầu, nên hiệu hai mốc
+ * liền nhau mới là thời lượng của một thẻ.
+ */
+private fun ChantMeta?.toSlideDurations(): List<Long> {
+    val slide = this?.slideMs ?: DEFAULT_SLIDE_DURATION_MS
+    val marks = this?.slideStartsMs ?: return List(CELEBRATION_SLIDE_INDEX) { slide }
+    return marks.mapIndexed { index, mark -> mark - (marks.getOrNull(index - 1) ?: 0L) }
 }
 
 private fun String.tokenize(): List<String> {

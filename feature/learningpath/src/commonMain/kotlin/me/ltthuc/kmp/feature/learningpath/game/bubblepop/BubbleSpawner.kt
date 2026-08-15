@@ -59,6 +59,46 @@ internal fun spawnBubblesForRound(
     return (targets + distractors).shuffled(random)
 }
 
+/**
+ * Vòng chơi của Level 2+: mục tiêu là một VẦN ("am", "ip"), không phải chữ cái.
+ *
+ * Ba điểm khác [spawnBubblesForRound], đều do user chốt 2026-08-12:
+ *
+ * 1. VẦN nhiễu chỉ được lấy trong chính unit đó — unit 2 không được thấy "ip"
+ *    hay "ug" của unit khác, vì bé chưa học. Thiếu thì độn bằng CHỮ CÁI A-Z:
+ *    chữ cái đã học ở Level 1 nên không phải nội dung lạ, và nhờ đó unit ít vần
+ *    vẫn đủ 4 bong bóng nhiễu mà không phải lặp lại cùng một vần.
+ * 2. Toàn chữ THƯỜNG. Level 1 xen hoa/thường để bé nhận mặt chữ (A và a là hai
+ *    hình của một chữ); phonics dạy vần bằng chữ thường nên không có việc đó.
+ * 3. Vẫn đúng [TARGET_COUNT] bong bóng mục tiêu mỗi vòng — giống Level 1.
+ */
+internal fun spawnBubblesForRimeRound(
+    targetRime: String,
+    unitRimes: List<String>,
+    random: Random = Random.Default,
+): List<BubbleSpec> {
+    val target = targetRime.lowercase()
+    val others = unitRimes.map { it.lowercase() }.filter { it != target }.distinct()
+
+    // Chữ cái độn phải khác mục tiêu: lesson nguyên âm đơn có vần đúng một ký tự
+    // ("a"), để lọt thì bong bóng nhiễu trùng hệt mục tiêu.
+    val letterPool = ('a'..'z').map { it.toString() }
+        .filter { it != target && it !in others }
+        .shuffled(random)
+
+    val distractorRimes = buildList {
+        addAll(others.shuffled(random).take(DISTRACTOR_COUNT))
+        val needed = DISTRACTOR_COUNT - size
+        if (needed > 0) addAll(letterPool.take(needed))
+    }.take(DISTRACTOR_COUNT)
+
+    val targets = List(TARGET_COUNT) { idx -> BubbleSpec(id = idx, letter = target, isTarget = true) }
+    val distractors = distractorRimes.mapIndexed { i, rime ->
+        BubbleSpec(id = TARGET_COUNT + i, letter = rime, isTarget = false)
+    }
+    return (targets + distractors).shuffled(random)
+}
+
 /** Random upper/lower case form of [letter]. */
 internal fun randomCase(letter: String, random: Random = Random.Default): String =
     if (random.nextBoolean()) letter.uppercase() else letter.lowercase()

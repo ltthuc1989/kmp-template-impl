@@ -10,11 +10,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import me.ltthuc.kmp.core.audio.AudioAssetResolver
-import me.ltthuc.kmp.core.audio.AudioCacheManager
 import me.ltthuc.kmp.core.audio.AudioPlayer
 import me.ltthuc.kmp.core.audio.AudioRef
-import me.ltthuc.kmp.core.resource.Res
-import org.jetbrains.compose.resources.ExperimentalResourceApi
+import me.ltthuc.kmp.core.content.AssetLocator
+import me.ltthuc.kmp.core.content.AssetSource
 
 /**
  * Khan Kids-style SFX layer: click chime, correct chime, voice praise, milestone fanfare.
@@ -22,7 +21,8 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
  * Owns its own [AudioPlayer] (injected with the `AudioPlayerSfx` qualifier) so that
  * firing a UI sound never cancels lesson playback in [AudioRepository]. Assets are
  * bundled-only — [AudioRef.Sfx], [AudioRef.Voice], [AudioRef.Music] all live in
- * composeResources under `files/sfx/`.
+ * composeResources under `files/sfx/` and are played straight out of the app in place;
+ * nothing here is ever copied to disk.
  *
  * Settings contract (R2): [setVoiceEnabled] gates voice praise / nudge only, NEVER
  * the lesson phoneme audio (that flows through [AudioRepository]). [setGlobalMuted]
@@ -31,7 +31,7 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 class SfxController(
     private val player: AudioPlayer,
     private val resolver: AudioAssetResolver,
-    private val cache: AudioCacheManager,
+    private val locator: AssetLocator,
 ) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     private var loadJob: Job? = null
@@ -108,9 +108,13 @@ class SfxController(
         player.stop()
     }
 
-    /** Warms the cache for upcoming SFX so the first tap-to-sound stays under ~50ms. */
+    /**
+     * Resolves upcoming SFX ahead of time so the first tap-to-sound stays under ~50ms.
+     * Nothing is copied to disk — this only pays the one-time "is it really bundled?"
+     * probe, so the play path is a straight `Res.getUri` lookup.
+     */
     suspend fun prefetch(names: List<String>) {
-        for (n in names) runCatching { ensurePlayable(AudioRef.Sfx(n)) }
+        for (n in names) runCatching { bundledUri(AudioRef.Sfx(n)) }
     }
 
     private fun play(ref: AudioRef) {
@@ -118,24 +122,21 @@ class SfxController(
         loadJob?.cancel()
         player.stop()
         loadJob = scope.launch {
-            runCatching { ensurePlayable(ref) }
-                .onSuccess { path -> player.playFile(path) }
+            runCatching { bundledUri(ref) }
+                .onSuccess { uri -> player.playUri(uri) }
                 .onFailure { Napier.e("SfxController play failed for $ref", it) }
         }
     }
 
-    private suspend fun ensurePlayable(ref: AudioRef): String {
-        val cacheKey = resolver.cacheKey(ref)
-        cache.cachedFilePath(cacheKey)?.let { return it }
-        val bytes = readBundled(ref) ?: error("SFX asset not bundled: $ref")
-        return cache.put(cacheKey, bytes)
-    }
-
-    @OptIn(ExperimentalResourceApi::class)
-    private suspend fun readBundled(ref: AudioRef): ByteArray? {
-        val path = resolver.bundledResourcePath(ref) ?: return null
-        return runCatching { Res.readBytes(path) }
-            .onFailure { Napier.d("Bundled SFX miss for $path: ${it.message}") }
-            .getOrNull()
+    /**
+     * SFX never comes off the network: a chime that arrives half a second late is worse
+     * than no chime, and these assets are small enough to always ship in the app.
+     */
+    private suspend fun bundledUri(ref: AudioRef): String {
+        val logicalPath = resolver.logicalPath(ref)
+        return when (val source = locator.resolve(logicalPath)) {
+            is AssetSource.Bundled -> source.uri
+            else -> error("SFX asset not bundled: $logicalPath")
+        }
     }
 }

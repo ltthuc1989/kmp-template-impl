@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "hashLength": 10,
+  "packs": {
+    "L2U3": {
+      "files": 50,
+      "bytes": 1571683,
+      "bundled": true
+    },
+    "L2U4": {
+      "files": 50,
+      "bytes": 1654763,
+      "bundled": true
+    },
+    "L2U5": {
+      "files": 51,
+      "bytes": 1525578,
+      "bundled": true
+    },
+    "L2U6": {
+      "files": 49,
+      "bytes": 1671661,
+      "bundled": true
+    },
+    "L2U7": {
+      "files": 50,
+      "bytes": 1531814,
+      "bundled": true
+    },
+    "L2U8": {
+      "files": 51,
+      "bytes": 1910219,
+      "bundled": true
+    },
+    "core": {
+      "files": 474,
+      "bytes": 17342739,
+      "bundled": true
+    }
+  },
+  "assets": {}
+}

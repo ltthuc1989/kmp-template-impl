@@ -7,14 +7,6 @@
       "isPremium": false,
       "ageRange": "3-5",
       "orderIndex": 0,
-      "visibleSteps": [
-        0,
-        1,
-        2,
-        3,
-        5,
-        6
-      ],
       "units": [
         {
           "id": "L1U1",
@@ -1206,10 +1198,10 @@
                 }
               ],
               "chantTexts": [
-                "C-A-T",
-                "A-N-T",
-                "Y-A-K",
-                "A-X"
+                "A-A-Cat",
+                "A-A-Ant",
+                "A-A-Yak",
+                "A-A-Ax"
               ],
               "chantOrder": [
                 0,
@@ -1255,10 +1247,10 @@
                 }
               ],
               "chantTexts": [
-                "R-A-M",
-                "J-A-M",
-                "Y-A-M",
-                "D-A-M"
+                "AM-AM-Ram",
+                "AM-AM-Jam",
+                "AM-AM-Yam",
+                "AM-AM-Dam"
               ],
               "chantOrder": [
                 0,
@@ -1294,10 +1286,10 @@
                 }
               ],
               "chantTexts": [
-                "F-A-N",
-                "M-A-N",
-                "P-A-N",
-                "C-A-N"
+                "AN-AN-Fan",
+                "AN-AN-Man",
+                "AN-AN-Pan",
+                "AN-AN-Can"
               ],
               "chantOrder": [
                 0,
@@ -1352,10 +1344,10 @@
                 }
               ],
               "chantTexts": [
-                "D-A-D",
-                "P-A-D",
-                "B-A-G",
-                "R-A-G"
+                "AD-AD-Dad",
+                "AD-AD-Pad",
+                "AG-AG-Bag",
+                "AG-AG-Rag"
               ],
               "chantOrder": [
                 0,
@@ -1391,10 +1383,10 @@
                 }
               ],
               "chantTexts": [
-                "C-A-P",
-                "M-A-P",
-                "N-A-P",
-                "T-A-P"
+                "AP-AP-Cap",
+                "AP-AP-Map",
+                "AP-AP-Nap",
+                "AP-AP-Tap"
               ],
               "chantOrder": [
                 0,
@@ -1430,10 +1422,10 @@
                 }
               ],
               "chantTexts": [
-                "B-A-T",
-                "R-A-T",
-                "H-A-T",
-                "M-A-T"
+                "AT-AT-Bat",
+                "AT-AT-Rat",
+                "AT-AT-Hat",
+                "AT-AT-Mat"
               ],
               "chantOrder": [
                 0,
@@ -1478,10 +1470,10 @@
                 }
               ],
               "chantTexts": [
-                "W-E-B",
-                "E-G-G",
-                "V-E-T",
-                "T-E-N"
+                "E-E-Web",
+                "E-E-Egg",
+                "E-E-Vet",
+                "E-E-Ten"
               ],
               "chantOrder": [
                 0,
@@ -1517,10 +1509,10 @@
                 }
               ],
               "chantTexts": [
-                "J-E-T",
-                "N-E-T",
-                "W-E-T",
-                "P-E-T"
+                "ET-ET-Jet",
+                "ET-ET-Net",
+                "ET-ET-Wet",
+                "ET-ET-Pet"
               ],
               "chantOrder": [
                 0,
@@ -1556,10 +1548,10 @@
                 }
               ],
               "chantTexts": [
-                "H-E-N",
-                "P-E-N",
-                "R-E-D",
-                "B-E-D"
+                "EN-EN-Hen",
+                "EN-EN-Pen",
+                "ED-ED-Red",
+                "ED-ED-Bed"
               ],
               "chantOrder": [
                 0,
@@ -1624,10 +1616,10 @@
                 }
               ],
               "chantTexts": [
-                "H-I-P",
-                "I-N-K",
-                "Z-I-P",
-                "I-N"
+                "I-I-Hip",
+                "I-I-Ink",
+                "I-I-Zip",
+                "I-I-In"
               ],
               "chantOrder": [
                 0,
@@ -1663,10 +1655,10 @@
                 }
               ],
               "chantTexts": [
-                "L-I-P",
-                "T-I-P",
-                "S-I-P",
-                "R-I-P"
+                "IP-IP-Lip",
+                "IP-IP-Tip",
+                "IP-IP-Sip",
+                "IP-IP-Rip"
               ],
               "chantOrder": [
                 0,
@@ -1722,10 +1714,10 @@
                 }
               ],
               "chantTexts": [
-                "B-I-B",
-                "R-I-B",
-                "K-I-D",
-                "L-I-D"
+                "IB-IB-Bib",
+                "IB-IB-Rib",
+                "ID-ID-Kid",
+                "ID-ID-Lid"
               ],
               "chantOrder": [
                 0,
@@ -1780,10 +1772,10 @@
                 }
               ],
               "chantTexts": [
-                "P-I-N",
-                "F-I-N",
-                "B-I-N",
-                "W-I-N"
+                "IN-IN-Pin",
+                "IN-IN-Fin",
+                "IN-IN-Bin",
+                "IN-IN-Win"
               ],
               "chantOrder": [
                 0,
@@ -1829,10 +1821,10 @@
                 }
               ],
               "chantTexts": [
-                "F-I-G",
-                "W-I-G",
-                "B-I-G",
-                "D-I-G"
+                "IG-IG-Fig",
+                "IG-IG-Wig",
+                "IG-IG-Big",
+                "IG-IG-Dig"
               ],
               "chantOrder": [
                 0,
@@ -1868,10 +1860,10 @@
                 }
               ],
               "chantTexts": [
-                "P-I-T",
-                "H-I-T",
-                "S-I-X",
-                "M-I-X"
+                "IT-IT-Pit",
+                "IT-IT-Hit",
+                "IX-IX-Six",
+                "IX-IX-Mix"
               ],
               "chantOrder": [
                 0,
@@ -1916,10 +1908,10 @@
                 }
               ],
               "chantTexts": [
-                "F-O-X",
-                "L-O-G",
-                "O-X",
-                "R-O-D"
+                "O-O-Fox",
+                "O-O-Log",
+                "O-O-Ox",
+                "O-O-Rod"
               ],
               "chantOrder": [
                 0,
@@ -1955,10 +1947,10 @@
                 }
               ],
               "chantTexts": [
-                "P-O-T",
-                "H-O-T",
-                "C-O-T",
-                "D-O-T"
+                "OT-OT-Pot",
+                "OT-OT-Hot",
+                "OT-OT-Cot",
+                "OT-OT-Dot"
               ],
               "chantOrder": [
                 0,
@@ -2004,10 +1996,10 @@
                 }
               ],
               "chantTexts": [
-                "T-O-P",
-                "M-O-P",
-                "H-O-P",
-                "P-O-P"
+                "OP-OP-Top",
+                "OP-OP-Mop",
+                "OP-OP-Hop",
+                "OP-OP-Pop"
               ],
               "chantOrder": [
                 0,
@@ -2052,10 +2044,10 @@
                 }
               ],
               "chantTexts": [
-                "S-U-N",
-                "U-P",
-                "J-U-G",
-                "H-U-G"
+                "U-U-Sun",
+                "U-U-Up",
+                "U-U-Jug",
+                "U-U-Hug"
               ],
               "chantOrder": [
                 0,
@@ -2091,10 +2083,10 @@
                 }
               ],
               "chantTexts": [
-                "B-U-G",
-                "R-U-G",
-                "M-U-G",
-                "J-U-G"
+                "UG-UG-Bug",
+                "UG-UG-Rug",
+                "UG-UG-Mug",
+                "UG-UG-Jug"
               ],
               "chantOrder": [
                 0,
@@ -2140,10 +2132,10 @@
                 }
               ],
               "chantTexts": [
-                "B-U-D",
-                "M-U-D",
-                "P-U-P",
-                "C-U-P"
+                "UD-UD-Bud",
+                "UD-UD-Mud",
+                "UP-UP-Pup",
+                "UP-UP-Cup"
               ],
               "chantOrder": [
                 0,
@@ -2188,10 +2180,10 @@
                 }
               ],
               "chantTexts": [
-                "N-U-T",
-                "H-U-T",
-                "C-U-T",
-                "B-U-T"
+                "UT-UT-Nut",
+                "UT-UT-Hut",
+                "UT-UT-Cut",
+                "UT-UT-But"
               ],
               "chantOrder": [
                 0,
@@ -2227,10 +2219,10 @@
                 }
               ],
               "chantTexts": [
-                "C-U-B",
-                "T-U-B",
-                "G-U-M",
-                "H-U-M"
+                "UB-UB-Cub",
+                "UB-UB-Tub",
+                "UM-UM-Gum",
+                "UM-UM-Hum"
               ],
               "chantOrder": [
                 0,
@@ -2266,10 +2258,10 @@
                 }
               ],
               "chantTexts": [
-                "B-U-N",
-                "R-U-N",
-                "F-U-N",
-                "S-U-N"
+                "UN-UN-Bun",
+                "UN-UN-Run",
+                "UN-UN-Fun",
+                "UN-UN-Sun"
               ],
               "chantOrder": [
                 0,

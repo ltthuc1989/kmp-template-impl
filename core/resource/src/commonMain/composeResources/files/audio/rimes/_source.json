@@ -1,0 +1,179 @@
+{
+  "rimes": {
+    "am": {
+      "spelling": "amm",
+      "source": "rimes_all.mp3",
+      "label": "am",
+      "start_ms": 314,
+      "end_ms": 1274
+    },
+    "an": {
+      "spelling": "ann",
+      "source": "rimes_all.mp3",
+      "label": "an",
+      "start_ms": 2699,
+      "end_ms": 3624
+    },
+    "ap": {
+      "spelling": "app",
+      "source": "rimes_all.mp3",
+      "label": "ap",
+      "start_ms": 9817,
+      "end_ms": 10556
+    },
+    "at": {
+      "spelling": "att",
+      "source": "rimes_all.mp3",
+      "label": "at",
+      "start_ms": 12124,
+      "end_ms": 12856
+    },
+    "ad": {
+      "spelling": "add",
+      "source": "rimes_all.mp3",
+      "label": "ad",
+      "start_ms": 5071,
+      "end_ms": 5979
+    },
+    "ag": {
+      "spelling": "agg",
+      "source": "rimes_all.mp3",
+      "label": "ag",
+      "start_ms": 7536,
+      "end_ms": 8467
+    },
+    "et": {
+      "spelling": "ett",
+      "source": "rimes_all.mp3",
+      "label": "et",
+      "start_ms": 14360,
+      "end_ms": 15101
+    },
+    "en": {
+      "spelling": "enn",
+      "source": "rimes_all.mp3",
+      "label": "en",
+      "start_ms": 16607,
+      "end_ms": 17393
+    },
+    "ed": {
+      "spelling": "ed",
+      "source": "rimes_all.mp3",
+      "label": "ed",
+      "start_ms": 18776,
+      "end_ms": 19581
+    },
+    "id": {
+      "spelling": "id",
+      "source": "rimes_all.mp3",
+      "label": "id",
+      "start_ms": 25609,
+      "end_ms": 26696
+    },
+    "in": {
+      "spelling": "inn",
+      "source": "rimes_all.mp3",
+      "label": "in",
+      "start_ms": 27963,
+      "end_ms": 28741
+    },
+    "ig": {
+      "spelling": "igg",
+      "source": "rimes_all.mp3",
+      "label": "ig",
+      "start_ms": 29971,
+      "end_ms": 30739
+    },
+    "it": {
+      "spelling": "itt",
+      "source": "rimes_all.mp3",
+      "label": "it",
+      "start_ms": 31735,
+      "end_ms": 32728
+    },
+    "ix": {
+      "spelling": "icks",
+      "source": "rimes_all.mp3",
+      "label": "ix",
+      "start_ms": 34032,
+      "end_ms": 34828
+    },
+    "ot": {
+      "spelling": "ott",
+      "source": "rimes_all.mp3",
+      "label": "ot",
+      "start_ms": 36105,
+      "end_ms": 36846
+    },
+    "ug": {
+      "spelling": "ugg",
+      "source": "rimes_all.mp3",
+      "label": "ug",
+      "start_ms": 40277,
+      "end_ms": 41016
+    },
+    "ud": {
+      "spelling": "udd",
+      "source": "rimes_all.mp3",
+      "label": "ud",
+      "start_ms": 42046,
+      "end_ms": 42824
+    },
+    "up": {
+      "spelling": "up",
+      "source": "rimes_all.mp3",
+      "label": "up",
+      "start_ms": 43425,
+      "end_ms": 44427
+    },
+    "ut": {
+      "spelling": "utt",
+      "source": "rimes_all.mp3",
+      "label": "ut",
+      "start_ms": 45430,
+      "end_ms": 46092
+    },
+    "um": {
+      "spelling": "umm",
+      "source": "rimes_all.mp3",
+      "label": "um",
+      "start_ms": 48855,
+      "end_ms": 50010
+    },
+    "un": {
+      "spelling": "unn",
+      "source": "rimes_all.mp3",
+      "label": "un",
+      "start_ms": 50926,
+      "end_ms": 51840
+    },
+    "ip": {
+      "spelling": "ippe",
+      "source": "rimes_fix.mp3",
+      "label": "ip__silente",
+      "start_ms": 2622,
+      "end_ms": 3507
+    },
+    "ub": {
+      "spelling": "ubbe",
+      "source": "rimes_fix_r2.mp3",
+      "label": "ub__silente",
+      "start_ms": 8726,
+      "end_ms": 9643
+    },
+    "op": {
+      "spelling": "oppe",
+      "source": "rimes_fix_r2.mp3",
+      "label": "op__silente",
+      "start_ms": 11128,
+      "end_ms": 12015
+    },
+    "ib": {
+      "spelling": "ybbe",
+      "source": "rimes_fix_r3.mp3",
+      "label": "ib__yletter",
+      "start_ms": 4105,
+      "end_ms": 4899
+    }
+  }
+}

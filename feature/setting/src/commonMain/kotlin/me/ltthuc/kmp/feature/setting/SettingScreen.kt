@@ -148,6 +148,9 @@ internal fun SettingScreen(
                             onMemoryMatchPreviewClicked = {
                                 navBackStack.add(Destination.Learning.MemoryMatchPreview)
                             },
+                            onLevelListClicked = {
+                                navBackStack.add(Destination.Home)
+                            },
                         )
                     }
                 }

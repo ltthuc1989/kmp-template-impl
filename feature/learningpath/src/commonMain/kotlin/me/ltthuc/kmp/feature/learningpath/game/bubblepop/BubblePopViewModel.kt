@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import me.ltthuc.kmp.core.audio.AudioRef
 import me.ltthuc.kmp.core.audio.AudioState
+import me.ltthuc.kmp.core.model.PhonicsLesson
 import me.ltthuc.kmp.core.repository.AudioRepository
 import me.ltthuc.kmp.core.repository.SfxController
 import me.ltthuc.kmp.core.repository.UnitRepository
@@ -81,11 +82,12 @@ internal class BubblePopViewModel(
             if (lessons.isEmpty()) {
                 ScreenState.Error(message = Res.string.error_no_data)
             } else {
-                val unitLetters = lessons.map { it.letter.uppercase() }.toImmutableList()
+                val rimeMode = lessons.first().isRimeLesson()
+                val unitLetters = lessons.gameTargets().toImmutableList()
                 val totalRounds = unitLetters.size.coerceAtLeast(1)
                 val clampedRound = round.coerceIn(0, totalRounds - 1)
                 val target = unitLetters[clampedRound]
-                val bubbles = bubblesForRound(target, unitLetters, clampedRound)
+                val bubbles = bubblesForRound(target, unitLetters, clampedRound, rimeMode)
                 ScreenState.Idle(
                     BubblePopUiState(
                         unitLetters = unitLetters,
@@ -101,6 +103,7 @@ internal class BubblePopViewModel(
                         isGameComplete = isGameDone,
                         roundStars = stars,
                         isGuidePlaying = guide,
+                        isRimeMode = rimeMode,
                     ),
                 )
             }
@@ -134,7 +137,12 @@ internal class BubblePopViewModel(
         viewModelScope.launch {
             guidePlaying.value = true // hide bubbles, keep timer paused
             delay(ROUND_START_DELAY_MS) // brief beat before the guide speaks
-            audioRepository.playAndAwait(AudioRef.FindSound(ui.targetLetter), GUIDE_AUDIO_MAX_MS)
+            val prompt = if (ui.isRimeMode) {
+                AudioRef.FindRime(ui.targetLetter)
+            } else {
+                AudioRef.FindSound(ui.targetLetter)
+            }
+            audioRepository.playAndAwait(prompt, GUIDE_AUDIO_MAX_MS)
             guidePlaying.value = false // bubbles appear
             ensureTimerRunning() // timer starts only now
         }
@@ -147,7 +155,12 @@ internal class BubblePopViewModel(
      * teaching paragraph.
      */
     private fun playLetterSound(letter: String) {
-        audioRepository.play(AudioRef.LetterSound(letter))
+        // Chọn theo ĐỘ DÀI nhãn, không theo chế độ chơi. Ở Level 2 bong bóng nhiễu là
+        // chữ cái a-z, mà `rimes/` chỉ có vần hai ký tự — cho cả hai đi qua `rimes/` thì
+        // chạm chữ cái là im lặng (user báo 2026-08-12). Ngược lại vần một ký tự ("a")
+        // dùng `phonemes/a.mp3` cũng đúng: đó chính là âm /æ/ ngắn.
+        val ref = if (letter.length > 1) AudioRef.Rime(letter) else AudioRef.LetterSound(letter)
+        audioRepository.play(ref)
     }
 
     private fun ensureTimerRunning() {
@@ -220,9 +233,14 @@ internal class BubblePopViewModel(
         target: String,
         unitLetters: List<String>,
         round: Int,
+        rimeMode: Boolean,
     ): ImmutableList<BubbleSpec> {
         bubblesCache[round]?.let { return it }
-        val fresh = spawnBubblesForRound(target, unitLetters).toImmutableList()
+        val fresh = if (rimeMode) {
+            spawnBubblesForRimeRound(target, unitLetters).toImmutableList()
+        } else {
+            spawnBubblesForRound(target, unitLetters).toImmutableList()
+        }
         bubblesCache[round] = fresh
         return fresh
     }
@@ -248,6 +266,36 @@ internal class BubblePopViewModel(
     }
 }
 
+/**
+ * Level 1 dạy CHỮ CÁI, Level 2+ dạy VẦN — trò chơi phải đổi cả nhãn lẫn audio theo đó.
+ *
+ * Nhận biết qua số cấp độ trong lesson id ("L2U1_am"), không qua hình dạng của `letter`:
+ * mã vần hiện là "SHORT-A-AM" nhưng đó là quy ước dữ liệu có thể đổi, còn số cấp độ thì không.
+ */
+private fun PhonicsLesson.isRimeLesson(): Boolean =
+    (LESSON_LEVEL_REGEX.find(id)?.groupValues?.get(1)?.toIntOrNull() ?: 1) >= FIRST_RIME_LEVEL
+
+/**
+ * Mục tiêu của các vòng chơi trong unit.
+ *
+ * Level 1: chữ cái viết hoa ("A", "B", "C") — đúng như cũ.
+ * Level 2+: các VẦN lấy từ `displayLetter`, KHÔNG phải `letter`. `letter` là mã dữ liệu
+ * ("SHORT-A-AM") và chính nó từng lọt vào bong bóng thành chuỗi "SHORT-A" (user báo
+ * 2026-08-12). Một lesson có thể dạy hai vần ("ad ag") nên phải tách theo dấu cách —
+ * vì thế unit 2 có 4 vòng dù chỉ có 3 lesson.
+ */
+private fun List<PhonicsLesson>.gameTargets(): List<String> =
+    if (firstOrNull()?.isRimeLesson() == true) {
+        flatMap { lesson -> lesson.displayLetter.trim().lowercase().split(' ') }
+            .filter { it.isNotEmpty() }
+            .distinct()
+    } else {
+        map { it.letter.uppercase() }
+    }
+
+private val LESSON_LEVEL_REGEX = Regex("""^L(\d+)U""")
+private const val FIRST_RIME_LEVEL = 2
+
 @Immutable
 internal data class BubblePopUiState(
     val unitLetters: ImmutableList<String>,
@@ -263,6 +311,8 @@ internal data class BubblePopUiState(
     val isGameComplete: Boolean,
     val roundStars: Int,
     val isGuidePlaying: Boolean = false,
+    /** True cho Level 2+: mục tiêu là VẦN, nhãn + audio đi theo bộ vần. */
+    val isRimeMode: Boolean = false,
 ) {
     companion object {
         val Empty = BubblePopUiState(

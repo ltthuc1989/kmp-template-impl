@@ -250,10 +250,6 @@
     <string name="identify_all_done_subtitle">Bé đã tìm được tất cả %1$d từ!</string>
     <string name="identify_all_done_soft_subtitle">Gần được rồi — cố lên nhé!</string>
 
-    <!-- Learning Path: Blending step -->
-    <string name="blending_title">Ghép âm</string>
-    <string name="blending_word_progress">Từ %1$d / %2$d</string>
-
     <!-- Learning Path: Matching step -->
     <string name="matching_title">Nối hình</string>
 
@@ -262,8 +258,8 @@
     <string name="story_letter_title">Câu chuyện chữ %1$s%2$s</string>
     <string name="story_page_sentence">Chữ %1$s trong %2$s!</string>
     <string name="story_audio_cd">Phát lời kể</string>
-    <string name="story_previous_page_cd">Trang trước</string>
-    <string name="story_next_page_cd">Trang sau</string>
+    <string name="slide_previous_cd">Trang trước</string>
+    <string name="slide_next_cd">Trang sau</string>
 
     <!-- Game flow (after Story) — shared chrome + per-game strings -->
     <string name="game_flow_title">Giờ chơi nào!</string>
@@ -327,7 +323,6 @@
     <string name="step_guide_chant">Nghe và hát theo</string>
     <string name="step_guide_vocabulary">Chạm từng hình để nghe</string>
     <string name="step_guide_identify">Chạm hình tương ứng</string>
-    <string name="step_guide_blending">Kéo dài và ghép các âm</string>
     <string name="step_guide_matching">Nối các cặp</string>
     <string name="step_guide_tracing">Tô theo nét chữ</string>
     <string name="step_guide_story">Nghe câu chuyện</string>

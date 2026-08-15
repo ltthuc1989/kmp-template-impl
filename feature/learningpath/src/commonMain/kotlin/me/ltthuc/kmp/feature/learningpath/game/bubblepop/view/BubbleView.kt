@@ -15,6 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -103,15 +104,29 @@ internal fun BubbleView(
             )
         }
 
-        // Single character display — upper OR lower case is decided per-spawn by the spawner.
-        // The kid distinguishes letterforms by separate bubbles (e.g. one "A" + one "a"),
-        // not a combined "Aa" inside the same bubble.
+        // Nhãn bong bóng: một chữ cái (Level 1) hoặc cả VẦN 2-3 ký tự (Level 2+).
+        //
+        // Cỡ chữ suy từ chiều rộng khả dụng chứ không phải một hằng số: chữ chỉ được nằm
+        // trong hình vuông NỘI TIẾP đường tròn (cạnh = đường kính / √2 ≈ 0.707d), nên vần
+        // càng dài thì chữ càng phải nhỏ. Giữ nguyên 0.45d cho một ký tự — đúng cỡ cũ,
+        // Level 1 không đổi gì.
+        //
+        // lineHeight phải đặt theo fontSize. Trước đây style lấy từ headlineLarge nên
+        // lineHeight kẹt ở 40sp trong khi chữ cao tới 45sp+ — chữ cao hơn dòng chứa nó và
+        // bị cắt mất chân, thấy rõ nhất ở bong bóng lớn.
+        val fitWidth = diameter.value * 0.70f
+        val perChar = 0.62f // bề ngang trung bình 1 ký tự Black weight
+        val fontSizeSp = minOf(diameter.value * 0.45f, fitWidth / (perChar * letter.length))
         Text(
             text = letter,
-            fontSize = (diameter.value * 0.45f).sp,
+            fontSize = fontSizeSp.sp,
             fontWeight = FontWeight.Black,
             color = Color.White,
+            maxLines = 1,
+            softWrap = false,
+            textAlign = TextAlign.Center,
             style = MaterialTheme.typography.headlineLarge.copy(
+                lineHeight = fontSizeSp.sp,
                 shadow = Shadow(
                     color = Color.Black.copy(alpha = 0.55f),
                     offset = Offset(0f, 2f),

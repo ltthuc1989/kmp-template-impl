@@ -17,6 +17,16 @@ expect class AudioPlayer {
     /** Loads the file at [absolutePath] and starts playback. Cancels any previous track. */
     fun playFile(absolutePath: String)
 
+    /**
+     * Loads a platform URI and starts playback. Cancels any previous track.
+     *
+     * Used for audio bundled inside the app, which `Res.getUri` hands back as a URI into
+     * the APK assets / app bundle. Playing it in place means no second copy on disk and —
+     * more importantly — no stale copy: a cached copy keyed by file path kept shadowing
+     * updated audio, so shipped fixes never reached devices that had played the old file.
+     */
+    fun playUri(uri: String)
+
     fun pause()
 
     fun resume()

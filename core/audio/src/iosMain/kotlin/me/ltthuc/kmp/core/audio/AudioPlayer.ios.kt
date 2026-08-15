@@ -35,9 +35,20 @@ actual class AudioPlayer {
         }.onFailure { Napier.e("AVAudioSession activate failed", it) }
     }
 
-    actual fun playFile(absolutePath: String) {
+    actual fun playFile(absolutePath: String) = playUrl(NSURL.fileURLWithPath(absolutePath))
+
+    /** `Res.getUri` trả về file URL trỏ vào app bundle — AVAudioPlayer đọc thẳng được. */
+    actual fun playUri(uri: String) {
+        val url = NSURL.URLWithString(uri)
+        if (url == null) {
+            _events.value = PlayerEvent.Failed(IllegalArgumentException("Bad audio URI: $uri"))
+            return
+        }
+        playUrl(url)
+    }
+
+    private fun playUrl(url: NSURL) {
         stopInternal()
-        val url = NSURL.fileURLWithPath(absolutePath)
         val player = AVAudioPlayer(contentsOfURL = url, error = null)
         if (player.prepareToPlay() && player.play()) {
             current = player
@@ -111,7 +122,9 @@ actual class AudioPlayer {
     }
 
     private companion object {
-        const val PROGRESS_INTERVAL_SEC = 0.2
+        // Keep in sync with PROGRESS_INTERVAL_MS in the Android actual — see the note there on
+        // why the L2 blend screen needs a finer grid than 200ms.
+        const val PROGRESS_INTERVAL_SEC = 0.1
     }
 }
 

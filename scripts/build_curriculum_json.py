@@ -6,6 +6,12 @@ Reads:
 Writes:
     core/resource/src/commonMain/composeResources/files/curriculum.json
 
+⚠️  CHẠY LẠI NGUYÊN FILE LÀ MẤT DỮ LIỆU (đo 2026-08-11): curriculum.json đang chứa
+    phần chỉnh tay mà CSV không có — chantTexts/stretchedWord của L1 ("A-A-pple" trong
+    JSON vs "AAA-pple" trong CSV) và các `displays` nhiều emoji thay thế. Sửa nội dung
+    một phần thì patch thẳng JSON (xem scripts/patch_l2_chant_texts.py), hoặc đối chiếu
+    diff trước khi ghi đè.
+
 Reuses emoji map from the existing curriculum.json (words[].emoji + vocabulary[].emoji)
 and supplements with EMOJI_FALLBACK below for words not present in the old file.
 """
@@ -294,15 +300,23 @@ EMOJI_FALLBACK = {
     "famous": "⭐", "dangerous": "☢️", "beautiful": "🌸", "helpful": "🙋",
 }
 
-def generate_chant_texts(level: int, stretched_word: str, words: list) -> list:
+def generate_chant_texts(level: int, stretched_word: str, words: list, letter: str = "") -> list:
     """Pre-generate 4 chant texts per lesson. User can hand-tune in JSON later.
 
-    L1: prefix-style — split stretched_word at last "-" → prefix; output [prefix-{Word}] x 4.
-        e.g. "AAA-pple" + [apple,ax,ant,alligator]
-          → ["AAA-Apple","AAA-Ax","AAA-Ant","AAA-Alligator"]
+    Chữ trên thẻ phải ĐỌC ĐƯỢC THEO TIẾNG trong 02_chant.mp3 — trẻ nhìn thẻ trong khi
+    nghe hô, lệch nhau là phản tác dụng. Khuôn tiếng nằm ở
+    opw_audio_project/scripts/prompts.py (template_chant_alphabet / _word_family).
 
-    L2-L5: blending-style — each word → uppercase letters joined by "-".
-        e.g. "cat" → "C-A-T", "tape" → "T-A-P-E", "black" → "B-L-A-C-K"
+    L1: prefix-style — split stretched_word at last "-" → prefix; output [prefix-{Word}] x 4.
+        tiếng "ahh, ahh, apple!" ↔ "AAA-Apple"
+
+    L2: rime-cue style — cue là VẦN của chính từ đó, suy từ mã letter
+        ("SHORT-A-AD-AG" → ad, ag), lesson chỉ dạy nguyên âm thì cue là nguyên âm.
+        tiếng "an, an, fan!"  ↔ "AN-AN-Fan"
+        tiếng "ahh, ahh, cat!" ↔ "A-A-Cat"
+
+    L3-L5: blending-style — each word → uppercase letters joined by "-".
+        e.g. "tape" → "T-A-P-E", "black" → "B-L-A-C-K" (chant chưa sinh, đổi khi sinh)
     """
     if level == 1:
         if "-" in stretched_word:
@@ -310,6 +324,21 @@ def generate_chant_texts(level: int, stretched_word: str, words: list) -> list:
         else:
             prefix = stretched_word
         return [f"{prefix}-{w['word'].capitalize()}" for w in words]
+
+    if level == 2:
+        segments = letter.upper().split("-")
+        vowel = segments[1] if len(segments) > 1 else segments[0]
+        rimes = segments[2:]
+        texts = []
+        for w in words:
+            word = w["word"]
+            cue = next(
+                (r for r in rimes if word.lower().endswith(r.lower()) and len(word) > len(r)),
+                vowel,
+            )
+            texts.append(f"{cue}-{cue}-{word.capitalize()}")
+        return texts
+
     return ["-".join(ch.upper() for ch in w["word"] if ch != " ") for w in words]
 
 
@@ -444,7 +473,9 @@ def main() -> int:
                         entry["emoji"] = e
                     apply_image_display(entry, vocab_images)
                     words.append(entry)
-                chant_texts = generate_chant_texts(lvl, row["stretched_word"], words)
+                chant_texts = generate_chant_texts(
+                    lvl, row["stretched_word"], words, row["letter"],
+                )
                 lessons.append({
                     "id": row["id"],
                     "letter": row["letter"],

@@ -55,18 +55,17 @@ Append entry vào array `units` (hoặc tạo file nếu chưa có):
 
 Asset paths convention: xem [phonics-domain.md](../skills/grabee/references/phonics-domain.md) section "Asset Path Convention".
 
-### Bước 3: Scaffold 8 step screens
+### Bước 3: Scaffold 7 step screens
 Trong `feature/learningpath/src/commonMain/kotlin/me/ltthuc/kmp/feature/learningpath/step/`:
 
-8 step types (mỗi cái có ViewModel + Screen + Composable):
+7 step types (mỗi cái có ViewModel + Screen + Composable). Index 4 (Blending) đã retire — screen bị xoá, index để trống, KHÔNG scaffold lại:
 1. `step01_soundintro/SoundIntroScreen.kt` + ViewModel — animation chữ + audio
 2. `step02_chant/ChantScreen.kt` + VM — rhythmic music + lyrics
 3. `step03_vocabulary/VocabularyScreen.kt` + VM — word cards
 4. `step04_identify/IdentifyScreen.kt` + VM — voice scoring với mic (load [voice-recognition.md](../skills/grabee/references/voice-recognition.md))
-5. `step05_blending/BlendingScreen.kt` + VM — sound combination
-6. `step06_matching/MatchingScreen.kt` + VM — visual-audio match
-7. `step07_tracing/TracingScreen.kt` + VM — letter tracing canvas
-8. `step08_story/StoryScreen.kt` + VM — phonics reader
+5. `step06_matching/MatchingScreen.kt` + VM — visual-audio match
+6. `step07_tracing/TracingScreen.kt` + VM — letter tracing canvas
+7. `step08_story/StoryScreen.kt` + VM — phonics reader
 
 Pattern: tất cả **Pattern B** (`ScreenState<UiState>` + `actionState` cho voice/tap actions). Reference: [PaywallViewModel.kt](../../feature/billing/src/commonMain/kotlin/me/ltthuc/kmp/feature/billing/PaywallViewModel.kt).
 
@@ -87,7 +86,6 @@ entry<Destination.Learning.Step> { destination ->
         1 -> ChantScreen(...)
         2 -> VocabularyScreen(...)
         3 -> IdentifyScreen(...)
-        4 -> BlendingScreen(...)
         5 -> MatchingScreen(...)
         6 -> TracingScreen(...)
         7 -> StoryScreen(...)

@@ -62,11 +62,14 @@ actual class AudioPlayer(context: Context) {
         }
     }
 
-    actual fun playFile(absolutePath: String) {
+    actual fun playFile(absolutePath: String) = playUri("file://$absolutePath")
+
+    /** ExoPlayer's `DefaultDataSource` already handles `file:///android_asset/...` URIs. */
+    actual fun playUri(uri: String) {
         runOnMain {
             exo.stop()
             exo.clearMediaItems()
-            exo.setMediaItem(MediaItem.fromUri("file://$absolutePath"))
+            exo.setMediaItem(MediaItem.fromUri(uri))
             exo.prepare()
             exo.playWhenReady = true
         }
@@ -109,6 +112,9 @@ actual class AudioPlayer(context: Context) {
     }
 
     private companion object {
-        const val PROGRESS_INTERVAL_MS = 200L
+        // 100ms, not 200ms: the L2 blend screen highlights cards whose sounds run 600-900ms, so a
+        // 200ms sampling grid put the highlight up to a quarter of a phoneme late. Keep in sync
+        // with PROGRESS_INTERVAL_SEC in the iOS actual.
+        const val PROGRESS_INTERVAL_MS = 100L
     }
 }

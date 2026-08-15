@@ -43,6 +43,7 @@ const val GUIDE_IDLE_MS = 10_000L
 sealed interface HandStep {
     /** Tap (press) at [pos]. */
     data class Tap(val pos: Offset) : HandStep
+
     /** Grab at [from], drag to [to], release (a trail line is drawn). */
     data class Drag(val from: Offset, val to: Offset) : HandStep
 }

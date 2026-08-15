@@ -4,6 +4,7 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -40,6 +41,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
@@ -313,6 +315,55 @@ internal fun PuffySurface(
         content()
     }
 }
+
+/**
+ * Round chevron overlaid on a card to page between slides, used by Story and the Level 2+
+ * blend screen. Sits ON the card (align it to CenterStart / CenterEnd of the card's Box)
+ * rather than in a row below, so the tap target is where the child is already looking.
+ *
+ * Disabled state keeps the button visible but dimmed — a chevron that vanishes at the first
+ * or last slide makes the row jump.
+ */
+@Composable
+internal fun StepChevronButton(
+    icon: ImageVector,
+    contentDescription: String,
+    enabled: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val tint = if (enabled) {
+        MaterialTheme.colorScheme.primary
+    } else {
+        MaterialTheme.colorScheme.primary.copy(alpha = 0.35f)
+    }
+    val borderColor = MaterialTheme.colorScheme.surfaceContainerHigh
+    val interaction = remember { MutableInteractionSource() }
+    Box(
+        modifier = modifier
+            .size(CHEVRON_SIZE)
+            .shadow(elevation = 8.dp, shape = CircleShape)
+            .clip(CircleShape)
+            .background(Color.White.copy(alpha = 0.9f))
+            .border(width = 1.dp, color = borderColor, shape = CircleShape)
+            .clickable(
+                enabled = enabled,
+                interactionSource = interaction,
+                indication = ripple(),
+                onClick = onClick,
+            ),
+        contentAlignment = Alignment.Center,
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = contentDescription,
+            tint = tint,
+            modifier = Modifier.size(28.dp),
+        )
+    }
+}
+
+private val CHEVRON_SIZE = 48.dp
 
 /**
  * Shared step navigation row (Previous + Next). Used by Chant, Vocabulary, ...

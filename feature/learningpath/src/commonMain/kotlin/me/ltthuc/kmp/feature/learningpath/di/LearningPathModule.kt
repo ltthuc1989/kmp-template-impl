@@ -10,7 +10,6 @@ import me.ltthuc.kmp.feature.learningpath.game.filletter.FillLetterViewModel
 import me.ltthuc.kmp.feature.learningpath.game.memorymatch.MemoryMatchViewModel
 import me.ltthuc.kmp.feature.learningpath.game.pickword.PickWordViewModel
 import me.ltthuc.kmp.feature.learningpath.game.spellletters.SpellLettersViewModel
-import me.ltthuc.kmp.feature.learningpath.step.blending.BlendingViewModel
 import me.ltthuc.kmp.feature.learningpath.step.chant.ChantViewModel
 import me.ltthuc.kmp.feature.learningpath.step.identify.IdentifyViewModel
 import me.ltthuc.kmp.feature.learningpath.step.matching.MatchingViewModel
@@ -18,6 +17,8 @@ import me.ltthuc.kmp.feature.learningpath.step.soundintro.SoundIntroViewModel
 import me.ltthuc.kmp.feature.learningpath.step.story.StoryViewModel
 import me.ltthuc.kmp.feature.learningpath.step.tracing.TracingViewModel
 import me.ltthuc.kmp.feature.learningpath.step.vocabulary.VocabularyViewModel
+import me.ltthuc.kmp.feature.learningpath.step.vowelblend.VowelBlendViewModel
+import me.ltthuc.kmp.feature.learningpath.step.wordtracing.WordTracingViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
@@ -39,12 +40,13 @@ val learningPathModule = module {
         )
     }
     viewModel { params -> SoundIntroViewModel(unitId = params.get(), get(), get()) }
+    viewModel { params -> VowelBlendViewModel(unitId = params.get(), get(), get(), get()) }
     viewModel { params -> ChantViewModel(unitId = params.get(), get(), get(), get()) }
     viewModel { params -> VocabularyViewModel(unitId = params.get(), get(), get()) }
     viewModel { params -> IdentifyViewModel(unitId = params.get(), get(), get()) }
-    viewModel { params -> BlendingViewModel(unitId = params.get(), get(), get()) }
     viewModel { params -> MatchingViewModel(unitId = params.get(), get(), get(), get()) }
     viewModel { params -> TracingViewModel(unitId = params.get(), get()) }
+    viewModel { params -> WordTracingViewModel(unitId = params.get(), get(), get()) }
     viewModel { params -> StoryViewModel(unitId = params.get(), get(), get(), get()) }
     viewModel { params -> BubblePopViewModel(unitId = params.get(), get(), get(), get()) }
     viewModel { params -> MemoryMatchViewModel(unitId = params.get(), get(), get(), get()) }
