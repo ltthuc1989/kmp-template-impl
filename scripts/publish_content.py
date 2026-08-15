@@ -33,6 +33,16 @@ import subprocess
 import sys
 from pathlib import Path
 
+# Compose Resources copies composeResources/ into these generated dirs, and its copy task does
+# NOT delete files that disappeared from the source. Strip a pack without clearing them and the
+# next build happily packages the removed audio again: the APK stays exactly as big as before,
+# the app never fetches anything, and nothing warns you. Measured 2026-08-16 — an APK still
+# carrying 762 MP3s when only 341 were left on disk.
+STALE_ASSET_DIRS = (
+    "core/resource/build/generated/assets",
+    "core/resource/build/intermediates/assets",
+)
+
 BASE = Path(__file__).resolve().parent.parent
 RES_FILES = BASE / "core/resource/src/commonMain/composeResources/files"
 MANIFEST = RES_FILES / "content_manifest.json"
@@ -109,7 +119,17 @@ def main() -> int:
         for directory in sorted(RES_FILES.rglob("*"), key=lambda p: -len(p.parts)):
             if directory.is_dir() and not any(directory.iterdir()):
                 directory.rmdir()
-        print(f"Đã gỡ {removed} file khỏi composeResources — build lại để APK nhỏ đi")
+        cleared = 0
+        for rel in STALE_ASSET_DIRS:
+            directory = BASE / rel
+            if directory.exists():
+                shutil.rmtree(directory)
+                cleared += 1
+
+        print(f"Đã gỡ {removed} file khỏi composeResources")
+        if cleared:
+            print(f"Đã xoá {cleared} thư mục asset sinh sẵn (Compose Resources không tự dọn file đã xoá)")
+        print("→ build lại để APK nhỏ đi")
 
     print("\nPack đã đưa ra ngoài:", ", ".join(sorted(already | wanted)))
     return 0
