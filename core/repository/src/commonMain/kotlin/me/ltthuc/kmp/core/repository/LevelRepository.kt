@@ -36,19 +36,8 @@ class LevelRepository(
     private val learningProgressDao: LearningProgressDao,
     private val seeder: DatabaseSeeder,
     private val appSettingRepository: AppSettingRepository,
-    private val unitCompletionRepository: UnitCompletionRepository,
     private val dispatcher: CoroutineDispatcher,
 ) {
-    /** True once every unit of [levelId] has been completed at least once. */
-    fun observeIsLevelComplete(levelId: String): Flow<Boolean> = combine(
-        unitDao.observeAll(),
-        unitCompletionRepository.observeAll(),
-    ) { units, completions ->
-        val ids = units.filter { it.levelId == levelId }.map { it.id }
-        ids.isNotEmpty() && ids.all { id ->
-            (completions.firstOrNull { it.unitId == id }?.completionCount ?: 0) > 0
-        }
-    }.flowOn(dispatcher)
 
     suspend fun getVisibleSteps(levelId: String): List<Int> = withContext(dispatcher) {
         seeder.syncCurriculum()

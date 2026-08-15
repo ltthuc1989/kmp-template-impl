@@ -50,7 +50,9 @@ internal fun SettingOthersSection(
     onLetterGuideDebugClicked: () -> Unit,
     onBubblePopPreviewClicked: () -> Unit,
     onMemoryMatchPreviewClicked: () -> Unit,
-    onLevelListClicked: () -> Unit,
+    onUnlockAllLevelsClicked: () -> Unit,
+    onResetPurchasesClicked: () -> Unit,
+    onDeleteDownloadsClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var isShowDeveloperModeDialog by remember { mutableStateOf(false) }
@@ -114,13 +116,26 @@ internal fun SettingOthersSection(
                     description = "Dev: test card flip + match animations standalone",
                     onClick = onMemoryMatchPreviewClicked,
                 )
-                // The shipping build pins users to the L1 unit map until L1 is complete, so the
-                // 5-level list is otherwise unreachable — and with it every L2+ screen.
+                // Developer mode unlocks every level, so the paywall and the download badge can
+                // never be seen while it is on. These two put the device back to a fresh state;
+                // switch developer mode off afterwards to walk the real flow.
                 SettingTextItem(
                     modifier = Modifier.fillMaxWidth(),
-                    title = "Level list",
-                    description = "Dev: open the 5-level map to reach L2+ without finishing L1",
-                    onClick = onLevelListClicked,
+                    title = "Unlock all levels (as purchased)",
+                    description = "Dev: own every level while every other rule still applies",
+                    onClick = onUnlockAllLevelsClicked,
+                )
+                SettingTextItem(
+                    modifier = Modifier.fillMaxWidth(),
+                    title = "Reset purchases",
+                    description = "Dev: forget owned levels so the paywall shows again",
+                    onClick = onResetPurchasesClicked,
+                )
+                SettingTextItem(
+                    modifier = Modifier.fillMaxWidth(),
+                    title = "Delete downloaded content",
+                    description = "Dev: wipe downloaded packs so units show the download badge again",
+                    onClick = onDeleteDownloadsClicked,
                 )
             }
         }

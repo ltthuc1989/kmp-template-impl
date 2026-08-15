@@ -18,6 +18,7 @@ import me.ltthuc.kmp.core.model.Level
 import me.ltthuc.kmp.core.model.Theme
 import me.ltthuc.kmp.core.repository.AppSettingRepository
 import me.ltthuc.kmp.core.repository.BillingRepository
+import me.ltthuc.kmp.core.repository.ContentPackRepository
 import me.ltthuc.kmp.core.repository.LevelRepository
 import me.ltthuc.kmp.core.repository.ProgressResetRepository
 
@@ -28,6 +29,7 @@ class SettingViewModel(
     private val progressResetRepository: ProgressResetRepository,
     private val levelRepository: LevelRepository,
     private val billingRepository: BillingRepository,
+    private val contentPackRepository: ContentPackRepository,
 ) : ViewModel() {
     val setting = repository.setting
 
@@ -110,6 +112,34 @@ class SettingViewModel(
     }
 
     /** Wipes all local learning progress, then invokes [onDone] on completion. */
+    /**
+     * QA: forget every purchase so the paywall can be walked again. Developer mode opens all
+     * levels outright, which makes the gate impossible to see — so the way to exercise the real
+     * flow is to reset here, switch developer mode off, and buy through the (fake) paywall.
+     */
+    fun resetPurchases() {
+        viewModelScope.launch { repository.clearOwnedLevels() }
+    }
+
+    /**
+     * QA: mark every level as bought, without developer mode.
+     *
+     * Developer mode is too blunt to test with — it also reports every unit as Completed, so
+     * the sequential gate, the download badge and the progress bar all stop behaving like they
+     * will for a real user. Writing the owned set instead leaves every rule running and only
+     * changes the one thing a purchase would change.
+     */
+    fun unlockAllLevelsAsPurchased() {
+        viewModelScope.launch {
+            repository.setOwnedLevelIds(levels.value.map { it.id }.toSet())
+        }
+    }
+
+    /** QA: delete downloaded lesson content so the download flow starts from zero again. */
+    fun deleteDownloadedContent() {
+        viewModelScope.launch { contentPackRepository.deleteAll() }
+    }
+
     fun resetProgress(onDone: () -> Unit) {
         viewModelScope.launch {
             progressResetRepository.resetAllProgress()

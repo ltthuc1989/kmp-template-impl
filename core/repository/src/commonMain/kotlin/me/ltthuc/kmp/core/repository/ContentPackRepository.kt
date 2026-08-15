@@ -161,6 +161,13 @@ class ContentPackRepository(
         refresh(packId)
     }
 
+    /** Drops every downloaded pack. QA tool: puts the device back to a just-installed state. */
+    suspend fun deleteAll() {
+        backgroundJob?.cancel()
+        packStore.clear()
+        manifestLoader.load().downloadablePackIds().forEach { refresh(it) }
+    }
+
     /**
      * Sweeps files no longer referenced by the manifest — what a content update leaves
      * behind once an asset's bytes, and therefore its hash, changed.

@@ -72,8 +72,10 @@ internal fun OnboardingScreen(
     val completeAndGoHome: () -> Unit = {
         viewModel.completeOnboarding()
         navBackStack.clear()
-        // V1: skip Home, land on Level 1 unit list. Restore `Destination.Home` when L2-L5 ship.
-        navBackStack.add(Destination.Learning.UnitSelection(levelId = "L1"))
+        // Level 2 has shipped, so the first thing after onboarding is the level list. While only
+        // Level 1 existed this jumped straight into its unit map; keeping that now would hide
+        // half the content behind a screen the child never sees.
+        navBackStack.add(Destination.Home)
     }
 
     Scaffold(

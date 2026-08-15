@@ -148,9 +148,9 @@ internal fun SettingScreen(
                             onMemoryMatchPreviewClicked = {
                                 navBackStack.add(Destination.Learning.MemoryMatchPreview)
                             },
-                            onLevelListClicked = {
-                                navBackStack.add(Destination.Home)
-                            },
+                            onUnlockAllLevelsClicked = viewModel::unlockAllLevelsAsPurchased,
+                            onResetPurchasesClicked = viewModel::resetPurchases,
+                            onDeleteDownloadsClicked = viewModel::deleteDownloadedContent,
                         )
                     }
                 }
