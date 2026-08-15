@@ -50,10 +50,10 @@
   },
   {
     "lesson_id": "L2U04_SHORT-I-IB-ID_bib",
-    "start_ms": 13640,
+    "start_ms": 10336,
     "speed_ms": 937,
     "edge_speed_ms": 600,
-    "slide_ms": 3410
+    "slide_ms": 2584
   },
   {
     "lesson_id": "L2U05_SHORT-I-IN_pin",
@@ -162,9 +162,9 @@
   },
   {
     "lesson_id": "L2U06_SHORT-O-OT_pot",
-    "start_ms": 13272,
+    "start_ms": 9840,
     "speed_ms": 712,
     "edge_speed_ms": 600,
-    "slide_ms": 3318
+    "slide_ms": 2460
   }
 ]

@@ -3,7 +3,7 @@
     "id": "L2_S01",
     "title": "Jam in a Pan",
     "level": 2,
-    "after_unit": 1,
+    "unit_number": 1,
     "phonics_used": [
       "SHORT-A",
       "SHORT-A-AM",
@@ -265,7 +265,7 @@
     "id": "L2_S02",
     "title": "Dad's Map",
     "level": 2,
-    "after_unit": 2,
+    "unit_number": 2,
     "phonics_used": [
       "SHORT-A-AD-AG",
       "SHORT-A-AP",
@@ -492,7 +492,7 @@
     "id": "L2_S03",
     "title": "Red Hen",
     "level": 2,
-    "after_unit": 3,
+    "unit_number": 3,
     "phonics_used": [
       "SHORT-E",
       "SHORT-E-ET",
@@ -724,7 +724,7 @@
     "id": "L2_S04",
     "title": "Ink on the Bib",
     "level": 2,
-    "after_unit": 4,
+    "unit_number": 4,
     "phonics_used": [
       "SHORT-I",
       "SHORT-I-IP",
@@ -971,7 +971,7 @@
     "id": "L2_S05",
     "title": "Big Fig",
     "level": 2,
-    "after_unit": 5,
+    "unit_number": 5,
     "phonics_used": [
       "SHORT-I-IN",
       "SHORT-I-IG",
@@ -1218,7 +1218,7 @@
     "id": "L2_S06",
     "title": "Hot Pot",
     "level": 2,
-    "after_unit": 6,
+    "unit_number": 6,
     "phonics_used": [
       "SHORT-O",
       "SHORT-O-OT",
@@ -1465,7 +1465,7 @@
     "id": "L2_S07",
     "title": "Pup in Mud",
     "level": 2,
-    "after_unit": 7,
+    "unit_number": 7,
     "phonics_used": [
       "SHORT-U",
       "SHORT-U-UG",
@@ -1707,7 +1707,7 @@
     "id": "L2_S08",
     "title": "Cub in Tub",
     "level": 2,
-    "after_unit": 8,
+    "unit_number": 8,
     "phonics_used": [
       "SHORT-U-UT",
       "SHORT-U-UB-UM",

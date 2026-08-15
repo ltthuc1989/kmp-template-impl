@@ -15,11 +15,11 @@ import androidx.compose.ui.unit.TextUnit
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import me.ltthuc.kmp.core.content.ContentBytes
 import me.ltthuc.kmp.core.model.LessonWord
 import me.ltthuc.kmp.core.model.WordDisplay
-import me.ltthuc.kmp.core.resource.Res
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.decodeToImageBitmap
+import org.koin.compose.koinInject
 
 private const val TAG = "WordDisplayView"
 
@@ -30,10 +30,9 @@ private const val TAG = "WordDisplayView"
  * The emoji choice is stable per [seedKey] composition (defaults to `word.text`) — same screen
  * mount keeps the same emoji; navigating away and back picks again.
  *
- * Resolution order: bundled image (sized to [fontSize]) → emoji [Text] if the image is absent or
- * fails to load → nothing while a present image is still loading (avoids flashing the fallback).
+ * Resolution order: image (sized to [fontSize]) → emoji [Text] if the image is absent or fails to
+ * load → nothing while a present image is still loading (avoids flashing the fallback).
  */
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 internal fun WordDisplayView(
     word: LessonWord,
@@ -42,6 +41,7 @@ internal fun WordDisplayView(
     seedKey: Any = word.text,
     fontWeight: FontWeight? = null,
 ) {
+    val contentBytes: ContentBytes = koinInject()
     val imagePath = remember(seedKey) {
         word.displays.filterIsInstance<WordDisplay.Image>().firstOrNull()?.path
     }
@@ -52,10 +52,14 @@ internal fun WordDisplayView(
     // null = still loading; Result captures success/failure so we can tell "loading" from "failed".
     val loadResult: Result<ImageBitmap>? = if (imagePath != null) {
         produceState<Result<ImageBitmap>?>(initialValue = null, imagePath) {
+            // Vocab art ships in the app today, but it is read through ContentBytes like every
+            // other image so that moving any of it into a content pack stays a data change.
             // Decode off the Main recompose dispatcher — decodeToImageBitmap() is synchronous CPU work.
             value = withContext(Dispatchers.Default) {
-                runCatching { Res.readBytes(imagePath).decodeToImageBitmap() }
-                    .onFailure { Napier.w(tag = TAG) { "No vocab image at $imagePath, falling back to emoji" } }
+                runCatching {
+                    val bytes = contentBytes.load(imagePath) ?: error("no bytes for $imagePath")
+                    bytes.decodeToImageBitmap()
+                }.onFailure { Napier.w(tag = TAG) { "No vocab image at $imagePath, falling back to emoji" } }
             }
         }.value
     } else {

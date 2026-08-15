@@ -14,7 +14,7 @@ nó cũng là sản phẩm $5 như L2-L5, chỉ 2 unit đầu là mở.
                   phoneme/rime/find_*, ảnh vocab, JSON
   L1U3 … L5U8   → tải khi LevelAccess cho phép mở level đó
 
-Story đi theo unit nó nối sau (`after_unit` trong stories/level_N.json),
+Story đi theo unit nó khép lại (`unit_number` trong stories/level_N.json),
 cả audio narration lẫn ảnh scene.
 
 Hash để đặt đường dẫn CDN bất biến: content/<hash>/<logicalPath>.
@@ -99,7 +99,7 @@ def load_story_units() -> dict[str, tuple[int, int]]:
     for path in sorted((RES_FILES / "stories").glob("level_*.json")):
         level = int(path.stem.split("_")[1])
         for story in json.loads(path.read_text()):
-            stories[story["id"]] = (level, story["after_unit"])
+            stories[story["id"]] = (level, story["unit_number"])
     return stories
 
 

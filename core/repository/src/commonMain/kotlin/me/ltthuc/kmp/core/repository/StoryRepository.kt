@@ -32,14 +32,14 @@ class StoryRepository(private val dispatcher: CoroutineDispatcher) {
     }
 
     suspend fun storyForUnit(level: Int, unitNumber: Int): Story? =
-        loadStories(level).firstOrNull { it.afterUnit == unitNumber }
+        loadStories(level).firstOrNull { it.unitNumber == unitNumber }
 
     @Serializable
     private data class StoryDto(
         val id: String,
         val title: String,
         val level: Int,
-        @SerialName("after_unit") val afterUnit: Int,
+        @SerialName("unit_number") val unitNumber: Int,
         @SerialName("phonics_used") val phonicsUsed: List<String> = emptyList(),
         @SerialName("duration_seconds") val durationSeconds: Int = 0,
         val scenes: List<SceneDto> = emptyList(),
@@ -48,7 +48,7 @@ class StoryRepository(private val dispatcher: CoroutineDispatcher) {
             id = id,
             title = title,
             level = level,
-            afterUnit = afterUnit,
+            unitNumber = unitNumber,
             phonicsUsed = phonicsUsed,
             durationSeconds = durationSeconds,
             scenes = scenes.map { it.toModel(loadedLevel, id) },

@@ -1,0 +1,119 @@
+"""
+================================================================
+PUBLISH CONTENT — đưa pack ra khỏi APK, lên CDN
+================================================================
+Ba việc, theo đúng thứ tự an toàn:
+
+  1. Dựng cây CDN   <out>/content/<hash>/<đường dẫn logic>
+  2. Đánh dấu pack là đã đưa ra ngoài trong content_manifest.json
+  3. (--strip) Xoá file khỏi composeResources để nó rời khỏi APK
+
+Thứ tự này quan trọng: bước 2 làm app chuyển sang tải từ CDN, nên
+file phải có mặt trên CDN TRƯỚC. Đảo lại là các bài đó câm ngay.
+
+Đường dẫn chứa hash nội dung nên bất biến — publish lại bản audio đã
+sửa sẽ ghi ra đường dẫn MỚI, bản cũ vẫn nằm đó phục vụ các máy chưa
+cập nhật app. Không bao giờ ghi đè, không cần purge cache CDN.
+
+Cách chạy — CDN giả để test, không cần tài khoản nào:
+  python3 scripts/publish_content.py --packs L1U3 --out /tmp/cdn
+  python3 -m http.server 8000 --directory /tmp/cdn
+  # local.properties: CONTENT_CDN_BASE_URL=http://10.0.2.2:8000/content
+
+Đẩy lên Firebase Storage thật (bucket phải cho đọc công khai prefix content/):
+  python3 scripts/publish_content.py --packs L1U3 --out build/cdn --strip
+  gsutil -m rsync -r build/cdn/content gs://<bucket>/content
+================================================================
+"""
+
+import argparse
+import json
+import shutil
+import subprocess
+import sys
+from pathlib import Path
+
+BASE = Path(__file__).resolve().parent.parent
+RES_FILES = BASE / "core/resource/src/commonMain/composeResources/files"
+MANIFEST = RES_FILES / "content_manifest.json"
+BUILD_MANIFEST = BASE / "scripts/build_content_manifest.py"
+
+
+def run_manifest(externalized: set[str]) -> dict:
+    subprocess.run(
+        [sys.executable, str(BUILD_MANIFEST), "--externalize", ",".join(sorted(externalized))],
+        check=True,
+        stdout=subprocess.DEVNULL,
+    )
+    return json.loads(MANIFEST.read_text())
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description="Publish content packs to a CDN tree")
+    parser.add_argument("--packs", required=True, help="Pack id, cách nhau bằng dấu phẩy (vd L1U3,L1U4)")
+    parser.add_argument("--out", required=True, help="Thư mục web root; file ghi vào <out>/content/")
+    parser.add_argument(
+        "--strip",
+        action="store_true",
+        help="Xoá file khỏi composeResources sau khi dựng cây CDN (git giữ bản gốc)",
+    )
+    args = parser.parse_args()
+
+    wanted = {p.strip() for p in args.packs.split(",") if p.strip()}
+
+    # Pack đang bundled -> hỏi manifest xem pack nào đã đưa ra ngoài từ trước, để không
+    # vô tình kéo chúng về lại.
+    current = json.loads(MANIFEST.read_text()).get("packs", {})
+    already = {name for name, info in current.items() if not info.get("bundled", True)}
+
+    unknown = wanted - current.keys()
+    if unknown:
+        print(f"Không có pack: {', '.join(sorted(unknown))}", file=sys.stderr)
+        return 1
+
+    manifest = run_manifest(already | wanted)
+
+    out_root = Path(args.out) / "content"
+    copied = skipped = 0
+    published_bytes = 0
+
+    for logical, asset in manifest["assets"].items():
+        if asset["pack"] not in wanted:
+            continue
+        src = RES_FILES / logical
+        if not src.is_file():
+            # File đã bị strip ở lần publish trước — cây CDN đã có nó rồi.
+            skipped += 1
+            continue
+        dst = out_root / asset["hash"] / logical
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(src, dst)
+        copied += 1
+        published_bytes += asset["bytes"]
+
+    mb = 1024 * 1024
+    print(f"Đã dựng {copied} file ({published_bytes / mb:.1f} MB) vào {out_root}")
+    if skipped:
+        print(f"  bỏ qua {skipped} file đã strip từ trước")
+
+    if args.strip:
+        removed = 0
+        for logical, asset in manifest["assets"].items():
+            if asset["pack"] not in wanted:
+                continue
+            src = RES_FILES / logical
+            if src.is_file():
+                src.unlink()
+                removed += 1
+        # Dọn thư mục rỗng còn lại
+        for directory in sorted(RES_FILES.rglob("*"), key=lambda p: -len(p.parts)):
+            if directory.is_dir() and not any(directory.iterdir()):
+                directory.rmdir()
+        print(f"Đã gỡ {removed} file khỏi composeResources — build lại để APK nhỏ đi")
+
+    print("\nPack đã đưa ra ngoài:", ", ".join(sorted(already | wanted)))
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

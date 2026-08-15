@@ -1,6 +1,7 @@
 package me.ltthuc.kmp.core.content.di
 
 import me.ltthuc.kmp.core.content.AssetLocator
+import me.ltthuc.kmp.core.content.ContentBytes
 import me.ltthuc.kmp.core.content.ContentManifestLoader
 import me.ltthuc.kmp.core.content.ContentPackDownloader
 import org.koin.core.module.Module
@@ -23,6 +24,7 @@ val contentModule = module {
     single { ContentManifestLoader() }
     single { AssetLocator(get(), get(), get<ContentConfig>().cdnBaseUrl) }
     single { ContentPackDownloader(get(), get(), get(), get()) }
+    single { ContentBytes(get(), get()) }
 
     includes(contentPlatformModule)
 }

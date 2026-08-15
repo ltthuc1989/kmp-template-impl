@@ -3,7 +3,7 @@
     "id": "L1_S01",
     "title": "Apple, Ant, Cat",
     "level": 1,
-    "after_unit": 1,
+    "unit_number": 1,
     "phonics_used": [
       "A",
       "B",
@@ -225,7 +225,7 @@
     "id": "L1_S02",
     "title": "Egg on the Farm",
     "level": 1,
-    "after_unit": 2,
+    "unit_number": 2,
     "phonics_used": [
       "D",
       "E",
@@ -417,7 +417,7 @@
     "id": "L1_S03",
     "title": "A Gift",
     "level": 1,
-    "after_unit": 3,
+    "unit_number": 3,
     "phonics_used": [
       "G",
       "H",
@@ -584,7 +584,7 @@
     "id": "L1_S04",
     "title": "King and Kite",
     "level": 1,
-    "after_unit": 4,
+    "unit_number": 4,
     "phonics_used": [
       "J",
       "K",
@@ -781,7 +781,7 @@
     "id": "L1_S05",
     "title": "Monkey's Nut",
     "level": 1,
-    "after_unit": 5,
+    "unit_number": 5,
     "phonics_used": [
       "M",
       "N",
@@ -963,7 +963,7 @@
     "id": "L1_S06",
     "title": "Queen's Quilt",
     "level": 1,
-    "after_unit": 6,
+    "unit_number": 6,
     "phonics_used": [
       "P",
       "Q",
@@ -1140,7 +1140,7 @@
     "id": "L1_S07",
     "title": "Sun and Rain",
     "level": 1,
-    "after_unit": 7,
+    "unit_number": 7,
     "phonics_used": [
       "S",
       "T",
@@ -1338,7 +1338,7 @@
     "id": "L1_S08",
     "title": "At the Zoo",
     "level": 1,
-    "after_unit": 8,
+    "unit_number": 8,
     "phonics_used": [
       "W",
       "X",

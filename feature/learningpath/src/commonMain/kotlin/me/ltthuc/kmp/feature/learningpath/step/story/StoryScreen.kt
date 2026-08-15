@@ -52,6 +52,7 @@ import kotlinx.coroutines.withContext
 import me.ltthuc.kmp.core.audio.AudioRef
 import me.ltthuc.kmp.core.audio.AudioState
 import me.ltthuc.kmp.core.audio.isActive
+import me.ltthuc.kmp.core.content.ContentBytes
 import me.ltthuc.kmp.core.model.Story
 import me.ltthuc.kmp.core.model.StoryScene
 import me.ltthuc.kmp.core.repository.AudioRepository
@@ -79,7 +80,6 @@ import me.ltthuc.kmp.feature.learningpath.step.common.StepChevronButton
 import me.ltthuc.kmp.feature.learningpath.step.common.StepContinueButton
 import me.ltthuc.kmp.feature.learningpath.step.common.StepHeader
 import me.ltthuc.kmp.feature.learningpath.step.common.StoryStyleCard
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.decodeToImageBitmap
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
@@ -378,17 +378,21 @@ private fun StorySceneImagePager(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun StorySceneCard(scene: StoryScene) {
+    val contentBytes: ContentBytes = koinInject()
     val imagePath = scene.imagePathLandscape
     val bitmap: ImageBitmap? = if (imagePath != null) {
         produceState<ImageBitmap?>(initialValue = null, imagePath) {
+            // Scene art moves out of the app with its unit's content pack, so it may live in
+            // the APK, in the downloaded pack, or still be on the CDN — ContentBytes picks.
             // Decode off the Main recompose dispatcher — decodeToImageBitmap() is synchronous CPU work.
             value = withContext(Dispatchers.Default) {
-                runCatching { Res.readBytes(imagePath).decodeToImageBitmap() }
-                    .onFailure { Napier.w(tag = TAG) { "No image at $imagePath, falling back to emoji" } }
-                    .getOrNull()
+                contentBytes.load(imagePath)?.let { bytes ->
+                    runCatching { bytes.decodeToImageBitmap() }
+                        .onFailure { Napier.w(tag = TAG) { "Undecodable image at $imagePath" } }
+                        .getOrNull()
+                }
             }
         }.value
     } else {
