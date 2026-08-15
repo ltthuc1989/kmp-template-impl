@@ -1,12 +1,17 @@
 package me.ltthuc.kmp.core.repository
 
 import io.github.aakira.napier.Napier
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import me.ltthuc.kmp.core.content.ContentManifestLoader
 import me.ltthuc.kmp.core.content.ContentPackDownloader
 import me.ltthuc.kmp.core.content.DownloadProgress
@@ -23,7 +28,30 @@ sealed interface PackState {
 
     data object Ready : PackState
 
-    data class Failed(val cause: Throwable, val bytes: Long) : PackState
+    /**
+     * [retryable] separates "the connection dropped" from "the device is full" or "the file
+     * is not on the CDN". Only the first is fixed by tapping again; offering a retry button
+     * for the others sends the user in a loop.
+     */
+    data class Failed(val cause: Throwable, val bytes: Long, val retryable: Boolean) : PackState
+}
+
+private const val HTTP_NOT_FOUND = "HTTP 404"
+
+/** Walks the cause chain — the downloader wraps the real failure after its last attempt. */
+internal fun isRetryableFailure(cause: Throwable?): Boolean {
+    var current = cause
+    while (current != null) {
+        val message = current.message.orEmpty()
+        if (message.contains("No space left", ignoreCase = true) ||
+            message.contains("ENOSPC", ignoreCase = true) ||
+            message.contains(HTTP_NOT_FOUND)
+        ) {
+            return false
+        }
+        current = current.cause
+    }
+    return true
 }
 
 /**
@@ -39,6 +67,12 @@ class ContentPackRepository(
     private val downloader: ContentPackDownloader,
     private val packStore: PackStore,
 ) {
+    // The repository owns this scope on purpose: a background fill must outlive the screen
+    // that started it, so the rest of a level keeps arriving while the child is already in a
+    // lesson. A screen-scoped coroutine would die at the first navigation.
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    private var backgroundJob: Job? = null
+
     private val states = MutableStateFlow<Map<String, PackState>>(emptyMap())
 
     /** Live state per pack id, e.g. `"L1U3"`. Absent means "not looked at yet". */
@@ -92,10 +126,33 @@ class ContentPackRepository(
                     is kotlin.coroutines.cancellation.CancellationException -> Unit
                     else -> {
                         Napier.e("Pack $packId download failed", cause)
-                        publish(packId, PackState.Failed(cause, downloader.pendingBytes(packId)))
+                        publish(
+                            packId,
+                            PackState.Failed(
+                                cause = cause,
+                                bytes = downloader.pendingBytes(packId),
+                                retryable = isRetryableFailure(cause),
+                            ),
+                        )
                     }
                 }
             }
+
+    /**
+     * Quietly fetches whatever [levelId] is still missing, one pack at a time, after the unit
+     * the child actually tapped is already playing. Failures stay silent — this is a
+     * head start, not something anyone is waiting on; a unit that misses out simply shows
+     * its download badge when it is reached.
+     */
+    fun downloadLevelInBackground(levelId: String) {
+        if (backgroundJob?.isActive == true) return
+        backgroundJob = scope.launch {
+            for (packId in packIdsForLevel(levelId)) {
+                if (refresh(packId) !is PackState.NotDownloaded) continue
+                runCatching { download(packId).collect { } }
+            }
+        }
+    }
 
     /** Frees a pack's files. Access is untouched — the unit stays unlocked, just re-downloadable. */
     suspend fun delete(packId: String) {

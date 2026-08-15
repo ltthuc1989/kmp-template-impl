@@ -1,5 +1,6 @@
 package me.ltthuc.kmp.feature.learningpath
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -25,11 +26,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.FileDownload
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -42,6 +47,7 @@ import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -51,6 +57,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.text.font.FontWeight
@@ -85,10 +92,23 @@ import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
+private const val PERCENT = 100f
 private val AccentRed = Color(0xFFE63946)
+private val WarnAmber = Color(0xFF9A6B00)
 private val SoftPink = Color(0xFFF7B4BC)
 private val LockedGray = Color(0xFFE4E7EB)
 private val LockedTextGray = Color(0xFF9AA3AF)
+
+/**
+ * Until a pack has been looked at, assume it is [UnitContent.Ready]: showing a download
+ * badge that resolves away a frame later would flicker on every unit that ships in the app.
+ */
+private fun PackState?.toUnitContent(): UnitContent = when (this) {
+    null, PackState.Bundled, PackState.Ready -> UnitContent.Ready
+    is PackState.NotDownloaded -> UnitContent.NeedsDownload
+    is PackState.Downloading -> UnitContent.Downloading(progress.fraction)
+    is PackState.Failed -> UnitContent.Failed(retryable = retryable)
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -102,6 +122,7 @@ internal fun UnitSelectionScreen(
     val sfx: SfxController = koinInject()
     val packRepository: ContentPackRepository = koinInject()
     val unitScope = rememberCoroutineScope()
+    val packStates by packRepository.packStates.collectAsStateWithLifecycle()
     val lang = LocalAppLanguage.current
     // Settings sits behind a parental gate; show it in-place so the backstack (→ unit list) is kept.
     var showSettingsGate by remember { mutableStateOf(false) }
@@ -132,6 +153,13 @@ internal fun UnitSelectionScreen(
                 // painted over by AsyncLoadContents' default background (matches LessonMapScreen).
                 containerColor = Color.Transparent,
             ) { uiState ->
+                // Ask the store which units are already on the device. Cheap (a manifest map
+                // lookup plus a file check per pack) and it settles before the first frame the
+                // child could tap, so no badge appears and then vanishes.
+                LaunchedEffect(uiState.units) {
+                    uiState.units.forEach { packRepository.refresh(it.unit.id) }
+                }
+
                 UnitSelectionList(
                     units = uiState.units,
                     contentPadding = PaddingValues(
@@ -140,6 +168,7 @@ internal fun UnitSelectionScreen(
                         start = 16.dp,
                         end = 16.dp,
                     ),
+                    contentFor = { card -> packStates[card.unit.id].toUnitContent() },
                     onUnitClick = { card ->
                         when (card.status) {
                             // Sequential lock (level already paid, but an earlier unit isn't finished —
@@ -164,17 +193,20 @@ internal fun UnitSelectionScreen(
                             UnitStatus.Unlocked,
                             -> unitScope.launch {
                                 val packId = card.unit.id
-                                val ready = when (packRepository.refresh(packId)) {
-                                    PackState.Bundled, PackState.Ready -> true
-                                    else -> false
+                                val open = { navBackStack.add(Destination.Learning.LessonMap(levelId, packId)) }
+                                when (packRepository.refresh(packId)) {
+                                    PackState.Bundled, PackState.Ready -> open()
+                                    // Fetch the tapped unit alone first (~1.3MB, about a second)
+                                    // and open as soon as it lands; the rest of the level follows
+                                    // in the background. Waiting for all 8.7MB would be fifteen
+                                    // seconds of staring for content the child does not need yet.
+                                    else -> runCatching {
+                                        packRepository.download(packId).collect { }
+                                    }.onSuccess {
+                                        open()
+                                        packRepository.downloadLevelInBackground(levelId)
+                                    }
                                 }
-                                navBackStack.add(
-                                    if (ready) {
-                                        Destination.Learning.LessonMap(levelId, packId)
-                                    } else {
-                                        Destination.Download(levelId)
-                                    },
-                                )
                             }
                         }
                     },
@@ -203,6 +235,7 @@ private fun UnitSelectionList(
     units: ImmutableList<UnitCard>,
     contentPadding: PaddingValues,
     onUnitClick: (UnitCard) -> Unit,
+    contentFor: (UnitCard) -> UnitContent,
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -218,6 +251,7 @@ private fun UnitSelectionList(
                 isFirst = index == 0,
                 isLast = index == units.lastIndex,
                 onClick = { onUnitClick(card) },
+                content = contentFor(card),
             )
         }
     }
@@ -229,6 +263,7 @@ private fun UnitRow(
     isFirst: Boolean,
     isLast: Boolean,
     onClick: () -> Unit,
+    content: UnitContent,
 ) {
     Row(
         modifier = Modifier
@@ -247,6 +282,7 @@ private fun UnitRow(
         UnitCardItem(
             card = card,
             onClick = onClick,
+            content = content,
             modifier = Modifier
                 .weight(1f)
                 .padding(vertical = CardVerticalPadding),
@@ -450,6 +486,7 @@ private fun BadgeLock(modifier: Modifier = Modifier) {
 private fun UnitCardItem(
     card: UnitCard,
     onClick: () -> Unit,
+    content: UnitContent,
     modifier: Modifier = Modifier,
 ) {
     // Sequential lock = greyed + not clickable; premium lock = greyed but tappable (opens paywall).
@@ -513,7 +550,7 @@ private fun UnitCardItem(
                     }
                 }
                 Spacer(Modifier.width(8.dp))
-                ActionPlayButton(status = card.status)
+                ActionPlayButton(status = card.status, content = content)
             }
             if (!isLocked) {
                 card.unit.themeChip?.let { theme ->
@@ -556,8 +593,75 @@ private fun LetterPreview(item: UnitLetterPreview) {
     }
 }
 
+/**
+ * Whether this unit's audio and pictures are on the device — orthogonal to [UnitStatus],
+ * which says whether the child is allowed in. A unit can be unlocked but not yet fetched.
+ */
+internal sealed interface UnitContent {
+    /** In the app or already downloaded. */
+    data object Ready : UnitContent
+    data object NeedsDownload : UnitContent
+    data class Downloading(val fraction: Float) : UnitContent
+
+    /** [retryable] false = out of space or a missing file; tapping again cannot help. */
+    data class Failed(val retryable: Boolean) : UnitContent
+}
+
+/**
+ * The card's trailing slot. It already carried "may I enter?" (play / lock); it now also
+ * carries "is it here?" — one slot, one glance, instead of a second indicator elsewhere.
+ * Lock always wins: an unpurchased unit must never show a download affordance.
+ */
 @Composable
-private fun ActionPlayButton(status: UnitStatus) {
+private fun ActionPlayButton(status: UnitStatus, content: UnitContent) {
+    if (status != UnitStatus.PremiumLocked && status != UnitStatus.Locked) {
+        when (content) {
+            is UnitContent.NeedsDownload -> {
+                SlotCircle {
+                    Icon(
+                        imageVector = Icons.Filled.FileDownload,
+                        contentDescription = "Download this unit",
+                        tint = AccentRed,
+                        modifier = Modifier.size(17.dp),
+                    )
+                }
+                return
+            }
+            is UnitContent.Downloading -> {
+                val animated by animateFloatAsState(content.fraction, label = "unitDownload")
+                Box(modifier = Modifier.size(PlayButtonSize), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator(
+                        progress = { animated },
+                        modifier = Modifier.fillMaxSize(),
+                        color = AccentRed,
+                        trackColor = AccentRed.copy(alpha = 0.16f),
+                        strokeWidth = 2.5.dp,
+                        strokeCap = StrokeCap.Round,
+                    )
+                    Text(
+                        text = "${(animated * PERCENT).toInt()}",
+                        fontSize = 9.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = AccentRed,
+                    )
+                }
+                return
+            }
+            is UnitContent.Failed -> {
+                SlotCircle(tint = if (content.retryable) AccentRed else WarnAmber) {
+                    Icon(
+                        imageVector = if (content.retryable) Icons.Filled.Refresh else Icons.Filled.Warning,
+                        contentDescription = if (content.retryable) "Retry download" else "Cannot download",
+                        tint = if (content.retryable) AccentRed else WarnAmber,
+                        modifier = Modifier.size(17.dp),
+                    )
+                }
+                return
+            }
+            UnitContent.Ready -> Unit
+        }
+    }
+
     when (status) {
         UnitStatus.Completed -> Box(
             modifier = Modifier
@@ -603,6 +707,18 @@ private fun ActionPlayButton(status: UnitStatus) {
         }
         UnitStatus.Locked -> Spacer(Modifier.size(PlayButtonSize))
     }
+}
+
+@Composable
+private fun SlotCircle(tint: Color = AccentRed, content: @Composable () -> Unit) {
+    Box(
+        modifier = Modifier
+            .size(PlayButtonSize)
+            .clip(CircleShape)
+            .border(1.5.dp, tint, CircleShape),
+        contentAlignment = Alignment.Center,
+        content = { content() },
+    )
 }
 
 @Composable
