@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import me.ltthuc.kmp.core.content.ContentManifestLoader
+import me.ltthuc.kmp.core.content.ManifestSource
 import me.ltthuc.kmp.core.content.ContentPackDownloader
 import me.ltthuc.kmp.core.content.DownloadProgress
 import me.ltthuc.kmp.core.content.PackFiles
@@ -64,7 +64,7 @@ internal fun isRetryableFailure(cause: Throwable?): Boolean {
  * changing at all.
  */
 class ContentPackRepository(
-    private val manifestLoader: ContentManifestLoader,
+    private val manifestSource: ManifestSource,
     private val downloader: ContentPackDownloader,
     private val packFiles: PackFiles,
 ) {
@@ -87,7 +87,7 @@ class ContentPackRepository(
 
     /** Packs belonging to [levelId], in curriculum order — `["L1U3", "L1U4", …]`. */
     suspend fun packIdsForLevel(levelId: String): List<String> =
-        manifestLoader.load()
+        manifestSource.load()
             .downloadablePackIds()
             .filter { it.startsWith("${levelId}U") }
             .sortedBy { it.substringAfter("U").toIntOrNull() ?: 0 }
@@ -98,14 +98,14 @@ class ContentPackRepository(
 
     /** Bytes currently stored on disk for [levelId], for the storage screen. */
     suspend fun storedBytesForLevel(levelId: String): Long {
-        val manifest = manifestLoader.load()
+        val manifest = manifestSource.load()
         return packIdsForLevel(levelId).sumOf { packId ->
             packFiles.sizeOf(manifest.assetsInPack(packId).values.map { it.hash })
         }
     }
 
     suspend fun refresh(packId: String): PackState {
-        val manifest = manifestLoader.load()
+        val manifest = manifestSource.load()
         val state = when {
             manifest.isPackBundled(packId) -> PackState.Bundled
             else -> {
@@ -198,7 +198,7 @@ class ContentPackRepository(
 
     /** Frees a pack's files. Access is untouched — the unit stays unlocked, just re-downloadable. */
     suspend fun delete(packId: String) {
-        val manifest = manifestLoader.load()
+        val manifest = manifestSource.load()
         packFiles.delete(manifest.assetsInPack(packId).values.map { it.hash })
         refresh(packId)
     }
@@ -207,7 +207,7 @@ class ContentPackRepository(
     suspend fun deleteAll() {
         queueLock.withLock { queuedLevels.clear() }
         packFiles.clear()
-        manifestLoader.load().downloadablePackIds().forEach { refresh(it) }
+        manifestSource.load().downloadablePackIds().forEach { refresh(it) }
     }
 
     /**
@@ -215,7 +215,7 @@ class ContentPackRepository(
      * behind once an asset's bytes, and therefore its hash, changed.
      */
     suspend fun sweepStaleFiles() {
-        val keep = manifestLoader.load().assets.values.mapTo(mutableSetOf()) { it.hash }
+        val keep = manifestSource.load().assets.values.mapTo(mutableSetOf()) { it.hash }
         packFiles.deleteUnreferenced(keep)
     }
 
