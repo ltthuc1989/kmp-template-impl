@@ -24,6 +24,7 @@ import me.ltthuc.kmp.core.ui.animation.NavigationTransitions
 import me.ltthuc.kmp.core.ui.screen.Destination
 import me.ltthuc.kmp.core.ui.screen.view.AppBottomNavBar
 import me.ltthuc.kmp.core.ui.screen.view.AppBottomNavTab
+import me.ltthuc.kmp.core.ui.screen.view.LocalFloatingNavHeight
 import me.ltthuc.kmp.core.ui.theme.AppDimensions
 import me.ltthuc.kmp.core.ui.theme.LocalAppLocale
 import me.ltthuc.kmp.core.ui.theme.LocalNavBackStack
@@ -85,14 +86,20 @@ internal fun AppNavHost(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(MaterialTheme.colorScheme.background)
-                    .padding(innerPadding),
+                    // Only the top padding is applied: the pill nav floats, so screens run the full
+                    // height and their content passes UNDER it. Its height is handed down instead,
+                    // for screens to pad their scrollable content and fade it out across.
+                    .padding(top = innerPadding.calculateTopPadding()),
                 contentAlignment = Alignment.TopCenter,
             ) {
                 // Kid screens are always English. Re-providing "en" here re-runs the locale
                 // side-effect on every navigation, so returning from Settings (which overrides the
                 // locale to the chosen language) resets kid screens back to English. Parent entries
                 // (Settings/Paywall/Onboarding) override back to LocalAppLanguage inside their entries.
-                CompositionLocalProvider(LocalAppLocale provides "en") {
+                CompositionLocalProvider(
+                    LocalAppLocale provides "en",
+                    LocalFloatingNavHeight provides innerPadding.calculateBottomPadding(),
+                ) {
                     NavDisplay(
                         modifier = Modifier
                             .fillMaxSize()

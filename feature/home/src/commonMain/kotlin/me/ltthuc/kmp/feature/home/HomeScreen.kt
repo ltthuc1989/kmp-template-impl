@@ -64,9 +64,11 @@ import me.ltthuc.kmp.core.ui.ads.BottomBannerAd
 import me.ltthuc.kmp.core.ui.dialog.ParentalGateScreen
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
 import me.ltthuc.kmp.core.ui.screen.Destination
+import me.ltthuc.kmp.core.ui.screen.view.LocalFloatingNavHeight
 import me.ltthuc.kmp.core.ui.theme.LocalAppLanguage
 import me.ltthuc.kmp.core.ui.theme.LocalAppLocale
 import me.ltthuc.kmp.core.ui.theme.LocalNavBackStack
+import me.ltthuc.kmp.core.ui.utils.fadeOutBottom
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -85,15 +87,22 @@ internal fun HomeScreen(
         HomeScreenContent(
             modifier = Modifier.fillMaxSize(),
             onSettings = { showSettingsGate = true },
-            content = {
+            content = { innerPadding ->
+                // The pill nav floats over this list. Reserve its height at the bottom so the last
+                // card can still be scrolled clear of it, and dissolve whatever slides underneath
+                // rather than letting cards run into the pill.
+                val navHeight = LocalFloatingNavHeight.current
                 AsyncLoadContents(
                     modifier = Modifier.fillMaxSize(),
                     screenState = screenState,
                 ) { uiState ->
                     LevelList(
                         levels = uiState.levels,
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = it,
+                        modifier = Modifier.fillMaxSize().fadeOutBottom(navHeight),
+                        contentPadding = PaddingValues(
+                            top = innerPadding.calculateTopPadding(),
+                            bottom = innerPadding.calculateBottomPadding() + navHeight,
+                        ),
                         onLevelClick = { levelCard ->
                             navBackStack.add(Destination.Learning.UnitSelection(levelCard.level.id))
                         },

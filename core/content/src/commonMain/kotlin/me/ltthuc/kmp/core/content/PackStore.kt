@@ -30,6 +30,15 @@ interface PackFiles {
 
     /** Wipes the whole store. */
     fun clear()
+
+    /**
+     * Removes the audio cache written by versions before content packs existed.
+     *
+     * That build copied bundled audio into an LRU cache capped at 50MB, so an updating device
+     * can be carrying tens of megabytes that nothing will ever read again — the class that
+     * owned the directory no longer exists, so nothing else would clean it up.
+     */
+    fun deleteLegacyAudioCache()
 }
 
 /**
@@ -64,4 +73,6 @@ expect class PackStore : PackFiles {
     override fun deleteUnreferenced(keep: Set<String>)
 
     override fun clear()
+
+    override fun deleteLegacyAudioCache()
 }

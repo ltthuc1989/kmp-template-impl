@@ -6,9 +6,11 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.persistentListOf
 import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.nav_home
@@ -16,6 +18,15 @@ import me.ltthuc.kmp.core.resource.nav_settings
 import me.ltthuc.kmp.core.ui.screen.Destination
 import me.ltthuc.kmp.core.ui.theme.LocalNavBackStack
 import org.jetbrains.compose.resources.StringResource
+
+/**
+ * How much of the screen bottom the floating pill nav covers — 0 on screens that don't show it.
+ *
+ * The pill floats OVER the content instead of reserving a strip of layout, so a screen that scrolls
+ * adds this to its bottom content padding (so the last item can still be scrolled clear of the pill)
+ * and fades content out across it with [me.ltthuc.kmp.core.ui.utils.fadeOutBottom].
+ */
+val LocalFloatingNavHeight = compositionLocalOf { 0.dp }
 
 enum class AppBottomNavTab(
     val key: String,

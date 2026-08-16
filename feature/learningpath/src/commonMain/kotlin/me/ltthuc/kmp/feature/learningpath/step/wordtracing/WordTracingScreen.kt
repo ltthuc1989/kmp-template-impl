@@ -457,7 +457,10 @@ private fun LetterCell(
     val cellBg = if (highlighted) TraceHighlightGreen else Color.Transparent
     Box(
         modifier = modifier
-            .size(HEADER_CELL_DP.dp)
+            // Taller than wide on purpose — see [HEADER_CELL_H_DP]. The clip (which rounds the
+            // green highlight) is also what cuts a descender off, so the cell has to be tall
+            // enough to hold one.
+            .size(width = HEADER_CELL_W_DP.dp, height = HEADER_CELL_H_DP.dp)
             .clip(RoundedCornerShape(6.dp))
             .background(cellBg),
     ) {
@@ -473,6 +476,17 @@ private fun LetterCell(
     }
 }
 
-private const val HEADER_CELL_DP = 60
+private const val HEADER_CELL_W_DP = 60
+
+/**
+ * Cells are taller than wide so descenders survive. The glyphs are authored in a 0..100 viewBox but
+ * the tails of `y` and `p` run to y=106 (`g` 104, `j` 101), and GuideLayout scales by
+ * `min(width, height) / 100` and centers — so in a square cell everything past the baseline falls
+ * outside the canvas and the rounded clip shears it off.
+ *
+ * With 60x74 and a 4dp pad the inner box is 52x66: scale 0.52, viewBox centered with 7dp above, so
+ * the deepest tail lands at 7 + 106*0.52 + half a 5.7dp stroke ≈ 65dp — inside 66dp.
+ */
+private const val HEADER_CELL_H_DP = 74
 private const val HEADER_CELL_PAD_DP = 4
 private const val HEADER_GLYPH_FRACTION = 0.11f

@@ -27,6 +27,10 @@ class FakePackFiles(
 
     val storedHashes: Set<String> get() = stored.keys.toSet()
 
+    /** True once the pre-pack audio cache has been asked to go. */
+    var legacyCacheDeleted: Boolean = false
+        private set
+
     override fun pathFor(hash: String): String? = if (stored.containsKey(hash)) "/packs/$hash" else null
 
     override fun has(hash: String): Boolean = stored.containsKey(hash)
@@ -50,6 +54,10 @@ class FakePackFiles(
 
     override fun clear() {
         stored.clear()
+    }
+
+    override fun deleteLegacyAudioCache() {
+        legacyCacheDeleted = true
     }
 
     fun seed(hash: String) {

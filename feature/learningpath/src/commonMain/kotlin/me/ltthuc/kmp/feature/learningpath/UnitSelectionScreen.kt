@@ -129,7 +129,6 @@ internal fun UnitSelectionScreen(
     // Settings sits behind a parental gate; show it in-place so the backstack (→ unit list) is kept.
     var showSettingsGate by remember { mutableStateOf(false) }
 
-    val isStartDestination = navBackStack.size == 1
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
     Box(modifier = modifier.fillMaxSize()) {
         Scaffold(
@@ -142,8 +141,18 @@ internal fun UnitSelectionScreen(
                     title = uiState
                         ?.let { stringResource(Res.string.level_name, it.level.number, it.level.title) }
                         .orEmpty(),
-                    showBackButton = !isStartDestination,
-                    onBack = { if (navBackStack.size > 1) navBackStack.removeAt(navBackStack.size - 1) },
+                    // Back always lands on Home. Usually that is a plain pop, but a cold start can
+                    // restore straight into this screen (lastScreen = UNIT_LIST) with nothing to
+                    // pop — and there is no bottom nav here, so hiding the button (what we used to
+                    // do) left the child with no way out of the level.
+                    onBack = {
+                        if (navBackStack.size > 1) {
+                            navBackStack.removeAt(navBackStack.size - 1)
+                        } else {
+                            navBackStack.clear()
+                            navBackStack.add(Destination.Home)
+                        }
+                    },
                     onSettings = { showSettingsGate = true },
                     scrollBehavior = scrollBehavior,
                 )
@@ -339,7 +348,6 @@ private fun TimelineColumn(
 @Composable
 private fun UnitTopBar(
     title: String,
-    showBackButton: Boolean,
     onBack: () -> Unit,
     onSettings: () -> Unit,
     scrollBehavior: TopAppBarScrollBehavior,
@@ -357,14 +365,12 @@ private fun UnitTopBar(
             )
         },
         navigationIcon = {
-            if (showBackButton) {
-                IconButton(onClick = onBack) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back",
-                        tint = MaterialTheme.colorScheme.onSurface,
-                    )
-                }
+            IconButton(onClick = onBack) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "Back",
+                    tint = MaterialTheme.colorScheme.onSurface,
+                )
             }
         },
         actions = {

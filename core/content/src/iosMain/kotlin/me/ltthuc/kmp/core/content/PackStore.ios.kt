@@ -8,6 +8,7 @@ import kotlinx.cinterop.usePinned
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import platform.Foundation.NSApplicationSupportDirectory
+import platform.Foundation.NSCachesDirectory
 import platform.Foundation.NSData
 import platform.Foundation.NSFileManager
 import platform.Foundation.NSFileSize
@@ -92,7 +93,24 @@ actual class PackStore : PackFiles {
         }
     }
 
+    actual override fun deleteLegacyAudioCache() {
+        // The old cache lived in Caches, not Application Support — iOS may already have purged
+        // it, which is exactly why paid content was moved out of there.
+        val caches = fileManager.URLForDirectory(
+            directory = NSCachesDirectory,
+            inDomain = NSUserDomainMask,
+            appropriateForURL = null,
+            create = false,
+            error = null,
+        ) ?: return
+        val legacy = caches.URLByAppendingPathComponent(LEGACY_AUDIO_CACHE_DIR) ?: return
+        if (fileManager.removeItemAtURL(legacy, null)) {
+            Napier.i("Removed the pre-pack audio cache")
+        }
+    }
+
     private companion object {
         const val STORE_DIR = "content_packs"
+        const val LEGACY_AUDIO_CACHE_DIR = "audio_cache"
     }
 }

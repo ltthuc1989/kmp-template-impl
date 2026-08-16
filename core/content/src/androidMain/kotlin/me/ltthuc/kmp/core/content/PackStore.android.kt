@@ -46,8 +46,16 @@ actual class PackStore(context: Context) : PackFiles {
         dir.listFiles()?.forEach { it.delete() }
     }
 
+    actual override fun deleteLegacyAudioCache() {
+        val legacy = File(dir.parentFile, LEGACY_AUDIO_CACHE_DIR)
+        if (legacy.isDirectory && legacy.deleteRecursively()) {
+            Napier.i("Removed the pre-pack audio cache")
+        }
+    }
+
     private companion object {
         const val STORE_DIR = "content_packs"
+        const val LEGACY_AUDIO_CACHE_DIR = "audio_cache"
         const val TMP_SUFFIX = ".tmp"
     }
 }

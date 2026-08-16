@@ -7,10 +7,12 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import me.ltthuc.kmp.core.repository.AppSettingRepository
 import me.ltthuc.kmp.core.repository.BillingRepository
+import me.ltthuc.kmp.core.repository.ContentPackRepository
 
 class MainViewModel(
     private val settingRepository: AppSettingRepository,
     private val billingRepository: BillingRepository,
+    private val contentPackRepository: ContentPackRepository,
 ) : ViewModel() {
 
     val setting = settingRepository.setting
@@ -23,6 +25,9 @@ class MainViewModel(
 
         viewModelScope.launch {
             settingRepository.initializeIdIfNeeded()
+            // Clears what an app update leaves behind: the pre-pack audio cache, and pack files
+            // superseded by new content. Nothing else would ever remove either.
+            contentPackRepository.cleanUpAfterUpdate()
         }
     }
 

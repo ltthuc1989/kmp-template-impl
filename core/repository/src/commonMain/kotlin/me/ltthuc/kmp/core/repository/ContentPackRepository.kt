@@ -211,6 +211,22 @@ class ContentPackRepository(
     }
 
     /**
+     * One-time-per-launch tidy after an app update. Cheap when there is nothing to do, so it
+     * needs no "already done" flag: both steps are no-ops once the disk is clean.
+     *
+     * Two kinds of leftovers, from two different causes. Versions before content packs copied
+     * bundled audio into an LRU cache that no longer has any owner in the code, and a content
+     * update leaves the previous bytes of every changed asset behind under their old hash.
+     * Neither has anything that would otherwise remove it.
+     */
+    suspend fun cleanUpAfterUpdate() {
+        runCatching {
+            packFiles.deleteLegacyAudioCache()
+            sweepStaleFiles()
+        }.onFailure { Napier.w("Post-update cleanup skipped: ${it.message}") }
+    }
+
+    /**
      * Sweeps files no longer referenced by the manifest — what a content update leaves
      * behind once an asset's bytes, and therefore its hash, changed.
      */
