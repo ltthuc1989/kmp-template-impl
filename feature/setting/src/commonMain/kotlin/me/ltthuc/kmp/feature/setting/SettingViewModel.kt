@@ -131,7 +131,10 @@ class SettingViewModel(
      */
     fun unlockAllLevelsAsPurchased() {
         viewModelScope.launch {
-            repository.setOwnedLevelIds(levels.value.map { it.id }.toSet())
+            val levelIds = levels.value.map { it.id }
+            repository.setOwnedLevelIds(levelIds.toSet())
+            // Mirror what a real purchase does, so QA sees the same auto-download.
+            levelIds.forEach(contentPackRepository::downloadLevelInBackground)
         }
     }
 

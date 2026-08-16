@@ -7,9 +7,21 @@ import me.ltthuc.kmp.core.billing.model.PurchaseResult
 import me.ltthuc.kmp.core.billing.model.SubscriptionPlan
 import me.ltthuc.kmp.core.billing.model.SubscriptionState
 
+/**
+ * Purchases, and the one place ownership changes — so it is also where a newly unlocked level
+ * starts fetching its content.
+ *
+ * Downloading here rather than when the child opens a unit is about connectivity, not
+ * convenience: buying requires a network, so this is the only moment the app *knows* it is
+ * online, and the parent is holding the phone. Waiting until a unit is tapped moves the fetch to
+ * an arbitrary later moment — a car, a plane, weak signal — with a 3-to-8-year-old holding the
+ * device and no one able to act on a failure. Per-unit download stays as the fallback for the
+ * paths that skip this one: restoring on a new device, deleting a pack, a download that failed.
+ */
 class BillingRepository(
     private val billingDataSource: BillingDataSource,
     private val appSettingRepository: AppSettingRepository,
+    private val contentPackRepository: ContentPackRepository,
 ) {
     val subscriptionState: Flow<SubscriptionState> = billingDataSource.subscriptionState
 
@@ -75,7 +87,15 @@ class BillingRepository(
     }
 
     private suspend fun syncOwnedLevels() {
-        appSettingRepository.setOwnedLevelIds(billingDataSource.getCurrentOwnedLevelIds())
+        val previouslyOwned = appSettingRepository.setting.value.ownedLevelIds
+        val owned = billingDataSource.getCurrentOwnedLevelIds()
+
+        appSettingRepository.setOwnedLevelIds(owned)
         appSettingRepository.setPlusMode(billingDataSource.getCurrentSubscriptionState().isPremium)
+
+        // Only levels that just became owned. Deliberately not "every owned level missing
+        // content": a parent who cleared a pack to free space should not have it pulled back
+        // behind their back, and app launch carries no guarantee of a network.
+        (owned - previouslyOwned).forEach(contentPackRepository::downloadLevelInBackground)
     }
 }
