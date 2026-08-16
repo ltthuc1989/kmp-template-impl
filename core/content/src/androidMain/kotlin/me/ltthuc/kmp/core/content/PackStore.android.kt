@@ -6,17 +6,17 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
 
-actual class PackStore(context: Context) {
+actual class PackStore(context: Context) : PackFiles {
 
     // filesDir, not cacheDir: Android reclaims cacheDir under storage pressure and paid
     // curriculum must survive that.
     private val dir: File = File(context.filesDir, STORE_DIR).apply { mkdirs() }
 
-    actual fun pathFor(hash: String): String? = File(dir, hash).takeIf { it.isFile }?.absolutePath
+    actual override fun pathFor(hash: String): String? = File(dir, hash).takeIf { it.isFile }?.absolutePath
 
-    actual fun has(hash: String): Boolean = File(dir, hash).isFile
+    actual override fun has(hash: String): Boolean = File(dir, hash).isFile
 
-    actual suspend fun put(hash: String, bytes: ByteArray): String = withContext(Dispatchers.IO) {
+    actual override suspend fun put(hash: String, bytes: ByteArray): String = withContext(Dispatchers.IO) {
         val target = File(dir, hash)
         val tmp = File(dir, "$hash$TMP_SUFFIX")
         tmp.writeBytes(bytes)

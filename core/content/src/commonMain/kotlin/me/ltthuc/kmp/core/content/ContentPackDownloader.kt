@@ -8,6 +8,7 @@ import io.ktor.http.isSuccess
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.sync.Mutex
@@ -44,17 +45,17 @@ data class DownloadProgress(
  */
 class ContentPackDownloader(
     private val client: HttpClient,
-    private val manifestLoader: ContentManifestLoader,
+    private val manifestSource: ManifestSource,
     private val locator: AssetLocator,
-    private val packStore: PackStore,
+    private val packFiles: PackFiles,
 ) {
     /**
      * Emits progress until the pack is complete. Cancelling the collector cancels the
      * download; whatever finished stays on disk and counts on the next attempt.
      */
     fun download(packId: String): Flow<DownloadProgress> = channelFlow {
-        val assets = manifestLoader.load().assetsInPack(packId)
-        val pending = assets.filterValues { !packStore.has(it.hash) }
+        val assets = manifestSource.load().assetsInPack(packId)
+        val pending = assets.filterValues { !packFiles.has(it.hash) }
 
         if (pending.isEmpty()) {
             send(DownloadProgress.COMPLETE.copy(filesTotal = assets.size, filesDone = assets.size))
@@ -95,15 +96,15 @@ class ContentPackDownloader(
      */
     suspend fun fetchOne(logicalPath: String, asset: ContentAsset): String {
         fetch(logicalPath, asset)
-        return packStore.pathFor(asset.hash)
+        return packFiles.pathFor(asset.hash)
             ?: error("Downloaded $logicalPath but it is not in the pack store")
     }
 
     /** Bytes a pack still needs, for a "download will use X MB" prompt. */
     suspend fun pendingBytes(packId: String): Long =
-        manifestLoader.load().assetsInPack(packId)
+        manifestSource.load().assetsInPack(packId)
             .values
-            .filterNot { packStore.has(it.hash) }
+            .filterNot { packFiles.has(it.hash) }
             .sumOf { it.bytes }
 
     private suspend fun fetch(logicalPath: String, asset: ContentAsset) {
@@ -120,11 +121,15 @@ class ContentPackDownloader(
             }
 
             result.onSuccess { bytes ->
-                packStore.put(asset.hash, bytes)
+                packFiles.put(asset.hash, bytes)
                 return
             }.onFailure { cause ->
                 lastError = cause
                 Napier.w("Pack fetch attempt ${attempt + 1} failed for $logicalPath: ${cause.message}")
+                // Back off before trying again. Three retries fired back-to-back all hit the same
+                // half-second of bad signal and fail together, which is a slower way of not
+                // retrying at all. Test time is virtual, so this costs the suite nothing.
+                if (attempt < MAX_ATTEMPTS - 1) delay(RETRY_BACKOFF_MS * (attempt + 1))
             }
         }
 
@@ -134,5 +139,6 @@ class ContentPackDownloader(
     private companion object {
         const val MAX_PARALLEL = 4
         const val MAX_ATTEMPTS = 3
+        const val RETRY_BACKOFF_MS = 400L
     }
 }

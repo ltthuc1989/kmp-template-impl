@@ -19,7 +19,7 @@ import platform.Foundation.create
 import platform.Foundation.writeToURL
 
 @OptIn(ExperimentalForeignApi::class)
-actual class PackStore {
+actual class PackStore : PackFiles {
 
     private val fileManager = NSFileManager.defaultManager
 
@@ -45,15 +45,15 @@ actual class PackStore {
 
     private fun urlFor(hash: String): NSURL? = dirUrl.URLByAppendingPathComponent(hash)
 
-    actual fun pathFor(hash: String): String? {
+    actual override fun pathFor(hash: String): String? {
         val path = urlFor(hash)?.path ?: return null
         return path.takeIf { fileManager.fileExistsAtPath(it) }
     }
 
-    actual fun has(hash: String): Boolean = pathFor(hash) != null
+    actual override fun has(hash: String): Boolean = pathFor(hash) != null
 
     @OptIn(BetaInteropApi::class)
-    actual suspend fun put(hash: String, bytes: ByteArray): String = withContext(Dispatchers.Default) {
+    actual override suspend fun put(hash: String, bytes: ByteArray): String = withContext(Dispatchers.Default) {
         val target = urlFor(hash) ?: error("Unable to compose PackStore file URL for '$hash'")
         val data: NSData = bytes.usePinned { pinned ->
             NSData.create(bytes = pinned.addressOf(0), length = bytes.size.toULong())

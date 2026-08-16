@@ -1,6 +1,26 @@
 package me.ltthuc.kmp.core.content
 
 /**
+ * The storage surface the download path actually needs. Split out from [PackStore] because that
+ * is an `expect class` and so cannot be substituted in commonTest — everything interesting about
+ * downloading (resume, retry, progress) is testable against an in-memory stand-in.
+ */
+interface PackFiles {
+
+    /** Absolute path of the stored file for [hash], or null when it is not on disk. */
+    fun pathFor(hash: String): String?
+
+    fun has(hash: String): Boolean
+
+    /**
+     * Writes [bytes] under [hash] and returns the absolute path. Implementations write to a temp
+     * file and rename, so a process death mid-write can never leave a truncated file that later
+     * looks complete.
+     */
+    suspend fun put(hash: String, bytes: ByteArray): String
+}
+
+/**
  * Pinned on-disk store for downloaded content packs.
  *
  * Deliberately NOT an LRU cache. Pack content is paid-for (or ad-unlocked) curriculum: if
@@ -16,19 +36,14 @@ package me.ltthuc.kmp.core.content
  * which iOS may purge under storage pressure) with the iCloud backup flag cleared, since
  * re-downloadable content must not consume the user's iCloud quota.
  */
-expect class PackStore {
 
-    /** Absolute path of the stored file for [hash], or null when it is not on disk. */
-    fun pathFor(hash: String): String?
+expect class PackStore : PackFiles {
 
-    fun has(hash: String): Boolean
+    override fun pathFor(hash: String): String?
 
-    /**
-     * Writes [bytes] under [hash] and returns the absolute path. Writes to a temp file and
-     * renames, so a process death mid-write can never leave a truncated file that later
-     * looks complete.
-     */
-    suspend fun put(hash: String, bytes: ByteArray): String
+    override fun has(hash: String): Boolean
+
+    override suspend fun put(hash: String, bytes: ByteArray): String
 
     /** Total bytes currently stored for [hashes]. */
     fun sizeOf(hashes: Collection<String>): Long

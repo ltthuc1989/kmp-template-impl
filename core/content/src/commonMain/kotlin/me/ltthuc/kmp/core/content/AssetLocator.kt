@@ -33,22 +33,22 @@ sealed interface AssetSource {
  * forever with no revalidation, no ETag round-trip, and correct behaviour offline.
  */
 class AssetLocator(
-    private val manifestLoader: ContentManifestLoader,
-    private val packStore: PackStore,
+    private val manifestSource: ManifestSource,
+    private val packFiles: PackFiles,
     private val cdnBaseUrl: String,
 ) {
     private val presence = mutableMapOf<String, Boolean>()
     private val presenceLock = Mutex()
 
     suspend fun resolve(logicalPath: String): AssetSource {
-        val asset = manifestLoader.load().assets[logicalPath]
+        val asset = manifestSource.load().assets[logicalPath]
             ?: return bundledUri(logicalPath)
                 ?.let { AssetSource.Bundled(it) }
                 ?: AssetSource.Missing.also {
                     Napier.w("Asset '$logicalPath' is not in the app and not in the manifest")
                 }
 
-        packStore.pathFor(asset.hash)?.let { return AssetSource.Local(it) }
+        packFiles.pathFor(asset.hash)?.let { return AssetSource.Local(it) }
         return AssetSource.Remote(urlFor(logicalPath, asset), asset)
     }
 

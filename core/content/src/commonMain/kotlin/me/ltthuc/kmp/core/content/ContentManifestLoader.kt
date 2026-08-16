@@ -7,6 +7,11 @@ import kotlinx.serialization.json.Json
 import me.ltthuc.kmp.core.resource.Res
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 
+/** Where the manifest comes from. An interface so tests can supply one without Compose Resources. */
+interface ManifestSource {
+    suspend fun load(): ContentManifest
+}
+
 /**
  * Reads the bundled [ContentManifest] once per process and keeps it in memory.
  *
@@ -15,13 +20,13 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
  * behaved before packs existed. A child mid-lesson must never hit a crash because a JSON
  * file failed to parse.
  */
-class ContentManifestLoader {
+class ContentManifestLoader : ManifestSource {
     private val json = Json { ignoreUnknownKeys = true }
     private val mutex = Mutex()
     private var cached: ContentManifest? = null
 
     @OptIn(ExperimentalResourceApi::class)
-    suspend fun load(): ContentManifest {
+    override suspend fun load(): ContentManifest {
         cached?.let { return it }
         return mutex.withLock {
             cached ?: run {
