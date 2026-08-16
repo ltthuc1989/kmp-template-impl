@@ -13,9 +13,9 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import me.ltthuc.kmp.core.content.ManifestSource
 import me.ltthuc.kmp.core.content.ContentPackDownloader
 import me.ltthuc.kmp.core.content.DownloadProgress
+import me.ltthuc.kmp.core.content.ManifestSource
 import me.ltthuc.kmp.core.content.PackFiles
 
 /** What the app knows about one unit's content pack right now. */

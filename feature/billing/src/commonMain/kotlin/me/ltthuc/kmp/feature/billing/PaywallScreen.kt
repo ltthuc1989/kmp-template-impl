@@ -17,7 +17,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -29,7 +28,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.collections.immutable.ImmutableList
@@ -38,11 +36,8 @@ import me.ltthuc.kmp.core.billing.model.SubscriptionPlan
 import me.ltthuc.kmp.core.model.Level
 import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.common_close
-import me.ltthuc.kmp.core.resource.paywall_billing_terms
-import me.ltthuc.kmp.core.resource.paywall_content_summary
 import me.ltthuc.kmp.core.resource.paywall_error_no_subscription_to_restore
 import me.ltthuc.kmp.core.resource.paywall_error_purchase_failed
-import me.ltthuc.kmp.core.resource.paywall_one_time_note
 import me.ltthuc.kmp.core.ui.dialog.ParentalGateScreen
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
 import me.ltthuc.kmp.core.ui.theme.LocalNavBackStack
@@ -68,7 +63,6 @@ internal fun PaywallScreen(
     val screenState by viewModel.screenState.collectAsStateWithLifecycle()
     val purchaseState by viewModel.purchaseState.collectAsStateWithLifecycle()
     val level by viewModel.level.collectAsStateWithLifecycle()
-    val contentSummary by viewModel.contentSummary.collectAsStateWithLifecycle()
     val selectedPlan by viewModel.selectedPlan.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     // Purchases must sit behind the parental gate. If we were already gated (Pro icon path),
@@ -109,7 +103,6 @@ internal fun PaywallScreen(
             PaywallContent(
                 modifier = Modifier.fillMaxSize(),
                 level = level,
-                contentSummary = contentSummary,
                 products = state.products,
                 selectedPlan = selectedPlan,
                 purchaseState = purchaseState,
@@ -140,7 +133,6 @@ internal fun PaywallScreen(
 @Composable
 private fun PaywallContent(
     level: Level?,
-    contentSummary: Triple<Int, Int, Int>?,
     products: ImmutableList<ProductInfo>,
     selectedPlan: SubscriptionPlan,
     purchaseState: PurchaseUiState,
@@ -189,22 +181,6 @@ private fun PaywallContent(
                     .padding(top = 8.dp),
             )
 
-            // Counted, not estimated. Two free units expose every screen the app has but only a
-            // quarter of the content, so how much more there is is precisely what trying it
-            // cannot show — and it is the question this line exists to answer.
-            contentSummary?.let { (units, lessons, stories) ->
-                Text(
-                    text = stringResource(Res.string.paywall_content_summary, units, lessons, stories),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    textAlign = TextAlign.Center,
-                )
-            }
-
-            // No weight(): this Column scrolls, so it measures children with unbounded height
-            // and weight() demands a bounded one — the pair throws at measure time, which is why
-            // the paywall crashed the moment it was opened. In a scrolling column the list simply
-            // takes the height it needs.
             PaywallFeatureList(
                 levelTitle = level?.title.orEmpty(),
                 unitCount = level?.totalUnits ?: 0,
@@ -218,33 +194,11 @@ private fun PaywallContent(
                 onPlanSelected = onPlanSelected,
             )
 
-            // Where a subscription app puts "3-day free trial, cancel anytime". That line answers
-            // a fear this product does not create — there is no renewal and nothing to cancel —
-            // so it says the true thing instead, which happens to be the stronger one against a
-            // market whose biggest local player is criticised for its subscription.
-            Text(
-                text = stringResource(Res.string.paywall_one_time_note),
-                style = MaterialTheme.typography.titleSmall,
-                color = MaterialTheme.colorScheme.onSurface,
-                textAlign = TextAlign.Center,
-            )
-
             PaywallFooter(
                 modifier = Modifier.fillMaxWidth(),
                 isLoading = isLoading,
                 onPurchaseClicked = onPurchaseClicked,
                 onRestoreClicked = onRestoreClicked,
-            )
-
-            // The store requires the billing terms to be stated. Copying a subscription app's
-            // wording here would describe a renewal that never happens — a refund request and a
-            // review policy problem at once.
-            Text(
-                text = stringResource(Res.string.paywall_billing_terms),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(bottom = 16.dp),
             )
         }
     }

@@ -18,17 +18,13 @@ class BillingRepository(
     }
 
     /**
-     * Products for a level-context paywall: this level, and the all-levels bundle.
-     *
-     * The bundle was held back while only Level 1 existed — advertising levels that do not ship
-     * is a refund waiting to happen. Level 2 has shipped, so it is offered again: someone buying
-     * two levels separately pays $10 for what the bundle covers at $20 across five, and both
-     * sides lose from hiding that. Offering a second, larger one-time option next to the small
-     * one is also the change RevenueCat measures as lifting total conversion 15-25%.
+     * The single level this paywall is for. The all-levels bundle stays out of it until enough
+     * levels exist to be worth bundling — with two shipped, it would charge for three that are
+     * not there yet.
      */
     suspend fun getProductsForLevel(levelId: String?): List<ProductInfo> {
         val plan = levelId?.let { SubscriptionPlan.forLevel(it) } ?: return emptyList()
-        return billingDataSource.getProducts(listOf(plan, SubscriptionPlan.BUNDLE))
+        return billingDataSource.getProducts(listOf(plan))
     }
 
     suspend fun getProducts(): List<ProductInfo> =

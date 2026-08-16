@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -20,7 +19,6 @@ import me.ltthuc.kmp.core.common.suspendRunCatching
 import me.ltthuc.kmp.core.model.Level
 import me.ltthuc.kmp.core.repository.BillingRepository
 import me.ltthuc.kmp.core.repository.LevelRepository
-import me.ltthuc.kmp.core.repository.StoryRepository
 import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.error_network
 import me.ltthuc.kmp.core.ui.screen.ScreenState
@@ -28,13 +26,8 @@ import me.ltthuc.kmp.core.ui.screen.ScreenState
 class PaywallViewModel(
     private val billingRepository: BillingRepository,
     private val levelRepository: LevelRepository,
-    private val storyRepository: StoryRepository,
     private val levelId: String?,
 ) : ViewModel() {
-
-    /** Units, lessons and stories in this level — counted, so the paywall can state them. */
-    private val _contentSummary = MutableStateFlow<Triple<Int, Int, Int>?>(null)
-    val contentSummary: StateFlow<Triple<Int, Int, Int>?> = _contentSummary.asStateFlow()
 
     /** The level this paywall is actually selling, so the copy can name it. */
     val level: StateFlow<Level?> = levelRepository.observeLevelCards()
@@ -56,16 +49,6 @@ class PaywallViewModel(
 
     init {
         fetch()
-        viewModelScope.launch {
-            val id = levelId ?: return@launch
-            runCatching {
-                val summary = levelRepository.contentSummary(id)
-                val level = levelRepository.observeLevelCards().first()
-                    .firstOrNull { it.level.id == id }?.level
-                val stories = level?.let { storyRepository.loadStories(it.number).size } ?: 0
-                Triple(summary.units, summary.lessons, stories)
-            }.onSuccess { _contentSummary.value = it }
-        }
     }
 
     fun fetch() {

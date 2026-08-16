@@ -3,7 +3,6 @@ package me.ltthuc.kmp.core.repository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
@@ -12,7 +11,6 @@ import kotlinx.serialization.json.Json
 import me.ltthuc.kmp.core.datasource.db.DatabaseSeeder
 import me.ltthuc.kmp.core.datasource.db.dao.LearningProgressDao
 import me.ltthuc.kmp.core.datasource.db.dao.LevelDao
-import me.ltthuc.kmp.core.datasource.db.dao.PhonicsLessonDao
 import me.ltthuc.kmp.core.datasource.db.dao.UnitDao
 import me.ltthuc.kmp.core.datasource.db.entity.LearningProgressEntity
 import me.ltthuc.kmp.core.datasource.db.entity.LevelEntity
@@ -32,36 +30,14 @@ private val DEFAULT_VISIBLE_STEPS = listOf(0, 1, 2, 3, 5, 6)
 // in UnitRepository). Other premium levels stay "Coming soon" until their content lands.
 private val LAUNCHED_PREMIUM_LEVELS = setOf("L2")
 
-/** Counts behind a level, all taken from the curriculum rather than written down twice. */
-data class LevelContentSummary(
-    val units: Int,
-    val lessons: Int,
-)
-
 class LevelRepository(
     private val levelDao: LevelDao,
     private val unitDao: UnitDao,
-    private val phonicsLessonDao: PhonicsLessonDao,
     private val learningProgressDao: LearningProgressDao,
     private val seeder: DatabaseSeeder,
     private val appSettingRepository: AppSettingRepository,
     private val dispatcher: CoroutineDispatcher,
 ) {
-
-    /**
-     * What a level actually contains, for the paywall to say in numbers.
-     *
-     * Two free units show every screen the app has but only about a quarter of the content, so
-     * the one thing trying it cannot reveal is how much more there is. That is the gap this
-     * fills — and it has to be counted, never estimated, because it is a claim made to someone
-     * about to pay.
-     */
-    suspend fun contentSummary(levelId: String): LevelContentSummary = withContext(dispatcher) {
-        seeder.syncCurriculum()
-        val units = unitDao.observeAll().first().filter { it.levelId == levelId }
-        val lessons = units.sumOf { phonicsLessonDao.observeByUnit(it.id).first().size }
-        LevelContentSummary(units = units.size, lessons = lessons)
-    }
 
     suspend fun getVisibleSteps(levelId: String): List<Int> = withContext(dispatcher) {
         seeder.syncCurriculum()

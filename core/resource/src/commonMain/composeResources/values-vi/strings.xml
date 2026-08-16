@@ -380,13 +380,4 @@
     <string name="setting_storage_not_downloaded">Chưa tải</string>
     <string name="setting_storage_delete">Xoá nội dung đã tải</string>
     <string name="setting_storage_delete_confirm">Xoá các bài đã tải của cấp độ này? Bạn có thể tải lại bất cứ lúc nào — quyền đã mua không bị ảnh hưởng.</string>
-    <string name="paywall_one_time_note">Mua một lần — không thuê bao, không tự gia hạn</string>
-    <string name="paywall_billing_terms">Thanh toán một lần qua Google Play. Không có gói định kỳ nào, cũng không có gì để huỷ. Nội dung đã mở nằm luôn trên máy và dùng được khi không có mạng.</string>
-    <string name="paywall_content_summary">%1$d unit · %2$d bài · %3$d truyện tranh</string>
-    <string name="paywall_feature_no_ads_kids">Không quảng cáo</string>
-    <string name="paywall_feature_no_ads_kids_desc">Không có gì cắt ngang giờ học, cũng không ai bán gì cho con bạn.</string>
-    <string name="paywall_feature_stories">Truyện tranh có lời kể</string>
-    <string name="paywall_feature_stories_desc">Đọc theo người kể, sáng từng chữ một.</string>
-    <string name="paywall_feature_games">Trò chơi luyện tập</string>
-    <string name="paywall_feature_games_desc">Sáu cách ôn lại âm và từ của mỗi unit.</string>
 </resources>
