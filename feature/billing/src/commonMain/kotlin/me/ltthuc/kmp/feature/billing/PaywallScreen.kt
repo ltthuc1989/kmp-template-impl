@@ -201,12 +201,14 @@ private fun PaywallContent(
                 )
             }
 
+            // No weight(): this Column scrolls, so it measures children with unbounded height
+            // and weight() demands a bounded one — the pair throws at measure time, which is why
+            // the paywall crashed the moment it was opened. In a scrolling column the list simply
+            // takes the height it needs.
             PaywallFeatureList(
                 levelTitle = level?.title.orEmpty(),
                 unitCount = level?.totalUnits ?: 0,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
+                modifier = Modifier.fillMaxWidth(),
             )
 
             PaywallPlanSelector(

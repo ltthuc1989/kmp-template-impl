@@ -7,9 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Block
 import androidx.compose.material.icons.filled.Check
@@ -46,7 +44,9 @@ internal fun PaywallFeatureList(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier.verticalScroll(rememberScrollState()),
+        // The paywall itself scrolls; a second vertical scroller inside it fights the
+        // first and traps drags that start on a feature row.
+        modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         // Named after the level being sold. These lines used to be fixed text that said
