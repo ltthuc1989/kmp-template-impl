@@ -38,6 +38,7 @@ import me.ltthuc.kmp.core.resource.common_close
 import me.ltthuc.kmp.core.resource.paywall_error_no_subscription_to_restore
 import me.ltthuc.kmp.core.resource.paywall_error_purchase_failed
 import me.ltthuc.kmp.core.ui.dialog.ParentalGateScreen
+import me.ltthuc.kmp.core.model.Level
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
 import me.ltthuc.kmp.core.ui.theme.LocalNavBackStack
 import me.ltthuc.kmp.feature.billing.components.PaywallFeatureList
@@ -61,6 +62,7 @@ internal fun PaywallScreen(
     val navBackStack = LocalNavBackStack.current
     val screenState by viewModel.screenState.collectAsStateWithLifecycle()
     val purchaseState by viewModel.purchaseState.collectAsStateWithLifecycle()
+    val level by viewModel.level.collectAsStateWithLifecycle()
     val selectedPlan by viewModel.selectedPlan.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     // Purchases must sit behind the parental gate. If we were already gated (Pro icon path),
@@ -100,6 +102,7 @@ internal fun PaywallScreen(
         ) { state ->
             PaywallContent(
                 modifier = Modifier.fillMaxSize(),
+                level = level,
                 products = state.products,
                 selectedPlan = selectedPlan,
                 purchaseState = purchaseState,
@@ -129,6 +132,7 @@ internal fun PaywallScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun PaywallContent(
+    level: Level?,
     products: ImmutableList<ProductInfo>,
     selectedPlan: SubscriptionPlan,
     purchaseState: PurchaseUiState,
@@ -178,6 +182,8 @@ private fun PaywallContent(
             )
 
             PaywallFeatureList(
+                levelTitle = level?.title.orEmpty(),
+                unitCount = level?.totalUnits ?: 0,
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f),

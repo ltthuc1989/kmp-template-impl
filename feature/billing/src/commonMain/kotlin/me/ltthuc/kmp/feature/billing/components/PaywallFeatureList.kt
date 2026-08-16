@@ -32,24 +32,30 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun PaywallFeatureList(
+    levelTitle: String,
+    unitCount: Int,
     modifier: Modifier = Modifier,
 ) {
-    val features = listOf(
-        Triple(Icons.Default.Download, Res.string.paywall_feature_unlimited_downloads, Res.string.paywall_feature_unlimited_downloads_desc),
-        Triple(Icons.Default.HighQuality, Res.string.paywall_feature_high_quality, Res.string.paywall_feature_high_quality_desc),
-    )
-
     Column(
         modifier = modifier.verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        features.forEach { (icon, title, desc) ->
-            PaywallFeatureItem(
-                icon = icon,
-                title = stringResource(title),
-                description = stringResource(desc),
-            )
-        }
+        // Named after the level being sold. These lines used to be fixed text that said
+        // "Level 1" no matter which level the parent had tapped.
+        PaywallFeatureItem(
+            icon = Icons.Default.Download,
+            title = stringResource(Res.string.paywall_feature_unlimited_downloads, levelTitle),
+            description = stringResource(
+                Res.string.paywall_feature_unlimited_downloads_desc,
+                unitCount,
+                levelTitle,
+            ),
+        )
+        PaywallFeatureItem(
+            icon = Icons.Default.HighQuality,
+            title = stringResource(Res.string.paywall_feature_high_quality),
+            description = stringResource(Res.string.paywall_feature_high_quality_desc),
+        )
     }
 }
 

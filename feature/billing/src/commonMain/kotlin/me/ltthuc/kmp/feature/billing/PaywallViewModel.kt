@@ -6,6 +6,9 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -13,15 +16,23 @@ import me.ltthuc.kmp.core.billing.model.ProductInfo
 import me.ltthuc.kmp.core.billing.model.PurchaseResult
 import me.ltthuc.kmp.core.billing.model.SubscriptionPlan
 import me.ltthuc.kmp.core.common.suspendRunCatching
+import me.ltthuc.kmp.core.model.Level
 import me.ltthuc.kmp.core.repository.BillingRepository
+import me.ltthuc.kmp.core.repository.LevelRepository
 import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.error_network
 import me.ltthuc.kmp.core.ui.screen.ScreenState
 
 class PaywallViewModel(
     private val billingRepository: BillingRepository,
+    private val levelRepository: LevelRepository,
     private val levelId: String?,
 ) : ViewModel() {
+
+    /** The level this paywall is actually selling, so the copy can name it. */
+    val level: StateFlow<Level?> = levelRepository.observeLevelCards()
+        .map { cards -> cards.firstOrNull { it.level.id == levelId }?.level }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
 
     private val _screenState = MutableStateFlow<ScreenState<PaywallUiState>>(ScreenState.Loading())
     val screenState: StateFlow<ScreenState<PaywallUiState>> = _screenState.asStateFlow()

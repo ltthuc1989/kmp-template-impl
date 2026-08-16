@@ -180,8 +180,8 @@
     <!-- Paywall -->
     <string name="paywall_title">ABC Phonics Kids Pro</string>
     <string name="paywall_subtitle">Unlock all of Level 1 — built for kids 3–8.</string>
-    <string name="paywall_feature_unlimited_downloads">Unlock all of Level 1</string>
-    <string name="paywall_feature_unlimited_downloads_desc">All 8 units of Level 1.</string>
+    <string name="paywall_feature_unlimited_downloads">Unlock all of %1$s</string>
+    <string name="paywall_feature_unlimited_downloads_desc">All %1$d units of %2$s.</string>
     <string name="paywall_feature_high_quality">Offline Mode</string>
     <string name="paywall_feature_high_quality_desc">Learn anywhere — no internet needed.</string>
     <string name="paywall_feature_no_ads">No Ads</string>

@@ -92,7 +92,6 @@ import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
-private const val PERCENT = 100f
 private val AccentRed = Color(0xFFE63946)
 private val WarnAmber = Color(0xFF9A6B00)
 private val SoftPink = Color(0xFFF7B4BC)
@@ -602,32 +601,20 @@ internal sealed interface UnitContent {
  */
 @Composable
 private fun ActionPlayButton(status: UnitStatus, content: UnitContent) {
-    // A unit locked behind the previous lesson still fetches its content in the background, and
-    // the parent who just paid deserves to see that happening. Shown muted so it reads as status
-    // rather than as something to tap — the unit genuinely is not enterable yet.
-    if (status == UnitStatus.Locked && content is UnitContent.Downloading) {
-        val animated by animateFloatAsState(content.fraction, label = "lockedUnitDownload")
-        Box(modifier = Modifier.size(PlayButtonSize), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator(
-                progress = { animated },
-                modifier = Modifier.fillMaxSize(),
-                color = LockedTextGray,
-                trackColor = LockedGray,
-                strokeWidth = 2.5.dp,
-                strokeCap = StrokeCap.Round,
-            )
-        }
-        return
-    }
+    // Content comes first for every state except an unpurchased unit: play must never appear
+    // before the audio is actually on the device, or a child taps into a silent lesson. Locked
+    // units draw the same states in the locked greys — they are status, not something to tap.
+    if (status != UnitStatus.PremiumLocked) {
+        val locked = status == UnitStatus.Locked
+        val accent = if (locked) LockedTextGray else AccentRed
 
-    if (status != UnitStatus.PremiumLocked && status != UnitStatus.Locked) {
         when (content) {
             is UnitContent.NeedsDownload -> {
-                SlotCircle {
+                SlotCircle(tint = accent) {
                     Icon(
                         imageVector = Icons.Filled.FileDownload,
                         contentDescription = "Download this unit",
-                        tint = AccentRed,
+                        tint = accent,
                         modifier = Modifier.size(17.dp),
                     )
                 }
@@ -639,26 +626,32 @@ private fun ActionPlayButton(status: UnitStatus, content: UnitContent) {
                     CircularProgressIndicator(
                         progress = { animated },
                         modifier = Modifier.fillMaxSize(),
-                        color = AccentRed,
-                        trackColor = AccentRed.copy(alpha = 0.16f),
+                        color = accent,
+                        trackColor = if (locked) LockedGray else AccentRed.copy(alpha = 0.16f),
                         strokeWidth = 2.5.dp,
                         strokeCap = StrokeCap.Round,
                     )
-                    Text(
-                        text = "${(animated * PERCENT).toInt()}",
-                        fontSize = 9.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = AccentRed,
+                    // The arrow stays put while the ring fills around it: the slot keeps saying
+                    // "this is being fetched" rather than swapping to a number too small to read
+                    // at 26dp.
+                    Icon(
+                        imageVector = Icons.Filled.FileDownload,
+                        contentDescription = "Downloading",
+                        tint = accent,
+                        modifier = Modifier.size(13.dp),
                     )
                 }
                 return
             }
             is UnitContent.Failed -> {
-                SlotCircle(tint = if (content.retryable) AccentRed else WarnAmber) {
+                // Retry lives on the unit that failed, so the tap that wants the lesson is the
+                // tap that fetches it again. The downloader has already tried 3 times per file.
+                val tint = if (content.retryable) accent else WarnAmber
+                SlotCircle(tint = tint) {
                     Icon(
                         imageVector = if (content.retryable) Icons.Filled.Refresh else Icons.Filled.Warning,
                         contentDescription = if (content.retryable) "Retry download" else "Cannot download",
-                        tint = if (content.retryable) AccentRed else WarnAmber,
+                        tint = tint,
                         modifier = Modifier.size(17.dp),
                     )
                 }

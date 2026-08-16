@@ -180,8 +180,8 @@
     <!-- Paywall -->
     <string name="paywall_title">ABC Phonics Kids Pro</string>
     <string name="paywall_subtitle">Mở khóa toàn bộ Cấp độ 1 — dành cho bé 3–8 tuổi.</string>
-    <string name="paywall_feature_unlimited_downloads">Mở khóa toàn bộ Cấp độ 1</string>
-    <string name="paywall_feature_unlimited_downloads_desc">Tất cả 8 bài của Cấp độ 1.</string>
+    <string name="paywall_feature_unlimited_downloads">Mở khoá toàn bộ %1$s</string>
+    <string name="paywall_feature_unlimited_downloads_desc">Đủ %1$d unit của %2$s.</string>
     <string name="paywall_feature_high_quality">Chế độ ngoại tuyến</string>
     <string name="paywall_feature_high_quality_desc">Học mọi nơi — không cần internet.</string>
     <string name="paywall_feature_no_ads">Không quảng cáo</string>
