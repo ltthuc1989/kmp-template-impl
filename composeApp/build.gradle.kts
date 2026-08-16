@@ -112,6 +112,10 @@ kotlin {
         }
 
         androidMain.dependencies {
+            // Pulled in transitively at 1.0.1, whose native library is not 16 KB compatible:
+            // its RELRO segment is 1-byte aligned, so Android 15+ runs the whole app in page
+            // size compatible mode and Play will reject the update. 1.1.0 is the fixed build.
+            implementation(libs.androidx.graphics.path)
             implementation(libs.androidx.core.splashscreen)
             implementation(libs.play.review)
             implementation(libs.play.update)

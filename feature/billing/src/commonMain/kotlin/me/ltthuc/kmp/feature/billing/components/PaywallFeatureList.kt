@@ -28,9 +28,10 @@ import me.ltthuc.kmp.core.resource.paywall_feature_unlimited_downloads
 import me.ltthuc.kmp.core.resource.paywall_feature_unlimited_downloads_desc
 import org.jetbrains.compose.resources.stringResource
 
+/** [levelName] is the level being sold ("Level 2: Short Vowels"); null when no single level is. */
 @Composable
 internal fun PaywallFeatureList(
-    levelTitle: String,
+    levelName: String?,
     unitCount: Int,
     modifier: Modifier = Modifier,
 ) {
@@ -41,16 +42,19 @@ internal fun PaywallFeatureList(
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         // Named after the level being sold. These lines used to be fixed text that said
-        // "Level 1" no matter which level the parent had tapped.
-        PaywallFeatureItem(
-            icon = Icons.Default.Download,
-            title = stringResource(Res.string.paywall_feature_unlimited_downloads, levelTitle),
-            description = stringResource(
-                Res.string.paywall_feature_unlimited_downloads_desc,
-                unitCount,
-                levelTitle,
-            ),
-        )
+        // "Level 1" no matter which level the parent had tapped. Dropped entirely when there is no
+        // single level, rather than naming an empty one.
+        if (levelName != null) {
+            PaywallFeatureItem(
+                icon = Icons.Default.Download,
+                title = stringResource(Res.string.paywall_feature_unlimited_downloads, levelName),
+                description = stringResource(
+                    Res.string.paywall_feature_unlimited_downloads_desc,
+                    unitCount,
+                    levelName,
+                ),
+            )
+        }
         PaywallFeatureItem(
             icon = Icons.Default.HighQuality,
             title = stringResource(Res.string.paywall_feature_high_quality),

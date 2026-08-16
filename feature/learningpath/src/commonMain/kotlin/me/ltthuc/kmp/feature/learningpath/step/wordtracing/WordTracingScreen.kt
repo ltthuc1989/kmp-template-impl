@@ -190,16 +190,17 @@ private fun WordTracingContent(
         if (letterIndex in 1 until word.letters.length) onPlayLetter(currentChar)
     }
 
-    val advance = {
-        val wIdx = wordIndex.coerceIn(0, words.lastIndex)
-        val letters = words[wIdx].letters
-        when {
-            letterIndex + 1 < letters.length -> letterIndex += 1
-            wIdx + 1 < words.size -> {
-                wordIndex += 1
-                letterIndex = 0
-            }
-            else -> allDone = true
+    // The current letter's celebration is over: it always flashes green in the header, then either
+    // the next letter loads or the word closes out (picture + whole-word audio hold).
+    val finishLetter = {
+        val completed = letterIndex.coerceIn(0, word.letters.lastIndex)
+        landedIndex = completed
+        if (completed + 1 < word.letters.length) {
+            letterIndex = completed + 1
+        } else {
+            // Word done: clear the focus (no highlighted cell) and hold on the picture.
+            letterIndex = word.letters.length
+            wordPaused = true
         }
     }
 
@@ -215,24 +216,14 @@ private fun WordTracingContent(
                 phase = if (canvasBounds != null && headerCellBounds != null) {
                     LetterPhase.Fly
                 } else {
-                    advance()
+                    finishLetter()
                     LetterPhase.Idle
                 }
             }
             LetterPhase.Fly -> {
                 flyProgress.snapTo(0f)
                 flyProgress.animateTo(1f, tween(FLY_MS, easing = FastOutSlowInEasing))
-                val completed = letterIndex
-                // The just-finished letter always flashes green then settles (it's still shown in
-                // this word's header, whether or not more letters follow).
-                landedIndex = completed
-                if (completed + 1 < word.letters.length) {
-                    letterIndex += 1
-                } else {
-                    // Word done: clear the focus (no highlighted cell) and hold before the next word.
-                    letterIndex = word.letters.length
-                    wordPaused = true
-                }
+                finishLetter()
                 phase = LetterPhase.Idle
             }
         }
@@ -246,9 +237,11 @@ private fun WordTracingContent(
         landedIndex = -1
     }
 
-    // End-of-word hold: show the finished word + picture, then advance to the next word (or finish).
+    // End-of-word hold: show the finished word + picture and voice the whole word, so the child
+    // hears what they just traced before the next word starts (or the step finishes).
     LaunchedEffect(wordPaused) {
         if (!wordPaused) return@LaunchedEffect
+        onPlayWord(word.audioWord)
         delay(WORD_PAUSE_MS)
         val wIdx = wordIndex.coerceIn(0, words.lastIndex)
         if (wIdx + 1 < words.size) {
@@ -285,10 +278,12 @@ private fun WordTracingContent(
             Spacer(Modifier.height(8.dp))
             // Big middle area: the trace surface while tracing; the word picture once the word is
             // finished (held during the end-of-word pause), then back to tracing for the next word.
+            // After the LAST word the picture stays for good — never fall back to the trace surface,
+            // which would re-offer the final letter.
             Box(
                 modifier = Modifier.fillMaxWidth().weight(1f),
             ) {
-                if (wordPaused) {
+                if (wordPaused || allDone) {
                     WordImageCard(word = word.source, modifier = Modifier.fillMaxSize())
                 } else {
                     LetterTraceCanvas(

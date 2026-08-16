@@ -36,6 +36,7 @@ import me.ltthuc.kmp.core.billing.model.SubscriptionPlan
 import me.ltthuc.kmp.core.model.Level
 import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.common_close
+import me.ltthuc.kmp.core.resource.level_name
 import me.ltthuc.kmp.core.resource.paywall_error_no_subscription_to_restore
 import me.ltthuc.kmp.core.resource.paywall_error_purchase_failed
 import me.ltthuc.kmp.core.ui.dialog.ParentalGateScreen
@@ -144,6 +145,9 @@ private fun PaywallContent(
     modifier: Modifier = Modifier,
 ) {
     val isLoading = purchaseState is PurchaseUiState.Loading
+    // "Level 2: Short Vowels" — the same naming the unit list header uses, so the parent recognises
+    // what they tapped. Null until the level loads (or when no single level is being sold).
+    val levelName = level?.let { stringResource(Res.string.level_name, it.number, it.title) }
 
     Scaffold(
         modifier = modifier,
@@ -176,13 +180,14 @@ private fun PaywallContent(
             verticalArrangement = Arrangement.spacedBy(24.dp),
         ) {
             PaywallHeader(
+                levelName = levelName,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 8.dp),
             )
 
             PaywallFeatureList(
-                levelTitle = level?.title.orEmpty(),
+                levelName = levelName,
                 unitCount = level?.totalUnits ?: 0,
                 modifier = Modifier.fillMaxWidth(),
             )

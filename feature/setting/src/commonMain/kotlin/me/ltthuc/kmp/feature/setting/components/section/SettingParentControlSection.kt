@@ -22,6 +22,7 @@ import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.ImmutableSet
 import me.ltthuc.kmp.core.model.Level
 import me.ltthuc.kmp.core.resource.Res
+import me.ltthuc.kmp.core.resource.level_name
 import me.ltthuc.kmp.core.resource.paywall_restore
 import me.ltthuc.kmp.core.resource.setting_parent_control_buy
 import me.ltthuc.kmp.core.resource.setting_parent_control_buy_plain
@@ -89,7 +90,7 @@ private fun LevelPurchaseRow(
     ) {
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = "Level ${level.number} · ${level.title}",
+                text = stringResource(Res.string.level_name, level.number, level.title),
                 style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.onSurface,

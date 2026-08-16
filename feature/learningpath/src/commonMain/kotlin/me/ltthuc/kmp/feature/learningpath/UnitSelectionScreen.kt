@@ -77,6 +77,7 @@ import me.ltthuc.kmp.core.repository.LevelAccess
 import me.ltthuc.kmp.core.repository.PackState
 import me.ltthuc.kmp.core.repository.SfxController
 import me.ltthuc.kmp.core.resource.Res
+import me.ltthuc.kmp.core.resource.level_name
 import me.ltthuc.kmp.core.resource.unit_free_label
 import me.ltthuc.kmp.core.ui.ads.BottomBannerAd
 import me.ltthuc.kmp.core.ui.components.PuffySurface
@@ -138,7 +139,9 @@ internal fun UnitSelectionScreen(
             topBar = {
                 val uiState = (screenState as? ScreenState.Idle)?.data
                 UnitTopBar(
-                    title = uiState?.let { "Book ${it.level.number}: ${it.level.title}" }.orEmpty(),
+                    title = uiState
+                        ?.let { stringResource(Res.string.level_name, it.level.number, it.level.title) }
+                        .orEmpty(),
                     showBackButton = !isStartDestination,
                     onBack = { if (navBackStack.size > 1) navBackStack.removeAt(navBackStack.size - 1) },
                     onSettings = { showSettingsGate = true },

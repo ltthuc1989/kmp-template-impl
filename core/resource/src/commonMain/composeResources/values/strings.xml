@@ -54,6 +54,9 @@
     <string name="unit_day">Day</string>
     <string name="unit_sheet">items</string>
 
+    <!-- Common Level: one naming for a level, used by the unit list header and the paywall copy -->
+    <string name="level_name">Level %1$d: %2$s</string>
+
     <!-- Platform -->
     <string name="platform_x">X (Twitter)</string>
     <string name="platform_pixiv">Pixiv</string>
@@ -179,7 +182,8 @@
 
     <!-- Paywall -->
     <string name="paywall_title">ABC Phonics Kids Pro</string>
-    <string name="paywall_subtitle">Unlock all of Level 1 — built for kids 3–8.</string>
+    <string name="paywall_subtitle">%1$s — built for kids 3–8.</string>
+    <string name="paywall_subtitle_all">Every level — built for kids 3–8.</string>
     <string name="paywall_feature_unlimited_downloads">Unlock all of %1$s</string>
     <string name="paywall_feature_unlimited_downloads_desc">All %1$d units of %2$s.</string>
     <string name="paywall_feature_high_quality">Offline Mode</string>

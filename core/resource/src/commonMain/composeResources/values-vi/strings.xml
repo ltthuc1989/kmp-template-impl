@@ -54,6 +54,9 @@
     <string name="unit_day">Ngày</string>
     <string name="unit_sheet">mục</string>
 
+    <!-- Common Level: one naming for a level, used by the unit list header and the paywall copy -->
+    <string name="level_name">Cấp độ %1$d: %2$s</string>
+
     <!-- Platform -->
     <string name="platform_x">X (Twitter)</string>
     <string name="platform_pixiv">Pixiv</string>
@@ -179,7 +182,8 @@
 
     <!-- Paywall -->
     <string name="paywall_title">ABC Phonics Kids Pro</string>
-    <string name="paywall_subtitle">Mở khóa toàn bộ Cấp độ 1 — dành cho bé 3–8 tuổi.</string>
+    <string name="paywall_subtitle">%1$s — dành cho bé 3–8 tuổi.</string>
+    <string name="paywall_subtitle_all">Mọi cấp độ — dành cho bé 3–8 tuổi.</string>
     <string name="paywall_feature_unlimited_downloads">Mở khoá toàn bộ %1$s</string>
     <string name="paywall_feature_unlimited_downloads_desc">Đủ %1$d unit của %2$s.</string>
     <string name="paywall_feature_high_quality">Chế độ ngoại tuyến</string>

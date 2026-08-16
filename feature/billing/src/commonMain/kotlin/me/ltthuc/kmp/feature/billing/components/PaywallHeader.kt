@@ -21,11 +21,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.paywall_subtitle
+import me.ltthuc.kmp.core.resource.paywall_subtitle_all
 import me.ltthuc.kmp.core.resource.paywall_title
 import org.jetbrains.compose.resources.stringResource
 
+/** [levelName] is the level being sold ("Level 2: Short Vowels"); null when no single level is. */
 @Composable
 internal fun PaywallHeader(
+    levelName: String?,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -64,7 +67,13 @@ internal fun PaywallHeader(
         )
 
         Text(
-            text = stringResource(Res.string.paywall_subtitle),
+            // Named after the level the parent tapped — this line used to be fixed copy that said
+            // "Level 1" whichever level was being sold.
+            text = if (levelName != null) {
+                stringResource(Res.string.paywall_subtitle, levelName)
+            } else {
+                stringResource(Res.string.paywall_subtitle_all)
+            },
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
