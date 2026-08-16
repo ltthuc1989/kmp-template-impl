@@ -380,4 +380,5 @@
     <string name="setting_storage_not_downloaded">Not downloaded</string>
     <string name="setting_storage_delete">Delete downloaded content</string>
     <string name="setting_storage_delete_confirm">Delete the downloaded lessons for this level? You can download them again any time — your purchase is not affected.</string>
+    <string name="content_download_banner">Downloading lessons · %1$d/%2$d units</string>
 </resources>

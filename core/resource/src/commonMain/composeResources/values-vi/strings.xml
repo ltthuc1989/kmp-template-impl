@@ -380,4 +380,5 @@
     <string name="setting_storage_not_downloaded">Chưa tải</string>
     <string name="setting_storage_delete">Xoá nội dung đã tải</string>
     <string name="setting_storage_delete_confirm">Xoá các bài đã tải của cấp độ này? Bạn có thể tải lại bất cứ lúc nào — quyền đã mua không bị ảnh hưởng.</string>
+    <string name="content_download_banner">Đang tải bài học · %1$d/%2$d unit</string>
 </resources>

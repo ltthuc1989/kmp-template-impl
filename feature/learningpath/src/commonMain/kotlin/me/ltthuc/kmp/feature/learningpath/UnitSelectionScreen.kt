@@ -76,6 +76,7 @@ import me.ltthuc.kmp.core.repository.ContentPackRepository
 import me.ltthuc.kmp.core.repository.PackState
 import me.ltthuc.kmp.core.repository.SfxController
 import me.ltthuc.kmp.core.resource.Res
+import me.ltthuc.kmp.core.resource.content_download_banner
 import me.ltthuc.kmp.core.resource.unit_free_label
 import me.ltthuc.kmp.core.ui.ads.BottomBannerAd
 import me.ltthuc.kmp.core.ui.components.PuffySurface
@@ -153,6 +154,15 @@ internal fun UnitSelectionScreen(
                 // painted over by AsyncLoadContents' default background (matches LessonMapScreen).
                 containerColor = Color.Transparent,
             ) { uiState ->
+                // One line for the whole level, because right after a purchase the question is
+                // "is my level arriving?", not "how is unit 5 doing". Per-unit rings answer the
+                // second question; most of those units are sequentially locked anyway.
+                LevelDownloadBanner(
+                    units = uiState.units,
+                    packStates = packStates,
+                    modifier = Modifier.padding(top = innerPadding.calculateTopPadding()),
+                )
+
                 // Ask the store which units are already on the device. Cheap (a manifest map
                 // lookup plus a file check per pack) and it settles before the first frame the
                 // child could tap, so no badge appears and then vanishes.
@@ -227,6 +237,42 @@ internal fun UnitSelectionScreen(
                 )
             }
         }
+    }
+}
+
+/** Slim "content is arriving" strip; absent unless something is actually downloading. */
+@Composable
+private fun LevelDownloadBanner(
+    units: ImmutableList<UnitCard>,
+    packStates: Map<String, PackState>,
+    modifier: Modifier = Modifier,
+) {
+    val relevant = remember(units, packStates) {
+        units.mapNotNull { packStates[it.unit.id] }
+    }
+    val downloading = relevant.count { it is PackState.Downloading }
+    if (downloading == 0) return
+
+    val ready = relevant.count { it is PackState.Bundled || it is PackState.Ready }
+    val total = relevant.size
+
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+    ) {
+        CircularProgressIndicator(
+            modifier = Modifier.size(14.dp),
+            color = AccentRed,
+            strokeWidth = 2.dp,
+        )
+        Text(
+            text = stringResource(Res.string.content_download_banner, ready, total),
+            fontSize = 12.sp,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
     }
 }
 
@@ -614,6 +660,24 @@ internal sealed interface UnitContent {
  */
 @Composable
 private fun ActionPlayButton(status: UnitStatus, content: UnitContent) {
+    // A unit locked behind the previous lesson still fetches its content in the background, and
+    // the parent who just paid deserves to see that happening. Shown muted so it reads as status
+    // rather than as something to tap — the unit genuinely is not enterable yet.
+    if (status == UnitStatus.Locked && content is UnitContent.Downloading) {
+        val animated by animateFloatAsState(content.fraction, label = "lockedUnitDownload")
+        Box(modifier = Modifier.size(PlayButtonSize), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator(
+                progress = { animated },
+                modifier = Modifier.fillMaxSize(),
+                color = LockedTextGray,
+                trackColor = LockedGray,
+                strokeWidth = 2.5.dp,
+                strokeCap = StrokeCap.Round,
+            )
+        }
+        return
+    }
+
     if (status != UnitStatus.PremiumLocked && status != UnitStatus.Locked) {
         when (content) {
             is UnitContent.NeedsDownload -> {
