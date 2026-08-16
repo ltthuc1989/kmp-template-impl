@@ -380,4 +380,13 @@
     <string name="setting_storage_not_downloaded">Not downloaded</string>
     <string name="setting_storage_delete">Delete downloaded content</string>
     <string name="setting_storage_delete_confirm">Delete the downloaded lessons for this level? You can download them again any time — your purchase is not affected.</string>
+    <string name="paywall_one_time_note">One-time purchase — no subscription, no auto-renew</string>
+    <string name="paywall_billing_terms">Charged once through Google Play. There is no recurring plan and nothing to cancel. What you unlock stays on this device and works without internet.</string>
+    <string name="paywall_content_summary">%1$d units · %2$d lessons · %3$d illustrated stories</string>
+    <string name="paywall_feature_no_ads_kids">No ads, ever</string>
+    <string name="paywall_feature_no_ads_kids_desc">Nothing interrupts your child, and nothing is sold to them.</string>
+    <string name="paywall_feature_stories">Illustrated stories</string>
+    <string name="paywall_feature_stories_desc">Read along with the narrator, word by word.</string>
+    <string name="paywall_feature_games">Practice games</string>
+    <string name="paywall_feature_games_desc">Six ways to practise each unit's sounds and words.</string>
 </resources>

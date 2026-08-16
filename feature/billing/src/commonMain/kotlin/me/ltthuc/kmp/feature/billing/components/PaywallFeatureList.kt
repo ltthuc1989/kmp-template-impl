@@ -11,9 +11,12 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Block
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.HighQuality
+import androidx.compose.material.icons.filled.MenuBook
+import androidx.compose.material.icons.filled.SportsEsports
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -24,8 +27,14 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import me.ltthuc.kmp.core.resource.Res
+import me.ltthuc.kmp.core.resource.paywall_feature_games
+import me.ltthuc.kmp.core.resource.paywall_feature_games_desc
 import me.ltthuc.kmp.core.resource.paywall_feature_high_quality
 import me.ltthuc.kmp.core.resource.paywall_feature_high_quality_desc
+import me.ltthuc.kmp.core.resource.paywall_feature_no_ads_kids
+import me.ltthuc.kmp.core.resource.paywall_feature_no_ads_kids_desc
+import me.ltthuc.kmp.core.resource.paywall_feature_stories
+import me.ltthuc.kmp.core.resource.paywall_feature_stories_desc
 import me.ltthuc.kmp.core.resource.paywall_feature_unlimited_downloads
 import me.ltthuc.kmp.core.resource.paywall_feature_unlimited_downloads_desc
 import org.jetbrains.compose.resources.stringResource
@@ -55,6 +64,24 @@ internal fun PaywallFeatureList(
             icon = Icons.Default.HighQuality,
             title = stringResource(Res.string.paywall_feature_high_quality),
             description = stringResource(Res.string.paywall_feature_high_quality_desc),
+        )
+        // Only claims the app can back. Deliberately absent: any wording about a human narrator —
+        // the voices are synthesised, and saying otherwise on a paywall is a false claim to a
+        // parent at the moment they pay.
+        PaywallFeatureItem(
+            icon = Icons.Default.MenuBook,
+            title = stringResource(Res.string.paywall_feature_stories),
+            description = stringResource(Res.string.paywall_feature_stories_desc),
+        )
+        PaywallFeatureItem(
+            icon = Icons.Default.SportsEsports,
+            title = stringResource(Res.string.paywall_feature_games),
+            description = stringResource(Res.string.paywall_feature_games_desc),
+        )
+        PaywallFeatureItem(
+            icon = Icons.Default.Block,
+            title = stringResource(Res.string.paywall_feature_no_ads_kids),
+            description = stringResource(Res.string.paywall_feature_no_ads_kids_desc),
         )
     }
 }
