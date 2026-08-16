@@ -27,14 +27,14 @@ actual class PackStore(context: Context) : PackFiles {
         target.absolutePath
     }
 
-    actual fun sizeOf(hashes: Collection<String>): Long =
+    actual override fun sizeOf(hashes: Collection<String>): Long =
         hashes.sumOf { File(dir, it).takeIf { file -> file.isFile }?.length() ?: 0L }
 
-    actual fun delete(hashes: Collection<String>) {
+    actual override fun delete(hashes: Collection<String>) {
         hashes.forEach { File(dir, it).delete() }
     }
 
-    actual fun deleteUnreferenced(keep: Set<String>) {
+    actual override fun deleteUnreferenced(keep: Set<String>) {
         dir.listFiles()?.forEach { file ->
             if (file.name.endsWith(TMP_SUFFIX) || file.name !in keep) {
                 if (file.delete()) Napier.d("PackStore swept ${file.name}")
@@ -42,7 +42,7 @@ actual class PackStore(context: Context) : PackFiles {
         }
     }
 
-    actual fun clear() {
+    actual override fun clear() {
         dir.listFiles()?.forEach { it.delete() }
     }
 

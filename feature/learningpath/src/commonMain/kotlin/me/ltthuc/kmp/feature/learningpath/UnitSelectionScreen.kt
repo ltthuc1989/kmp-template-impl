@@ -73,6 +73,7 @@ import me.ltthuc.kmp.core.model.UnitCard
 import me.ltthuc.kmp.core.model.UnitLetterPreview
 import me.ltthuc.kmp.core.model.UnitStatus
 import me.ltthuc.kmp.core.repository.ContentPackRepository
+import me.ltthuc.kmp.core.repository.LevelAccess
 import me.ltthuc.kmp.core.repository.PackState
 import me.ltthuc.kmp.core.repository.SfxController
 import me.ltthuc.kmp.core.resource.Res
@@ -120,6 +121,7 @@ internal fun UnitSelectionScreen(
     val navBackStack = LocalNavBackStack.current
     val sfx: SfxController = koinInject()
     val packRepository: ContentPackRepository = koinInject()
+    val levelAccess: LevelAccess = koinInject()
     val unitScope = rememberCoroutineScope()
     val packStates by packRepository.packStates.collectAsStateWithLifecycle()
     val lang = LocalAppLanguage.current
@@ -159,6 +161,16 @@ internal fun UnitSelectionScreen(
                     uiState.units.forEach { packRepository.refresh(it.unit.id) }
                 }
 
+                // Opening a level the parent has paid for is the signal to fetch it. One trigger,
+                // here: buying ends by returning to this very screen, so a second hook on the
+                // purchase itself would be the same work down a second path. Gated on access so
+                // browsing a level nobody bought never pulls 8.7MB.
+                LaunchedEffect(levelId) {
+                    if (levelAccess.canOpenPaidUnitsNow(levelId)) {
+                        packRepository.downloadLevelInBackground(levelId)
+                    }
+                }
+
                 UnitSelectionList(
                     units = uiState.units,
                     contentPadding = PaddingValues(
@@ -192,7 +204,6 @@ internal fun UnitSelectionScreen(
                                     sfx.playPrompt("vp_locked", lang)
                                 } else {
                                     navBackStack.add(Destination.Learning.LessonMap(levelId, packId))
-                                    packRepository.downloadLevelInBackground(levelId)
                                 }
                             }
                         }

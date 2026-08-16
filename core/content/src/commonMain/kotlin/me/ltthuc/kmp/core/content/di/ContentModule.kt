@@ -4,6 +4,9 @@ import me.ltthuc.kmp.core.content.AssetLocator
 import me.ltthuc.kmp.core.content.ContentBytes
 import me.ltthuc.kmp.core.content.ContentManifestLoader
 import me.ltthuc.kmp.core.content.ContentPackDownloader
+import me.ltthuc.kmp.core.content.ManifestSource
+import me.ltthuc.kmp.core.content.PackFiles
+import me.ltthuc.kmp.core.content.PackStore
 import org.koin.core.module.Module
 import org.koin.dsl.module
 
@@ -21,7 +24,12 @@ data class ContentConfig(
  * it keeps a single connection pool for all content traffic.
  */
 val contentModule = module {
-    single { ContentManifestLoader() }
+    // Bound by interface, not by concrete type: the download path depends on ManifestSource and
+    // PackFiles so it can be tested without Compose Resources or a real filesystem, and Koin
+    // resolves by the declared type. Registering only the concrete classes compiles fine and
+    // then fails at startup.
+    single<ManifestSource> { ContentManifestLoader() }
+    single<PackFiles> { get<PackStore>() }
     single { AssetLocator(get(), get(), get<ContentConfig>().cdnBaseUrl) }
     single { ContentPackDownloader(get(), get(), get(), get()) }
     single { ContentBytes(get(), get()) }

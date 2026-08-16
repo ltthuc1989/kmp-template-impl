@@ -64,17 +64,17 @@ actual class PackStore : PackFiles {
         target.path ?: error("Unable to read written PackStore file path")
     }
 
-    actual fun sizeOf(hashes: Collection<String>): Long = hashes.sumOf { hash ->
+    actual override fun sizeOf(hashes: Collection<String>): Long = hashes.sumOf { hash ->
         val path = pathFor(hash) ?: return@sumOf 0L
         val attrs = fileManager.attributesOfItemAtPath(path, null)
         (attrs?.get(NSFileSize) as? NSNumber)?.longValue ?: 0L
     }
 
-    actual fun delete(hashes: Collection<String>) {
+    actual override fun delete(hashes: Collection<String>) {
         hashes.forEach { hash -> urlFor(hash)?.let { fileManager.removeItemAtURL(it, null) } }
     }
 
-    actual fun deleteUnreferenced(keep: Set<String>) {
+    actual override fun deleteUnreferenced(keep: Set<String>) {
         val contents = fileManager.contentsOfDirectoryAtURL(dirUrl, null, 0u, null) ?: return
         for (item in contents) {
             val url = item as? NSURL ?: continue
@@ -85,7 +85,7 @@ actual class PackStore : PackFiles {
         }
     }
 
-    actual fun clear() {
+    actual override fun clear() {
         val contents = fileManager.contentsOfDirectoryAtURL(dirUrl, null, 0u, null) ?: return
         for (item in contents) {
             (item as? NSURL)?.let { fileManager.removeItemAtURL(it, null) }

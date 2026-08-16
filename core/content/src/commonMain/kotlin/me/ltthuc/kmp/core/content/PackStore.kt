@@ -18,6 +18,18 @@ interface PackFiles {
      * looks complete.
      */
     suspend fun put(hash: String, bytes: ByteArray): String
+
+    /** Total bytes currently stored for [hashes]. */
+    fun sizeOf(hashes: Collection<String>): Long
+
+    /** Deletes the files for [hashes]. Missing entries are ignored. */
+    fun delete(hashes: Collection<String>)
+
+    /** Deletes every stored file whose hash is not in [keep] — sweeps content-update garbage. */
+    fun deleteUnreferenced(keep: Set<String>)
+
+    /** Wipes the whole store. */
+    fun clear()
 }
 
 /**
@@ -45,15 +57,11 @@ expect class PackStore : PackFiles {
 
     override suspend fun put(hash: String, bytes: ByteArray): String
 
-    /** Total bytes currently stored for [hashes]. */
-    fun sizeOf(hashes: Collection<String>): Long
+    override fun sizeOf(hashes: Collection<String>): Long
 
-    /** Deletes the files for [hashes]. Missing entries are ignored. */
-    fun delete(hashes: Collection<String>)
+    override fun delete(hashes: Collection<String>)
 
-    /** Deletes every stored file whose hash is not in [keep] — sweeps content-update garbage. */
-    fun deleteUnreferenced(keep: Set<String>)
+    override fun deleteUnreferenced(keep: Set<String>)
 
-    /** Wipes the whole store. */
-    fun clear()
+    override fun clear()
 }

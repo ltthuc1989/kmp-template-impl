@@ -37,6 +37,21 @@ class FakePackFiles(
         "/packs/$hash"
     }
 
+    override fun sizeOf(hashes: Collection<String>): Long =
+        hashes.sumOf { stored[it]?.size?.toLong() ?: 0L }
+
+    override fun delete(hashes: Collection<String>) {
+        hashes.forEach { stored.remove(it) }
+    }
+
+    override fun deleteUnreferenced(keep: Set<String>) {
+        stored.keys.retainAll(keep)
+    }
+
+    override fun clear() {
+        stored.clear()
+    }
+
     fun seed(hash: String) {
         stored[hash] = ByteArray(1)
     }

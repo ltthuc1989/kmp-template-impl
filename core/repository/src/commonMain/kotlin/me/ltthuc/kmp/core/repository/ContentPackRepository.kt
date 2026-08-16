@@ -3,7 +3,6 @@ package me.ltthuc.kmp.core.repository
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,10 +11,12 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import me.ltthuc.kmp.core.content.ContentManifestLoader
 import me.ltthuc.kmp.core.content.ContentPackDownloader
 import me.ltthuc.kmp.core.content.DownloadProgress
-import me.ltthuc.kmp.core.content.PackStore
+import me.ltthuc.kmp.core.content.PackFiles
 
 /** What the app knows about one unit's content pack right now. */
 sealed interface PackState {
@@ -65,13 +66,19 @@ internal fun isRetryableFailure(cause: Throwable?): Boolean {
 class ContentPackRepository(
     private val manifestLoader: ContentManifestLoader,
     private val downloader: ContentPackDownloader,
-    private val packStore: PackStore,
+    private val packFiles: PackFiles,
 ) {
     // The repository owns this scope on purpose: a background fill must outlive the screen
     // that started it, so the rest of a level keeps arriving while the child is already in a
     // lesson. A screen-scoped coroutine would die at the first navigation.
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
-    private var backgroundJob: Job? = null
+
+    // A queue, not a single job. Buying the all-levels bundle grants five levels in one go, and
+    // the previous "skip if something is already running" guard silently dropped four of them —
+    // the parent paid for five and one arrived.
+    private val queuedLevels = mutableListOf<String>()
+    private val queueLock = Mutex()
+    private var draining = false
 
     private val states = MutableStateFlow<Map<String, PackState>>(emptyMap())
 
@@ -93,7 +100,7 @@ class ContentPackRepository(
     suspend fun storedBytesForLevel(levelId: String): Long {
         val manifest = manifestLoader.load()
         return packIdsForLevel(levelId).sumOf { packId ->
-            packStore.sizeOf(manifest.assetsInPack(packId).values.map { it.hash })
+            packFiles.sizeOf(manifest.assetsInPack(packId).values.map { it.hash })
         }
     }
 
@@ -159,8 +166,29 @@ class ContentPackRepository(
      * its download badge when it is reached.
      */
     fun downloadLevelInBackground(levelId: String) {
-        if (backgroundJob?.isActive == true) return
-        backgroundJob = scope.launch {
+        scope.launch {
+            val startDraining = queueLock.withLock {
+                if (levelId !in queuedLevels) queuedLevels += levelId
+                if (draining) false else true.also { draining = true }
+            }
+            if (!startDraining) return@launch
+
+            try {
+                drainQueue()
+            } finally {
+                queueLock.withLock { draining = false }
+            }
+        }
+    }
+
+    /**
+     * One level at a time, one pack at a time. Files inside a pack already run four abreast;
+     * adding more parallelism across packs would just spread the same bandwidth thinner and
+     * delay the unit the child is waiting on.
+     */
+    private suspend fun drainQueue() {
+        while (true) {
+            val levelId = queueLock.withLock { queuedLevels.removeFirstOrNull() } ?: return
             for (packId in packIdsForLevel(levelId)) {
                 if (refresh(packId) !is PackState.NotDownloaded) continue
                 runCatching { download(packId).collect { } }
@@ -171,14 +199,14 @@ class ContentPackRepository(
     /** Frees a pack's files. Access is untouched — the unit stays unlocked, just re-downloadable. */
     suspend fun delete(packId: String) {
         val manifest = manifestLoader.load()
-        packStore.delete(manifest.assetsInPack(packId).values.map { it.hash })
+        packFiles.delete(manifest.assetsInPack(packId).values.map { it.hash })
         refresh(packId)
     }
 
     /** Drops every downloaded pack. QA tool: puts the device back to a just-installed state. */
     suspend fun deleteAll() {
-        backgroundJob?.cancel()
-        packStore.clear()
+        queueLock.withLock { queuedLevels.clear() }
+        packFiles.clear()
         manifestLoader.load().downloadablePackIds().forEach { refresh(it) }
     }
 
@@ -188,7 +216,7 @@ class ContentPackRepository(
      */
     suspend fun sweepStaleFiles() {
         val keep = manifestLoader.load().assets.values.mapTo(mutableSetOf()) { it.hash }
-        packStore.deleteUnreferenced(keep)
+        packFiles.deleteUnreferenced(keep)
     }
 
     private fun publish(packId: String, state: PackState) {
