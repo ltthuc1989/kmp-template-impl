@@ -76,7 +76,6 @@ import me.ltthuc.kmp.core.repository.ContentPackRepository
 import me.ltthuc.kmp.core.repository.PackState
 import me.ltthuc.kmp.core.repository.SfxController
 import me.ltthuc.kmp.core.resource.Res
-import me.ltthuc.kmp.core.resource.content_download_banner
 import me.ltthuc.kmp.core.resource.unit_free_label
 import me.ltthuc.kmp.core.ui.ads.BottomBannerAd
 import me.ltthuc.kmp.core.ui.components.PuffySurface
@@ -154,15 +153,6 @@ internal fun UnitSelectionScreen(
                 // painted over by AsyncLoadContents' default background (matches LessonMapScreen).
                 containerColor = Color.Transparent,
             ) { uiState ->
-                // One line for the whole level, because right after a purchase the question is
-                // "is my level arriving?", not "how is unit 5 doing". Per-unit rings answer the
-                // second question; most of those units are sequentially locked anyway.
-                LevelDownloadBanner(
-                    units = uiState.units,
-                    packStates = packStates,
-                    modifier = Modifier.padding(top = innerPadding.calculateTopPadding()),
-                )
-
                 // Ask the store which units are already on the device. Cheap (a manifest map
                 // lookup plus a file check per pack) and it settles before the first frame the
                 // child could tap, so no badge appears and then vanishes.
@@ -181,11 +171,9 @@ internal fun UnitSelectionScreen(
                     contentFor = { card -> packStates[card.unit.id].toUnitContent() },
                     onUnitClick = { card ->
                         when (card.status) {
-                            // Sequential lock (level already paid, but an earlier unit isn't finished —
-                            // or a not-yet-reached free unit) → speak the "finish the previous one" guide.
-                            UnitStatus.Locked -> sfx.playPrompt("vp_locked", lang)
                             // Paid unit not owned → open the features/paywall screen directly (kid-safe
-                            // marketing). The parental gate appears on the purchase button there.
+                            // marketing). The parental gate appears on the purchase button there. No
+                            // content is fetched: nothing has been bought yet.
                             UnitStatus.PremiumLocked -> navBackStack.add(
                                 Destination.Paywall(
                                     source = Destination.Paywall.Source.UNIT_LOCKED,
@@ -193,29 +181,19 @@ internal fun UnitSelectionScreen(
                                     gatedAlready = false,
                                 ),
                             )
-                            // Any unlocked/active/completed unit opens the full-screen Lesson Map,
-                            // which handles per-lesson lock state and resume/replay — unless its
-                            // audio and pictures are still on the CDN, in which case fetching them
-                            // comes first. Checked per tap rather than on entry so a child browsing
-                            // the unit list is never interrupted by a download prompt.
-                            UnitStatus.Completed,
-                            UnitStatus.Active,
-                            UnitStatus.Unlocked,
-                            -> unitScope.launch {
+                            // Everything else: make sure the content is on the device, then apply
+                            // the ordinary rule. Getting the data first means a unit whose earlier
+                            // download failed retries on the very tap that wanted it, and the
+                            // sequential gate below stays the single place that decides entry.
+                            else -> unitScope.launch {
                                 val packId = card.unit.id
-                                val open = { navBackStack.add(Destination.Learning.LessonMap(levelId, packId)) }
-                                when (packRepository.refresh(packId)) {
-                                    PackState.Bundled, PackState.Ready -> open()
-                                    // Fetch the tapped unit alone first (~1.3MB, about a second)
-                                    // and open as soon as it lands; the rest of the level follows
-                                    // in the background. Waiting for all 8.7MB would be fifteen
-                                    // seconds of staring for content the child does not need yet.
-                                    else -> runCatching {
-                                        packRepository.download(packId).collect { }
-                                    }.onSuccess {
-                                        open()
-                                        packRepository.downloadLevelInBackground(levelId)
-                                    }
+                                if (!packRepository.ensureReady(packId)) return@launch
+
+                                if (card.status == UnitStatus.Locked) {
+                                    sfx.playPrompt("vp_locked", lang)
+                                } else {
+                                    navBackStack.add(Destination.Learning.LessonMap(levelId, packId))
+                                    packRepository.downloadLevelInBackground(levelId)
                                 }
                             }
                         }
@@ -237,42 +215,6 @@ internal fun UnitSelectionScreen(
                 )
             }
         }
-    }
-}
-
-/** Slim "content is arriving" strip; absent unless something is actually downloading. */
-@Composable
-private fun LevelDownloadBanner(
-    units: ImmutableList<UnitCard>,
-    packStates: Map<String, PackState>,
-    modifier: Modifier = Modifier,
-) {
-    val relevant = remember(units, packStates) {
-        units.mapNotNull { packStates[it.unit.id] }
-    }
-    val downloading = relevant.count { it is PackState.Downloading }
-    if (downloading == 0) return
-
-    val ready = relevant.count { it is PackState.Bundled || it is PackState.Ready }
-    val total = relevant.size
-
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 6.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
-    ) {
-        CircularProgressIndicator(
-            modifier = Modifier.size(14.dp),
-            color = AccentRed,
-            strokeWidth = 2.dp,
-        )
-        Text(
-            text = stringResource(Res.string.content_download_banner, ready, total),
-            fontSize = 12.sp,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
     }
 }
 
@@ -769,7 +711,22 @@ private fun ActionPlayButton(status: UnitStatus, content: UnitContent) {
                 modifier = Modifier.size(16.dp),
             )
         }
-        UnitStatus.Locked -> Spacer(Modifier.size(PlayButtonSize))
+        // Content is here, the previous lesson is not finished. Greyed play rather than an
+        // empty slot: the unit is complete and waiting, which is different from having nothing.
+        UnitStatus.Locked -> Box(
+            modifier = Modifier
+                .size(PlayButtonSize)
+                .clip(CircleShape)
+                .border(1.5.dp, LockedTextGray, CircleShape),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(
+                imageVector = Icons.Filled.PlayArrow,
+                contentDescription = "Finish the previous lesson first",
+                tint = LockedTextGray,
+                modifier = Modifier.size(18.dp),
+            )
+        }
     }
 }
 

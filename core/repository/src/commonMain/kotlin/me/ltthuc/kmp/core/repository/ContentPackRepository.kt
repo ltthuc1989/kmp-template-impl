@@ -139,6 +139,20 @@ class ContentPackRepository(
             }
 
     /**
+     * Makes sure [packId] is playable, downloading it if it is not, and reports whether it
+     * ended up available. Progress lands in [packStates] so the unit's card animates while
+     * this runs; a failure leaves the card showing retry.
+     *
+     * Callers use this before applying their own rules, so a pack whose earlier download
+     * failed is retried by the very tap that needs it.
+     */
+    suspend fun ensureReady(packId: String): Boolean =
+        when (refresh(packId)) {
+            PackState.Bundled, PackState.Ready -> true
+            else -> runCatching { download(packId).collect { } }.isSuccess
+        }
+
+    /**
      * Quietly fetches whatever [levelId] is still missing, one pack at a time, after the unit
      * the child actually tapped is already playing. Failures stay silent — this is a
      * head start, not something anyone is waiting on; a unit that misses out simply shows
