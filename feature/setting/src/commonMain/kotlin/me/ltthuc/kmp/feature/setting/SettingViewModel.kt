@@ -15,6 +15,7 @@ import me.ltthuc.kmp.core.common.share.StoreLinks
 import me.ltthuc.kmp.core.model.AppThemePalette
 import me.ltthuc.kmp.core.model.Language
 import me.ltthuc.kmp.core.model.Level
+import me.ltthuc.kmp.core.model.LevelStatus
 import me.ltthuc.kmp.core.model.Theme
 import me.ltthuc.kmp.core.repository.AppSettingRepository
 import me.ltthuc.kmp.core.repository.BillingRepository
@@ -33,9 +34,16 @@ class SettingViewModel(
 ) : ViewModel() {
     val setting = repository.setting
 
-    /** All levels in order, for the parent "unlock learning order" control. */
+    /**
+     * The levels a parent can actually buy here, in curriculum order.
+     *
+     * Filtered by the same [LevelStatus.ComingSoon] the Home screen renders, so a level appears
+     * in this section on the build that ships its content and not before — the shipped set lives
+     * in one place (`LevelRepository.LAUNCHED_PREMIUM_LEVELS`). An earlier hardcoded "level 1 only"
+     * filter here meant shipping Level 2 left its unlock entry missing from Settings.
+     */
     val levels: StateFlow<List<Level>> = levelRepository.observeLevelCards()
-        .map { cards -> cards.map { it.level } }
+        .map { cards -> cards.filterNot { it.status is LevelStatus.ComingSoon }.map { it.level } }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     /** Real localized unlock price per level (levelId → priceString) from the store / fake billing. */

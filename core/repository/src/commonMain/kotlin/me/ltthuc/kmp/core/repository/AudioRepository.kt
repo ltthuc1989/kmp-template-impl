@@ -37,6 +37,12 @@ class AudioRepository(
     private var currentRef: AudioRef? = null
     private var loadJob: Job? = null
 
+    // Who started what is playing, so a screen that leaves cannot silence the screen that arrives.
+    // Navigation disposes the outgoing screen only AFTER the incoming one has mounted and started
+    // its audio (measured on a step→step jump: play(LetterSound(c)) at T, unconditional stop() from
+    // the leaver at T+278ms), which swallowed the arriving screen's opening sound whole.
+    private var currentOwner: Any? = null
+
     // Hàng chờ cho [playAll]. Level 2 step 0 là 4-6 file rời (guide vần + từng từ)
     // chứ không phải một file dài như Level 1, nên cần phát nối tiếp. Giữ ở đây
     // thay vì để ViewModel tự nghe trạng thái rồi gọi play() tiếp: chuyển bài phải
@@ -77,8 +83,13 @@ class AudioRepository(
         }
     }
 
-    fun play(ref: AudioRef) {
+    /**
+     * [owner] claims this playback, so only that same owner can [stopFor] it. Leave it null and the
+     * playback stays unowned — anyone may stop it, exactly as before.
+     */
+    fun play(ref: AudioRef, owner: Any? = null) {
         clearQueue()
+        currentOwner = owner
         playInternal(ref)
     }
 
@@ -89,8 +100,9 @@ class AudioRepository(
      * đúng với đúng bài đó — màn hình muốn biết "cả chuỗi có đang chạy không" thì
      * kiểm tra ref hiện tại có nằm trong danh sách của mình hay không.
      */
-    fun playAll(refs: List<AudioRef>) {
+    fun playAll(refs: List<AudioRef>, owner: Any? = null) {
         if (refs.isEmpty()) return
+        currentOwner = owner
         queue = refs
         queueIndex = 0
         playInternal(refs.first())
@@ -132,7 +144,17 @@ class AudioRepository(
         loadJob?.cancel()
         player.stop()
         currentRef = null
+        currentOwner = null
         _state.value = AudioState.Idle
+    }
+
+    /**
+     * Stops only what [owner] itself started — what a screen wants when it is being disposed, since
+     * by then the next screen may already be talking. Unowned playback (a [play] with no owner) is
+     * still stopped, so callers that never claim ownership keep the old behaviour.
+     */
+    fun stopFor(owner: Any) {
+        if (currentOwner == null || currentOwner === owner) stop()
     }
 
     suspend fun prefetch(refs: List<AudioRef>) {

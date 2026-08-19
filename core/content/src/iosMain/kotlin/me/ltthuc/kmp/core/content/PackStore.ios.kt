@@ -13,10 +13,13 @@ import platform.Foundation.NSData
 import platform.Foundation.NSFileManager
 import platform.Foundation.NSFileSize
 import platform.Foundation.NSNumber
+import platform.Foundation.NSString
 import platform.Foundation.NSURL
 import platform.Foundation.NSURLIsExcludedFromBackupKey
+import platform.Foundation.NSUTF8StringEncoding
 import platform.Foundation.NSUserDomainMask
 import platform.Foundation.create
+import platform.Foundation.stringWithContentsOfFile
 import platform.Foundation.writeToURL
 
 @OptIn(ExperimentalForeignApi::class)
@@ -80,6 +83,9 @@ actual class PackStore : PackFiles {
         for (item in contents) {
             val url = item as? NSURL ?: continue
             val name = url.lastPathComponent ?: continue
+            // The index is bookkeeping, not content — sweeping it would throw away the only
+            // record of which lesson each stored hash belongs to.
+            if (name == INDEX_FILE) continue
             if (name !in keep && fileManager.removeItemAtURL(url, null)) {
                 Napier.d("PackStore swept $name")
             }
@@ -109,8 +115,25 @@ actual class PackStore : PackFiles {
         }
     }
 
+    actual override suspend fun readIndex(): String? = withContext(Dispatchers.Default) {
+        val path = urlFor(INDEX_FILE)?.path ?: return@withContext null
+        if (!fileManager.fileExistsAtPath(path)) return@withContext null
+        NSString.stringWithContentsOfFile(path, NSUTF8StringEncoding, null)
+    }
+
+    actual override suspend fun writeIndex(json: String): Unit = withContext(Dispatchers.Default) {
+        val target = urlFor(INDEX_FILE) ?: error("Unable to compose the pack index URL")
+        // atomically = true writes to a temp file and renames, so a kill mid-write cannot
+        // leave a truncated index that later parses as a shorter one.
+        (json as NSString).writeToURL(target, true, NSUTF8StringEncoding, null)
+        Unit
+    }
+
     private companion object {
         const val STORE_DIR = "content_packs"
         const val LEGACY_AUDIO_CACHE_DIR = "audio_cache"
+
+        // Not hash-shaped, so it can never collide with a stored asset.
+        const val INDEX_FILE = "index.json"
     }
 }

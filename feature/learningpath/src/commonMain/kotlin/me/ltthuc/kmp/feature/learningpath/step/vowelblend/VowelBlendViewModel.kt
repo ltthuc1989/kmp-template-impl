@@ -16,9 +16,9 @@ import me.ltthuc.kmp.core.audio.AudioState
 import me.ltthuc.kmp.core.model.BlendMeta
 import me.ltthuc.kmp.core.model.PhonicsLesson
 import me.ltthuc.kmp.core.repository.AudioRepository
+import me.ltthuc.kmp.core.repository.AudioSession
 import me.ltthuc.kmp.core.repository.BlendMetaRepository
 import me.ltthuc.kmp.core.repository.UnitRepository
-import me.ltthuc.kmp.core.repository.playAndAwait
 import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.error_network
 import me.ltthuc.kmp.core.resource.error_no_data
@@ -39,6 +39,10 @@ internal class VowelBlendViewModel(
     private val audioRepository: AudioRepository,
     private val blendMetaRepository: BlendMetaRepository,
 ) : ViewModel() {
+
+    // This screen's claim on the single playback channel: what it starts, only it can stop. Keeps the
+    // outgoing screen's stop (which runs mid nav-transition) from cutting the incoming screen's audio.
+    private val audio = AudioSession(audioRepository)
 
     val screenState: StateFlow<ScreenState<VowelBlendUiState>> =
         unitRepository.observeLessons(unitId)
@@ -75,7 +79,7 @@ internal class VowelBlendViewModel(
     /** Starts one page's chain audio. Fire-and-forget: the screen follows [audioState]. */
     fun playChain(lesson: PhonicsLesson, pageIndex: Int, word: String) {
         val folder = lesson.audioFolderName() ?: return
-        audioRepository.play(AudioRef.Blend(folder, word, pageIndex))
+        audio.play(AudioRef.Blend(folder, word, pageIndex))
     }
 
     /**
@@ -87,13 +91,13 @@ internal class VowelBlendViewModel(
      */
     suspend fun playLetter(letter: Char, timeoutMs: Long) {
         if (!letter.isLetter()) return
-        audioRepository.playAndAwait(AudioRef.LetterSound(letter.toString()), timeoutMs)
+        audio.playAndAwait(AudioRef.LetterSound(letter.toString()), timeoutMs)
     }
 
     /** The rime spoken as one blended unit, e.g. "an". */
     suspend fun playRime(rime: String, timeoutMs: Long) {
         if (rime.isBlank()) return
-        audioRepository.playAndAwait(AudioRef.RimeBlend(rime), timeoutMs)
+        audio.playAndAwait(AudioRef.RimeBlend(rime), timeoutMs)
     }
 
     /** The whole blended word from the lesson's vocab audio, e.g. "fan". */
@@ -102,11 +106,11 @@ internal class VowelBlendViewModel(
             Napier.w(tag = TAG) { "No Word audio ref for ${lesson.id}/$word" }
             return
         }
-        audioRepository.playAndAwait(ref, timeoutMs)
+        audio.playAndAwait(ref, timeoutMs)
     }
 
     fun onLeaveScreen() {
-        audioRepository.stop()
+        audio.stop()
     }
 
     private companion object {

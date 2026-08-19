@@ -19,9 +19,9 @@ import me.ltthuc.kmp.core.audio.AudioRef
 import me.ltthuc.kmp.core.audio.AudioState
 import me.ltthuc.kmp.core.model.PhonicsLesson
 import me.ltthuc.kmp.core.repository.AudioRepository
+import me.ltthuc.kmp.core.repository.AudioSession
 import me.ltthuc.kmp.core.repository.SfxController
 import me.ltthuc.kmp.core.repository.UnitRepository
-import me.ltthuc.kmp.core.repository.playAndAwait
 import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.error_no_data
 import me.ltthuc.kmp.core.ui.screen.ScreenState
@@ -52,6 +52,10 @@ internal class BubblePopViewModel(
     private val audioRepository: AudioRepository,
     private val sfxController: SfxController,
 ) : ViewModel() {
+
+    // This screen's claim on the single playback channel: what it starts, only it can stop. Keeps the
+    // outgoing screen's stop (which runs mid nav-transition) from cutting the incoming screen's audio.
+    private val audio = AudioSession(audioRepository)
 
     private val roundIndex = MutableStateFlow(0)
     private val popCount = MutableStateFlow(0)
@@ -142,7 +146,7 @@ internal class BubblePopViewModel(
             } else {
                 AudioRef.FindSound(ui.targetLetter)
             }
-            audioRepository.playAndAwait(prompt, GUIDE_AUDIO_MAX_MS)
+            audio.playAndAwait(prompt, GUIDE_AUDIO_MAX_MS)
             guidePlaying.value = false // bubbles appear
             ensureTimerRunning() // timer starts only now
         }
@@ -160,7 +164,7 @@ internal class BubblePopViewModel(
         // chạm chữ cái là im lặng (user báo 2026-08-12). Ngược lại vần một ký tự ("a")
         // dùng `phonemes/a.mp3` cũng đúng: đó chính là âm /æ/ ngắn.
         val ref = if (letter.length > 1) AudioRef.Rime(letter) else AudioRef.LetterSound(letter)
-        audioRepository.play(ref)
+        audio.play(ref)
     }
 
     private fun ensureTimerRunning() {
@@ -223,7 +227,7 @@ internal class BubblePopViewModel(
 
     fun onLeaveScreen() {
         timerJob?.cancel()
-        audioRepository.stop()
+        audio.stop()
     }
 
     private fun totalRoundsSnapshot(): Int =

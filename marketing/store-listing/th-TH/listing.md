@@ -1,5 +1,11 @@
 # Play Store Listing — Thailand (th-TH)
 
+> 🛑 **STALE — DO NOT SHIP (audit 2026-08-17).** Written for Mốc 1. Now wrong on three
+> counts: Level 2 has shipped (16 stories, not 8), "488+ words" counted unshipped levels
+> L3–L5, and in-app purchases are live (`MONETIZATION_ENABLED = true`). Per the EN+VN
+> locale scope, this file is not being retranslated yet. Rewrite from
+> `../en-US/listing.md` before submitting this locale.
+
 ⚠️ **Mốc 1 strategy**: 100% FREE, NO ADS.
 
 ## App title (~25 chars)

@@ -6,6 +6,7 @@ import me.ltthuc.kmp.core.content.ContentManifestLoader
 import me.ltthuc.kmp.core.content.ContentPackDownloader
 import me.ltthuc.kmp.core.content.ManifestSource
 import me.ltthuc.kmp.core.content.PackFiles
+import me.ltthuc.kmp.core.content.PackIndex
 import me.ltthuc.kmp.core.content.PackStore
 import org.koin.core.module.Module
 import org.koin.dsl.module
@@ -30,8 +31,9 @@ val contentModule = module {
     // then fails at startup.
     single<ManifestSource> { ContentManifestLoader() }
     single<PackFiles> { get<PackStore>() }
-    single { AssetLocator(get(), get(), get<ContentConfig>().cdnBaseUrl) }
-    single { ContentPackDownloader(get(), get(), get(), get()) }
+    single { PackIndex(get()) }
+    single { AssetLocator(get(), get(), get(), get<ContentConfig>().cdnBaseUrl) }
+    single { ContentPackDownloader(get(), get(), get(), get(), get()) }
     single { ContentBytes(get(), get()) }
 
     includes(contentPlatformModule)

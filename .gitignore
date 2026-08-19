@@ -62,3 +62,6 @@ xcuserdata
 iosApp/Grabee/Info.plist
 iosApp/ShareExtension/Info.plist
 iosApp/Pods
+
+# Stray screenshots at repo root
+/s[0-9].png

@@ -17,15 +17,23 @@ import io.github.vinceglb.filekit.dialogs.init
 import me.ltthuc.kmp.core.common.share.AndroidActivityHolder
 import me.ltthuc.kmp.core.model.Theme
 import me.ltthuc.kmp.core.ui.theme.shouldUseDarkTheme
+import me.ltthuc.kmp.update.InAppUpdateController
+import me.ltthuc.kmp.update.UpdateReadyBanner
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : ComponentActivity() {
 
     private val viewModel by viewModel<MainViewModel>()
 
+    // Built here rather than injected: it registers an activity result launcher, which
+    // ComponentActivity only accepts before the activity is STARTED, and it observes this
+    // activity's lifecycle to re-check on every resume.
+    private lateinit var inAppUpdate: InAppUpdateController
+
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
+        inAppUpdate = InAppUpdateController(this)
         enableEdgeToEdge()
         setContent {
             val userData by viewModel.setting.collectAsStateWithLifecycle(null)
@@ -42,10 +50,18 @@ class MainActivity : ComponentActivity() {
                 onDispose {}
             }
 
+            val updateReady by inAppUpdate.readyToInstall.collectAsStateWithLifecycle()
+
             userData?.let {
                 GrabeeApp(
                     modifier = Modifier.fillMaxSize(),
                     setting = it,
+                    overlay = {
+                        UpdateReadyBanner(
+                            visible = updateReady,
+                            onRestart = inAppUpdate::completeUpdate,
+                        )
+                    },
                 )
             }
 

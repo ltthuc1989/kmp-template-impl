@@ -26,6 +26,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.CloudDownload
 import androidx.compose.material.icons.filled.FileDownload
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.PlayArrow
@@ -103,10 +104,14 @@ private val LockedTextGray = Color(0xFF9AA3AF)
 /**
  * Until a pack has been looked at, assume it is [UnitContent.Ready]: showing a download
  * badge that resolves away a frame later would flicker on every unit that ships in the app.
+ *
+ * [wasCompleted] splits the one missing-bytes state the repository reports into the two
+ * situations a parent reads very differently — see [UnitContent.NeedsUpdate].
  */
-private fun PackState?.toUnitContent(): UnitContent = when (this) {
+private fun PackState?.toUnitContent(wasCompleted: Boolean): UnitContent = when (this) {
     null, PackState.Bundled, PackState.Ready -> UnitContent.Ready
-    is PackState.NotDownloaded -> UnitContent.NeedsDownload
+    is PackState.NotDownloaded ->
+        if (wasCompleted) UnitContent.NeedsUpdate else UnitContent.NeedsDownload
     is PackState.Downloading -> UnitContent.Downloading(progress.fraction)
     is PackState.Failed -> UnitContent.Failed(retryable = retryable)
 }
@@ -191,7 +196,9 @@ internal fun UnitSelectionScreen(
                         start = 16.dp,
                         end = 16.dp,
                     ),
-                    contentFor = { card -> packStates[card.unit.id].toUnitContent() },
+                    contentFor = { card ->
+                        packStates[card.unit.id].toUnitContent(wasCompleted = card.completionCount > 0)
+                    },
                     onUnitClick = { card ->
                         when (card.status) {
                             // Paid unit not owned → open the features/paywall screen directly (kid-safe
@@ -608,6 +615,16 @@ internal sealed interface UnitContent {
     /** In the app or already downloaded. */
     data object Ready : UnitContent
     data object NeedsDownload : UnitContent
+
+    /**
+     * Missing bytes on a unit the child has already finished — an app update changed the
+     * audio, so the old hash was swept and the new one is not here yet.
+     *
+     * Same fetch as [NeedsDownload], different story: without the distinction a finished
+     * unit silently reverts to a download prompt, which reads as lost progress rather than
+     * as fresh content.
+     */
+    data object NeedsUpdate : UnitContent
     data class Downloading(val fraction: Float) : UnitContent
 
     /** [retryable] false = out of space or a missing file; tapping again cannot help. */
@@ -634,6 +651,20 @@ private fun ActionPlayButton(status: UnitStatus, content: UnitContent) {
                     Icon(
                         imageVector = Icons.Filled.FileDownload,
                         contentDescription = "Download this unit",
+                        tint = accent,
+                        modifier = Modifier.size(17.dp),
+                    )
+                }
+                return
+            }
+            is UnitContent.NeedsUpdate -> {
+                // A cloud, not the plain tray arrow of NeedsDownload: the unit is already the
+                // child's, only a newer copy is out there. Refresh is not free to reuse here —
+                // it already means "your download failed, try again" two branches down.
+                SlotCircle(tint = accent) {
+                    Icon(
+                        imageVector = Icons.Filled.CloudDownload,
+                        contentDescription = "Get the updated lesson",
                         tint = accent,
                         modifier = Modifier.size(17.dp),
                     )

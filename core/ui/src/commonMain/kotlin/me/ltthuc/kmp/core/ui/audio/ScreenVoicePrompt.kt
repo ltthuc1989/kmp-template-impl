@@ -3,6 +3,8 @@ package me.ltthuc.kmp.core.ui.audio
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import kotlinx.coroutines.delay
 import me.ltthuc.kmp.core.repository.SfxController
 import me.ltthuc.kmp.core.ui.theme.LocalAppLanguage
@@ -18,12 +20,15 @@ import org.koin.compose.koinInject
  * (e.g. "vp_step_trace"). A small [delayMs] beat lets the screen settle before speaking.
  */
 @Composable
-fun ScreenVoicePrompt(promptId: String, delayMs: Long = 0L) {
+fun ScreenVoicePrompt(promptId: String, delayMs: Long = 0L, onFinished: () -> Unit = {}) {
     val sfx = koinInject<SfxController>()
     val lang = LocalAppLanguage.current
+    // Kept fresh so a screen that recomposes doesn't get its first callback lambda called back.
+    val finished by rememberUpdatedState(onFinished)
     LaunchedEffect(promptId) {
         if (delayMs > 0) delay(delayMs)
-        sfx.playPrompt(promptId, lang)
+        sfx.playPromptAndAwait(promptId, lang)
+        finished()
     }
     // Stop this prompt the moment we leave the screen so audio never bleeds into the next
     // one (which may have no prompt). [stopPrompt] only stops if THIS prompt is still

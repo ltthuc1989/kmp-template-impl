@@ -28,9 +28,10 @@ class ContentPackDownloaderTest {
         files: FakePackFiles = FakePackFiles(),
         server: FlakyServer = FlakyServer(),
         source: ManifestSource = FakeManifestSource(manifest),
+        index: PackIndex = PackIndex(files),
     ): ContentPackDownloader {
-        val locator = AssetLocator(source, files, "https://cdn.test/content")
-        return ContentPackDownloader(server.client(), source, locator, files)
+        val locator = AssetLocator(source, files, index, "https://cdn.test/content")
+        return ContentPackDownloader(server.client(), source, locator, files, index)
     }
 
     @Test

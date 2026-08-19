@@ -55,17 +55,16 @@ import me.ltthuc.kmp.core.audio.isActive
 import me.ltthuc.kmp.core.content.ContentBytes
 import me.ltthuc.kmp.core.model.Story
 import me.ltthuc.kmp.core.model.StoryScene
-import me.ltthuc.kmp.core.repository.AudioRepository
 import me.ltthuc.kmp.core.repository.LearningProgressRepository
 import me.ltthuc.kmp.core.repository.LessonProgressRepository
 import me.ltthuc.kmp.core.repository.LevelRepository
-import me.ltthuc.kmp.core.repository.playAndAwait
 import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.common_next
 import me.ltthuc.kmp.core.resource.slide_next_cd
 import me.ltthuc.kmp.core.resource.slide_previous_cd
 import me.ltthuc.kmp.core.resource.step_guide_story
 import me.ltthuc.kmp.core.resource.story_audio_cd
+import me.ltthuc.kmp.core.ui.audio.rememberAudioSession
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
 import me.ltthuc.kmp.core.ui.screen.Destination
 import me.ltthuc.kmp.core.ui.theme.LocalAppLanguage
@@ -198,7 +197,7 @@ private fun StoryContent(
     val pagerState = rememberPagerState(pageCount = { pageCount })
     val currentPage by remember { derivedStateOf { pagerState.currentPage.coerceIn(0, scenes.lastIndex) } }
     val scope = rememberCoroutineScope()
-    val audioRepository = koinInject<AudioRepository>()
+    val guideAudio = rememberAudioSession()
     val lang = LocalAppLanguage.current
     var guidePlayed by remember(story.id) { mutableStateOf(false) }
 
@@ -207,7 +206,7 @@ private fun StoryContent(
     LaunchedEffect(currentPage) {
         if (currentPage == 0 && !guidePlayed) {
             guidePlayed = true
-            audioRepository.playAndAwait(AudioRef.Prompt("vp_step_story", lang), STORY_GUIDE_MAX_MS)
+            guideAudio.playAndAwait(AudioRef.Prompt("vp_step_story", lang), STORY_GUIDE_MAX_MS)
         }
         onPageChange(currentPage)
     }

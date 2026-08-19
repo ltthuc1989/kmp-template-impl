@@ -13,11 +13,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.delay
 import me.ltthuc.kmp.core.audio.AudioRef
-import me.ltthuc.kmp.core.repository.AudioRepository
 import me.ltthuc.kmp.core.repository.LearningProgressRepository
 import me.ltthuc.kmp.core.repository.LevelRepository
 import me.ltthuc.kmp.core.repository.UnitCompletionRepository
-import me.ltthuc.kmp.core.repository.playAndAwait
+import me.ltthuc.kmp.core.ui.audio.rememberAudioSession
 import me.ltthuc.kmp.core.ui.screen.Destination
 import me.ltthuc.kmp.core.ui.theme.LocalAppLanguage
 import me.ltthuc.kmp.core.ui.theme.LocalNavBackStack
@@ -59,7 +58,7 @@ internal fun GameFlowScreen(
     val progressRepository: LearningProgressRepository = koinInject()
     val unitCompletionRepository: UnitCompletionRepository = koinInject()
     val levelRepository: LevelRepository = koinInject()
-    val audioRepository: AudioRepository = koinInject()
+    val congratsAudio = rememberAudioSession()
     val lang = LocalAppLanguage.current
     val games = DEFAULT_UNIT_GAMES
     val totalGames = games.size
@@ -81,7 +80,7 @@ internal fun GameFlowScreen(
         unitCompletionRepository.markCompleted(unitId)
         // No finish chime — go straight to the congrats voice prompt below.
         delay(CELEBRATE_PRAISE_DELAY_MS)
-        audioRepository.playAndAwait(AudioRef.Prompt("vp_lesson_done", lang), CONGRATS_MAX_MS)
+        congratsAudio.playAndAwait(AudioRef.Prompt("vp_lesson_done", lang), CONGRATS_MAX_MS)
         if (nextUnit == null) {
             // Last unit of the level → whole-level celebration.
             navBackStack.add(Destination.Learning.LevelComplete(levelId = levelId))

@@ -21,6 +21,7 @@ import kotlinx.coroutines.launch
 import me.ltthuc.kmp.core.audio.AudioRef
 import me.ltthuc.kmp.core.model.PhonicsLesson
 import me.ltthuc.kmp.core.repository.AudioRepository
+import me.ltthuc.kmp.core.repository.AudioSession
 import me.ltthuc.kmp.core.repository.SfxController
 import me.ltthuc.kmp.core.repository.UnitRepository
 import me.ltthuc.kmp.core.resource.Res
@@ -45,6 +46,10 @@ internal class MemoryMatchViewModel(
     private val sfxController: SfxController,
     private val audioRepository: AudioRepository,
 ) : ViewModel() {
+
+    // This screen's claim on the single playback channel: what it starts, only it can stop. Keeps the
+    // outgoing screen's stop (which runs mid nav-transition) from cutting the incoming screen's audio.
+    private val audio = AudioSession(audioRepository)
 
     private val lessonsFlow = MutableStateFlow<List<PhonicsLesson>>(emptyList())
     private val cardsFlow = MutableStateFlow<ImmutableList<MemoryCardSpec>>(persistentListOf())
@@ -150,7 +155,7 @@ internal class MemoryMatchViewModel(
     private fun playCardSound(card: MemoryCardSpec) {
         // Thẻ vòng 2 mang sẵn ref của TỪ (thẻ chữ lẫn thẻ hình đều phát tiếng từ đó).
         card.audio?.let {
-            audioRepository.play(it)
+            audio.play(it)
             return
         }
         playLetterSound(card.letter)
@@ -160,7 +165,7 @@ internal class MemoryMatchViewModel(
         // Short letter phoneme from files/audio/phonemes/<letter>.mp3 (not the long sound-intro).
         // Vần hai ký tự không có file trong `phonemes/` (chỉ a-z) — xem BubblePopViewModel.
         val ref = if (letter.length > 1) AudioRef.Rime(letter) else AudioRef.LetterSound(letter)
-        audioRepository.play(ref)
+        audio.play(ref)
     }
 
     private fun resolvePair(pair: ImmutableList<Int>) {
@@ -266,6 +271,11 @@ internal class MemoryMatchViewModel(
     /** Level 2+ dạy vần; nhận biết qua số cấp độ trong lesson id, không qua hình dạng `letter`. */
     private fun PhonicsLesson.isRimeLesson(): Boolean =
         (LESSON_LEVEL_REGEX.find(id)?.groupValues?.get(1)?.toIntOrNull() ?: 1) >= FIRST_RIME_LEVEL
+
+    /** Games swap in place, so leaving one must not leave its audio talking over the next. */
+    fun onLeaveScreen() {
+        audio.stop()
+    }
 
     private companion object {
         const val TAG = "MemoryMatchViewModel"

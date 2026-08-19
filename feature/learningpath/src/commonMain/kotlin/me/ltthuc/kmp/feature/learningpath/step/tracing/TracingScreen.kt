@@ -65,14 +65,13 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import me.ltthuc.kmp.core.audio.AudioRef
 import me.ltthuc.kmp.core.model.PhonicsLesson
-import me.ltthuc.kmp.core.repository.AudioRepository
 import me.ltthuc.kmp.core.repository.SfxController
-import me.ltthuc.kmp.core.repository.playAndAwait
 import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.common_next
 import me.ltthuc.kmp.core.resource.step_guide_tracing
 import me.ltthuc.kmp.core.resource.tracing_draw_here
 import me.ltthuc.kmp.core.ui.audio.ScreenVoicePrompt
+import me.ltthuc.kmp.core.ui.audio.rememberAudioSession
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
 import me.ltthuc.kmp.core.ui.theme.LocalAppLanguage
 import me.ltthuc.kmp.feature.learningpath.step.common.ConfettiCanvas
@@ -135,7 +134,7 @@ private fun TracingContent(
     // lets the kid move on instead of retrying forever.
     var failCount by remember(currentLesson.id) { mutableStateOf(0) }
     val sfx = koinInject<SfxController>()
-    val audioRepository = koinInject<AudioRepository>()
+    val congratsAudio = rememberAudioSession()
     val lang = LocalAppLanguage.current
     val tracingScope = rememberCoroutineScope()
     var navigated by remember(currentLesson.id) { mutableStateOf(false) }
@@ -167,7 +166,7 @@ private fun TracingContent(
             sfx.playSfx("correct")
             tracingScope.launch {
                 delay(TRACING_PRAISE_DELAY_MS)
-                audioRepository.playAndAwait(AudioRef.Prompt("vp_lesson_done", lang), CONGRATS_MAX_MS)
+                congratsAudio.playAndAwait(AudioRef.Prompt("vp_lesson_done", lang), CONGRATS_MAX_MS)
                 if (!navigated) {
                     navigated = true
                     onNext()

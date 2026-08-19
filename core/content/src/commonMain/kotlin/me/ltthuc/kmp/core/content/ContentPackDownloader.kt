@@ -5,6 +5,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsBytes
 import io.ktor.http.isSuccess
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -15,6 +16,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.sync.withPermit
+import kotlinx.coroutines.withContext
 
 /** How far along a pack download is. [bytesTotal] counts only what still had to be fetched. */
 data class DownloadProgress(
@@ -48,6 +50,7 @@ class ContentPackDownloader(
     private val manifestSource: ManifestSource,
     private val locator: AssetLocator,
     private val packFiles: PackFiles,
+    private val packIndex: PackIndex,
 ) {
     /**
      * Emits progress until the pack is complete. Cancelling the collector cancels the
@@ -72,18 +75,27 @@ class ContentPackDownloader(
         send(DownloadProgress(filesDone = 0, filesTotal = filesTotal, bytesDone = 0L, bytesTotal = bytesTotal))
 
         val gate = Semaphore(MAX_PARALLEL)
-        coroutineScope {
-            pending.map { (logicalPath, asset) ->
-                async {
-                    gate.withPermit { fetch(logicalPath, asset) }
-                    val progress = lock.withLock {
-                        filesDone += 1
-                        bytesDone += asset.bytes
-                        DownloadProgress(filesDone, filesTotal, bytesDone, bytesTotal)
+        val fetched = mutableMapOf<String, String>()
+        try {
+            coroutineScope {
+                pending.map { (logicalPath, asset) ->
+                    async {
+                        gate.withPermit { fetch(logicalPath, asset) }
+                        val progress = lock.withLock {
+                            fetched[logicalPath] = asset.hash
+                            filesDone += 1
+                            bytesDone += asset.bytes
+                            DownloadProgress(filesDone, filesTotal, bytesDone, bytesTotal)
+                        }
+                        send(progress)
                     }
-                    send(progress)
-                }
-            }.awaitAll()
+                }.awaitAll()
+            }
+        } finally {
+            // Recorded once per pack rather than per file: 50 index rewrites per pack would
+            // cost far more than the one this replaces. NonCancellable so a user leaving the
+            // screen still keeps the record of what did land.
+            withContext(NonCancellable) { packIndex.record(fetched) }
         }
     }
 
@@ -96,6 +108,7 @@ class ContentPackDownloader(
      */
     suspend fun fetchOne(logicalPath: String, asset: ContentAsset): String {
         fetch(logicalPath, asset)
+        packIndex.record(mapOf(logicalPath to asset.hash))
         return packFiles.pathFor(asset.hash)
             ?: error("Downloaded $logicalPath but it is not in the pack store")
     }
@@ -106,6 +119,24 @@ class ContentPackDownloader(
             .values
             .filterNot { packFiles.has(it.hash) }
             .sumOf { it.bytes }
+
+    /**
+     * Whether every asset in the pack can be played from disk right now — the current bytes,
+     * or the predecessor the sweep kept while an update is outstanding.
+     *
+     * Deliberately not the same question as [pendingBytes], which answers "how much is there
+     * left to fetch". A pack can owe bytes and still be perfectly playable, and conflating
+     * the two is what would keep a child out of a unit they had already finished just because
+     * the device is offline when a newer take exists on the CDN.
+     */
+    suspend fun isPlayable(packId: String): Boolean {
+        val assets = manifestSource.load().assetsInPack(packId)
+        if (assets.isEmpty()) return true
+        val previous = packIndex.snapshot()
+        return assets.all { (logicalPath, asset) ->
+            packFiles.has(asset.hash) || previous[logicalPath]?.let(packFiles::has) == true
+        }
+    }
 
     private suspend fun fetch(logicalPath: String, asset: ContentAsset) {
         val url = locator.urlFor(logicalPath, asset)

@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
@@ -60,6 +61,10 @@ internal fun MemoryMatchScreen(
     viewModel: MemoryMatchViewModel = koinViewModel(key = unitId) { parametersOf(unitId) },
 ) {
     val screenState by viewModel.screenState.collectAsStateWithLifecycle()
+
+    DisposableEffect(viewModel) {
+        onDispose { viewModel.onLeaveScreen() }
+    }
     val stepSegments = remember(totalGames) { gameSegmentsFor(totalGames) }
 
     ScreenVoicePrompt("vp_game_memory")

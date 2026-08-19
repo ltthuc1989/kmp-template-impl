@@ -6,8 +6,12 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
@@ -27,6 +31,32 @@ import org.jetbrains.compose.resources.StringResource
  * and fades content out across it with [me.ltthuc.kmp.core.ui.utils.fadeOutBottom].
  */
 val LocalFloatingNavHeight = compositionLocalOf { 0.dp }
+
+/**
+ * Lets a screen hide the floating pill nav while it covers itself with a full-screen overlay.
+ *
+ * The pill is hosted by the app Scaffold, OUTSIDE the navigation entries, so anything a screen
+ * draws over itself still has the pill floating on top — including a live Settings button sitting
+ * on the parental gate that exists to keep a child out of Settings.
+ *
+ * Requests nest: two overlaps (one fading out over the next) each need their own [show].
+ */
+@Stable
+class FloatingNavVisibility {
+    private var hideRequests by mutableStateOf(0)
+
+    val isVisible: Boolean get() = hideRequests == 0
+
+    fun hide() {
+        hideRequests++
+    }
+
+    fun show() {
+        hideRequests--
+    }
+}
+
+val LocalFloatingNavVisibility = compositionLocalOf { FloatingNavVisibility() }
 
 enum class AppBottomNavTab(
     val key: String,

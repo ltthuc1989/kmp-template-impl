@@ -60,13 +60,12 @@ import me.ltthuc.kmp.core.audio.AudioState
 import me.ltthuc.kmp.core.audio.isActiveFor
 import me.ltthuc.kmp.core.model.LessonWord
 import me.ltthuc.kmp.core.model.PhonicsLesson
-import me.ltthuc.kmp.core.repository.AudioRepository
 import me.ltthuc.kmp.core.repository.SfxController
-import me.ltthuc.kmp.core.repository.playAndAwait
 import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.common_next
 import me.ltthuc.kmp.core.resource.identify_listen_cd
 import me.ltthuc.kmp.core.resource.step_guide_identify
+import me.ltthuc.kmp.core.ui.audio.rememberAudioSession
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
 import me.ltthuc.kmp.core.ui.theme.LocalAppLanguage
 import me.ltthuc.kmp.feature.learningpath.step.common.PuffySurface
@@ -165,20 +164,19 @@ private fun IdentifyContent(
 
     val scope = rememberCoroutineScope()
     val sfx = koinInject<SfxController>()
-    val audioRepository = koinInject<AudioRepository>()
+    val guideAudio = rememberAudioSession()
     val lang = LocalAppLanguage.current
 
-    // First entry plays the spoken guide ("Listen, then tap the right picture"), then the target
-    // word. Later rounds just play the word (after a short delay that lets the previous step's
-    // audioRepository.stop() finish so our play() doesn't get cancelled).
+    // First entry plays the spoken guide ("Listen, then tap the right picture"), then the target word.
+    // Later rounds just play the word.
     LaunchedEffect(currentLesson.id, roundIndex) {
-        // The leading delay is required on EVERY branch: when we arrive from the previous
-        // step its DisposableEffect runs audioRepository.stop() in dispose, and the guide
-        // shares that same channel. Without the beat, play() races the outgoing stop() and
-        // gets cancelled — the guide goes silent on first entry. (Was the missing-guide bug.)
+        // The leading beat used to be load-bearing: arriving from the previous step, that screen's
+        // dispose stopped this shared channel ~300ms in and cancelled our play, so the guide went
+        // silent on first entry. Per-screen ownership ([guideAudio]) is what prevents that now — the
+        // delay is kept only as a pause before the narrator speaks.
         delay(AUTO_PLAY_DELAY_MS)
         if (roundIndex == 0) {
-            audioRepository.playAndAwait(AudioRef.Prompt("vp_step_identify", lang), IDENTIFY_GUIDE_MAX_MS)
+            guideAudio.playAndAwait(AudioRef.Prompt("vp_step_identify", lang), IDENTIFY_GUIDE_MAX_MS)
         }
         onPlayWord(target.text)
     }

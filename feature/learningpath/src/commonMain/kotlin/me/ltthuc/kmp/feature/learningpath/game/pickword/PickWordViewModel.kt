@@ -12,15 +12,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withTimeoutOrNull
 import me.ltthuc.kmp.core.audio.AudioRef
-import me.ltthuc.kmp.core.audio.AudioState
-import me.ltthuc.kmp.core.audio.isActiveFor
 import me.ltthuc.kmp.core.model.PhonicsLesson
 import me.ltthuc.kmp.core.repository.AudioRepository
+import me.ltthuc.kmp.core.repository.AudioSession
 import me.ltthuc.kmp.core.repository.SfxController
 import me.ltthuc.kmp.core.repository.UnitRepository
 import me.ltthuc.kmp.core.resource.Res
@@ -43,6 +40,10 @@ internal class PickWordViewModel(
     private val sfxController: SfxController,
     private val audioRepository: AudioRepository,
 ) : ViewModel() {
+
+    // This screen's claim on the single playback channel: what it starts, only it can stop. Keeps the
+    // outgoing screen's stop (which runs mid nav-transition) from cutting the incoming screen's audio.
+    private val audio = AudioSession(audioRepository)
 
     private data class InternalState(
         val currentRoundIndex: Int = 0,
@@ -135,11 +136,7 @@ internal class PickWordViewModel(
 
     private suspend fun playWordAndAwait(ref: AudioRef.Word?) {
         if (ref == null) return
-        audioRepository.play(ref)
-        withTimeoutOrNull(AUDIO_MAX_MS) {
-            audioRepository.state.first { it.isActiveFor(ref) }
-            audioRepository.state.first { it is AudioState.Idle || it is AudioState.Error }
-        }
+        audio.playAndAwait(ref, AUDIO_MAX_MS)
     }
 
     private fun buildRounds(lessons: List<PhonicsLesson>): ImmutableList<PickWordRound> {
@@ -160,6 +157,11 @@ internal class PickWordViewModel(
                 wordRef = lesson.wordRef(target.word),
             )
         }.toImmutableList()
+    }
+
+    /** Games swap in place, so leaving one must not leave its audio talking over the next. */
+    fun onLeaveScreen() {
+        audio.stop()
     }
 
     private companion object {

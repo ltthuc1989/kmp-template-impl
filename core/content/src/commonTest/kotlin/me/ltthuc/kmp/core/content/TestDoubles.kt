@@ -25,6 +25,10 @@ class FakePackFiles(
     private val stored = mutableMapOf<String, ByteArray>()
     private val lock = Mutex()
 
+    // The index lives beside the packs but is never content, so [deleteUnreferenced] and
+    // [clear] leave it alone exactly as the real store does.
+    private var index: String? = null
+
     val storedHashes: Set<String> get() = stored.keys.toSet()
 
     /** True once the pre-pack audio cache has been asked to go. */
@@ -58,6 +62,12 @@ class FakePackFiles(
 
     override fun deleteLegacyAudioCache() {
         legacyCacheDeleted = true
+    }
+
+    override suspend fun readIndex(): String? = index
+
+    override suspend fun writeIndex(json: String) {
+        index = json
     }
 
     fun seed(hash: String) {

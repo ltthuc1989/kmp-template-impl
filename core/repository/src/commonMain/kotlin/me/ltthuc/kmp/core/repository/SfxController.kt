@@ -8,10 +8,13 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 import me.ltthuc.kmp.core.audio.AudioAssetResolver
 import me.ltthuc.kmp.core.audio.AudioPlayer
 import me.ltthuc.kmp.core.audio.AudioRef
+import me.ltthuc.kmp.core.audio.PlayerEvent
 import me.ltthuc.kmp.core.content.AssetLocator
 import me.ltthuc.kmp.core.content.AssetSource
 
@@ -40,6 +43,10 @@ class SfxController(
     // cutting a newer screen's prompt when the previous screen disposes.
     private var currentPromptId: String? = null
 
+    // What kind of clip the single SFX player is on, so [stopSpeech] can silence the narrator
+    // without swallowing the chime that answered the tap in the same instant.
+    private var currentKind: Kind? = null
+
     private val sfxEnabled = MutableStateFlow(true)
     private val voiceEnabled = MutableStateFlow(true)
     private val musicEnabled = MutableStateFlow(true)
@@ -62,7 +69,7 @@ class SfxController(
     /** UI chime / click / lesson_complete. Khan-simple: fires every time the caller asks. */
     fun playSfx(name: String) {
         if (globalMuted.value || !sfxEnabled.value) return
-        play(AudioRef.Sfx(name))
+        play(AudioRef.Sfx(name), Kind.CHIME)
     }
 
     /**
@@ -72,7 +79,7 @@ class SfxController(
      */
     fun playVoicePraise(name: String) {
         if (globalMuted.value || !voiceEnabled.value) return
-        play(AudioRef.Voice(name))
+        play(AudioRef.Voice(name), Kind.SPEECH)
     }
 
     /**
@@ -82,8 +89,24 @@ class SfxController(
      */
     fun playPrompt(promptId: String, lang: String) {
         if (globalMuted.value || !voiceEnabled.value) return
-        play(AudioRef.Prompt(promptId, lang))
+        play(AudioRef.Prompt(promptId, lang), Kind.SPEECH)
         currentPromptId = promptId
+    }
+
+    /**
+     * Same as [playPrompt], but suspends until the narrator stops talking (or [timeoutMs] runs out),
+     * so a screen can hold its own audio back instead of speaking over the guidance. Returns at once
+     * when voice is off — then there is nothing to wait for.
+     */
+    suspend fun playPromptAndAwait(promptId: String, lang: String, timeoutMs: Long = PROMPT_MAX_MS) {
+        if (globalMuted.value || !voiceEnabled.value) return
+        playPrompt(promptId, lang)
+        withTimeoutOrNull(timeoutMs) {
+            // Wait for THIS clip to start before waiting for an end: [events] is a StateFlow, so its
+            // current value can still be the previous clip's Completed.
+            player.events.first { it is PlayerEvent.Started }
+            player.events.first { it is PlayerEvent.Completed || it is PlayerEvent.Failed }
+        }
     }
 
     /**
@@ -97,15 +120,30 @@ class SfxController(
         stop()
     }
 
+    /**
+     * Silences the narrator — a screen prompt or voice praise — and nothing else.
+     *
+     * This is what navigation calls. A chime is UI feedback for the very tap that navigated
+     * ("correct" fires and the game advances in the same breath), so cutting it would make the
+     * app feel broken; a spoken line belongs to the screen being left and must not follow the
+     * child to the next one.
+     */
+    fun stopSpeech() {
+        if (currentKind != Kind.SPEECH) return
+        stop()
+    }
+
     /** Background music loop. No-op until BGM assets ship (phase 1.1). */
     fun playMusic(name: String) {
         if (globalMuted.value || !musicEnabled.value) return
-        play(AudioRef.Music(name))
+        play(AudioRef.Music(name), Kind.MUSIC)
     }
 
     fun stop() {
         loadJob?.cancel()
         player.stop()
+        currentPromptId = null
+        currentKind = null
     }
 
     /**
@@ -117,8 +155,9 @@ class SfxController(
         for (n in names) runCatching { bundledUri(AudioRef.Sfx(n)) }
     }
 
-    private fun play(ref: AudioRef) {
+    private fun play(ref: AudioRef, kind: Kind) {
         currentPromptId = null
+        currentKind = kind
         loadJob?.cancel()
         player.stop()
         loadJob = scope.launch {
@@ -138,5 +177,13 @@ class SfxController(
             is AssetSource.Bundled -> source.uri
             else -> error("SFX asset not bundled: $logicalPath")
         }
+    }
+
+    /** What the single SFX player is currently busy with — see [stopSpeech]. */
+    private enum class Kind { CHIME, SPEECH, MUSIC }
+
+    private companion object {
+        /** Ceiling for [playPromptAndAwait] — matches the guide timeouts the step screens use. */
+        const val PROMPT_MAX_MS = 6_000L
     }
 }

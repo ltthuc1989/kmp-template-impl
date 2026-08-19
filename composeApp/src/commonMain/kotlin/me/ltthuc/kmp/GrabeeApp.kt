@@ -1,5 +1,7 @@
 package me.ltthuc.kmp
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -14,10 +16,17 @@ import me.ltthuc.kmp.core.ui.screen.Destination
 import me.ltthuc.kmp.core.ui.theme.GrabeeTheme
 import org.koin.compose.koinInject
 
+/**
+ * @param overlay platform chrome drawn above the nav host and inside [GrabeeTheme], so it can
+ *   use the app's colours and locale. Android passes the in-app update banner here; iOS has
+ *   no equivalent and leaves it empty. Keeping it a slot is what allows the Play update API,
+ *   which is Android-only, to stay out of commonMain.
+ */
 @Composable
 internal fun GrabeeApp(
     setting: AppSetting,
     modifier: Modifier = Modifier,
+    overlay: @Composable () -> Unit = {},
 ) {
     SetupCoil()
 
@@ -52,10 +61,13 @@ internal fun GrabeeApp(
             // khi dựng backstack, nên app mở nhanh hơn một nhịp.
             else -> listOf(Destination.Home)
         }
-        AppNavHost(
-            startDestinations = starts,
-            modifier = modifier,
-        )
+        Box(modifier = modifier) {
+            AppNavHost(
+                startDestinations = starts,
+                modifier = Modifier.fillMaxSize(),
+            )
+            overlay()
+        }
     }
 }
 

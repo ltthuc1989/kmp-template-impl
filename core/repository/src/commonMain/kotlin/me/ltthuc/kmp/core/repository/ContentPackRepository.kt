@@ -17,6 +17,7 @@ import me.ltthuc.kmp.core.content.ContentPackDownloader
 import me.ltthuc.kmp.core.content.DownloadProgress
 import me.ltthuc.kmp.core.content.ManifestSource
 import me.ltthuc.kmp.core.content.PackFiles
+import me.ltthuc.kmp.core.content.PackIndex
 
 /** What the app knows about one unit's content pack right now. */
 sealed interface PackState {
@@ -56,6 +57,32 @@ internal fun isRetryableFailure(cause: Throwable?): Boolean {
 }
 
 /**
+ * Which stored hashes survive a sweep. Pure — extracted so the rule can be tested without a
+ * filesystem, the way [isRetryableFailure] is.
+ *
+ * Everything the manifest currently points at, plus one carefully bounded extra: the copy an
+ * asset was *previously* stored under, while its replacement is still missing. That single
+ * exception is what keeps a finished unit audible offline right after an app update — see
+ * [ContentPackRepository.sweepStaleFiles]. A predecessor stops qualifying the moment its
+ * replacement lands, so the reprieve cannot turn into a leak.
+ *
+ * @param currentHashes logical path → hash the manifest wants today
+ * @param indexed logical path → hash actually stored, from [me.ltthuc.kmp.core.content.PackIndex]
+ */
+internal fun hashesToKeep(
+    currentHashes: Map<String, String>,
+    indexed: Map<String, String>,
+    isPresent: (String) -> Boolean,
+): Set<String> {
+    val keep = currentHashes.values.toMutableSet()
+    for ((logicalPath, storedHash) in indexed) {
+        val fresh = currentHashes[logicalPath] ?: continue // dropped from the curriculum
+        if (storedHash != fresh && !isPresent(fresh)) keep += storedHash
+    }
+    return keep
+}
+
+/**
  * Pack availability for the UI: which units still need downloading, how big they are, and
  * how a download is going.
  *
@@ -67,6 +94,7 @@ class ContentPackRepository(
     private val manifestSource: ManifestSource,
     private val downloader: ContentPackDownloader,
     private val packFiles: PackFiles,
+    private val packIndex: PackIndex,
 ) {
     // The repository owns this scope on purpose: a background fill must outlive the screen
     // that started it, so the rest of a level keeps arriving while the child is already in a
@@ -156,7 +184,12 @@ class ContentPackRepository(
     suspend fun ensureReady(packId: String): Boolean =
         when (refresh(packId)) {
             PackState.Bundled, PackState.Ready -> true
-            else -> runCatching { download(packId).collect { } }.isSuccess
+            // A failed download is not automatically a locked door. After an app update the
+            // pack owes bytes for assets whose hash changed, yet every one of them still has
+            // the previous copy on disk — offline, that unit plays exactly as it did
+            // yesterday, so refusing entry would take away a lesson the child had finished.
+            else -> runCatching { download(packId).collect { } }.isSuccess ||
+                downloader.isPlayable(packId)
         }
 
     /**
@@ -229,10 +262,22 @@ class ContentPackRepository(
     /**
      * Sweeps files no longer referenced by the manifest — what a content update leaves
      * behind once an asset's bytes, and therefore its hash, changed.
+     *
+     * With one exception, and it is the whole point: an asset whose new bytes have not been
+     * downloaded yet keeps its previous copy. Deleting on sight is what used to silence a
+     * unit the child had already finished — the update lands, the old audio goes, and until
+     * the device is next online the lesson has no sound. Holding the old file costs a little
+     * disk until the new one arrives, and [AssetLocator] plays it in the meantime.
      */
     suspend fun sweepStaleFiles() {
-        val keep = manifestSource.load().assets.values.mapTo(mutableSetOf()) { it.hash }
+        val manifest = manifestSource.load()
+        val keep = hashesToKeep(
+            currentHashes = manifest.assets.mapValues { it.value.hash },
+            indexed = packIndex.snapshot(),
+            isPresent = packFiles::has,
+        )
         packFiles.deleteUnreferenced(keep)
+        packIndex.pruneMissing()
     }
 
     private fun publish(packId: String, state: PackState) {

@@ -33,11 +33,10 @@ import me.ltthuc.kmp.core.audio.AudioState
 import me.ltthuc.kmp.core.audio.isActiveFor
 import me.ltthuc.kmp.core.model.LessonWord
 import me.ltthuc.kmp.core.model.PhonicsLesson
-import me.ltthuc.kmp.core.repository.AudioRepository
-import me.ltthuc.kmp.core.repository.playAndAwait
 import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.common_next
 import me.ltthuc.kmp.core.resource.sound_intro_listen
+import me.ltthuc.kmp.core.ui.audio.rememberAudioSession
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
 import me.ltthuc.kmp.core.ui.theme.LocalAppLanguage
 import me.ltthuc.kmp.feature.learningpath.step.common.PulseRings
@@ -48,7 +47,6 @@ import me.ltthuc.kmp.feature.learningpath.step.common.WordDisplayView
 import me.ltthuc.kmp.feature.learningpath.step.common.letterPair
 import me.ltthuc.kmp.feature.learningpath.step.common.step0Refs
 import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -69,7 +67,7 @@ internal fun SoundIntroScreen(
 ) {
     val screenState by viewModel.screenState.collectAsStateWithLifecycle()
     val audioState by viewModel.audioState.collectAsStateWithLifecycle()
-    val audioRepository = koinInject<AudioRepository>()
+    val guideAudio = rememberAudioSession()
     val lang = LocalAppLanguage.current
 
     DisposableEffect(viewModel) {
@@ -85,7 +83,7 @@ internal fun SoundIntroScreen(
         val currentLesson = uiState.lessons[safeIndex]
         // Phát guide nói trước, guide xong thì tự động phát audio sound của chữ.
         LaunchedEffect(currentLesson.id) {
-            audioRepository.playAndAwait(AudioRef.Prompt("vp_step_sound", lang), SOUND_GUIDE_MAX_MS)
+            guideAudio.playAndAwait(AudioRef.Prompt("vp_step_sound", lang), SOUND_GUIDE_MAX_MS)
             viewModel.onListenToggle(currentLesson)
         }
         SoundIntroContent(

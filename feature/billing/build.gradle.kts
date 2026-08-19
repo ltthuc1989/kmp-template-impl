@@ -21,5 +21,8 @@ kotlin {
             implementation(project(":core:ui"))
             implementation(project(":core:resource"))
         }
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+        }
     }
 }

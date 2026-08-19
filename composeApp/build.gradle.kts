@@ -105,7 +105,6 @@ kotlin {
             implementation(project(":feature:home"))
             implementation(project(":feature:setting"))
             implementation(project(":feature:billing"))
-            implementation(project(":feature:download"))
             implementation(project(":feature:learningpath"))
             implementation(project(":feature:onboarding"))
             implementation(project(":feature:review"))

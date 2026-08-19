@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.stateIn
 import me.ltthuc.kmp.core.audio.AudioRef
 import me.ltthuc.kmp.core.model.PhonicsLesson
 import me.ltthuc.kmp.core.repository.AudioRepository
+import me.ltthuc.kmp.core.repository.AudioSession
 import me.ltthuc.kmp.core.repository.UnitRepository
 import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.error_network
@@ -23,15 +24,19 @@ import me.ltthuc.kmp.feature.learningpath.step.common.wordRef
 
 /**
  * Level 2+ Tracing step. One slide = the lesson's words; each word is traced letter-by-letter,
- * Duolingo-style. Loads the unit's lessons and voices the whole word (lesson vocab audio) when a
- * word begins, plus the isolated letter sound as each letter starts. Playback is fire-and-forget
- * so tracing never stalls on a missing asset.
+ * Duolingo-style. Loads the unit's lessons and voices the isolated letter sound as each letter
+ * starts; the whole word (lesson vocab audio) is kept for the end, once the word is fully traced.
+ * Playback is fire-and-forget so tracing never stalls on a missing asset.
  */
 internal class WordTracingViewModel(
     private val unitId: String,
     unitRepository: UnitRepository,
     private val audioRepository: AudioRepository,
 ) : ViewModel() {
+
+    // This screen's claim on the single playback channel: what it starts, only it can stop. Keeps the
+    // outgoing screen's stop (which runs mid nav-transition) from cutting the incoming screen's audio.
+    private val audio = AudioSession(audioRepository)
 
     val screenState: StateFlow<ScreenState<WordTracingUiState>> =
         unitRepository.observeLessons(unitId)
@@ -52,23 +57,23 @@ internal class WordTracingViewModel(
                 initialValue = ScreenState.Loading(),
             )
 
-    /** Whole-word vocab audio, played when a word begins. */
+    /** Whole-word vocab audio, played on its own (e.g. over the picture when a word is finished). */
     fun playWord(lesson: PhonicsLesson, word: String) {
         val ref = lesson.wordRef(word) ?: run {
             Napier.w(tag = TAG) { "No Word audio ref for ${lesson.id}/$word" }
             return
         }
-        audioRepository.play(ref)
+        audio.play(ref)
     }
 
-    /** Isolated single-letter phoneme, e.g. /t/, played as each letter starts. */
+    /** Isolated single-letter phoneme, e.g. /t/, played as each letter starts — the first included. */
     fun playLetter(letter: Char) {
         if (!letter.isLetter()) return
-        audioRepository.play(AudioRef.LetterSound(letter.toString()))
+        audio.play(AudioRef.LetterSound(letter.toString()))
     }
 
     fun onLeaveScreen() {
-        audioRepository.stop()
+        audio.stop()
     }
 
     private companion object {

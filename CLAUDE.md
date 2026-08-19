@@ -8,6 +8,12 @@ App học phonics tiếng Anh cho trẻ 3-8 tuổi, build trên template KMP + C
 
 **Product docs**: [docs/abc-phonics-kids/README.md](docs/abc-phonics-kids/README.md) — đọc trước khi code.
 
+**Delivery workflow**: [docs/engineering/APP_DELIVERY_WORKFLOW.md](docs/engineering/APP_DELIVERY_WORKFLOW.md) — 11 pha từ lên kế hoạch tới publish, mỗi pha một cổng chặn. Xương sống nối mọi doc/script/skill.
+
+**Engineering playbook**: [docs/engineering/FAILURE_FIRST_PLAYBOOK.md](docs/engineering/FAILURE_FIRST_PLAYBOOK.md) — luật chống lỗi im lặng + bảng thất bại viết trước khi code. Đọc trước khi bắt đầu tính năng mới.
+
+**Billing / IAP**: [docs/abc-phonics-kids/04-BILLING_SETUP.md](docs/abc-phonics-kids/04-BILLING_SETUP.md) — dựng RevenueCat từ đầu, thêm product cho level mới, chẩn đoán khi paywall hỏng. Viết để dùng lại cho project sau.
+
 **App display name**: "ABC Phonics Kids" (qua `app_name` string). **Code namespace**: `me.ltthuc.kmp` (đã rename từ template gốc `me.matsumo.grabee`).
 
 ## Grabee Skill
@@ -40,7 +46,7 @@ Scaffold 1 phonics unit (8 step screens + Room seed). Optional: attach UI mockup
 # Build
 ./gradlew :composeApp:assembleDebug
 ./gradlew :composeApp:assembleRelease
-./gradlew :composeApp:assembleBilling   # billing test build (release signing)
+./gradlew :composeApp:assembleBilling   # release signing, but still FAKE billing — see docs/abc-phonics-kids/04-BILLING_SETUP.md Phần D1
 
 # Install
 ./gradlew :composeApp:installDebug

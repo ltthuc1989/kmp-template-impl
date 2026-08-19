@@ -56,12 +56,11 @@ import me.ltthuc.kmp.core.audio.AudioState
 import me.ltthuc.kmp.core.audio.isActiveFor
 import me.ltthuc.kmp.core.model.ChantMeta
 import me.ltthuc.kmp.core.model.PhonicsLesson
-import me.ltthuc.kmp.core.repository.AudioRepository
-import me.ltthuc.kmp.core.repository.playAndAwait
 import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.chant_listen_cd
 import me.ltthuc.kmp.core.resource.common_next
 import me.ltthuc.kmp.core.resource.step_guide_chant
+import me.ltthuc.kmp.core.ui.audio.rememberAudioSession
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
 import me.ltthuc.kmp.core.ui.theme.LocalAppLanguage
 import me.ltthuc.kmp.feature.learningpath.step.common.PageDotsRow
@@ -71,7 +70,6 @@ import me.ltthuc.kmp.feature.learningpath.step.common.StepHeader
 import me.ltthuc.kmp.feature.learningpath.step.common.StoryStyleCard
 import me.ltthuc.kmp.feature.learningpath.step.common.chantRef
 import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 import kotlin.math.abs
@@ -108,7 +106,7 @@ internal fun ChantScreen(
     val screenState by viewModel.screenState.collectAsStateWithLifecycle()
 
     val audioState by viewModel.audioState.collectAsStateWithLifecycle()
-    val audioRepository = koinInject<AudioRepository>()
+    val guideAudio = rememberAudioSession()
     val lang = LocalAppLanguage.current
 
     DisposableEffect(viewModel) {
@@ -125,7 +123,7 @@ internal fun ChantScreen(
         // Chờ stop() của màn trước xong (tránh race huỷ guide) → phát guide → tự phát chant.
         LaunchedEffect(currentLesson.id) {
             delay(ENTRY_AUDIO_DELAY_MS)
-            audioRepository.playAndAwait(AudioRef.Prompt("vp_step_chant", lang), CHANT_GUIDE_MAX_MS)
+            guideAudio.playAndAwait(AudioRef.Prompt("vp_step_chant", lang), CHANT_GUIDE_MAX_MS)
             viewModel.onChantToggle(currentLesson)
         }
         val chantMeta by produceState<ChantMeta?>(initialValue = null, key1 = currentLesson.id) {

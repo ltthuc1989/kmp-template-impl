@@ -368,20 +368,13 @@
     <string name="onboarding_page4_subtitle">Thưởng thức câu chuyện vui ở cuối mỗi chữ cái</string>
 
     <!-- Content pack download (parent-facing: follows the app language) -->
-    <string name="content_download_title">Nội dung bài học</string>
-    <string name="content_download_message">Cấp độ này cần tải %1$s âm thanh và hình ảnh để dùng được khi không có mạng.</string>
-    <string name="content_download_action">Tải %1$s</string>
-    <string name="content_download_later">Để sau</string>
-    <string name="content_download_progress">%1$d trên %2$d tệp</string>
-    <string name="content_download_ready_title">Sẵn sàng học</string>
-    <string name="content_download_ready_message">Mọi thứ đã có trong máy. Không cần mạng vẫn học được.</string>
-    <string name="content_download_failed_title">Tải bị dừng</string>
-    <string name="content_download_failed_message">Kiểm tra kết nối rồi thử lại. Những tệp đã tải xong vẫn được giữ.</string>
-    <string name="content_download_retry">Thử lại</string>
-    <string name="content_download_done">Xong</string>
     <string name="setting_storage_title">Dung lượng</string>
     <string name="setting_storage_downloaded">Đã tải %1$s</string>
     <string name="setting_storage_not_downloaded">Chưa tải</string>
     <string name="setting_storage_delete">Xoá nội dung đã tải</string>
     <string name="setting_storage_delete_confirm">Xoá các bài đã tải của cấp độ này? Bạn có thể tải lại bất cứ lúc nào — quyền đã mua không bị ảnh hưởng.</string>
+
+    <string name="update_ready_title">Đã có bản mới</string>
+    <string name="update_ready_message">Khởi động lại để dùng bài học mới.</string>
+    <string name="update_ready_action">Khởi động lại</string>
 </resources>

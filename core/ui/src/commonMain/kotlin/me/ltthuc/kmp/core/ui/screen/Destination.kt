@@ -17,10 +17,6 @@ sealed interface Destination : NavKey {
     data object Onboarding : Destination
 
     @Serializable
-    /** Content-pack download for a level, e.g. after unlocking it. */
-    data class Download(val levelId: String) : Destination
-
-    @Serializable
     data class Paywall(
         val source: String,
         val levelId: String? = null,
@@ -110,7 +106,6 @@ sealed interface Destination : NavKey {
                 polymorphic(NavKey::class) {
                     subclass(Home::class, Home.serializer())
                     subclass(Onboarding::class, Onboarding.serializer())
-                    subclass(Download::class, Download.serializer())
                     subclass(Paywall::class, Paywall.serializer())
                     subclass(Learning.UnitSelection::class, Learning.UnitSelection.serializer())
                     subclass(Learning.Step::class, Learning.Step.serializer())

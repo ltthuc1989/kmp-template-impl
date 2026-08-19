@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.stateIn
 import me.ltthuc.kmp.core.audio.AudioState
 import me.ltthuc.kmp.core.model.PhonicsLesson
 import me.ltthuc.kmp.core.repository.AudioRepository
+import me.ltthuc.kmp.core.repository.AudioSession
 import me.ltthuc.kmp.core.repository.SfxController
 import me.ltthuc.kmp.core.repository.UnitRepository
 import me.ltthuc.kmp.core.resource.Res
@@ -28,6 +29,10 @@ internal class MatchingViewModel(
     private val audioRepository: AudioRepository,
     private val sfxController: SfxController,
 ) : ViewModel() {
+
+    // This screen's claim on the single playback channel: what it starts, only it can stop. Keeps the
+    // outgoing screen's stop (which runs mid nav-transition) from cutting the incoming screen's audio.
+    private val audio = AudioSession(audioRepository)
 
     val screenState: StateFlow<ScreenState<MatchingUiState>> =
         unitRepository.observeLessons(unitId)
@@ -55,7 +60,7 @@ internal class MatchingViewModel(
             Napier.w(tag = TAG) { "No Word audio ref for ${lesson.id}/$word" }
             return
         }
-        audioRepository.play(ref)
+        audio.play(ref)
     }
 
     fun playSfx(name: String) {
@@ -68,7 +73,7 @@ internal class MatchingViewModel(
     }
 
     fun onLeaveScreen() {
-        audioRepository.stop()
+        audio.stop()
     }
 
     private companion object {

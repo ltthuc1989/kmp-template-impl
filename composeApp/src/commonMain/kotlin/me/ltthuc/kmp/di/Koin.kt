@@ -7,7 +7,6 @@ import me.ltthuc.kmp.core.content.di.contentModule
 import me.ltthuc.kmp.core.datasource.di.dataSourceModule
 import me.ltthuc.kmp.core.repository.di.repositoryModule
 import me.ltthuc.kmp.feature.billing.di.billingFeatureModule
-import me.ltthuc.kmp.feature.download.di.downloadModule
 import me.ltthuc.kmp.feature.home.di.homeModule
 import me.ltthuc.kmp.feature.learningpath.di.learningPathModule
 import me.ltthuc.kmp.feature.onboarding.di.onboardingModule
@@ -28,7 +27,6 @@ fun KoinApplication.applyModules() {
     modules(homeModule)
     modules(settingModule)
     modules(billingFeatureModule)
-    modules(downloadModule)
     modules(learningPathModule)
     modules(onboardingModule)
     modules(reviewModule)

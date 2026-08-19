@@ -41,6 +41,38 @@ class SubscriptionPlanTest {
         assertNull(SubscriptionPlan.fromProductId("unknown"))
     }
 
+    /**
+     * Pins every id that has to match a dashboard entry. These four strings per plan are spread
+     * across Play Console, RevenueCat products, RevenueCat entitlements and curriculum.json — a
+     * typo in any of them fails silently at runtime (empty product list, or a purchase that never
+     * unlocks). Fail here instead.
+     */
+    @Test
+    fun everyPlanPinsItsStoreIds() {
+        val expected = listOf(
+            //          android + ios productId, entitlementId, levelId
+            SubscriptionPlan.LEVEL_1 to listOf("phonics_level_1", "level_1", "L1"),
+            SubscriptionPlan.LEVEL_2 to listOf("phonics_level_2", "level_2", "L2"),
+            SubscriptionPlan.LEVEL_3 to listOf("phonics_level_3", "level_3", "L3"),
+            SubscriptionPlan.LEVEL_4 to listOf("phonics_level_4", "level_4", "L4"),
+            SubscriptionPlan.LEVEL_5 to listOf("phonics_level_5", "level_5", "L5"),
+        )
+
+        for ((plan, ids) in expected) {
+            val (productId, entitlementId, levelId) = ids
+            assertEquals(productId, plan.androidProductId, "androidProductId of $plan")
+            assertEquals(productId, plan.iosProductId, "iosProductId of $plan")
+            assertEquals(entitlementId, plan.entitlementId, "entitlementId of $plan")
+            assertEquals(levelId, plan.levelId, "levelId of $plan")
+
+            // The two lookups the paywall actually goes through.
+            assertEquals(plan, SubscriptionPlan.forLevel(levelId), "forLevel($levelId)")
+            assertEquals(plan, SubscriptionPlan.fromProductId(productId), "fromProductId($productId)")
+        }
+
+        assertEquals("phonics_all_levels", SubscriptionPlan.BUNDLE.androidProductId)
+    }
+
     @Test
     fun isBundleOnlyTrueForBundle() {
         assertTrue(SubscriptionPlan.BUNDLE.isBundle)

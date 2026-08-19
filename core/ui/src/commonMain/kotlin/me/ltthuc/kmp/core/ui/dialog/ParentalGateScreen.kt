@@ -27,6 +27,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -48,6 +49,7 @@ import me.ltthuc.kmp.core.resource.parental_gate_subtitle
 import me.ltthuc.kmp.core.resource.parental_gate_title
 import me.ltthuc.kmp.core.ui.audio.ScreenVoicePrompt
 import me.ltthuc.kmp.core.ui.components.PuffySurface
+import me.ltthuc.kmp.core.ui.screen.view.LocalFloatingNavVisibility
 import me.ltthuc.kmp.core.ui.theme.bold
 import me.ltthuc.kmp.core.ui.theme.extraBold
 import org.jetbrains.compose.resources.stringResource
@@ -82,6 +84,15 @@ fun ParentalGateScreen(
     var locked by remember { mutableStateOf(false) }
 
     val digitWords = (0..9).map { stringResource(digitWordRes(it)) }
+
+    // Screens show this gate in-place (Home keeps its own backstack entry), so the app's floating
+    // pill nav would keep hovering over it — a live Settings button on the very screen meant to
+    // guard Settings. Hide it for as long as the gate is composed.
+    val floatingNav = LocalFloatingNavVisibility.current
+    DisposableEffect(floatingNav) {
+        floatingNav.hide()
+        onDispose { floatingNav.show() }
+    }
 
     ScreenVoicePrompt("vp_parent_handoff")
 

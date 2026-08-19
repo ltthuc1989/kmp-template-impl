@@ -13,13 +13,13 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import me.ltthuc.kmp.core.billing.model.ProductInfo
-import me.ltthuc.kmp.core.billing.model.PurchaseResult
 import me.ltthuc.kmp.core.billing.model.SubscriptionPlan
 import me.ltthuc.kmp.core.common.suspendRunCatching
 import me.ltthuc.kmp.core.model.Level
 import me.ltthuc.kmp.core.repository.BillingRepository
 import me.ltthuc.kmp.core.repository.LevelRepository
 import me.ltthuc.kmp.core.resource.Res
+import me.ltthuc.kmp.core.resource.error_billing
 import me.ltthuc.kmp.core.resource.error_network
 import me.ltthuc.kmp.core.ui.screen.ScreenState
 
@@ -60,7 +60,17 @@ class PaywallViewModel(
                 fetched.firstOrNull()?.let { _selectedPlan.value = it.plan }
                 PaywallUiState(products = fetched.toImmutableList())
             }.fold(
-                onSuccess = { ScreenState.Idle(it) },
+                onSuccess = {
+                    // An empty list is not a success: the store returned no package for this level
+                    // (product missing from the current RevenueCat offering, inactive in Play, or
+                    // billing never configured). Showing the paywall anyway leaves an empty plan
+                    // selector and a Buy button that does nothing, so surface it with a retry.
+                    if (it.products.isEmpty()) {
+                        ScreenState.Error(Res.string.error_billing)
+                    } else {
+                        ScreenState.Idle(it)
+                    }
+                },
                 onFailure = { ScreenState.Error(Res.string.error_network) },
             )
         }
@@ -70,51 +80,33 @@ class PaywallViewModel(
         _selectedPlan.value = plan
     }
 
+    /** Ownership scoped to what this paywall actually sells. Rule lives in [ownsPaywallTarget]. */
+    private fun ownsThisLevel(): Boolean =
+        ownsPaywallTarget(levelId, billingRepository.ownedLevelIds(), billingRepository.isPremium())
+
     fun purchase() {
-        val product = products.find { it.plan == _selectedPlan.value } ?: return
+        val product = products.find { it.plan == _selectedPlan.value }
+        if (product == null) {
+            // Nothing to buy for the selected plan. Returning silently here was the reason a failed
+            // purchase showed no dialog and no message at all.
+            _purchaseState.value = PurchaseUiState.PurchaseFailed
+            return
+        }
 
         viewModelScope.launch {
             _purchaseState.value = PurchaseUiState.Loading
-            when (val result = billingRepository.purchase(product)) {
-                PurchaseResult.Success -> {
-                    if (billingRepository.isPremium()) {
-                        _purchaseState.value = PurchaseUiState.Success
-                    } else {
-                        _purchaseState.value = PurchaseUiState.PurchaseFailed
-                    }
-                }
-
-                PurchaseResult.Cancelled -> {
-                    _purchaseState.value = PurchaseUiState.Idle
-                }
-
-                is PurchaseResult.Error -> {
-                    _purchaseState.value = PurchaseUiState.Error(result.message)
-                }
-            }
+            // Ownership is read *after* the call, so it reflects the entitlement the store just
+            // granted (or failed to).
+            val result = billingRepository.purchase(product)
+            _purchaseState.value = purchaseOutcome(result, ownsThisLevel())
         }
     }
 
     fun restore() {
         viewModelScope.launch {
             _purchaseState.value = PurchaseUiState.Loading
-            when (val result = billingRepository.restorePurchases()) {
-                PurchaseResult.Success -> {
-                    if (billingRepository.isPremium()) {
-                        _purchaseState.value = PurchaseUiState.Success
-                    } else {
-                        _purchaseState.value = PurchaseUiState.NoSubscriptionToRestore
-                    }
-                }
-
-                PurchaseResult.Cancelled -> {
-                    _purchaseState.value = PurchaseUiState.Idle
-                }
-
-                is PurchaseResult.Error -> {
-                    _purchaseState.value = PurchaseUiState.Error(result.message)
-                }
-            }
+            val result = billingRepository.restorePurchases()
+            _purchaseState.value = restoreOutcome(result, ownsThisLevel())
         }
     }
 }

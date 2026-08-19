@@ -39,6 +39,12 @@ interface PackFiles {
      * owned the directory no longer exists, so nothing else would clean it up.
      */
     fun deleteLegacyAudioCache()
+
+    /** The [PackIndex] blob, or null when none has been written yet. */
+    suspend fun readIndex(): String?
+
+    /** Replaces the [PackIndex] blob. Stored beside the packs, never swept as content. */
+    suspend fun writeIndex(json: String)
 }
 
 /**
@@ -75,4 +81,8 @@ expect class PackStore : PackFiles {
     override fun clear()
 
     override fun deleteLegacyAudioCache()
+
+    override suspend fun readIndex(): String?
+
+    override suspend fun writeIndex(json: String)
 }

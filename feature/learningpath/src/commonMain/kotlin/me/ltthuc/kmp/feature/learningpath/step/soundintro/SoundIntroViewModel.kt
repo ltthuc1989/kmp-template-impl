@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.stateIn
 import me.ltthuc.kmp.core.audio.AudioState
 import me.ltthuc.kmp.core.model.PhonicsLesson
 import me.ltthuc.kmp.core.repository.AudioRepository
+import me.ltthuc.kmp.core.repository.AudioSession
 import me.ltthuc.kmp.core.repository.UnitRepository
 import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.error_network
@@ -26,6 +27,10 @@ internal class SoundIntroViewModel(
     unitRepository: UnitRepository,
     private val audioRepository: AudioRepository,
 ) : ViewModel() {
+
+    // This screen's claim on the single playback channel: what it starts, only it can stop. Keeps the
+    // outgoing screen's stop (which runs mid nav-transition) from cutting the incoming screen's audio.
+    private val audio = AudioSession(audioRepository)
 
     val screenState: StateFlow<ScreenState<SoundIntroUiState>> =
         unitRepository.observeLessons(unitId)
@@ -64,16 +69,16 @@ internal class SoundIntroViewModel(
         }
         when (val current = audioRepository.state.value) {
             is AudioState.Playing ->
-                if (current.ref in refs) audioRepository.stop() else audioRepository.playAll(refs)
+                if (current.ref in refs) audio.stop() else audio.playAll(refs)
             is AudioState.Paused ->
-                if (current.ref in refs) audioRepository.resume() else audioRepository.playAll(refs)
-            is AudioState.Loading -> if (current.ref !in refs) audioRepository.playAll(refs)
-            else -> audioRepository.playAll(refs)
+                if (current.ref in refs) audio.resume() else audio.playAll(refs)
+            is AudioState.Loading -> if (current.ref !in refs) audio.playAll(refs)
+            else -> audio.playAll(refs)
         }
     }
 
     fun onLeaveScreen() {
-        audioRepository.stop()
+        audio.stop()
     }
 
     private companion object {

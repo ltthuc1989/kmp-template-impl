@@ -33,6 +33,12 @@ App học phonics tiếng Anh cho trẻ 3-8 tuổi, build trên template `kmp-te
 | Pattern A vs Pattern B ViewModel? Navigation3? | [.claude/skills/grabee/SKILL.md](../../.claude/skills/grabee/SKILL.md) |
 | Khi sinh code đụng audio/data trẻ em, làm gì? | [.claude/skills/grabee/references/coppa.md](../../.claude/skills/grabee/references/coppa.md) |
 | Đính kèm UI mockup, agent có hiểu không? | [.claude/skills/grabee/references/ui-from-screenshot.md](../../.claude/skills/grabee/references/ui-from-screenshot.md) — gõ `/grabee` + attach image |
+| Workflow đầy đủ từ kế hoạch tới publish? | [../engineering/APP_DELIVERY_WORKFLOW.md](../engineering/APP_DELIVERY_WORKFLOW.md) — 11 pha, mỗi pha một cổng |
+| Luật code chống lỗi im lặng, bảng thất bại? | [../engineering/FAILURE_FIRST_PLAYBOOK.md](../engineering/FAILURE_FIRST_PLAYBOOK.md) |
+| Dựng RevenueCat + Play Billing từ đầu cho app mới? | [04-BILLING_SETUP.md](04-BILLING_SETUP.md) — Phần A–B |
+| Thêm sản phẩm mua cho level mới? | [04-BILLING_SETUP.md](04-BILLING_SETUP.md) — Phần B, 4 bước |
+| Paywall không hiện giá / mua không mở khoá? | [04-BILLING_SETUP.md](04-BILLING_SETUP.md) — Phần D4 chẩn đoán theo triệu chứng |
+| Build type nào dùng billing thật? | [04-BILLING_SETUP.md](04-BILLING_SETUP.md) — Phần D1 |
 
 ---
 

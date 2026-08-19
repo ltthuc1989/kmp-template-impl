@@ -35,6 +35,7 @@ sealed interface AssetSource {
 class AssetLocator(
     private val manifestSource: ManifestSource,
     private val packFiles: PackFiles,
+    private val packIndex: PackIndex,
     private val cdnBaseUrl: String,
 ) {
     private val presence = mutableMapOf<String, Boolean>()
@@ -49,8 +50,21 @@ class AssetLocator(
                 }
 
         packFiles.pathFor(asset.hash)?.let { return AssetSource.Local(it) }
+
+        // The previous copy of this same lesson, kept by the sweep until the new bytes land.
+        // An app update rewrites hashes, so without this a child who is offline right after
+        // updating loses audio on units they had already finished — for a phonics app a
+        // slightly older take of the same word beats silence every time.
+        previousCopy(logicalPath)?.let {
+            Napier.i("Serving the previous copy of $logicalPath until the update downloads")
+            return AssetSource.Local(it)
+        }
+
         return AssetSource.Remote(urlFor(logicalPath, asset), asset)
     }
+
+    private suspend fun previousCopy(logicalPath: String): String? =
+        packIndex.hashFor(logicalPath)?.let { packFiles.pathFor(it) }
 
     fun urlFor(logicalPath: String, asset: ContentAsset): String =
         contentUrl(cdnBaseUrl, logicalPath, asset)

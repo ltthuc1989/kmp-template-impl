@@ -11,6 +11,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -21,15 +22,17 @@ import androidx.navigation3.ui.NavDisplay
 import me.ltthuc.kmp.core.model.AppSetting
 import me.ltthuc.kmp.core.repository.AppSettingRepository
 import me.ltthuc.kmp.core.ui.animation.NavigationTransitions
+import me.ltthuc.kmp.core.ui.audio.rememberSilencingNavBackStack
 import me.ltthuc.kmp.core.ui.screen.Destination
 import me.ltthuc.kmp.core.ui.screen.view.AppBottomNavBar
 import me.ltthuc.kmp.core.ui.screen.view.AppBottomNavTab
+import me.ltthuc.kmp.core.ui.screen.view.FloatingNavVisibility
 import me.ltthuc.kmp.core.ui.screen.view.LocalFloatingNavHeight
+import me.ltthuc.kmp.core.ui.screen.view.LocalFloatingNavVisibility
 import me.ltthuc.kmp.core.ui.theme.AppDimensions
 import me.ltthuc.kmp.core.ui.theme.LocalAppLocale
 import me.ltthuc.kmp.core.ui.theme.LocalNavBackStack
 import me.ltthuc.kmp.feature.billing.paywallEntry
-import me.ltthuc.kmp.feature.download.downloadEntry
 import me.ltthuc.kmp.feature.home.homeEntry
 import me.ltthuc.kmp.feature.learningpath.learningEntry
 import me.ltthuc.kmp.feature.onboarding.onboardingEntry
@@ -43,10 +46,16 @@ internal fun AppNavHost(
     startDestinations: List<Destination>,
     modifier: Modifier = Modifier,
 ) {
-    val navBackStack = rememberNavBackStack(Destination.config, *startDestinations.toTypedArray())
+    val backStack = rememberNavBackStack(Destination.config, *startDestinations.toTypedArray())
+    // What every screen pushes and pops through: it stops the leaving screen's audio as the tap
+    // happens, instead of when navigation finally disposes that screen — several hundred ms later,
+    // by which time the child is already looking at (and hearing it over) the next screen.
+    val navBackStack = rememberSilencingNavBackStack(backStack)
+    val floatingNavVisibility = remember { FloatingNavVisibility() }
 
     CompositionLocalProvider(
         LocalNavBackStack provides navBackStack,
+        LocalFloatingNavVisibility provides floatingNavVisibility,
     ) {
         val currentTab = navBackStack.lastOrNull().toBottomNavTabOrNull()
 
@@ -77,7 +86,10 @@ internal fun AppNavHost(
             containerColor = Color.Transparent,
             contentWindowInsets = WindowInsets(0, 0, 0, 0),
             bottomBar = {
-                if (currentTab != null) {
+                // A screen that covers itself with a full-screen overlay (the parental gate) also
+                // hides the pill: it is hosted here, above the entries, so it would float on top of
+                // that overlay instead of being covered by it.
+                if (currentTab != null && floatingNavVisibility.isVisible) {
                     AppBottomNavBar(currentTab = currentTab)
                 }
             },
@@ -104,7 +116,12 @@ internal fun AppNavHost(
                         modifier = Modifier
                             .fillMaxSize()
                             .widthIn(max = AppDimensions.ContentMaxWidth),
-                        backStack = navBackStack,
+                        backStack = backStack,
+                        // Same pop as the default, routed through the silencing wrapper so a system
+                        // back / predictive-back gesture cuts the audio too.
+                        onBack = {
+                            if (navBackStack.isNotEmpty()) navBackStack.removeAt(navBackStack.lastIndex)
+                        },
                         entryProvider = entryProvider {
                             homeEntry()
                             paywallEntry()
@@ -113,7 +130,6 @@ internal fun AppNavHost(
                             learningEntry()
                             onboardingEntry()
                             reviewEntry()
-                            downloadEntry()
                         },
                         transitionSpec = { NavigationTransitions.forwardTransition },
                         popTransitionSpec = { NavigationTransitions.backwardTransition },

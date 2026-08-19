@@ -111,8 +111,9 @@ internal fun SettingScreen(
                     item {
                         SettingParentControlSection(
                             modifier = Modifier.fillMaxWidth(),
-                            // App ships only Level 1 → only that level is sellable here.
-                            levels = levels.filter { it.number == 1 }.toImmutableList(),
+                            // Every shipped level is sellable here — the view model already drops
+                            // the ones whose content has not landed yet ("Coming soon").
+                            levels = levels.toImmutableList(),
                             ownedLevelIds = setting.ownedLevelIds.toImmutableSet(),
                             levelPrices = levelPrices.toImmutableMap(),
                             onBuy = { levelId ->

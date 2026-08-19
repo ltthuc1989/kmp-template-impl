@@ -25,9 +25,9 @@ import me.ltthuc.kmp.core.model.PhonicsLesson
 import me.ltthuc.kmp.core.model.Story
 import me.ltthuc.kmp.core.model.StoryScene
 import me.ltthuc.kmp.core.repository.AudioRepository
+import me.ltthuc.kmp.core.repository.AudioSession
 import me.ltthuc.kmp.core.repository.StoryRepository
 import me.ltthuc.kmp.core.repository.UnitRepository
-import me.ltthuc.kmp.core.repository.playAndAwait
 import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.error_no_data
 import me.ltthuc.kmp.core.ui.screen.ScreenState
@@ -38,6 +38,10 @@ internal class StoryViewModel(
     private val storyRepository: StoryRepository,
     private val audioRepository: AudioRepository,
 ) : ViewModel() {
+
+    // This screen's claim on the single playback channel: what it starts, only it can stop. Keeps the
+    // outgoing screen's stop (which runs mid nav-transition) from cutting the incoming screen's audio.
+    private val audio = AudioSession(audioRepository)
 
     private val storyFlow: StateFlow<Story?> = flow {
         emit(loadStoryForUnit())
@@ -88,7 +92,7 @@ internal class StoryViewModel(
         val ref = AudioRef.Story(storyId = story.id, sceneNumber = scene.sceneNumber)
         playJob?.cancel()
         playJob = viewModelScope.launch {
-            audioRepository.playAndAwait(ref, SCENE_AUDIO_MAX_MS)
+            audio.playAndAwait(ref, SCENE_AUDIO_MAX_MS)
             // Only auto-advance if the kid is still on this scene and did not stop manually.
             if (_activeSceneIndex.value == sceneIndex && !userInterrupted) {
                 sceneCompletedFlow.emit(sceneIndex)
@@ -103,32 +107,32 @@ internal class StoryViewModel(
         when (val current = audioRepository.state.value) {
             is AudioState.Playing -> if (current.ref == ref) {
                 userInterrupted = true
-                audioRepository.stop()
+                audio.stop()
             } else {
                 userInterrupted = false
-                audioRepository.play(ref)
+                audio.play(ref)
             }
             is AudioState.Paused -> if (current.ref == ref) {
                 userInterrupted = false
-                audioRepository.resume()
+                audio.resume()
             } else {
                 userInterrupted = false
-                audioRepository.play(ref)
+                audio.play(ref)
             }
             is AudioState.Loading -> if (current.ref != ref) {
                 userInterrupted = false
-                audioRepository.play(ref)
+                audio.play(ref)
             }
             else -> {
                 userInterrupted = false
-                audioRepository.play(ref)
+                audio.play(ref)
             }
         }
     }
 
     fun onLeaveScreen() {
         playJob?.cancel()
-        audioRepository.stop()
+        audio.stop()
     }
 
     private suspend fun loadStoryForUnit(): Story? {

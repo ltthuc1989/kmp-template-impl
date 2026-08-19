@@ -15,6 +15,7 @@ import me.ltthuc.kmp.core.audio.AudioState
 import me.ltthuc.kmp.core.model.ChantMeta
 import me.ltthuc.kmp.core.model.PhonicsLesson
 import me.ltthuc.kmp.core.repository.AudioRepository
+import me.ltthuc.kmp.core.repository.AudioSession
 import me.ltthuc.kmp.core.repository.ChantMetaRepository
 import me.ltthuc.kmp.core.repository.UnitRepository
 import me.ltthuc.kmp.core.resource.Res
@@ -30,6 +31,10 @@ internal class ChantViewModel(
     private val audioRepository: AudioRepository,
     private val chantMetaRepository: ChantMetaRepository,
 ) : ViewModel() {
+
+    // This screen's claim on the single playback channel: what it starts, only it can stop. Keeps the
+    // outgoing screen's stop (which runs mid nav-transition) from cutting the incoming screen's audio.
+    private val audio = AudioSession(audioRepository)
 
     /**
      * ChantMeta JSON keys lessons by [audioFolderName] (e.g. "L1U01_A_apple"), which
@@ -82,15 +87,15 @@ internal class ChantViewModel(
             return
         }
         when (val current = audioRepository.state.value) {
-            is AudioState.Playing -> if (current.ref == ref) audioRepository.stop() else audioRepository.play(ref)
-            is AudioState.Paused -> if (current.ref == ref) audioRepository.resume() else audioRepository.play(ref)
-            is AudioState.Loading -> if (current.ref != ref) audioRepository.play(ref)
-            else -> audioRepository.play(ref)
+            is AudioState.Playing -> if (current.ref == ref) audio.stop() else audio.play(ref)
+            is AudioState.Paused -> if (current.ref == ref) audio.resume() else audio.play(ref)
+            is AudioState.Loading -> if (current.ref != ref) audio.play(ref)
+            else -> audio.play(ref)
         }
     }
 
     fun onLeaveScreen() {
-        audioRepository.stop()
+        audio.stop()
     }
 
     private companion object {

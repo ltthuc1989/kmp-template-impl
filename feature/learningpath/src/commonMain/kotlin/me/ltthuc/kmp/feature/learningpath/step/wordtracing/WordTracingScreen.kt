@@ -98,7 +98,10 @@ internal fun WordTracingScreen(
 ) {
     val screenState by viewModel.screenState.collectAsStateWithLifecycle()
 
-    ScreenVoicePrompt("vp_step_trace")
+    // The letter sound waits for the narrator to finish — two voices at once is noise to a 4-year-old.
+    // Flips immediately when voice is off, so a muted parent's child isn't left waiting.
+    var guideDone by remember { mutableStateOf(false) }
+    ScreenVoicePrompt("vp_step_trace") { guideDone = true }
 
     DisposableEffect(viewModel) {
         onDispose { viewModel.onLeaveScreen() }
@@ -113,6 +116,7 @@ internal fun WordTracingScreen(
         val currentLesson = uiState.lessons[safeIndex]
         WordTracingContent(
             lesson = currentLesson,
+            guideDone = guideDone,
             onPlayWord = { word -> viewModel.playWord(currentLesson, word) },
             onPlayLetter = viewModel::playLetter,
             onClose = onClose,
@@ -137,6 +141,7 @@ private fun buildWords(lesson: PhonicsLesson): List<TraceWord> =
 @Composable
 private fun WordTracingContent(
     lesson: PhonicsLesson,
+    guideDone: Boolean,
     onPlayWord: (String) -> Unit,
     onPlayLetter: (Char) -> Unit,
     onClose: () -> Unit,
@@ -184,10 +189,15 @@ private fun WordTracingContent(
     val currentChar = word.letters[safeLetter]
     val guide = remember(currentChar) { DuolingoGlyphs.get(currentChar) }
 
-    // Whole word voiced when it begins; the isolated letter as each subsequent letter starts.
-    LaunchedEffect(lesson.id, wordIndex) { onPlayWord(word.audioWord) }
-    LaunchedEffect(lesson.id, wordIndex, letterIndex) {
-        if (letterIndex in 1 until word.letters.length) onPlayLetter(currentChar)
+    // Every letter is voiced as it becomes the one to trace — the first one included (it used to be
+    // skipped, so it was silent). The whole word is not spoken here at all: it is saved for the end,
+    // over the picture, once the child has traced all of it.
+    //
+    // [guideDone] holds the very first letter back until the screen's spoken guide has finished;
+    // after that it stays true, so no later letter ever waits. Re-running on the flip is what makes
+    // whichever letter is current then get its sound.
+    LaunchedEffect(lesson.id, wordIndex, letterIndex, guideDone) {
+        if (guideDone && letterIndex < word.letters.length) onPlayLetter(currentChar)
     }
 
     // The current letter's celebration is over: it always flashes green in the header, then either
