@@ -82,8 +82,9 @@ internal fun PhonicsLesson.soundBlendRefs(): List<AudioRef.SoundBlend> {
     if (level < FIRST_BLEND_LEVEL) return emptyList()
 
     val folder = audioFolderName() ?: return emptyList()
-    // "SHORT-A-AD-AG" -> ["ad", "ag"]; "SHORT-A" -> []. Segment 0 is "SHORT", 1 is the vowel.
-    val rimes = letter.uppercase().split('-').drop(2).map { it.lowercase() }
+    // "SHORT-A-AD-AG" -> ["ad", "ag"]; "SHORT-A" -> []. Xem [lessonPatterns] để biết
+    // vì sao cấp 3 trở đi phải đọc mã `letter` theo luật khác.
+    val rimes = lessonPatterns()
     val refs = mutableListOf<AudioRef.SoundBlend>()
 
     if (rimes.isEmpty()) {
