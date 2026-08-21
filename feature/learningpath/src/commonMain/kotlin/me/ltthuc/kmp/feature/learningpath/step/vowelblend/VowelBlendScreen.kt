@@ -75,6 +75,7 @@ import me.ltthuc.kmp.core.resource.common_next
 import me.ltthuc.kmp.core.resource.slide_next_cd
 import me.ltthuc.kmp.core.resource.slide_previous_cd
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
+import me.ltthuc.kmp.core.ui.theme.LocalPhonicsFontFamily
 import me.ltthuc.kmp.feature.learningpath.step.common.PageDotsRow
 import me.ltthuc.kmp.feature.learningpath.step.common.PuffySurface
 import me.ltthuc.kmp.feature.learningpath.step.common.StepChevronButton
@@ -82,6 +83,7 @@ import me.ltthuc.kmp.feature.learningpath.step.common.StepContinueButton
 import me.ltthuc.kmp.feature.learningpath.step.common.StepHeader
 import me.ltthuc.kmp.feature.learningpath.step.common.StoryStyleCard
 import me.ltthuc.kmp.feature.learningpath.step.common.WordDisplayView
+import me.ltthuc.kmp.feature.learningpath.step.common.level
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -98,9 +100,12 @@ private const val SHOW_RIME_ROW_ALL_WORDS = false
 // leaving just the target-letter card + word card.
 private const val MAX_BLEND_LETTERS = 5
 
+/** Cấp đầu tiên dùng bố cục "từ nguyên khối" thay cho các thẻ ghép của cấp 2. */
+private const val FIRST_PATTERN_LEVEL = 3
+
 // Per-phoneme colours (short-vowel = magenta, consonant = blue), matching the reference mockup.
-private val VowelColor = Color(0xFFE6007E)
-private val ConsonantColor = Color(0xFF1E88E5)
+internal val VowelColor = Color(0xFFE6007E)
+internal val ConsonantColor = Color(0xFF1E88E5)
 
 /** How a card's text is coloured — depends on the card's role, not just its letters. */
 private enum class CardStyle { Letter, Rime, Word }
@@ -136,6 +141,19 @@ internal fun VowelBlendScreen(
             value = viewModel.loadBlendMeta(currentLesson)
         }
         val audioState by viewModel.audioState.collectAsStateWithLifecycle()
+        // Cấp 3 trở đi dạy nguyên âm dài nên bố cục khác hẳn — từ giữ nguyên khối, không
+        // tách thẻ. Rẽ nhánh ngay ở đây thay vì nhồi thêm chế độ vào [VowelBlendContent],
+        // để cấp 2 vốn đã ship không bị đụng tới.
+        if ((currentLesson.level() ?: 0) >= FIRST_PATTERN_LEVEL) {
+            PatternBlendContent(
+                lesson = currentLesson,
+                onClose = onClose,
+                onNext = onNext,
+                onStepJump = onStepJump,
+                stepSegments = stepSegments,
+            )
+            return@AsyncLoadContents
+        }
         VowelBlendContent(
             lesson = currentLesson,
             blendMeta = blendMeta,
@@ -524,16 +542,6 @@ private fun VowelBlendContent(
         ) {
             WordCard(
                 word = page.word,
-                // Chain mode has no separate "w" beat — the label inks in while the word itself is
-                // being spoken, i.e. while the result card of the word row is active.
-                inkProgress = when {
-                    wordActive && chain != null -> chainFill(rows.lastOrNull()?.fillCard.orEmpty())
-                    wordActive -> fills.lastOrNull()?.value ?: 0f
-                    // Finished: the label keeps its final black instead of springing back to the
-                    // phoneme colours; the next slide resets it via chainCompleted's page key.
-                    chainCompleted -> 1f
-                    else -> 0f
-                },
                 replayable = (replayable || allDone) && !audioBusy,
                 // Chạm = nghe lại CẢ TRANG ("f… an… fan… fan"), không phải mỗi từ: thẻ hình
                 // là chỗ bé nhìn vào, và cái cần ôn là phép ghép vần chứ không phải từ rời.
@@ -577,7 +585,7 @@ private fun VowelBlendContent(
 }
 
 @Composable
-private fun VowelBlendScaffold(
+internal fun VowelBlendScaffold(
     onClose: () -> Unit,
     onStepJump: (Int) -> Unit,
     stepSegments: ImmutableList<Int>,
@@ -616,7 +624,7 @@ private fun VowelBlendScaffold(
 
 /** Rounded card panel wrapping the equation row(s), matching the app's puffy card chrome. */
 @Composable
-private fun EquationPanel(content: @Composable ColumnScope.() -> Unit) {
+internal fun EquationPanel(content: @Composable ColumnScope.() -> Unit) {
     PuffySurface(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(28.dp),
@@ -713,6 +721,7 @@ private fun TargetLetter(
     )
     Text(
         text = coloredWord(letter, CardStyle.Letter),
+        fontFamily = LocalPhonicsFontFamily.current,
         fontSize = 96.sp,
         lineHeight = 100.sp,
         fontWeight = FontWeight.ExtraBold,
@@ -726,6 +735,7 @@ private fun TargetLetter(
 private fun OperatorGlyph(symbol: String) {
     Text(
         text = symbol,
+        fontFamily = LocalPhonicsFontFamily.current,
         fontSize = 30.sp,
         fontWeight = FontWeight.ExtraBold,
         color = MaterialTheme.colorScheme.onSurface,
@@ -781,6 +791,7 @@ private fun LetterCard(
                         solidWord(model.text, lerp(VowelColor, ConsonantColor, gradientFill.coerceIn(0f, 1f)))
                     else -> coloredWord(model.text, model.style)
                 },
+                fontFamily = LocalPhonicsFontFamily.current,
                 fontSize = 30.sp,
                 lineHeight = 32.sp,
                 fontWeight = FontWeight.ExtraBold,
@@ -825,11 +836,14 @@ private fun FillBar(
     }
 }
 
-/** The whole-word card at the bottom: vocab image + word text inside one card. Always visible. */
+/**
+ * Thẻ hình của từ, luôn hiện ở dưới cùng. CHỈ có hình, không kèm chữ bên dưới — chữ đã
+ * nằm ở hàng ghép phía trên rồi, in thêm lần nữa là bắt bé đọc cùng một từ ở hai chỗ mà
+ * chẳng thêm thông tin gì. Bấm vào thẻ để nghe lại cả trang.
+ */
 @Composable
-private fun WordCard(
+internal fun WordCard(
     word: LessonWord,
-    inkProgress: Float,
     replayable: Boolean,
     onTap: () -> Unit,
 ) {
@@ -847,18 +861,6 @@ private fun WordCard(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 WordDisplayView(word = word, fontSize = 76.sp)
-                Spacer(Modifier.height(6.dp))
-                Text(
-                    text = word.text,
-                    fontSize = 22.sp,
-                    fontWeight = FontWeight.Bold,
-                    // Card stays put; only the ink darkens, in step with the voice.
-                    color = lerp(
-                        MaterialTheme.colorScheme.onSurface,
-                        Color.Black,
-                        inkProgress.coerceIn(0f, 1f),
-                    ),
-                )
             }
         }
     }
