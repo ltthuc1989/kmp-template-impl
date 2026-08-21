@@ -24,6 +24,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import me.ltthuc.kmp.core.ui.theme.LocalPhonicsFontFamily
 import me.ltthuc.kmp.feature.learningpath.game.common.ReadingTextDark
 
 /**
@@ -70,6 +71,7 @@ internal fun LetterCircle(
     ) {
         Text(
             text = letter.toString(),
+            fontFamily = LocalPhonicsFontFamily.current,
             fontSize = 36.sp,
             fontWeight = FontWeight.ExtraBold,
             color = ReadingTextDark,
@@ -100,6 +102,7 @@ internal fun WordWithBlank(
         }
         Text(
             text = display,
+            fontFamily = LocalPhonicsFontFamily.current,
             fontSize = 64.sp,
             fontWeight = FontWeight.ExtraBold,
             color = ReadingTextDark,

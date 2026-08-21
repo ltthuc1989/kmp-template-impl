@@ -32,6 +32,7 @@ import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import me.ltthuc.kmp.core.ui.theme.LocalPhonicsFontFamily
 import me.ltthuc.kmp.feature.learningpath.game.common.ReadingTextDark
 import me.ltthuc.kmp.feature.learningpath.game.common.SlotOutline
 
@@ -105,6 +106,7 @@ internal fun PictureSlot(
             if (filledWord != null) {
                 Text(
                     text = filledWord,
+                    fontFamily = LocalPhonicsFontFamily.current,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.ExtraBold,
                     color = ReadingTextDark,

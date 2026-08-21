@@ -56,6 +56,7 @@ import me.ltthuc.kmp.core.resource.step_guide_vocabulary
 import me.ltthuc.kmp.core.resource.vocabulary_listen_cd
 import me.ltthuc.kmp.core.ui.audio.ScreenVoicePrompt
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
+import me.ltthuc.kmp.core.ui.theme.LocalPhonicsFontFamily
 import me.ltthuc.kmp.feature.learningpath.step.common.StepContinueButton
 import me.ltthuc.kmp.feature.learningpath.step.common.StepHeader
 import me.ltthuc.kmp.feature.learningpath.step.common.StoryStyleCard
@@ -240,6 +241,7 @@ private fun VocabularyGridCell(
                     Spacer(Modifier.height(8.dp))
                     Text(
                         text = word.word,
+                        fontFamily = LocalPhonicsFontFamily.current,
                         fontSize = WORD_FONT_SP.sp,
                         fontWeight = FontWeight.ExtraBold,
                         color = MaterialTheme.colorScheme.primary,

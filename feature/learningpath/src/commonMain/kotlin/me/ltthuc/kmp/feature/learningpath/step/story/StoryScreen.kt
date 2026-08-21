@@ -69,6 +69,7 @@ import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
 import me.ltthuc.kmp.core.ui.screen.Destination
 import me.ltthuc.kmp.core.ui.theme.LocalAppLanguage
 import me.ltthuc.kmp.core.ui.theme.LocalNavBackStack
+import me.ltthuc.kmp.core.ui.theme.LocalPhonicsFontFamily
 import me.ltthuc.kmp.feature.learningpath.STORY_PROGRESS_ID
 import me.ltthuc.kmp.feature.learningpath.step.DEFAULT_VISIBLE_STEPS
 import me.ltthuc.kmp.feature.learningpath.step.STORY_SEGMENT_INDEX
@@ -286,6 +287,7 @@ private fun StoryContent(
         ) {
             Text(
                 text = story.title,
+                fontFamily = LocalPhonicsFontFamily.current,
                 fontSize = 22.sp,
                 fontWeight = FontWeight.ExtraBold,
                 color = MaterialTheme.colorScheme.onSurface,

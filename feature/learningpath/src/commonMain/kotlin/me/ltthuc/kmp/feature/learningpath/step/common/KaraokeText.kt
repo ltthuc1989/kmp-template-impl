@@ -19,6 +19,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 import me.ltthuc.kmp.core.model.WordTiming
+import me.ltthuc.kmp.core.ui.theme.LocalPhonicsFontFamily
 
 /**
  * Karaoke-style progressive fill text — tokens stay at a single font size and color-fill from
@@ -73,6 +74,7 @@ internal fun KaraokeText(
             }
             Text(
                 text = annotated,
+                fontFamily = LocalPhonicsFontFamily.current,
                 modifier = modifier,
                 fontWeight = fontWeight,
                 textAlign = TextAlign.Center,
@@ -116,6 +118,7 @@ internal fun KaraokeText(
 
     Text(
         text = annotated,
+        fontFamily = LocalPhonicsFontFamily.current,
         modifier = modifier,
         fontWeight = fontWeight,
         textAlign = TextAlign.Center,

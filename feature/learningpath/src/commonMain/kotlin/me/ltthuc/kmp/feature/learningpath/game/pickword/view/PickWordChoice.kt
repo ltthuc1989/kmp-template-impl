@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import me.ltthuc.kmp.core.ui.theme.LocalPhonicsFontFamily
 import me.ltthuc.kmp.feature.learningpath.game.common.ReadingTextDark
 
 /**
@@ -79,6 +80,7 @@ internal fun PickWordChoice(
     ) {
         Text(
             text = word,
+            fontFamily = LocalPhonicsFontFamily.current,
             fontSize = 28.sp,
             fontWeight = FontWeight.ExtraBold,
             color = ReadingTextDark,
@@ -138,6 +140,7 @@ internal fun AnswerSlot(
             if (filledWord != null) {
                 Text(
                     text = filledWord,
+                    fontFamily = LocalPhonicsFontFamily.current,
                     fontSize = 28.sp,
                     fontWeight = FontWeight.ExtraBold,
                     color = ReadingTextDark,

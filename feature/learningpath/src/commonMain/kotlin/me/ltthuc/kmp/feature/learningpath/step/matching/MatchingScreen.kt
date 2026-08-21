@@ -59,6 +59,7 @@ import me.ltthuc.kmp.core.resource.common_next
 import me.ltthuc.kmp.core.resource.step_guide_matching
 import me.ltthuc.kmp.core.ui.audio.ScreenVoicePrompt
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
+import me.ltthuc.kmp.core.ui.theme.LocalPhonicsFontFamily
 import me.ltthuc.kmp.feature.learningpath.step.common.PuffySurface
 import me.ltthuc.kmp.feature.learningpath.step.common.StepContinueButton
 import me.ltthuc.kmp.feature.learningpath.step.common.StepHeader
@@ -557,6 +558,7 @@ private fun WordPill(
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             Text(
+                fontFamily = LocalPhonicsFontFamily.current,
                 text = text,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,

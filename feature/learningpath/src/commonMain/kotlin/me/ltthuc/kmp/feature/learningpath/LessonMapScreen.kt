@@ -67,6 +67,7 @@ import me.ltthuc.kmp.core.ui.screen.Destination
 import me.ltthuc.kmp.core.ui.screen.ScreenState
 import me.ltthuc.kmp.core.ui.theme.LocalAppLanguage
 import me.ltthuc.kmp.core.ui.theme.LocalNavBackStack
+import me.ltthuc.kmp.core.ui.theme.LocalPhonicsFontFamily
 import me.ltthuc.kmp.feature.learningpath.step.common.PulseRings
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
@@ -126,6 +127,7 @@ internal fun LessonMapScreen(
                 title = {
                     Text(
                         text = title,
+                        fontFamily = LocalPhonicsFontFamily.current,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurface,
@@ -436,6 +438,7 @@ private fun LessonCardItem(
             }
             Spacer(Modifier.width(12.dp))
             Text(
+                fontFamily = LocalPhonicsFontFamily.current,
                 text = label,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,

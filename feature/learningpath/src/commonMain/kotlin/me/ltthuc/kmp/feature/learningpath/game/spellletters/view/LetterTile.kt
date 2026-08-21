@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
+import me.ltthuc.kmp.core.ui.theme.LocalPhonicsFontFamily
 import me.ltthuc.kmp.feature.learningpath.game.common.ReadingTextDark
 import me.ltthuc.kmp.feature.learningpath.game.common.SlotOutline
 
@@ -127,6 +128,7 @@ internal fun DraggableLetterTile(
     ) {
         Text(
             text = letter.toString(),
+            fontFamily = LocalPhonicsFontFamily.current,
             fontSize = 36.sp,
             fontWeight = FontWeight.ExtraBold,
             color = ReadingTextDark,
@@ -168,6 +170,7 @@ internal fun WordSlot(
         if (filled) {
             Text(
                 text = letter.toString(),
+                fontFamily = LocalPhonicsFontFamily.current,
                 fontSize = 36.sp,
                 fontWeight = FontWeight.ExtraBold,
                 color = ReadingTextDark,

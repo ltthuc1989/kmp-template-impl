@@ -39,6 +39,7 @@ import me.ltthuc.kmp.core.resource.sound_intro_listen
 import me.ltthuc.kmp.core.ui.audio.rememberAudioSession
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
 import me.ltthuc.kmp.core.ui.theme.LocalAppLanguage
+import me.ltthuc.kmp.core.ui.theme.LocalPhonicsFontFamily
 import me.ltthuc.kmp.feature.learningpath.step.common.PulseRings
 import me.ltthuc.kmp.feature.learningpath.step.common.StepContinueButton
 import me.ltthuc.kmp.feature.learningpath.step.common.StepHeader
@@ -169,6 +170,7 @@ private fun SoundIntroContent(
             Spacer(Modifier.height(8.dp))
             Text(
                 text = currentLesson.letterPair(),
+                fontFamily = LocalPhonicsFontFamily.current,
                 fontSize = 54.sp,
                 lineHeight = 56.sp,
                 fontWeight = FontWeight.ExtraBold,

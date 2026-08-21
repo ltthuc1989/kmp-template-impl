@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
+import me.ltthuc.kmp.core.ui.theme.LocalPhonicsFontFamily
 import me.ltthuc.kmp.feature.learningpath.game.common.ReadingTextDark
 
 /**
@@ -126,6 +127,7 @@ internal fun DraggableWord(
     ) {
         Text(
             text = word,
+            fontFamily = LocalPhonicsFontFamily.current,
             fontSize = 20.sp,
             fontWeight = FontWeight.ExtraBold,
             color = ReadingTextDark,

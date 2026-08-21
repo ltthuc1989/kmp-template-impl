@@ -39,6 +39,7 @@ fun GrabeeTheme(
         LocalAppLanguage provides appLang,
         LocalAppSetting provides appSetting,
         LocalAppConfig provides appConfig,
+        LocalPhonicsFontFamily provides rememberPhonicsFontFamily(),
     ) {
         MaterialExpressiveTheme(
             colorScheme = colorScheme,

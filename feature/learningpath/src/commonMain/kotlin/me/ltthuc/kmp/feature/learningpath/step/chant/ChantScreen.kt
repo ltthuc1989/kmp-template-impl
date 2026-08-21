@@ -63,6 +63,7 @@ import me.ltthuc.kmp.core.resource.step_guide_chant
 import me.ltthuc.kmp.core.ui.audio.rememberAudioSession
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
 import me.ltthuc.kmp.core.ui.theme.LocalAppLanguage
+import me.ltthuc.kmp.core.ui.theme.LocalPhonicsFontFamily
 import me.ltthuc.kmp.feature.learningpath.step.common.PageDotsRow
 import me.ltthuc.kmp.feature.learningpath.step.common.PulseRings
 import me.ltthuc.kmp.feature.learningpath.step.common.StepContinueButton
@@ -309,7 +310,9 @@ private fun CharacterArtwork(emoji: String) {
 
 @Composable
 private fun ChantText(chant: String, isChanting: Boolean) {
-    val tokens = remember(chant) { chant.tokenize() }
+    // Chữ thường, không phải chữ hoa: bài đang dạy dáng chữ viết tay, mà dáng đó chỉ
+    // thấy được ở chữ thường — "A" hoa không mang hình dạng bé tập tô.
+    val tokens = remember(chant) { chant.lowercase().tokenize() }
     if (tokens.isEmpty()) return
 
     val transition = rememberInfiniteTransition(label = "chant")
@@ -346,6 +349,7 @@ private fun ChantText(chant: String, isChanting: Boolean) {
 
     Text(
         text = annotated,
+        fontFamily = LocalPhonicsFontFamily.current,
         fontWeight = FontWeight.ExtraBold,
         textAlign = TextAlign.Center,
         lineHeight = LINE_HEIGHT_SP.sp,

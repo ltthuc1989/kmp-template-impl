@@ -74,6 +74,7 @@ import me.ltthuc.kmp.core.ui.audio.ScreenVoicePrompt
 import me.ltthuc.kmp.core.ui.audio.rememberAudioSession
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
 import me.ltthuc.kmp.core.ui.theme.LocalAppLanguage
+import me.ltthuc.kmp.core.ui.theme.LocalPhonicsFontFamily
 import me.ltthuc.kmp.feature.learningpath.step.common.ConfettiCanvas
 import me.ltthuc.kmp.feature.learningpath.step.common.PuffySurface
 import me.ltthuc.kmp.feature.learningpath.step.common.StepContinueButton
@@ -289,6 +290,7 @@ private fun CasePill(label: String, selected: Boolean, onClick: () -> Unit) {
     ) {
         Text(
             text = label,
+            fontFamily = LocalPhonicsFontFamily.current,
             fontSize = 14.sp,
             fontWeight = FontWeight.Bold,
             color = fg,

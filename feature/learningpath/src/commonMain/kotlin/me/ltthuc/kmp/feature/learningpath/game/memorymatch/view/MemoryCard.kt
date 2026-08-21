@@ -25,6 +25,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import me.ltthuc.kmp.core.ui.theme.LocalPhonicsFontFamily
 
 /**
  * Memory match card with a 3D Y-axis flip between face-down and face-up states.
@@ -142,6 +143,7 @@ private fun CardFrontFace(
         }
         Text(
             text = letter,
+            fontFamily = LocalPhonicsFontFamily.current,
             fontSize = fontSizeSp.sp,
             lineHeight = (fontSizeSp * 1.1f).sp,
             maxLines = 1,

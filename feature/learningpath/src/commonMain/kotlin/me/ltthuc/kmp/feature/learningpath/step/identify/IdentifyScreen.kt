@@ -68,6 +68,7 @@ import me.ltthuc.kmp.core.resource.step_guide_identify
 import me.ltthuc.kmp.core.ui.audio.rememberAudioSession
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
 import me.ltthuc.kmp.core.ui.theme.LocalAppLanguage
+import me.ltthuc.kmp.core.ui.theme.LocalPhonicsFontFamily
 import me.ltthuc.kmp.feature.learningpath.step.common.PuffySurface
 import me.ltthuc.kmp.feature.learningpath.step.common.PulseRings
 import me.ltthuc.kmp.feature.learningpath.step.common.StepContinueButton
@@ -305,6 +306,7 @@ private fun IdentifyContent(
 private fun TargetWordHeader(targetText: String) {
     Text(
         text = targetText,
+        fontFamily = LocalPhonicsFontFamily.current,
         fontSize = 28.sp,
         fontWeight = FontWeight.ExtraBold,
         color = MaterialTheme.colorScheme.primary,

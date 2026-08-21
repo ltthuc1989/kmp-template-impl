@@ -89,6 +89,7 @@ import me.ltthuc.kmp.core.ui.screen.ScreenState
 import me.ltthuc.kmp.core.ui.theme.LocalAppLanguage
 import me.ltthuc.kmp.core.ui.theme.LocalAppLocale
 import me.ltthuc.kmp.core.ui.theme.LocalNavBackStack
+import me.ltthuc.kmp.core.ui.theme.LocalPhonicsFontFamily
 import me.ltthuc.kmp.feature.learningpath.step.common.PulseRings
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
@@ -548,6 +549,7 @@ private fun UnitCardItem(
                 if (isLocked) {
                     Text(
                         text = card.unit.title,
+                        fontFamily = LocalPhonicsFontFamily.current,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
                         color = LockedTextGray,
@@ -589,6 +591,7 @@ private fun LetterPreview(item: UnitLetterPreview) {
         Row(verticalAlignment = Alignment.Bottom) {
             Text(
                 text = item.letter.take(1),
+                fontFamily = LocalPhonicsFontFamily.current,
                 fontSize = 22.sp,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface,
@@ -596,6 +599,7 @@ private fun LetterPreview(item: UnitLetterPreview) {
             if (item.letter.length > 1) {
                 Text(
                     text = item.letter.drop(1),
+                    fontFamily = LocalPhonicsFontFamily.current,
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Normal,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -801,6 +805,7 @@ private fun ThemeChip(
     ) {
         Text(
             text = label,
+            fontFamily = LocalPhonicsFontFamily.current,
             fontSize = 10.sp,
             // Tight line height so the pill hugs the glyphs instead of the default 1.4× box.
             lineHeight = 10.sp,

@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.sp
 import me.ltthuc.kmp.core.model.LessonWord
 import me.ltthuc.kmp.core.model.PhonicsLesson
 import me.ltthuc.kmp.core.model.WordTiming
+import me.ltthuc.kmp.core.ui.theme.LocalPhonicsFontFamily
 import me.ltthuc.kmp.feature.learningpath.step.common.StoryStyleCard
 import me.ltthuc.kmp.feature.learningpath.step.common.WordDisplayView
 import kotlin.math.PI
@@ -286,6 +287,7 @@ private fun WordCelebrationCard(
         )
         Text(
             text = word.word,
+            fontFamily = LocalPhonicsFontFamily.current,
             fontSize = 13.sp,
             fontWeight = FontWeight.SemiBold,
             color = MaterialTheme.colorScheme.onSurface,

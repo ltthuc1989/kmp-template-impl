@@ -19,6 +19,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import me.ltthuc.kmp.core.ui.theme.LocalPhonicsFontFamily
 
 /**
  * Glassy translucent floating bubble — body lets the background show through, only the
@@ -119,6 +120,7 @@ internal fun BubbleView(
         val fontSizeSp = minOf(diameter.value * 0.45f, fitWidth / (perChar * letter.length))
         Text(
             text = letter,
+            fontFamily = LocalPhonicsFontFamily.current,
             fontSize = fontSizeSp.sp,
             fontWeight = FontWeight.Black,
             color = Color.White,

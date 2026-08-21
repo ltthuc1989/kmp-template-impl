@@ -47,6 +47,7 @@ import me.ltthuc.kmp.core.resource.lesson_complete_back_to_list
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
 import me.ltthuc.kmp.core.ui.screen.Destination
 import me.ltthuc.kmp.core.ui.theme.LocalNavBackStack
+import me.ltthuc.kmp.core.ui.theme.LocalPhonicsFontFamily
 import me.ltthuc.kmp.feature.learningpath.step.common.ConfettiCanvas
 import me.ltthuc.kmp.feature.learningpath.step.common.PuffySurface
 import me.ltthuc.kmp.feature.learningpath.step.common.StoryStyleCard
@@ -140,6 +141,7 @@ private fun LessonCompleteContent(
                     Spacer(Modifier.height(8.dp))
                     Text(
                         text = "You finished letter $currentLetter",
+                        fontFamily = LocalPhonicsFontFamily.current,
                         fontSize = 17.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.onSurface,
