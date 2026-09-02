@@ -404,11 +404,23 @@ def apply_image_display(entry: dict, vocab_images: dict[str, str]) -> bool:
     img = vocab_images.get(entry["word"].lower())
     if not img:
         return False
+    # Manifest cũng là HÀNG ĐỢI: dòng có thể được thêm trước khi ảnh được sinh.
+    # Trỏ vào file chưa có là để app đi tìm một thứ không tồn tại — dẫm 2026-08-30,
+    # 11 từ mất hình chỉ vì tôi xếp hàng 12 dòng mới rồi chạy patch ngay.
+    # Chưa có ảnh thì GIỮ NGUYÊN emoji, lần chạy sau ảnh có là tự vào.
+    if not (VOCAB_IMAGE_DIR / f"{img}.webp").exists():
+        return False
     displays = [{"type": "image", "path": f"files/images/vocab/{img}.webp"}]
     if entry.get("emoji"):
         displays.append({"type": "emoji", "char": entry["emoji"]})
     entry["displays"] = displays
     return True
+
+
+VOCAB_IMAGE_DIR = (
+    Path(__file__).resolve().parent.parent
+    / "core/resource/src/commonMain/composeResources/files/images/vocab"
+)
 
 
 def apply_images_only() -> int:

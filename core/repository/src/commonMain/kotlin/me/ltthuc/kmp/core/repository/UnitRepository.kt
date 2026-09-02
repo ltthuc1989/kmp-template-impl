@@ -108,7 +108,9 @@ class UnitRepository(
             previewLetters = lessons.map { lesson ->
                 UnitLetterPreview(
                     letter = lesson.displayLetter,
-                    emoji = lesson.words.firstNotNullOfOrNull { it.emoji },
+                    // Từ đầu tiên CÓ HÌNH (ảnh hoặc emoji), không phải từ đầu tiên có emoji:
+                    // từ chỉ có ảnh riêng vẫn vẽ được, chốt theo emoji là bỏ sót nó.
+                    word = lesson.words.firstOrNull { it.displays.isNotEmpty() },
                 )
             },
         )

@@ -57,9 +57,39 @@
       "bytes": 1910219,
       "bundled": false
     },
+    "L3U3": {
+      "files": 35,
+      "bytes": 1606902,
+      "bundled": false
+    },
+    "L3U4": {
+      "files": 35,
+      "bytes": 1380322,
+      "bundled": false
+    },
+    "L3U5": {
+      "files": 35,
+      "bytes": 1664812,
+      "bundled": false
+    },
+    "L3U6": {
+      "files": 35,
+      "bytes": 1313348,
+      "bundled": false
+    },
+    "L3U7": {
+      "files": 35,
+      "bytes": 1867315,
+      "bundled": false
+    },
+    "L3U8": {
+      "files": 35,
+      "bytes": 1629891,
+      "bundled": false
+    },
     "core": {
-      "files": 306,
-      "bytes": 8176732,
+      "files": 458,
+      "bytes": 12429691,
       "bundled": true
     }
   },
@@ -2059,6 +2089,936 @@
       "bytes": 7933,
       "pack": "L2U8"
     },
+    "audio/level_3/stories/L3_S03/scene_1.mp3": {
+      "hash": "a1469e8c73",
+      "bytes": 35362,
+      "pack": "L3U3"
+    },
+    "audio/level_3/stories/L3_S03/scene_2.mp3": {
+      "hash": "d9c23b0b85",
+      "bytes": 39541,
+      "pack": "L3U3"
+    },
+    "audio/level_3/stories/L3_S03/scene_3.mp3": {
+      "hash": "6e01f02e4a",
+      "bytes": 49337,
+      "pack": "L3U3"
+    },
+    "audio/level_3/stories/L3_S03/scene_4.mp3": {
+      "hash": "b40b400c94",
+      "bytes": 49206,
+      "pack": "L3U3"
+    },
+    "audio/level_3/stories/L3_S04/scene_1.mp3": {
+      "hash": "e380e92123",
+      "bytes": 33011,
+      "pack": "L3U4"
+    },
+    "audio/level_3/stories/L3_S04/scene_2.mp3": {
+      "hash": "de46305787",
+      "bytes": 34578,
+      "pack": "L3U4"
+    },
+    "audio/level_3/stories/L3_S04/scene_3.mp3": {
+      "hash": "81f9f7542b",
+      "bytes": 45027,
+      "pack": "L3U4"
+    },
+    "audio/level_3/stories/L3_S04/scene_4.mp3": {
+      "hash": "139fa98e48",
+      "bytes": 38104,
+      "pack": "L3U4"
+    },
+    "audio/level_3/stories/L3_S05/scene_1.mp3": {
+      "hash": "f76449ae0b",
+      "bytes": 45549,
+      "pack": "L3U5"
+    },
+    "audio/level_3/stories/L3_S05/scene_2.mp3": {
+      "hash": "5ced3c26f9",
+      "bytes": 42676,
+      "pack": "L3U5"
+    },
+    "audio/level_3/stories/L3_S05/scene_3.mp3": {
+      "hash": "327f1ac431",
+      "bytes": 42937,
+      "pack": "L3U5"
+    },
+    "audio/level_3/stories/L3_S05/scene_4.mp3": {
+      "hash": "a5973de61c",
+      "bytes": 37713,
+      "pack": "L3U5"
+    },
+    "audio/level_3/stories/L3_S06/scene_1.mp3": {
+      "hash": "233cc81236",
+      "bytes": 33011,
+      "pack": "L3U6"
+    },
+    "audio/level_3/stories/L3_S06/scene_2.mp3": {
+      "hash": "b711123ea7",
+      "bytes": 46202,
+      "pack": "L3U6"
+    },
+    "audio/level_3/stories/L3_S06/scene_3.mp3": {
+      "hash": "d8c91891e8",
+      "bytes": 31182,
+      "pack": "L3U6"
+    },
+    "audio/level_3/stories/L3_S06/scene_4.mp3": {
+      "hash": "b28abc72ad",
+      "bytes": 33664,
+      "pack": "L3U6"
+    },
+    "audio/level_3/stories/L3_S07/scene_1.mp3": {
+      "hash": "3f28264305",
+      "bytes": 42284,
+      "pack": "L3U7"
+    },
+    "audio/level_3/stories/L3_S07/scene_2.mp3": {
+      "hash": "72e2c49b23",
+      "bytes": 41762,
+      "pack": "L3U7"
+    },
+    "audio/level_3/stories/L3_S07/scene_3.mp3": {
+      "hash": "711ac0314c",
+      "bytes": 49860,
+      "pack": "L3U7"
+    },
+    "audio/level_3/stories/L3_S07/scene_4.mp3": {
+      "hash": "767560a220",
+      "bytes": 46464,
+      "pack": "L3U7"
+    },
+    "audio/level_3/stories/L3_S08/scene_1.mp3": {
+      "hash": "bd14b5dcb7",
+      "bytes": 38757,
+      "pack": "L3U8"
+    },
+    "audio/level_3/stories/L3_S08/scene_2.mp3": {
+      "hash": "2fd9009f94",
+      "bytes": 36537,
+      "pack": "L3U8"
+    },
+    "audio/level_3/stories/L3_S08/scene_3.mp3": {
+      "hash": "94eaa9767e",
+      "bytes": 41370,
+      "pack": "L3U8"
+    },
+    "audio/level_3/stories/L3_S08/scene_4.mp3": {
+      "hash": "02d941dd20",
+      "bytes": 40325,
+      "pack": "L3U8"
+    },
+    "audio/level_3/unit_03/L3U03_O_E_home/02_chant.mp3": {
+      "hash": "12b68a8820",
+      "bytes": 96621,
+      "pack": "L3U3"
+    },
+    "audio/level_3/unit_03/L3U03_O_E_home/blend/01_home.mp3": {
+      "hash": "69c7450fe3",
+      "bytes": 55215,
+      "pack": "L3U3"
+    },
+    "audio/level_3/unit_03/L3U03_O_E_home/blend/02_bone.mp3": {
+      "hash": "5373c024d3",
+      "bytes": 59525,
+      "pack": "L3U3"
+    },
+    "audio/level_3/unit_03/L3U03_O_E_home/blend/03_cone.mp3": {
+      "hash": "6a2a91ee2c",
+      "bytes": 55998,
+      "pack": "L3U3"
+    },
+    "audio/level_3/unit_03/L3U03_O_E_home/blend/04_rope.mp3": {
+      "hash": "82ab946233",
+      "bytes": 54562,
+      "pack": "L3U3"
+    },
+    "audio/level_3/unit_03/L3U03_O_E_home/vocab/01_home.mp3": {
+      "hash": "4fc2a91c21",
+      "bytes": 6235,
+      "pack": "L3U3"
+    },
+    "audio/level_3/unit_03/L3U03_O_E_home/vocab/02_bone.mp3": {
+      "hash": "55e937d2e8",
+      "bytes": 8717,
+      "pack": "L3U3"
+    },
+    "audio/level_3/unit_03/L3U03_O_E_home/vocab/03_cone.mp3": {
+      "hash": "a005f1474d",
+      "bytes": 7411,
+      "pack": "L3U3"
+    },
+    "audio/level_3/unit_03/L3U03_O_E_home/vocab/04_rope.mp3": {
+      "hash": "b1e654ab0e",
+      "bytes": 7672,
+      "pack": "L3U3"
+    },
+    "audio/level_3/unit_03/L3U03_U_E-1_cube/02_chant.mp3": {
+      "hash": "02220a53c2",
+      "bytes": 97005,
+      "pack": "L3U3"
+    },
+    "audio/level_3/unit_03/L3U03_U_E-1_cube/blend/01_cube.mp3": {
+      "hash": "bc7a840652",
+      "bytes": 50121,
+      "pack": "L3U3"
+    },
+    "audio/level_3/unit_03/L3U03_U_E-1_cube/blend/02_mute.mp3": {
+      "hash": "ef9731592e",
+      "bytes": 53125,
+      "pack": "L3U3"
+    },
+    "audio/level_3/unit_03/L3U03_U_E-1_cube/blend/03_cute.mp3": {
+      "hash": "bb52ff1677",
+      "bytes": 52733,
+      "pack": "L3U3"
+    },
+    "audio/level_3/unit_03/L3U03_U_E-1_cube/blend/04_mule.mp3": {
+      "hash": "64471ce73c",
+      "bytes": 57827,
+      "pack": "L3U3"
+    },
+    "audio/level_3/unit_03/L3U03_U_E-1_cube/vocab/01_cube.mp3": {
+      "hash": "4e945ca447",
+      "bytes": 2970,
+      "pack": "L3U3"
+    },
+    "audio/level_3/unit_03/L3U03_U_E-1_cube/vocab/02_mute.mp3": {
+      "hash": "17f5a8f3e2",
+      "bytes": 4798,
+      "pack": "L3U3"
+    },
+    "audio/level_3/unit_03/L3U03_U_E-1_cube/vocab/03_cute.mp3": {
+      "hash": "0166228b37",
+      "bytes": 4798,
+      "pack": "L3U3"
+    },
+    "audio/level_3/unit_03/L3U03_U_E-1_cube/vocab/04_mule.mp3": {
+      "hash": "b502628087",
+      "bytes": 6366,
+      "pack": "L3U3"
+    },
+    "audio/level_3/unit_03/L3U03_U_E-2_tube/02_chant.mp3": {
+      "hash": "406919080b",
+      "bytes": 90669,
+      "pack": "L3U3"
+    },
+    "audio/level_3/unit_03/L3U03_U_E-2_tube/blend/01_tube.mp3": {
+      "hash": "5b38343bd4",
+      "bytes": 50774,
+      "pack": "L3U3"
+    },
+    "audio/level_3/unit_03/L3U03_U_E-2_tube/blend/02_june.mp3": {
+      "hash": "a28dbd228c",
+      "bytes": 47900,
+      "pack": "L3U3"
+    },
+    "audio/level_3/unit_03/L3U03_U_E-2_tube/blend/03_tune.mp3": {
+      "hash": "3b75fd108c",
+      "bytes": 49729,
+      "pack": "L3U3"
+    },
+    "audio/level_3/unit_03/L3U03_U_E-2_tube/blend/04_rule.mp3": {
+      "hash": "58c9e94d9a",
+      "bytes": 47900,
+      "pack": "L3U3"
+    },
+    "audio/level_3/unit_03/L3U03_U_E-2_tube/vocab/01_tube.mp3": {
+      "hash": "2a2e85d5b7",
+      "bytes": 4276,
+      "pack": "L3U3"
+    },
+    "audio/level_3/unit_03/L3U03_U_E-2_tube/vocab/02_june.mp3": {
+      "hash": "99fcff4de6",
+      "bytes": 4145,
+      "pack": "L3U3"
+    },
+    "audio/level_3/unit_03/L3U03_U_E-2_tube/vocab/03_tune.mp3": {
+      "hash": "531bfe253d",
+      "bytes": 4537,
+      "pack": "L3U3"
+    },
+    "audio/level_3/unit_03/L3U03_U_E-2_tube/vocab/04_rule.mp3": {
+      "hash": "e5a4d88aae",
+      "bytes": 4145,
+      "pack": "L3U3"
+    },
+    "audio/level_3/unit_04/L3U04_AI-AY_sail/02_chant.mp3": {
+      "hash": "69a0aead07",
+      "bytes": 95085,
+      "pack": "L3U4"
+    },
+    "audio/level_3/unit_04/L3U04_AI-AY_sail/blend/01_sail.mp3": {
+      "hash": "4e45dd1c03",
+      "bytes": 55868,
+      "pack": "L3U4"
+    },
+    "audio/level_3/unit_04/L3U04_AI-AY_sail/blend/02_mail.mp3": {
+      "hash": "c332483468",
+      "bytes": 54562,
+      "pack": "L3U4"
+    },
+    "audio/level_3/unit_04/L3U04_AI-AY_sail/blend/03_hay.mp3": {
+      "hash": "ebfd27dbee",
+      "bytes": 36798,
+      "pack": "L3U4"
+    },
+    "audio/level_3/unit_04/L3U04_AI-AY_sail/blend/04_may.mp3": {
+      "hash": "a81f3dd999",
+      "bytes": 38235,
+      "pack": "L3U4"
+    },
+    "audio/level_3/unit_04/L3U04_AI-AY_sail/vocab/01_sail.mp3": {
+      "hash": "6754d6a8fd",
+      "bytes": 7672,
+      "pack": "L3U4"
+    },
+    "audio/level_3/unit_04/L3U04_AI-AY_sail/vocab/02_mail.mp3": {
+      "hash": "7aaff0f877",
+      "bytes": 7672,
+      "pack": "L3U4"
+    },
+    "audio/level_3/unit_04/L3U04_AI-AY_sail/vocab/03_hay.mp3": {
+      "hash": "de12ee8c78",
+      "bytes": 2709,
+      "pack": "L3U4"
+    },
+    "audio/level_3/unit_04/L3U04_AI-AY_sail/vocab/04_may.mp3": {
+      "hash": "e1a704e339",
+      "bytes": 4798,
+      "pack": "L3U4"
+    },
+    "audio/level_3/unit_04/L3U04_AI_rain/02_chant.mp3": {
+      "hash": "6a4da6c10f",
+      "bytes": 100557,
+      "pack": "L3U4"
+    },
+    "audio/level_3/unit_04/L3U04_AI_rain/blend/01_rain.mp3": {
+      "hash": "58b8f9a0cc",
+      "bytes": 50251,
+      "pack": "L3U4"
+    },
+    "audio/level_3/unit_04/L3U04_AI_rain/blend/02_nail.mp3": {
+      "hash": "22d185d9fc",
+      "bytes": 52211,
+      "pack": "L3U4"
+    },
+    "audio/level_3/unit_04/L3U04_AI_rain/blend/03_tail.mp3": {
+      "hash": "150ff1c53a",
+      "bytes": 57043,
+      "pack": "L3U4"
+    },
+    "audio/level_3/unit_04/L3U04_AI_rain/blend/04_wait.mp3": {
+      "hash": "1c036163f4",
+      "bytes": 55737,
+      "pack": "L3U4"
+    },
+    "audio/level_3/unit_04/L3U04_AI_rain/vocab/01_rain.mp3": {
+      "hash": "25df7540c7",
+      "bytes": 6627,
+      "pack": "L3U4"
+    },
+    "audio/level_3/unit_04/L3U04_AI_rain/vocab/02_nail.mp3": {
+      "hash": "4c8bccd870",
+      "bytes": 6366,
+      "pack": "L3U4"
+    },
+    "audio/level_3/unit_04/L3U04_AI_rain/vocab/03_tail.mp3": {
+      "hash": "54a28ecc30",
+      "bytes": 7672,
+      "pack": "L3U4"
+    },
+    "audio/level_3/unit_04/L3U04_AI_rain/vocab/04_wait.mp3": {
+      "hash": "bab64c2723",
+      "bytes": 8717,
+      "pack": "L3U4"
+    },
+    "audio/level_3/unit_04/L3U04_AY_bay/02_chant.mp3": {
+      "hash": "63fc1a7608",
+      "bytes": 98637,
+      "pack": "L3U4"
+    },
+    "audio/level_3/unit_04/L3U04_AY_bay/blend/01_bay.mp3": {
+      "hash": "ae23ac062b",
+      "bytes": 39802,
+      "pack": "L3U4"
+    },
+    "audio/level_3/unit_04/L3U04_AY_bay/blend/02_day.mp3": {
+      "hash": "ff736fa055",
+      "bytes": 38888,
+      "pack": "L3U4"
+    },
+    "audio/level_3/unit_04/L3U04_AY_bay/blend/03_say.mp3": {
+      "hash": "b230c7cb1c",
+      "bytes": 35884,
+      "pack": "L3U4"
+    },
+    "audio/level_3/unit_04/L3U04_AY_bay/blend/04_pay.mp3": {
+      "hash": "163234e199",
+      "bytes": 36537,
+      "pack": "L3U4"
+    },
+    "audio/level_3/unit_04/L3U04_AY_bay/vocab/01_bay.mp3": {
+      "hash": "b62935d07d",
+      "bytes": 5321,
+      "pack": "L3U4"
+    },
+    "audio/level_3/unit_04/L3U04_AY_bay/vocab/02_day.mp3": {
+      "hash": "06300e4ee6",
+      "bytes": 3623,
+      "pack": "L3U4"
+    },
+    "audio/level_3/unit_04/L3U04_AY_bay/vocab/03_say.mp3": {
+      "hash": "1c7ea5ddc0",
+      "bytes": 2970,
+      "pack": "L3U4"
+    },
+    "audio/level_3/unit_04/L3U04_AY_bay/vocab/04_pay.mp3": {
+      "hash": "44401c03f9",
+      "bytes": 4276,
+      "pack": "L3U4"
+    },
+    "audio/level_3/unit_05/L3U05_EA_leaf/02_chant.mp3": {
+      "hash": "a47911c1b9",
+      "bytes": 98349,
+      "pack": "L3U5"
+    },
+    "audio/level_3/unit_05/L3U05_EA_leaf/blend/01_leaf.mp3": {
+      "hash": "0203a62589",
+      "bytes": 46202,
+      "pack": "L3U5"
+    },
+    "audio/level_3/unit_05/L3U05_EA_leaf/blend/02_eat.mp3": {
+      "hash": "af3e1a21ca",
+      "bytes": 39019,
+      "pack": "L3U5"
+    },
+    "audio/level_3/unit_05/L3U05_EA_leaf/blend/03_sea.mp3": {
+      "hash": "1d09a82188",
+      "bytes": 38366,
+      "pack": "L3U5"
+    },
+    "audio/level_3/unit_05/L3U05_EA_leaf/blend/04_meat.mp3": {
+      "hash": "970c4cc474",
+      "bytes": 49076,
+      "pack": "L3U5"
+    },
+    "audio/level_3/unit_05/L3U05_EA_leaf/vocab/01_leaf.mp3": {
+      "hash": "f87efec686",
+      "bytes": 4276,
+      "pack": "L3U5"
+    },
+    "audio/level_3/unit_05/L3U05_EA_leaf/vocab/02_eat.mp3": {
+      "hash": "a9e1ab0a7e",
+      "bytes": 5582,
+      "pack": "L3U5"
+    },
+    "audio/level_3/unit_05/L3U05_EA_leaf/vocab/03_sea.mp3": {
+      "hash": "447ecae70a",
+      "bytes": 4276,
+      "pack": "L3U5"
+    },
+    "audio/level_3/unit_05/L3U05_EA_leaf/vocab/04_meat.mp3": {
+      "hash": "aff71f1463",
+      "bytes": 5713,
+      "pack": "L3U5"
+    },
+    "audio/level_3/unit_05/L3U05_EE_bee/02_chant.mp3": {
+      "hash": "1f5124d051",
+      "bytes": 97677,
+      "pack": "L3U5"
+    },
+    "audio/level_3/unit_05/L3U05_EE_bee/blend/01_bee.mp3": {
+      "hash": "57773b6ab8",
+      "bytes": 34839,
+      "pack": "L3U5"
+    },
+    "audio/level_3/unit_05/L3U05_EE_bee/blend/02_feet.mp3": {
+      "hash": "dca852e6b6",
+      "bytes": 45941,
+      "pack": "L3U5"
+    },
+    "audio/level_3/unit_05/L3U05_EE_bee/blend/03_seed.mp3": {
+      "hash": "eb49f163e0",
+      "bytes": 51296,
+      "pack": "L3U5"
+    },
+    "audio/level_3/unit_05/L3U05_EE_bee/blend/04_jeep.mp3": {
+      "hash": "e2411eb6a8",
+      "bytes": 46072,
+      "pack": "L3U5"
+    },
+    "audio/level_3/unit_05/L3U05_EE_bee/vocab/01_bee.mp3": {
+      "hash": "6cbe76bf73",
+      "bytes": 2970,
+      "pack": "L3U5"
+    },
+    "audio/level_3/unit_05/L3U05_EE_bee/vocab/02_feet.mp3": {
+      "hash": "a02c3b3c82",
+      "bytes": 4537,
+      "pack": "L3U5"
+    },
+    "audio/level_3/unit_05/L3U05_EE_bee/vocab/03_seed.mp3": {
+      "hash": "e22fbb650e",
+      "bytes": 4276,
+      "pack": "L3U5"
+    },
+    "audio/level_3/unit_05/L3U05_EE_bee/vocab/04_jeep.mp3": {
+      "hash": "12251b5c11",
+      "bytes": 4668,
+      "pack": "L3U5"
+    },
+    "audio/level_3/unit_05/L3U05_Y-EY_candy/02_chant.mp3": {
+      "hash": "6ff5afd9fa",
+      "bytes": 97389,
+      "pack": "L3U5"
+    },
+    "audio/level_3/unit_05/L3U05_Y-EY_candy/blend/01_candy.mp3": {
+      "hash": "4e73fcf4d4",
+      "bytes": 80815,
+      "pack": "L3U5"
+    },
+    "audio/level_3/unit_05/L3U05_Y-EY_candy/blend/02_key.mp3": {
+      "hash": "c35e71b309",
+      "bytes": 36929,
+      "pack": "L3U5"
+    },
+    "audio/level_3/unit_05/L3U05_Y-EY_candy/blend/03_happy.mp3": {
+      "hash": "c01dded48e",
+      "bytes": 60962,
+      "pack": "L3U5"
+    },
+    "audio/level_3/unit_05/L3U05_Y-EY_candy/blend/04_money.mp3": {
+      "hash": "e4e0725a8e",
+      "bytes": 56651,
+      "pack": "L3U5"
+    },
+    "audio/level_3/unit_05/L3U05_Y-EY_candy/vocab/01_candy.mp3": {
+      "hash": "4d7c9cdc0a",
+      "bytes": 8717,
+      "pack": "L3U5"
+    },
+    "audio/level_3/unit_05/L3U05_Y-EY_candy/vocab/02_key.mp3": {
+      "hash": "bdc848001c",
+      "bytes": 4537,
+      "pack": "L3U5"
+    },
+    "audio/level_3/unit_05/L3U05_Y-EY_candy/vocab/03_happy.mp3": {
+      "hash": "d0428a3b69",
+      "bytes": 4145,
+      "pack": "L3U5"
+    },
+    "audio/level_3/unit_05/L3U05_Y-EY_candy/vocab/04_money.mp3": {
+      "hash": "92a1307f79",
+      "bytes": 3623,
+      "pack": "L3U5"
+    },
+    "audio/level_3/unit_06/L3U06_IE_pie/02_chant.mp3": {
+      "hash": "3d336b94b2",
+      "bytes": 87213,
+      "pack": "L3U6"
+    },
+    "audio/level_3/unit_06/L3U06_IE_pie/blend/01_pie.mp3": {
+      "hash": "2ad3932109",
+      "bytes": 48162,
+      "pack": "L3U6"
+    },
+    "audio/level_3/unit_06/L3U06_IE_pie/blend/02_tie.mp3": {
+      "hash": "dc918c39db",
+      "bytes": 43590,
+      "pack": "L3U6"
+    },
+    "audio/level_3/unit_06/L3U06_IE_pie/blend/03_lie.mp3": {
+      "hash": "6a77f40be9",
+      "bytes": 42153,
+      "pack": "L3U6"
+    },
+    "audio/level_3/unit_06/L3U06_IE_pie/blend/04_die.mp3": {
+      "hash": "fec95b96c6",
+      "bytes": 51819,
+      "pack": "L3U6"
+    },
+    "audio/level_3/unit_06/L3U06_IE_pie/vocab/01_pie.mp3": {
+      "hash": "c5fc059511",
+      "bytes": 7933,
+      "pack": "L3U6"
+    },
+    "audio/level_3/unit_06/L3U06_IE_pie/vocab/02_tie.mp3": {
+      "hash": "b6a537fad6",
+      "bytes": 4145,
+      "pack": "L3U6"
+    },
+    "audio/level_3/unit_06/L3U06_IE_pie/vocab/03_lie.mp3": {
+      "hash": "11531c5b99",
+      "bytes": 4276,
+      "pack": "L3U6"
+    },
+    "audio/level_3/unit_06/L3U06_IE_pie/vocab/04_die.mp3": {
+      "hash": "db90520467",
+      "bytes": 7933,
+      "pack": "L3U6"
+    },
+    "audio/level_3/unit_06/L3U06_IGH_light/02_chant.mp3": {
+      "hash": "465c2988a4",
+      "bytes": 98349,
+      "pack": "L3U6"
+    },
+    "audio/level_3/unit_06/L3U06_IGH_light/blend/01_light.mp3": {
+      "hash": "5274f912a9",
+      "bytes": 56913,
+      "pack": "L3U6"
+    },
+    "audio/level_3/unit_06/L3U06_IGH_light/blend/02_night.mp3": {
+      "hash": "69f5d6ca82",
+      "bytes": 57304,
+      "pack": "L3U6"
+    },
+    "audio/level_3/unit_06/L3U06_IGH_light/blend/03_high.mp3": {
+      "hash": "ff3e945e91",
+      "bytes": 46986,
+      "pack": "L3U6"
+    },
+    "audio/level_3/unit_06/L3U06_IGH_light/blend/04_right.mp3": {
+      "hash": "dcee7a3792",
+      "bytes": 52602,
+      "pack": "L3U6"
+    },
+    "audio/level_3/unit_06/L3U06_IGH_light/vocab/01_light.mp3": {
+      "hash": "0370be497f",
+      "bytes": 7149,
+      "pack": "L3U6"
+    },
+    "audio/level_3/unit_06/L3U06_IGH_light/vocab/02_night.mp3": {
+      "hash": "7f0e92d8e8",
+      "bytes": 7541,
+      "pack": "L3U6"
+    },
+    "audio/level_3/unit_06/L3U06_IGH_light/vocab/03_high.mp3": {
+      "hash": "1a6b6d8767",
+      "bytes": 5843,
+      "pack": "L3U6"
+    },
+    "audio/level_3/unit_06/L3U06_IGH_light/vocab/04_right.mp3": {
+      "hash": "1ae7d7c346",
+      "bytes": 5582,
+      "pack": "L3U6"
+    },
+    "audio/level_3/unit_06/L3U06_Y_spy/02_chant.mp3": {
+      "hash": "7d6449cffb",
+      "bytes": 93645,
+      "pack": "L3U6"
+    },
+    "audio/level_3/unit_06/L3U06_Y_spy/blend/01_spy.mp3": {
+      "hash": "eb69d34b04",
+      "bytes": 39019,
+      "pack": "L3U6"
+    },
+    "audio/level_3/unit_06/L3U06_Y_spy/blend/02_sky.mp3": {
+      "hash": "33ea9c4b5a",
+      "bytes": 50904,
+      "pack": "L3U6"
+    },
+    "audio/level_3/unit_06/L3U06_Y_spy/blend/03_cry.mp3": {
+      "hash": "473b890fd9",
+      "bytes": 42284,
+      "pack": "L3U6"
+    },
+    "audio/level_3/unit_06/L3U06_Y_spy/blend/04_my.mp3": {
+      "hash": "311ab9d69a",
+      "bytes": 42284,
+      "pack": "L3U6"
+    },
+    "audio/level_3/unit_06/L3U06_Y_spy/vocab/01_spy.mp3": {
+      "hash": "f39a68f6e0",
+      "bytes": 2839,
+      "pack": "L3U6"
+    },
+    "audio/level_3/unit_06/L3U06_Y_spy/vocab/02_sky.mp3": {
+      "hash": "2d495607fa",
+      "bytes": 8717,
+      "pack": "L3U6"
+    },
+    "audio/level_3/unit_06/L3U06_Y_spy/vocab/03_cry.mp3": {
+      "hash": "e5609c8584",
+      "bytes": 4798,
+      "pack": "L3U6"
+    },
+    "audio/level_3/unit_06/L3U06_Y_spy/vocab/04_my.mp3": {
+      "hash": "d4760747ff",
+      "bytes": 4668,
+      "pack": "L3U6"
+    },
+    "audio/level_3/unit_07/L3U07_OA-OW_goat/02_chant.mp3": {
+      "hash": "99e8d67f00",
+      "bytes": 96045,
+      "pack": "L3U7"
+    },
+    "audio/level_3/unit_07/L3U07_OA-OW_goat/blend/01_goat.mp3": {
+      "hash": "81670d75d3",
+      "bytes": 54953,
+      "pack": "L3U7"
+    },
+    "audio/level_3/unit_07/L3U07_OA-OW_goat/blend/02_toad.mp3": {
+      "hash": "b918678ecd",
+      "bytes": 59917,
+      "pack": "L3U7"
+    },
+    "audio/level_3/unit_07/L3U07_OA-OW_goat/blend/03_elbow.mp3": {
+      "hash": "b8a5094aa0",
+      "bytes": 68668,
+      "pack": "L3U7"
+    },
+    "audio/level_3/unit_07/L3U07_OA-OW_goat/blend/04_window.mp3": {
+      "hash": "ac6a5a55bc",
+      "bytes": 85125,
+      "pack": "L3U7"
+    },
+    "audio/level_3/unit_07/L3U07_OA-OW_goat/vocab/01_goat.mp3": {
+      "hash": "1d9cb589ed",
+      "bytes": 6104,
+      "pack": "L3U7"
+    },
+    "audio/level_3/unit_07/L3U07_OA-OW_goat/vocab/02_toad.mp3": {
+      "hash": "708e45c5d2",
+      "bytes": 5843,
+      "pack": "L3U7"
+    },
+    "audio/level_3/unit_07/L3U07_OA-OW_goat/vocab/03_elbow.mp3": {
+      "hash": "7e4a5c3759",
+      "bytes": 7541,
+      "pack": "L3U7"
+    },
+    "audio/level_3/unit_07/L3U07_OA-OW_goat/vocab/04_window.mp3": {
+      "hash": "52714cc9e7",
+      "bytes": 8586,
+      "pack": "L3U7"
+    },
+    "audio/level_3/unit_07/L3U07_OA_boat/02_chant.mp3": {
+      "hash": "793287ff30",
+      "bytes": 81549,
+      "pack": "L3U7"
+    },
+    "audio/level_3/unit_07/L3U07_OA_boat/blend/01_boat.mp3": {
+      "hash": "938776d5a2",
+      "bytes": 54431,
+      "pack": "L3U7"
+    },
+    "audio/level_3/unit_07/L3U07_OA_boat/blend/02_coat.mp3": {
+      "hash": "7d34e8a23e",
+      "bytes": 54170,
+      "pack": "L3U7"
+    },
+    "audio/level_3/unit_07/L3U07_OA_boat/blend/03_soap.mp3": {
+      "hash": "804beae5ff",
+      "bytes": 48292,
+      "pack": "L3U7"
+    },
+    "audio/level_3/unit_07/L3U07_OA_boat/blend/04_road.mp3": {
+      "hash": "21e04e5206",
+      "bytes": 59786,
+      "pack": "L3U7"
+    },
+    "audio/level_3/unit_07/L3U07_OA_boat/vocab/01_boat.mp3": {
+      "hash": "8251de2fe6",
+      "bytes": 5974,
+      "pack": "L3U7"
+    },
+    "audio/level_3/unit_07/L3U07_OA_boat/vocab/02_coat.mp3": {
+      "hash": "7237e00809",
+      "bytes": 6366,
+      "pack": "L3U7"
+    },
+    "audio/level_3/unit_07/L3U07_OA_boat/vocab/03_soap.mp3": {
+      "hash": "f3e0737713",
+      "bytes": 3753,
+      "pack": "L3U7"
+    },
+    "audio/level_3/unit_07/L3U07_OA_boat/vocab/04_road.mp3": {
+      "hash": "372221fdbc",
+      "bytes": 7280,
+      "pack": "L3U7"
+    },
+    "audio/level_3/unit_07/L3U07_OW_bow/02_chant.mp3": {
+      "hash": "d87cbfe52c",
+      "bytes": 89133,
+      "pack": "L3U7"
+    },
+    "audio/level_3/unit_07/L3U07_OW_bow/blend/01_bow.mp3": {
+      "hash": "b26bc7d9a1",
+      "bytes": 42937,
+      "pack": "L3U7"
+    },
+    "audio/level_3/unit_07/L3U07_OW_bow/blend/02_row.mp3": {
+      "hash": "48b444ba6c",
+      "bytes": 48553,
+      "pack": "L3U7"
+    },
+    "audio/level_3/unit_07/L3U07_OW_bow/blend/03_yellow.mp3": {
+      "hash": "8d32eb9b0c",
+      "bytes": 66317,
+      "pack": "L3U7"
+    },
+    "audio/level_3/unit_07/L3U07_OW_bow/blend/04_pillow.mp3": {
+      "hash": "fbcb04330d",
+      "bytes": 70366,
+      "pack": "L3U7"
+    },
+    "audio/level_3/unit_07/L3U07_OW_bow/vocab/01_bow.mp3": {
+      "hash": "19b7fe011d",
+      "bytes": 4798,
+      "pack": "L3U7"
+    },
+    "audio/level_3/unit_07/L3U07_OW_bow/vocab/02_row.mp3": {
+      "hash": "c4223e87af",
+      "bytes": 8064,
+      "pack": "L3U7"
+    },
+    "audio/level_3/unit_07/L3U07_OW_bow/vocab/03_yellow.mp3": {
+      "hash": "17a6afb20c",
+      "bytes": 6104,
+      "pack": "L3U7"
+    },
+    "audio/level_3/unit_07/L3U07_OW_bow/vocab/04_pillow.mp3": {
+      "hash": "a5c01f6d79",
+      "bytes": 8064,
+      "pack": "L3U7"
+    },
+    "audio/level_3/unit_08/L3U08_OO_moon/02_chant.mp3": {
+      "hash": "2c2d730c0d",
+      "bytes": 89133,
+      "pack": "L3U8"
+    },
+    "audio/level_3/unit_08/L3U08_OO_moon/blend/01_moon.mp3": {
+      "hash": "306f475b37",
+      "bytes": 46725,
+      "pack": "L3U8"
+    },
+    "audio/level_3/unit_08/L3U08_OO_moon/blend/02_zoo.mp3": {
+      "hash": "187da0700c",
+      "bytes": 44504,
+      "pack": "L3U8"
+    },
+    "audio/level_3/unit_08/L3U08_OO_moon/blend/03_food.mp3": {
+      "hash": "598d45947e",
+      "bytes": 49990,
+      "pack": "L3U8"
+    },
+    "audio/level_3/unit_08/L3U08_OO_moon/blend/04_boot.mp3": {
+      "hash": "ef20a88676",
+      "bytes": 52864,
+      "pack": "L3U8"
+    },
+    "audio/level_3/unit_08/L3U08_OO_moon/vocab/01_moon.mp3": {
+      "hash": "7e305573fb",
+      "bytes": 4276,
+      "pack": "L3U8"
+    },
+    "audio/level_3/unit_08/L3U08_OO_moon/vocab/02_zoo.mp3": {
+      "hash": "670c36d9d8",
+      "bytes": 7280,
+      "pack": "L3U8"
+    },
+    "audio/level_3/unit_08/L3U08_OO_moon/vocab/03_food.mp3": {
+      "hash": "74978fbc99",
+      "bytes": 4145,
+      "pack": "L3U8"
+    },
+    "audio/level_3/unit_08/L3U08_OO_moon/vocab/04_boot.mp3": {
+      "hash": "9c5121da38",
+      "bytes": 6888,
+      "pack": "L3U8"
+    },
+    "audio/level_3/unit_08/L3U08_UE_blue/02_chant.mp3": {
+      "hash": "7d86290347",
+      "bytes": 92397,
+      "pack": "L3U8"
+    },
+    "audio/level_3/unit_08/L3U08_UE_blue/blend/01_blue.mp3": {
+      "hash": "e5da446781",
+      "bytes": 39149,
+      "pack": "L3U8"
+    },
+    "audio/level_3/unit_08/L3U08_UE_blue/blend/02_glue.mp3": {
+      "hash": "1c1ffbe3b9",
+      "bytes": 48031,
+      "pack": "L3U8"
+    },
+    "audio/level_3/unit_08/L3U08_UE_blue/blend/03_clue.mp3": {
+      "hash": "a3c871b7ef",
+      "bytes": 39149,
+      "pack": "L3U8"
+    },
+    "audio/level_3/unit_08/L3U08_UE_blue/blend/04_tuesday.mp3": {
+      "hash": "8552448dc2",
+      "bytes": 75460,
+      "pack": "L3U8"
+    },
+    "audio/level_3/unit_08/L3U08_UE_blue/vocab/01_blue.mp3": {
+      "hash": "fad33153e7",
+      "bytes": 4406,
+      "pack": "L3U8"
+    },
+    "audio/level_3/unit_08/L3U08_UE_blue/vocab/02_glue.mp3": {
+      "hash": "cdf6294837",
+      "bytes": 8325,
+      "pack": "L3U8"
+    },
+    "audio/level_3/unit_08/L3U08_UE_blue/vocab/03_clue.mp3": {
+      "hash": "f025536b4a",
+      "bytes": 4276,
+      "pack": "L3U8"
+    },
+    "audio/level_3/unit_08/L3U08_UE_blue/vocab/04_tuesday.mp3": {
+      "hash": "faa393708d",
+      "bytes": 4929,
+      "pack": "L3U8"
+    },
+    "audio/level_3/unit_08/L3U08_UI-EW_fruit/02_chant.mp3": {
+      "hash": "2816a26424",
+      "bytes": 84909,
+      "pack": "L3U8"
+    },
+    "audio/level_3/unit_08/L3U08_UI-EW_fruit/blend/01_fruit.mp3": {
+      "hash": "176f6aec15",
+      "bytes": 47639,
+      "pack": "L3U8"
+    },
+    "audio/level_3/unit_08/L3U08_UI-EW_fruit/blend/02_suit.mp3": {
+      "hash": "9544da39d3",
+      "bytes": 49598,
+      "pack": "L3U8"
+    },
+    "audio/level_3/unit_08/L3U08_UI-EW_fruit/blend/03_new.mp3": {
+      "hash": "7c2b874608",
+      "bytes": 39672,
+      "pack": "L3U8"
+    },
+    "audio/level_3/unit_08/L3U08_UI-EW_fruit/blend/04_dew.mp3": {
+      "hash": "3afae6bdbc",
+      "bytes": 48815,
+      "pack": "L3U8"
+    },
+    "audio/level_3/unit_08/L3U08_UI-EW_fruit/vocab/01_fruit.mp3": {
+      "hash": "4a76bf4f89",
+      "bytes": 4145,
+      "pack": "L3U8"
+    },
+    "audio/level_3/unit_08/L3U08_UI-EW_fruit/vocab/02_suit.mp3": {
+      "hash": "6770301909",
+      "bytes": 4798,
+      "pack": "L3U8"
+    },
+    "audio/level_3/unit_08/L3U08_UI-EW_fruit/vocab/03_new.mp3": {
+      "hash": "36836c482e",
+      "bytes": 4929,
+      "pack": "L3U8"
+    },
+    "audio/level_3/unit_08/L3U08_UI-EW_fruit/vocab/04_dew.mp3": {
+      "hash": "97ffb21e42",
+      "bytes": 8064,
+      "pack": "L3U8"
+    },
     "images/level_1/stories/L1_S04/scene_1.webp": {
       "hash": "3beaf5bd2d",
       "bytes": 74876,
@@ -2278,6 +3238,126 @@
       "hash": "7b8516a1a3",
       "bytes": 162320,
       "pack": "L2U8"
+    },
+    "images/level_3/stories/L3_S03/scene_1.webp": {
+      "hash": "f968c06560",
+      "bytes": 129736,
+      "pack": "L3U3"
+    },
+    "images/level_3/stories/L3_S03/scene_2.webp": {
+      "hash": "1b4b05402f",
+      "bytes": 114426,
+      "pack": "L3U3"
+    },
+    "images/level_3/stories/L3_S03/scene_3.webp": {
+      "hash": "35e8f29c93",
+      "bytes": 117296,
+      "pack": "L3U3"
+    },
+    "images/level_3/stories/L3_S03/scene_4.webp": {
+      "hash": "d971232e42",
+      "bytes": 86224,
+      "pack": "L3U3"
+    },
+    "images/level_3/stories/L3_S04/scene_1.webp": {
+      "hash": "c9235b4e13",
+      "bytes": 94142,
+      "pack": "L3U4"
+    },
+    "images/level_3/stories/L3_S04/scene_2.webp": {
+      "hash": "909cb48d25",
+      "bytes": 82126,
+      "pack": "L3U4"
+    },
+    "images/level_3/stories/L3_S04/scene_3.webp": {
+      "hash": "5dac7c2a3b",
+      "bytes": 87876,
+      "pack": "L3U4"
+    },
+    "images/level_3/stories/L3_S04/scene_4.webp": {
+      "hash": "bdf2cdad3b",
+      "bytes": 50940,
+      "pack": "L3U4"
+    },
+    "images/level_3/stories/L3_S05/scene_1.webp": {
+      "hash": "f169646682",
+      "bytes": 151884,
+      "pack": "L3U5"
+    },
+    "images/level_3/stories/L3_S05/scene_2.webp": {
+      "hash": "ea2c811b7a",
+      "bytes": 135752,
+      "pack": "L3U5"
+    },
+    "images/level_3/stories/L3_S05/scene_3.webp": {
+      "hash": "ffe001e104",
+      "bytes": 134606,
+      "pack": "L3U5"
+    },
+    "images/level_3/stories/L3_S05/scene_4.webp": {
+      "hash": "ec40b36d9d",
+      "bytes": 136792,
+      "pack": "L3U5"
+    },
+    "images/level_3/stories/L3_S06/scene_1.webp": {
+      "hash": "0d021f0568",
+      "bytes": 54614,
+      "pack": "L3U6"
+    },
+    "images/level_3/stories/L3_S06/scene_2.webp": {
+      "hash": "ddd8fab0cf",
+      "bytes": 52428,
+      "pack": "L3U6"
+    },
+    "images/level_3/stories/L3_S06/scene_3.webp": {
+      "hash": "cf57afc5a2",
+      "bytes": 65012,
+      "pack": "L3U6"
+    },
+    "images/level_3/stories/L3_S06/scene_4.webp": {
+      "hash": "9ca87e2613",
+      "bytes": 72584,
+      "pack": "L3U6"
+    },
+    "images/level_3/stories/L3_S07/scene_1.webp": {
+      "hash": "e40535dc9c",
+      "bytes": 167788,
+      "pack": "L3U7"
+    },
+    "images/level_3/stories/L3_S07/scene_2.webp": {
+      "hash": "f8e3d235a0",
+      "bytes": 158790,
+      "pack": "L3U7"
+    },
+    "images/level_3/stories/L3_S07/scene_3.webp": {
+      "hash": "9d66fb9be0",
+      "bytes": 142210,
+      "pack": "L3U7"
+    },
+    "images/level_3/stories/L3_S07/scene_4.webp": {
+      "hash": "5304b03eb8",
+      "bytes": 159438,
+      "pack": "L3U7"
+    },
+    "images/level_3/stories/L3_S08/scene_1.webp": {
+      "hash": "3b378dcb13",
+      "bytes": 144888,
+      "pack": "L3U8"
+    },
+    "images/level_3/stories/L3_S08/scene_2.webp": {
+      "hash": "f454c7283d",
+      "bytes": 145668,
+      "pack": "L3U8"
+    },
+    "images/level_3/stories/L3_S08/scene_3.webp": {
+      "hash": "a97f4f7cab",
+      "bytes": 148470,
+      "pack": "L3U8"
+    },
+    "images/level_3/stories/L3_S08/scene_4.webp": {
+      "hash": "7ca1fad091",
+      "bytes": 119380,
+      "pack": "L3U8"
     }
   }
 }

@@ -42,6 +42,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import me.ltthuc.kmp.core.model.LessonWord
 import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.lesson_complete_back_to_list
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
@@ -51,6 +52,7 @@ import me.ltthuc.kmp.core.ui.theme.LocalPhonicsFontFamily
 import me.ltthuc.kmp.feature.learningpath.step.common.ConfettiCanvas
 import me.ltthuc.kmp.feature.learningpath.step.common.PuffySurface
 import me.ltthuc.kmp.feature.learningpath.step.common.StoryStyleCard
+import me.ltthuc.kmp.feature.learningpath.step.common.WordDisplayView
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -79,7 +81,7 @@ internal fun LessonCompleteScreen(
             ) { ui ->
                 LessonCompleteContent(
                     currentLetter = ui.currentLetter,
-                    currentEmoji = ui.currentEmoji,
+                    currentWord = ui.currentWord,
                     nextLetter = ui.nextLetter,
                     onNextLessonClick = {
                         if (navBackStack.isNotEmpty()) navBackStack.removeAt(navBackStack.lastIndex)
@@ -106,7 +108,7 @@ internal fun LessonCompleteScreen(
 @Composable
 private fun LessonCompleteContent(
     currentLetter: String,
-    currentEmoji: String?,
+    currentWord: LessonWord?,
     nextLetter: String?,
     onNextLessonClick: () -> Unit,
     onBackToLessonsClick: () -> Unit,
@@ -147,9 +149,9 @@ private fun LessonCompleteContent(
                         color = MaterialTheme.colorScheme.onSurface,
                         textAlign = TextAlign.Center,
                     )
-                    if (currentEmoji != null) {
+                    if (currentWord != null) {
                         Spacer(Modifier.height(20.dp))
-                        BouncingEmoji(emoji = currentEmoji)
+                        BouncingPicture(word = currentWord)
                     }
                 }
             }
@@ -185,7 +187,7 @@ private fun BackToLessonsButton(onClick: () -> Unit) {
 }
 
 @Composable
-private fun BouncingEmoji(emoji: String) {
+private fun BouncingPicture(word: LessonWord) {
     val transition = rememberInfiniteTransition(label = "lesson-complete-bounce")
     val scale by transition.animateFloat(
         initialValue = 1f,
@@ -196,8 +198,10 @@ private fun BouncingEmoji(emoji: String) {
         ),
         label = "scale",
     )
-    Text(
-        text = emoji,
+    // Ảnh WebP nếu từ đó có, không thì emoji — cùng lý do như 5 game: emoji của 35 từ
+    // gây hiểu nhầm (`cave` → 🕳️ cái hố). [WordDisplayView] tự chọn.
+    WordDisplayView(
+        word = word,
         fontSize = 56.sp,
         modifier = Modifier.scale(scale),
     )

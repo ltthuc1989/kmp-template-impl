@@ -6,7 +6,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -25,7 +27,9 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import me.ltthuc.kmp.core.model.LessonWord
 import me.ltthuc.kmp.core.ui.theme.LocalPhonicsFontFamily
+import me.ltthuc.kmp.feature.learningpath.step.common.WordDisplayView
 
 /**
  * Memory match card with a 3D Y-axis flip between face-down and face-up states.
@@ -48,6 +52,7 @@ internal fun MemoryCard(
     enabled: Boolean,
     onTap: () -> Unit,
     modifier: Modifier = Modifier,
+    picture: LessonWord? = null,
 ) {
     val rotation by animateFloatAsState(
         targetValue = if (isFaceUp) 180f else 0f,
@@ -89,6 +94,7 @@ internal fun MemoryCard(
                 tint = tint,
                 isMatched = isMatched,
                 modifier = Modifier.graphicsLayer { rotationY = 180f },
+                picture = picture,
             )
         }
     }
@@ -118,8 +124,9 @@ private fun CardFrontFace(
     tint: Color,
     isMatched: Boolean,
     modifier: Modifier = Modifier,
+    picture: LessonWord? = null,
 ) {
-    Box(
+    BoxWithConstraints(
         modifier = modifier
             .fillMaxSize()
             .clip(RoundedCornerShape(20.dp))
@@ -133,26 +140,47 @@ private fun CardFrontFace(
             ),
         contentAlignment = Alignment.Center,
     ) {
-        // Mặt thẻ có thể là chữ cái ("A"), vần ("am"), TỪ ("ram") hoặc emoji. Cỡ chữ phải
-        // suy từ độ dài, không để cố định 64sp — từ 3 ký tự ở cỡ đó tràn khỏi thẻ vuông,
-        // đúng lỗi đã gặp ở bong bóng.
-        val fontSizeSp = when {
-            letter.length <= 1 -> 64f
-            letter.length == 2 -> 52f
-            else -> (150f / letter.length).coerceAtLeast(24f)
+        if (picture != null) {
+            // Thẻ HÌNH: phủ gần kín mặt thẻ, cỡ suy từ bề ngang thật của thẻ chứ không
+            // để một hằng số sp. Trước đây emoji đi chung nhánh chữ bên dưới và ăn đúng
+            // 52sp — vì `"🍎".length` là 2 (cặp surrogate), không phải vì ai chọn cỡ đó —
+            // nên hình bé tí giữa thẻ ~153dp. Đi qua [WordDisplayView] còn được thêm ảnh
+            // WebP của những từ đã vẽ riêng, thay vì luôn rơi về emoji.
+            WordDisplayView(
+                word = picture,
+                fontSize = (maxWidth.value * PICTURE_FILL_RATIO).sp,
+                modifier = Modifier.padding(CARD_PADDING_DP.dp),
+            )
+        } else {
+            // Mặt thẻ chữ: chữ cái ("A"), vần ("am") hoặc TỪ ("ram"). Cỡ chữ phải suy từ
+            // độ dài, không để cố định 64sp — từ 3 ký tự ở cỡ đó tràn khỏi thẻ vuông,
+            // đúng lỗi đã gặp ở bong bóng.
+            val fontSizeSp = when {
+                letter.length <= 1 -> 64f
+                letter.length == 2 -> 52f
+                else -> (150f / letter.length).coerceAtLeast(24f)
+            }
+            Text(
+                text = letter,
+                fontFamily = LocalPhonicsFontFamily.current,
+                fontSize = fontSizeSp.sp,
+                lineHeight = (fontSizeSp * 1.1f).sp,
+                maxLines = 1,
+                softWrap = false,
+                fontWeight = FontWeight.Black,
+                color = if (isMatched) Color(0xFF0E5562) else MaterialTheme.colorScheme.onSurface,
+            )
         }
-        Text(
-            text = letter,
-            fontFamily = LocalPhonicsFontFamily.current,
-            fontSize = fontSizeSp.sp,
-            lineHeight = (fontSizeSp * 1.1f).sp,
-            maxLines = 1,
-            softWrap = false,
-            fontWeight = FontWeight.Black,
-            color = if (isMatched) Color(0xFF0E5562) else MaterialTheme.colorScheme.onSurface,
-        )
     }
 }
+
+/**
+ * Phần bề ngang thẻ mà hình chiếm. 0.78 chứ không phải 1.0: `WordDisplayView` dựng ảnh
+ * VUÔNG cạnh bằng `fontSize`, mà thẻ cũng vuông — để 1.0 thì ảnh chạm sát mép bo tròn và
+ * bị góc bo cắt mất bốn chân.
+ */
+private const val PICTURE_FILL_RATIO = 0.78f
+private const val CARD_PADDING_DP = 6
 
 private val BACK_GRADIENT = listOf(
     Color(0xFF0E7C8A),

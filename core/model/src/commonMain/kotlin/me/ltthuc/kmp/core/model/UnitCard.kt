@@ -9,7 +9,14 @@ data class UnitCard(
 
 data class UnitLetterPreview(
     val letter: String,
-    val emoji: String?,
+    /**
+     * Từ đại diện của bài, để màn chọn unit vẽ hình xem trước.
+     *
+     * Mang cả [LessonWord] chứ không mang sẵn chuỗi emoji: 35 từ trên cả 5 cấp có ảnh
+     * WebP vẽ riêng vì emoji của chúng gây hiểu nhầm (`cave` → 🕳️ cái hố, `nail` → 🔨
+     * cái búa). Chốt emoji ở tầng model thì tầng vẽ không còn đường lấy ảnh.
+     */
+    val word: LessonWord?,
 )
 
 enum class UnitStatus {

@@ -141,7 +141,7 @@ internal fun PickWordScreen(
 
                     val round = ui.currentRound
                     PicturePanel(
-                        emoji = round.targetEmoji,
+                        word = round.picture,
                         modifier = Modifier
                             .fillMaxWidth(fraction = 0.55f)
                             .aspectRatio(1f),

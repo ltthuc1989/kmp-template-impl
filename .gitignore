@@ -65,3 +65,6 @@ iosApp/Pods
 
 # Stray screenshots at repo root
 /s[0-9].png
+
+__pycache__/
+*.pyc

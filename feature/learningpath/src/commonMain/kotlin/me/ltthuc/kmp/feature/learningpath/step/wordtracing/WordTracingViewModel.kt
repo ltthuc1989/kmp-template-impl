@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import me.ltthuc.kmp.core.audio.AudioRef
+import me.ltthuc.kmp.core.audio.ONSET_LETTERS
 import me.ltthuc.kmp.core.model.PhonicsLesson
 import me.ltthuc.kmp.core.repository.AudioRepository
 import me.ltthuc.kmp.core.repository.AudioSession
@@ -66,10 +67,27 @@ internal class WordTracingViewModel(
         audio.play(ref)
     }
 
-    /** Isolated single-letter phoneme, e.g. /t/, played as each letter starts — the first included. */
-    fun playLetter(letter: Char) {
+    /**
+     * The letter spoken as each letter starts — the first one included.
+     *
+     * Which take depends on where the letter sits. At the FRONT of the word it is read the way
+     * the blending screen reads it, "lơ / mơ / nơ" ([AudioRef.Onset]); anywhere else it keeps the
+     * isolated phoneme ([AudioRef.LetterSound]). The two sets say the letter differently and the
+     * split is the point: `phonemes/l.mp3` is a bare 0.64s hum, which reads as the letter L only
+     * once it is already inside a word — starting "lake" on it says nothing to a child.
+     *
+     * Falls back to the phoneme whenever the onset set has no file for [letter] — see
+     * [ONSET_LETTERS]. That covers word-initial vowels, where the phoneme IS the right reading.
+     */
+    fun playLetter(letter: Char, isWordInitial: Boolean) {
         if (!letter.isLetter()) return
-        audio.play(AudioRef.LetterSound(letter.toString()))
+        val lower = letter.lowercaseChar()
+        val ref = if (isWordInitial && lower in ONSET_LETTERS) {
+            AudioRef.Onset(lower.toString())
+        } else {
+            AudioRef.LetterSound(lower.toString())
+        }
+        audio.play(ref)
     }
 
     fun onLeaveScreen() {

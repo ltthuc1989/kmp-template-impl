@@ -128,7 +128,9 @@ internal fun BubbleView(
             softWrap = false,
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.headlineLarge.copy(
-                lineHeight = fontSizeSp.sp,
+                // 1.15× chứ không phải 1.0×: chữ cái đơn không có nét thòng nên 1.0 nhìn
+                // vẫn ổn, còn `tape` `sky` `pie` thì cụt chân. Memory Match đang để 1.1.
+                lineHeight = (fontSizeSp * 1.15f).sp,
                 shadow = Shadow(
                     color = Color.Black.copy(alpha = 0.55f),
                     offset = Offset(0f, 2f),

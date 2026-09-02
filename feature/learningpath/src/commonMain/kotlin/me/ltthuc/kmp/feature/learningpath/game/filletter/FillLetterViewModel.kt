@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import me.ltthuc.kmp.core.audio.AudioRef
+import me.ltthuc.kmp.core.model.LessonWord
 import me.ltthuc.kmp.core.model.PhonicsLesson
 import me.ltthuc.kmp.core.repository.AudioRepository
 import me.ltthuc.kmp.core.repository.AudioSession
@@ -144,7 +145,10 @@ internal class FillLetterViewModel(
         // Keep each word paired with its originating lesson so we can resolve the word audio ref.
         val pool = lessons.flatMap { lesson ->
             lesson.words
-                .filter { it.word.length >= MIN_WORD_LEN && !it.emoji.isNullOrBlank() }
+                // lọc theo `displays` chứ KHÔNG theo `emoji`: từ có ảnh WebP riêng mà thiếu emoji
+                // thay thế sẽ bị `!emoji.isNullOrBlank()` loại oan — đúng bẫy mà KDoc của
+                // `LessonWord.emoji` cảnh báo.
+                .filter { it.word.length >= MIN_WORD_LEN && it.displays.isNotEmpty() }
                 .map { lesson to it }
         }
         if (pool.size < 2) return persistentListOf()
@@ -172,7 +176,7 @@ internal class FillLetterViewModel(
             val tint = BUBBLE_TINT_PALETTE[idx % BUBBLE_TINT_PALETTE.size]
             FillLetterRound(
                 fullWord = word,
-                emoji = target.emoji.orEmpty(),
+                picture = target,
                 blankIndex = blankIndex,
                 correctLetter = correctLetter,
                 choices = (listOf(correctLetter) + distractors)
@@ -203,7 +207,7 @@ internal class FillLetterViewModel(
 @Immutable
 internal data class FillLetterRound(
     val fullWord: String,
-    val emoji: String,
+    val picture: LessonWord?,
     val blankIndex: Int,
     val correctLetter: Char,
     val choices: ImmutableList<Char>,

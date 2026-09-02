@@ -11,12 +11,19 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ChevronLeft
+import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -24,23 +31,28 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.lerp
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.LocalTextStyle
-import androidx.compose.material3.Text
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.withTimeoutOrNull
+import me.ltthuc.kmp.core.audio.AudioState
+import me.ltthuc.kmp.core.model.BlendMeta
 import me.ltthuc.kmp.core.model.PhonicsLesson
+import me.ltthuc.kmp.core.resource.Res
+import me.ltthuc.kmp.core.resource.slide_next_cd
+import me.ltthuc.kmp.core.resource.slide_previous_cd
 import me.ltthuc.kmp.core.ui.theme.LocalPhonicsFontFamily
 import me.ltthuc.kmp.feature.learningpath.step.common.BlendPiece
 import me.ltthuc.kmp.feature.learningpath.step.common.BlendPieceKind
 import me.ltthuc.kmp.feature.learningpath.step.common.PageDotsRow
+import me.ltthuc.kmp.feature.learningpath.step.common.StepChevronButton
 import me.ltthuc.kmp.feature.learningpath.step.common.blendParts
 import me.ltthuc.kmp.feature.learningpath.step.common.lessonPatterns
+import org.jetbrains.compose.resources.stringResource
 
 /**
  * Bước 0 của cấp 3 — dạy nguyên âm dài.
@@ -56,13 +68,20 @@ import me.ltthuc.kmp.feature.learningpath.step.common.lessonPatterns
  *
  * Trình tự: đọc vần một lần → đánh vần từng mảnh → đọc cả từ, lặp [SPELL_REPEATS] lượt.
  *
- * CHƯA CÓ AUDIO. Cấp 3 chưa sinh file tiếng nào nên nhịp ở đây chạy bằng khoảng chờ cố
- * định. Khi audio xong thì thay [PIECE_MS]/[WHOLE_MS] bằng mốc thật trong `blend_meta`,
- * y như cách cấp 2 dùng chuỗi đã ghép sẵn.
+ * HAI ĐƯỜNG CHẠY NHỊP:
+ *   có [blendMeta]  một file tiếng cho cả trang, chữ sáng theo VỊ TRÍ PHÁT THẬT
+ *   không có        khoảng chờ cố định, câm — giữ lại để bài chưa sinh audio vẫn xem được
+ *
+ * Cấp 2 lặp bằng cách phát LẠI cả file; cấp 3 thì không, vì hàng vần nằm NGOÀI vòng lặp.
+ * Nên cả 2 lượt đánh vần đã được gói sẵn trong một file, màn hình phát đúng một lần rồi
+ * bám theo mốc `row`/`slot` để biết sáng chỗ nào.
  */
 @Composable
 internal fun PatternBlendContent(
     lesson: PhonicsLesson,
+    blendMeta: BlendMeta?,
+    audioState: AudioState,
+    onPlayChain: (page: Int, word: String) -> Unit,
     onClose: () -> Unit,
     onNext: () -> Unit,
     onStepJump: (Int) -> Unit,
@@ -71,6 +90,10 @@ internal fun PatternBlendContent(
     val pages = remember(lesson.id) { buildPatternPages(lesson) }
     var pageIndex by remember(lesson.id) { mutableStateOf(0) }
     var allDone by remember(lesson.id) { mutableStateOf(false) }
+    // Bật khi bé tự bấm mũi tên để xem lại. Trang vẫn đọc lại như thường, nhưng KHÔNG tự
+    // lật tiếp — nếu vẫn tự lật thì bấm "về trang trước" xong lại bị kéo tới trang cuối,
+    // mũi tên hoá ra vô dụng. Giống hệt cấp 2.
+    var browsing by remember(lesson.id) { mutableStateOf(false) }
     val safePage = pageIndex.coerceIn(0, (pages.size - 1).coerceAtLeast(0))
     val page = pages.getOrNull(safePage)
 
@@ -82,8 +105,55 @@ internal fun PatternBlendContent(
     // Đếm số lần chạy lại do bé bấm thẻ hình; đổi giá trị là khởi động lại vòng đọc.
     var replayTick by remember(lesson.id, safePage) { mutableStateOf(0) }
 
-    LaunchedEffect(lesson.id, safePage, replayTick) {
-        if (page == null) return@LaunchedEffect
+    val chain = blendMeta?.chains?.getOrNull(safePage)
+
+    // ---- Có audio: chữ bám theo vị trí phát thật ------------------------------------------
+    // Sáng GIỮ tới khi nhịp kế bắt đầu chứ không tắt ở end_ms: mảnh phụ âm cuối cắt ra chỉ
+    // 140-180ms, tắt đúng lúc thì chữ chỉ loé lên rồi mất.
+    val positionMs = (audioState as? AudioState.Playing)?.positionMs ?: -1L
+    val activeSegment = if (chain != null && positionMs >= 0L) {
+        chain.segments.lastOrNull { positionMs >= it.startMs }
+    } else {
+        null
+    }
+    // SUY RA giá trị, KHÔNG gán vào state: gán state trong thân composable là ghi lúc đang
+    // dựng khung hình, Compose cấm và nó đẻ ra vòng recomposition.
+    val chainActive = activeSegment
+        ?.takeIf { it.slot >= 0 }
+        ?.let { seg ->
+            val spans = when (seg.row) {
+                1 -> page?.patternSteps?.getOrNull(seg.slot)
+                else -> page?.pieces?.getOrNull(seg.slot)?.spans
+            }
+            spans?.let { ActiveSpan(row = seg.row, spans = it) }
+        }
+    // slot -1 = đang đọc cả từ; màn hình dồn màu về đen thay vì phóng to.
+    val chainInk = activeSegment?.slot == WHOLE_WORD_SLOT
+
+    // Bài đã có audio thì nhịp bám theo tiếng; chưa có thì dùng state của đường chờ cố định.
+    val shownActive = if (chain != null) chainActive else active
+    val shownInk = if (chain != null) chainInk else inkAll
+
+    val currentAudioState by rememberUpdatedState(audioState)
+
+    LaunchedEffect(lesson.id, safePage, replayTick, chain) {
+        if (page == null || chain == null) return@LaunchedEffect
+        delay(START_DELAY_MS)
+        onPlayChain(safePage, chain.word)
+        // Chặn bằng chính độ dài của file: thiếu asset thì mất một nhịp, chứ không treo
+        // trang lại vĩnh viễn với nút Next tắt.
+        withTimeoutOrNull(chain.durationMs + CHAIN_TIMEOUT_PAD_MS) {
+            snapshotFlow { currentAudioState }.first { it is AudioState.Playing }
+            snapshotFlow { currentAudioState }
+                .first { it is AudioState.Idle || it is AudioState.Error }
+        }
+        delay(PAGE_TURN_DELAY_MS)
+        if (safePage >= pages.lastIndex || browsing) allDone = true else pageIndex = safePage + 1
+    }
+
+    // ---- Chưa có audio: khoảng chờ cố định, câm -------------------------------------------
+    LaunchedEffect(lesson.id, safePage, replayTick, chain) {
+        if (page == null || chain != null) return@LaunchedEffect
         active = null
         inkAll = false
         delay(START_DELAY_MS)
@@ -112,7 +182,7 @@ internal fun PatternBlendContent(
         }
 
         delay(PAGE_TURN_DELAY_MS)
-        if (safePage >= pages.lastIndex) allDone = true else pageIndex = safePage + 1
+        if (safePage >= pages.lastIndex || browsing) allDone = true else pageIndex = safePage + 1
     }
 
     VowelBlendScaffold(
@@ -133,7 +203,7 @@ internal fun PatternBlendContent(
                 SpanRow(
                     text = page.pattern,
                     pinkSpans = page.patternPink,
-                    active = active?.takeIf { it.row == 1 }?.spans,
+                    active = shownActive?.takeIf { it.row == 1 }?.spans,
                     inkAll = false,
                     fontSize = PATTERN_SP,
                 )
@@ -141,8 +211,8 @@ internal fun PatternBlendContent(
                 SpanRow(
                     text = page.word.text,
                     pinkSpans = page.wordPink,
-                    active = active?.takeIf { it.row == 2 }?.spans,
-                    inkAll = inkAll,
+                    active = shownActive?.takeIf { it.row == 2 }?.spans,
+                    inkAll = shownInk,
                     fontSize = WORD_SP,
                 )
             }
@@ -157,6 +227,35 @@ internal fun PatternBlendContent(
                 // xong, nếu không bé bấm giữa chừng là hai vòng đọc chồng lên nhau.
                 onTap = { replayTick++ },
             )
+            // Mũi tên lật trang, đặt trên hai mép thẻ hình — y như cấp 2. Chỉ hiện sau khi cả
+            // bài chạy xong (lúc nút Next sáng): đang dạy dở mà cho lật thì bé bấm lung tung,
+            // chuỗi đọc đang chạy bị cắt ngang.
+            if (allDone && pages.size > 1) {
+                StepChevronButton(
+                    icon = Icons.Filled.ChevronLeft,
+                    contentDescription = stringResource(Res.string.slide_previous_cd),
+                    enabled = safePage > 0,
+                    onClick = {
+                        browsing = true
+                        pageIndex = (safePage - 1).coerceAtLeast(0)
+                    },
+                    modifier = Modifier
+                        .align(Alignment.CenterStart)
+                        .padding(start = 4.dp),
+                )
+                StepChevronButton(
+                    icon = Icons.Filled.ChevronRight,
+                    contentDescription = stringResource(Res.string.slide_next_cd),
+                    enabled = safePage < pages.lastIndex,
+                    onClick = {
+                        browsing = true
+                        pageIndex = (safePage + 1).coerceAtMost(pages.lastIndex)
+                    },
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .padding(end = 4.dp),
+                )
+            }
         }
         Spacer(Modifier.height(14.dp))
         PageDotsRow(currentPage = safePage, total = pages.size)
@@ -250,7 +349,7 @@ private fun buildPatternPages(lesson: PhonicsLesson): List<PatternPage> {
         PatternPage(
             word = word,
             pattern = pattern,
-            patternPink = listOf(pattern.indices),
+            patternPink = patternPinkSpans(pattern),
             patternSteps = patternSteps(pattern),
             wordPink = pinkSpansFor(pieces, pattern),
             pieces = pieces,
@@ -281,17 +380,39 @@ private fun patternForWord(patterns: List<String>, word: String): String {
  */
 private fun patternSteps(pattern: String): List<List<IntRange>> {
     val whole = listOf(listOf(pattern.indices))
-    if (pattern.length != MAGIC_E_RIME_LENGTH) return whole
-    if (pattern.contains('_') || !pattern.endsWith('e')) return whole
-    val first = pattern.first()
-    val middle = pattern[1]
-    if (first !in VOWELS || middle in VOWELS) return whole
+    // "a_e" cũng theo khuôn magic-e nhưng KHÔNG dựng dần: chỗ `_` để trống, không có phụ
+    // âm nào để đọc thành một nhịp riêng.
+    if (!isMagicERime(pattern) || pattern.contains('_')) return whole
     return listOf(
-        listOf(0..0, 2..2),
+        listOf(0..0, MAGIC_E_TAIL..MAGIC_E_TAIL),
         listOf(1..1),
         listOf(pattern.indices),
     )
 }
+
+/**
+ * Ký tự nào của VẦN ở hàng 1 được tô hồng — chỉ phần nguyên âm, đúng như hàng 2 tô cho từ.
+ *
+ * Vần magic-e ("ame") viết ra là nguyên âm + phụ âm + `e` câm, mà bài dạy là `a_e`; chữ ở
+ * giữa chỉ là phụ âm nên để xanh như mọi phụ âm khác. Tô hồng cả ba chữ thì hàng 1 bảo vần
+ * là "ame" trong khi hàng 2 của `game` chỉ tô `a` với `e` — hai hàng dạy hai điều khác nhau.
+ * Chữ `_` của "a_e" cũng xanh: nó đứng thay chỗ phụ âm chứ không phải nguyên âm.
+ *
+ * Tổ hợp nguyên âm ("ai", "igh", "ee") vẫn hồng cả cụm — cả cụm mới là MỘT nguyên âm.
+ */
+private fun patternPinkSpans(pattern: String): List<IntRange> =
+    if (isMagicERime(pattern)) {
+        listOf(0..0, MAGIC_E_TAIL..MAGIC_E_TAIL)
+    } else {
+        listOf(pattern.indices)
+    }
+
+/** Vần theo khuôn magic-e: nguyên âm + MỘT phụ âm (hoặc chỗ trống `_`) + `e` cuối. */
+private fun isMagicERime(pattern: String): Boolean =
+    pattern.length == MAGIC_E_RIME_LENGTH &&
+        pattern.endsWith('e') &&
+        pattern.first() in VOWELS &&
+        pattern[1] !in VOWELS
 
 /**
  * Ký tự nào của từ được tô hồng: đúng phần nguyên âm của VẦN ĐANG DẠY.
@@ -307,6 +428,9 @@ private fun pinkSpansFor(pieces: List<BlendPiece>, pattern: String): List<IntRan
 
 private const val VOWELS = "aeiou"
 private const val MAGIC_E_RIME_LENGTH = 3
+
+/** Vị trí chữ `e` câm trong vần magic-e ba chữ. */
+private const val MAGIC_E_TAIL = 2
 
 private const val PATTERN_SP = 40
 private const val WORD_SP = 46
@@ -325,3 +449,7 @@ private const val GAP_MS = 500L
 private const val REPEAT_GAP_MS = 500L
 private const val PAGE_TURN_DELAY_MS = 1_400L
 private const val SPELL_REPEATS = 2
+private const val CHAIN_TIMEOUT_PAD_MS = 2_000L
+
+/** `slot` của nhịp đọc CẢ TỪ — khớp `blend_meta`, xem [BlendSegment]. */
+private const val WHOLE_WORD_SLOT = -1

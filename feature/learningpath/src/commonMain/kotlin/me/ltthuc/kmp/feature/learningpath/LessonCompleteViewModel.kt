@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import me.ltthuc.kmp.core.model.LessonWord
 import me.ltthuc.kmp.core.model.PhonicsLesson
 import me.ltthuc.kmp.core.repository.UnitRepository
 import me.ltthuc.kmp.core.resource.Res
@@ -32,7 +33,8 @@ internal class LessonCompleteViewModel(
                 ScreenState.Idle(
                     LessonCompleteUiState(
                         currentLetter = current.displayLetter,
-                        currentEmoji = current.words.firstNotNullOfOrNull { it.emoji },
+                        // Từ đầu tiên CÓ HÌNH — ảnh WebP riêng cũng tính, không chỉ emoji.
+                        currentWord = current.words.firstOrNull { it.displays.isNotEmpty() },
                         nextLetter = next?.displayLetter,
                     ),
                 )
@@ -57,6 +59,7 @@ internal class LessonCompleteViewModel(
 @Immutable
 internal data class LessonCompleteUiState(
     val currentLetter: String,
-    val currentEmoji: String?,
+    /** Từ để vẽ hình ăn mừng; null thì màn không hiện hình nào. */
+    val currentWord: LessonWord?,
     val nextLetter: String?,
 )

@@ -65,7 +65,7 @@ internal fun BubbleCanvas(
 
         val scope = rememberCoroutineScope()
 
-        val runtimes = remember(bubbles, widthPx, heightPx) {
+        val runtimes = remember(bubbles, widthPx, heightPx, bubbleRadiusPx) {
             initRuntimes(bubbles, widthPx, heightPx, bubbleRadiusPx)
         }
 

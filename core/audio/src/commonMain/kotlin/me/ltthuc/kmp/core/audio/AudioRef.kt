@@ -82,6 +82,28 @@ sealed interface AudioRef {
     }
 
     /**
+     * The same letter read the way it is read at the FRONT of a word — "lơ", "mơ", "nơ"
+     * (`/lˈʌ/`) — bundled at `files/audio/onsets/<letter>.mp3` (lowercased).
+     *
+     * Separate from [LetterSound] because the two sets say the letter differently, and both
+     * readings are wanted. `phonemes/` holds the isolated sound as the Bubble Pop / Memory
+     * Match cards want it — for the continuants (l m n r s v y z) that is a bare hum with no
+     * vowel, which reads as a letter only once it is already inside a word. Word tracing
+     * starts a word on that letter, so it needs the onset take instead.
+     *
+     * Bytes come from `opw_audio_project/output/level_3/sound_bank/onset_<x>.mp3` — the very
+     * pieces the blending screen's chain audio is assembled from, so the two screens say the
+     * letter with one voice.
+     *
+     * **Only [ONSET_LETTERS] ship.** A word starting with a vowel, or with q/v/x, has no file
+     * here; ask for one and playback goes silent (`AssetLocator` logs a miss and returns
+     * `Missing`). Callers must consult the set, never let a lookup fail.
+     */
+    data class Onset(val letter: String) : AudioRef {
+        override val lessonFolder: String get() = "onsets"
+    }
+
+    /**
      * Blended short-vowel rime (onset+rime phonics), bundled at `files/audio/rimes/<rime>.mp3`
      * (lowercased). Says the rime as one blended unit (e.g. "an", "am", "at"). Keyed only by
      * [rime]; not tied to a specific lesson folder. Used by the Bubble Pop game.
@@ -157,3 +179,18 @@ sealed interface AudioRef {
         override val lessonFolder: String get() = "prompts"
     }
 }
+
+/**
+ * Letters that have a file in `files/audio/onsets/` — the whole valid key space of
+ * [AudioRef.Onset]. Written out rather than probed because a missing bundled asset is
+ * silent: `AssetLocator` logs one line and plays nothing.
+ *
+ * Missing on purpose: the five vowels, which need no onset take (`a` at the front of "ant"
+ * IS the `phonemes/a.mp3` sound), plus q, v and x, which the Level 3 sound bank never had a
+ * piece for. `v` is the one real gap — "vet" and "van" in Level 2 keep the bare hum until
+ * someone records `onset_v`.
+ *
+ * Keep this in step with the folder: adding a file without adding its letter here means the
+ * new take never plays.
+ */
+val ONSET_LETTERS: Set<Char> = "bcdfghjklmnprstwyz".toSet()

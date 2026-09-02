@@ -51,6 +51,7 @@ internal fun MemoryGrid(
                 rowCards.forEach { card ->
                     MemoryCard(
                         letter = card.letter,
+                        picture = card.picture,
                         tint = card.tint,
                         isFaceUp = card.id in matchedIds || card.id in selectedIds,
                         isMatched = card.id in matchedIds,

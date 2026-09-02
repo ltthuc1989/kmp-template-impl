@@ -174,6 +174,168 @@
       "label": "ib__yletter",
       "start_ms": 4105,
       "end_ms": 4899
+    },
+    "a_e": {
+      "source": "sound_bank",
+      "piece": "vowel_long_a.mp3",
+      "from_word": "tape",
+      "level": 3
+    },
+    "ame": {
+      "source": "sound_bank",
+      "piece": "rime_ame.mp3",
+      "from_word": "game",
+      "level": 3
+    },
+    "ake": {
+      "source": "sound_bank",
+      "piece": "rime_ake.mp3",
+      "from_word": "cake",
+      "level": 3
+    },
+    "ate": {
+      "source": "sound_bank",
+      "piece": "rime_ate.mp3",
+      "from_word": "skate",
+      "level": 3
+    },
+    "ave": {
+      "source": "sound_bank",
+      "piece": "rime_ave.mp3",
+      "from_word": "cave",
+      "level": 3
+    },
+    "i_e": {
+      "source": "sound_bank",
+      "piece": "vowel_long_i.mp3",
+      "from_word": "kite",
+      "level": 3
+    },
+    "ime": {
+      "source": "sound_bank",
+      "piece": "rime_ime.mp3",
+      "from_word": "time",
+      "level": 3
+    },
+    "ike": {
+      "source": "sound_bank",
+      "piece": "rime_ike.mp3",
+      "from_word": "bike",
+      "level": 3
+    },
+    "ive": {
+      "source": "sound_bank",
+      "piece": "rime_ive.mp3",
+      "from_word": "dive",
+      "level": 3
+    },
+    "ine": {
+      "source": "sound_bank",
+      "piece": "rime_ine.mp3",
+      "from_word": "pine",
+      "level": 3
+    },
+    "o_e": {
+      "source": "sound_bank",
+      "piece": "vowel_long_o.mp3",
+      "from_word": "home",
+      "level": 3
+    },
+    "u_e": {
+      "source": "sound_bank",
+      "piece": "vowel_long_u.mp3",
+      "from_word": "cube",
+      "level": 3
+    },
+    "ai": {
+      "source": "sound_bank",
+      "piece": "vowel_long_a.mp3",
+      "from_word": "rain",
+      "level": 3
+    },
+    "ay": {
+      "source": "sound_bank",
+      "piece": "vowel_long_a.mp3",
+      "from_word": "bay",
+      "level": 3
+    },
+    "ee": {
+      "source": "sound_bank",
+      "piece": "vowel_long_e.mp3",
+      "from_word": "bee",
+      "level": 3
+    },
+    "ea": {
+      "source": "sound_bank",
+      "piece": "vowel_long_e.mp3",
+      "from_word": "leaf",
+      "level": 3
+    },
+    "y_eee": {
+      "source": "sound_bank",
+      "piece": "vowel_long_e.mp3",
+      "from_word": "candy",
+      "level": 3
+    },
+    "ey": {
+      "source": "sound_bank",
+      "piece": "vowel_long_e.mp3",
+      "from_word": "key",
+      "level": 3
+    },
+    "igh": {
+      "source": "sound_bank",
+      "piece": "vowel_long_i.mp3",
+      "from_word": "light",
+      "level": 3
+    },
+    "ie": {
+      "source": "sound_bank",
+      "piece": "vowel_long_i.mp3",
+      "from_word": "pie",
+      "level": 3
+    },
+    "y_eye": {
+      "source": "sound_bank",
+      "piece": "vowel_long_i.mp3",
+      "from_word": "spy",
+      "level": 3
+    },
+    "oa": {
+      "source": "sound_bank",
+      "piece": "vowel_long_o.mp3",
+      "from_word": "boat",
+      "level": 3
+    },
+    "ow": {
+      "source": "sound_bank",
+      "piece": "vowel_long_o.mp3",
+      "from_word": "bow",
+      "level": 3
+    },
+    "ue": {
+      "source": "sound_bank",
+      "piece": "vowel_long_oo.mp3",
+      "from_word": "blue",
+      "level": 3
+    },
+    "ui": {
+      "source": "sound_bank",
+      "piece": "vowel_long_oo.mp3",
+      "from_word": "fruit",
+      "level": 3
+    },
+    "ew": {
+      "source": "sound_bank",
+      "piece": "vowel_long_oo.mp3",
+      "from_word": "new",
+      "level": 3
+    },
+    "oo": {
+      "source": "sound_bank",
+      "piece": "vowel_long_oo.mp3",
+      "from_word": "moon",
+      "level": 3
     }
   }
 }

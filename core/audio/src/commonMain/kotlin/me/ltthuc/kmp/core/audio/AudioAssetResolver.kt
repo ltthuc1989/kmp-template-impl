@@ -39,6 +39,7 @@ class AudioAssetResolver {
         is AudioRef.Phoneme -> "${ref.lessonFolder.toUnitPath()}/${ref.lessonFolder}/$FILE_PHONEME"
         is AudioRef.Story -> "${ref.storyId.toStoryLevelPath()}/stories/${ref.storyId}/scene_${ref.sceneNumber}.mp3"
         is AudioRef.LetterSound -> "phonemes/${ref.letter.lowercase()}.mp3"
+        is AudioRef.Onset -> "onsets/${ref.letter.lowercase()}.mp3"
         is AudioRef.Rime -> "rimes/${ref.rime.lowercase()}.mp3"
         is AudioRef.RimeBlend -> "rimes_blend/${ref.rime.lowercase()}.mp3"
         is AudioRef.FindSound -> "find_sound/${ref.letter.lowercase()}.mp3"

@@ -91,6 +91,7 @@ import me.ltthuc.kmp.core.ui.theme.LocalAppLocale
 import me.ltthuc.kmp.core.ui.theme.LocalNavBackStack
 import me.ltthuc.kmp.core.ui.theme.LocalPhonicsFontFamily
 import me.ltthuc.kmp.feature.learningpath.step.common.PulseRings
+import me.ltthuc.kmp.feature.learningpath.step.common.WordDisplayView
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
@@ -191,6 +192,10 @@ internal fun UnitSelectionScreen(
 
                 UnitSelectionList(
                     units = uiState.units,
+                    // Cấp 1 `displayLetter` là cặp hoa/thường ("Aa") — vẽ A to kèm a nhỏ là cố ý.
+                    // Từ cấp 2 nó là VẦN ("ad ag", "ame ake"): chẻ ký tự đầu ra khỏi phần sau là
+                    // cắt đôi vần, nên cả chuỗi đọc thành một khối.
+                    lettersAreCluster = uiState.level.number >= FIRST_CLUSTER_LEVEL,
                     contentPadding = PaddingValues(
                         top = innerPadding.calculateTopPadding() + 12.dp,
                         bottom = innerPadding.calculateBottomPadding() + 12.dp,
@@ -254,6 +259,7 @@ private fun UnitSelectionList(
     contentPadding: PaddingValues,
     onUnitClick: (UnitCard) -> Unit,
     contentFor: (UnitCard) -> UnitContent,
+    lettersAreCluster: Boolean,
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -270,6 +276,7 @@ private fun UnitSelectionList(
                 isLast = index == units.lastIndex,
                 onClick = { onUnitClick(card) },
                 content = contentFor(card),
+                lettersAreCluster = lettersAreCluster,
             )
         }
     }
@@ -282,6 +289,7 @@ private fun UnitRow(
     isLast: Boolean,
     onClick: () -> Unit,
     content: UnitContent,
+    lettersAreCluster: Boolean,
 ) {
     Row(
         modifier = Modifier
@@ -301,6 +309,7 @@ private fun UnitRow(
             card = card,
             onClick = onClick,
             content = content,
+            lettersAreCluster = lettersAreCluster,
             modifier = Modifier
                 .weight(1f)
                 .padding(vertical = CardVerticalPadding),
@@ -502,6 +511,7 @@ private fun UnitCardItem(
     card: UnitCard,
     onClick: () -> Unit,
     content: UnitContent,
+    lettersAreCluster: Boolean,
     modifier: Modifier = Modifier,
 ) {
     // Sequential lock = greyed + not clickable; premium lock = greyed but tappable (opens paywall).
@@ -514,21 +524,12 @@ private fun UnitCardItem(
         MaterialTheme.colorScheme.surface
     }
 
-    val activeBorder = if (card.status == UnitStatus.Active) {
-        Modifier.border(1.5.dp, AccentRed.copy(alpha = 0.5f), RoundedCornerShape(CardCornerRadius))
-    } else {
-        Modifier
-    }
-
     ElevatedCard(
         onClick = onClick,
         // Always tappable: a sequential-locked tap plays the spoken guide instead of navigating.
         // PremiumLocked taps still open the paywall. Dim visuals are driven by isLocked below.
         enabled = true,
-        modifier = modifier
-            .fillMaxWidth()
-            .defaultMinSize(minHeight = CardMinHeight)
-            .then(activeBorder),
+        modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(CardCornerRadius),
         colors = CardDefaults.elevatedCardColors(
             containerColor = containerColor,
@@ -539,11 +540,18 @@ private fun UnitCardItem(
             disabledElevation = 5.dp,
         ),
     ) {
-        Box(modifier = Modifier.fillMaxWidth()) {
+        // Chiều cao tối thiểu nằm ở Box chứ không ở thẻ: chip bám đáy Box, mà Box ngắn hơn thẻ thì
+        // chip treo lơ lửng cách mép dưới đúng phần thẻ dôi ra.
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .defaultMinSize(minHeight = CardMinHeight),
+        ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 14.dp, vertical = 12.dp),
+                    .padding(horizontal = 14.dp, vertical = 12.dp)
+                    .align(Alignment.CenterStart),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 if (isLocked) {
@@ -561,7 +569,7 @@ private fun UnitCardItem(
                         horizontalArrangement = Arrangement.spacedBy(18.dp),
                     ) {
                         card.previewLetters.forEach { item ->
-                            LetterPreview(item)
+                            LetterPreview(item, asCluster = lettersAreCluster)
                         }
                     }
                 }
@@ -570,44 +578,73 @@ private fun UnitCardItem(
             }
             if (!isLocked) {
                 card.unit.themeChip?.let { theme ->
-                    Box(
-                        modifier = Modifier
-                            .align(Alignment.TopEnd)
-                            // Inset past the action button so the chip never sits on the
-                            // check/play circle.
-                            .padding(top = 6.dp, end = ChipEndInset),
-                    ) {
-                        ThemeChip(label = theme)
-                    }
+                    // Góc dưới-phải, dính cả hai mép. Nút play nằm giữa thẻ nên chip đi xuống đáy
+                    // là hết chuyện tranh chỗ — không còn phải chừa 54dp bên phải để né nó, và
+                    // chip cũng không còn nằm cùng hàng với chữ.
+                    ThemeChip(label = theme, modifier = Modifier.align(Alignment.BottomEnd))
                 }
+            }
+            // Viền thẻ đang học vẽ SAU cùng, phủ lên cả chip. Để nó ở modifier của ElevatedCard
+            // thì nó vẽ trước nội dung, và chip — vốn dính sát hai mép — liếm mất một đoạn viền ở
+            // góc dưới-phải.
+            if (card.status == UnitStatus.Active) {
+                Box(
+                    modifier = Modifier
+                        .matchParentSize()
+                        .border(
+                            width = 1.5.dp,
+                            color = AccentRed.copy(alpha = 0.5f),
+                            shape = RoundedCornerShape(CardCornerRadius),
+                        ),
+                )
             }
         }
     }
 }
 
+/**
+ * [asCluster] chọn cách vẽ [UnitLetterPreview.letter], theo cấp:
+ *
+ * - Cấp 1 (false): chuỗi là cặp hoa/thường `"Aa"` → A 22sp đậm kèm a 13sp thường, đúng như sách
+ *   dạy nhận mặt chữ.
+ * - Cấp 2 trở lên (true): chuỗi là VẦN — `"ad ag"`, `"ame ake"`, `"tion sion"`. Chẻ ký tự đầu ra
+ *   khỏi phần sau ở đây là cắt đôi vần, nên cả chuỗi đi một cỡ, một nét, một màu.
+ */
 @Composable
-private fun LetterPreview(item: UnitLetterPreview) {
+private fun LetterPreview(item: UnitLetterPreview, asCluster: Boolean) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Row(verticalAlignment = Alignment.Bottom) {
+        if (asCluster) {
             Text(
-                text = item.letter.take(1),
+                text = item.letter,
                 fontFamily = LocalPhonicsFontFamily.current,
-                fontSize = 22.sp,
+                fontSize = ClusterLetterSize,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface,
             )
-            if (item.letter.length > 1) {
+        } else {
+            Row(verticalAlignment = Alignment.Bottom) {
                 Text(
-                    text = item.letter.drop(1),
+                    text = item.letter.take(1),
                     fontFamily = LocalPhonicsFontFamily.current,
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Normal,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontSize = 22.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface,
                 )
+                if (item.letter.length > 1) {
+                    Text(
+                        text = item.letter.drop(1),
+                        fontFamily = LocalPhonicsFontFamily.current,
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Normal,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
             }
         }
         Spacer(Modifier.height(2.dp))
-        Text(text = item.emoji.orEmpty(), fontSize = 22.sp)
+        // Ảnh WebP trước, emoji sau — xem [UnitLetterPreview.word]. Không có hình thì
+        // chừa chỗ trống, đừng thả emoji mặc định: hàng chip này chỉ để liếc nhanh.
+        item.word?.let { WordDisplayView(word = it, fontSize = 22.sp) }
     }
 }
 
@@ -790,6 +827,17 @@ private fun SlotCircle(tint: Color = AccentRed, content: @Composable () -> Unit)
     )
 }
 
+/**
+ * Nhãn chủ đề của unit, nằm ở góc dưới-phải thẻ.
+ *
+ * Chỉ bo MỘT góc, trên-trái, bán kính bằng đúng chiều cao chip: cung tròn khi đó tiếp tuyến với
+ * mép trên ở một đầu và với mép dưới ở đầu kia, nên mặt trái là một phần tư đường tròn trọn vẹn
+ * thay vì một góc bo dở. Ba góc còn lại để vuông — chip dính sát hai mép, và thẻ tự cắt góc
+ * dưới-phải theo bo góc [CardCornerRadius] của nó, nên chip luôn ôm đúng đường cong thẻ.
+ *
+ * Đệm trái rộng hơn phải vì cung tròn ăn vào chỗ của chữ: ở ngang tầm đỉnh chữ, mép trái đã lấn
+ * vào ~5.5dp.
+ */
 @Composable
 private fun ThemeChip(
     label: String,
@@ -797,18 +845,18 @@ private fun ThemeChip(
 ) {
     Box(
         modifier = modifier
-            .height(18.dp)
-            .clip(CircleShape)
+            .height(ChipHeight)
+            .clip(RoundedCornerShape(topStart = ChipHeight))
             .background(MaterialTheme.colorScheme.secondaryContainer)
-            .padding(horizontal = 7.dp),
+            .padding(start = 12.dp, end = 11.dp),
         contentAlignment = Alignment.Center,
     ) {
         Text(
             text = label,
             fontFamily = LocalPhonicsFontFamily.current,
-            fontSize = 10.sp,
+            fontSize = 9.sp,
             // Tight line height so the pill hugs the glyphs instead of the default 1.4× box.
-            lineHeight = 10.sp,
+            lineHeight = 9.sp,
             fontWeight = FontWeight.SemiBold,
             color = MaterialTheme.colorScheme.onSecondaryContainer,
             maxLines = 1,
@@ -828,6 +876,10 @@ private val CardVerticalPadding = 6.dp
 private val CardMinHeight = 76.dp
 private val CardCornerRadius = 20.dp
 
-// Card end padding (14) + play/check button (34) + a small gap, so the theme chip lands to the
-// left of the action button instead of over it.
-private val ChipEndInset = 14.dp + PlayButtonSize + 6.dp
+// Cấp đầu tiên mà `displayLetter` là vần chứ không còn là cặp hoa/thường — xem [LetterPreview].
+private const val FIRST_CLUSTER_LEVEL = 2
+private val ClusterLetterSize = 15.sp
+
+// Cũng là bán kính bo góc trên-trái của chip: bằng chiều cao thì cung tròn trọn một phần tư.
+// Nút play cao 34dp và canh giữa thẻ, thẻ tối thiểu 76dp ⇒ đáy nút ở 55dp, đỉnh chip ở 58dp.
+private val ChipHeight = 18.dp

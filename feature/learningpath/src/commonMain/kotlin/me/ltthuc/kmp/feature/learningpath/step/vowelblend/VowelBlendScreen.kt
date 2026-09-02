@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -76,13 +77,13 @@ import me.ltthuc.kmp.core.resource.slide_next_cd
 import me.ltthuc.kmp.core.resource.slide_previous_cd
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
 import me.ltthuc.kmp.core.ui.theme.LocalPhonicsFontFamily
+import me.ltthuc.kmp.feature.learningpath.step.common.FillingWordDisplayView
 import me.ltthuc.kmp.feature.learningpath.step.common.PageDotsRow
 import me.ltthuc.kmp.feature.learningpath.step.common.PuffySurface
 import me.ltthuc.kmp.feature.learningpath.step.common.StepChevronButton
 import me.ltthuc.kmp.feature.learningpath.step.common.StepContinueButton
 import me.ltthuc.kmp.feature.learningpath.step.common.StepHeader
 import me.ltthuc.kmp.feature.learningpath.step.common.StoryStyleCard
-import me.ltthuc.kmp.feature.learningpath.step.common.WordDisplayView
 import me.ltthuc.kmp.feature.learningpath.step.common.level
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -147,6 +148,9 @@ internal fun VowelBlendScreen(
         if ((currentLesson.level() ?: 0) >= FIRST_PATTERN_LEVEL) {
             PatternBlendContent(
                 lesson = currentLesson,
+                blendMeta = blendMeta,
+                audioState = audioState,
+                onPlayChain = { page, word -> viewModel.playChain(currentLesson, page, word) },
                 onClose = onClose,
                 onNext = onNext,
                 onStepJump = onStepJump,
@@ -840,6 +844,9 @@ private fun FillBar(
  * Thẻ hình của từ, luôn hiện ở dưới cùng. CHỈ có hình, không kèm chữ bên dưới — chữ đã
  * nằm ở hàng ghép phía trên rồi, in thêm lần nữa là bắt bé đọc cùng một từ ở hai chỗ mà
  * chẳng thêm thông tin gì. Bấm vào thẻ để nghe lại cả trang.
+ *
+ * Bề ngang thẻ giữ nguyên 52% màn; chỉ có ẢNH bên trong là phóng cho kín lòng thẻ thay vì
+ * đứng giữa một hình vuông 76dp.
  */
 @Composable
 internal fun WordCard(
@@ -860,7 +867,10 @@ internal fun WordCard(
                 modifier = Modifier.fillMaxWidth().padding(vertical = 14.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                WordDisplayView(word = word, fontSize = 76.sp)
+                FillingWordDisplayView(
+                    word = word,
+                    modifier = Modifier.fillMaxWidth().aspectRatio(1f),
+                )
             }
         }
     }

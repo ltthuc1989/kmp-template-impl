@@ -23,7 +23,13 @@ data class LessonWord(
     /**
      * First emoji variant for legacy preview/hero use cases (deterministic, not random).
      * Returns null when no [WordDisplay.Emoji] variant exists in [displays].
+     *
+     * Phải LỌC theo kiểu chứ không lấy phần tử đầu rồi ép kiểu: từ nào có ảnh riêng thì
+     * ảnh đứng ĐẦU `displays` (ảnh được ưu tiên hơn emoji), nên phép ép kiểu trả null
+     * cho đúng những từ đã bỏ công vẽ ảnh. Hậu quả im lặng: 4 game lọc bằng
+     * `!it.emoji.isNullOrBlank()` (Drag Words, Pick Word, Fill Letter, Memory Match) tự
+     * loại sạch nhóm từ đó, và thẻ bài trong Lesson Map rơi về "📘".
      */
     val emoji: String?
-        get() = (displays.firstOrNull() as? WordDisplay.Emoji)?.char
+        get() = displays.filterIsInstance<WordDisplay.Emoji>().firstOrNull()?.char
 }

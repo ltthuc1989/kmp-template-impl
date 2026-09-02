@@ -120,6 +120,13 @@ class BlendPartsTest {
 
     /** Từ hai âm tiết có hai mảnh nguyên âm: nguyên âm âm tiết đầu + vần cuối. */
     private val TWO_SYLLABLE_WORDS = setOf(
-        "candy", "happy", "money", "yellow", "pillow", "elbow", "window", "tuesday",
+        "candy",
+        "happy",
+        "money",
+        "yellow",
+        "pillow",
+        "elbow",
+        "window",
+        "tuesday",
     )
 }

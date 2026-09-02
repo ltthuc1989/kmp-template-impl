@@ -53,6 +53,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import me.ltthuc.kmp.core.model.LessonCard
 import me.ltthuc.kmp.core.model.LessonStatus
+import me.ltthuc.kmp.core.model.LessonWord
 import me.ltthuc.kmp.core.repository.LessonProgressRepository
 import me.ltthuc.kmp.core.repository.LevelRepository
 import me.ltthuc.kmp.core.repository.SfxController
@@ -69,6 +70,7 @@ import me.ltthuc.kmp.core.ui.theme.LocalAppLanguage
 import me.ltthuc.kmp.core.ui.theme.LocalNavBackStack
 import me.ltthuc.kmp.core.ui.theme.LocalPhonicsFontFamily
 import me.ltthuc.kmp.feature.learningpath.step.common.PulseRings
+import me.ltthuc.kmp.feature.learningpath.step.common.WordDisplayView
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
@@ -228,7 +230,10 @@ private fun LessonMapList(
                     index + 1,
                     card.lesson.displayLetter,
                 ),
-                emoji = card.lesson.words.firstOrNull()?.emoji.orEmpty().ifEmpty { "📘" },
+                // Từ đầu tiên CÓ HÌNH, không phải từ đầu tiên rồi lấy emoji của nó:
+                // `firstOrNull()?.emoji` trả null cho bài mà từ đầu chỉ có ảnh riêng,
+                // và cả hàng rơi về "📘" dù bài đó có hình hẳn hoi.
+                word = card.lesson.words.firstOrNull { it.displays.isNotEmpty() },
                 isFirst = index == 0,
                 isLast = false,
                 onClick = {
@@ -276,10 +281,11 @@ private fun LessonMapList(
 private fun LessonRow(
     status: LessonStatus,
     label: String,
-    emoji: String,
     isFirst: Boolean,
     isLast: Boolean,
     onClick: () -> Unit,
+    emoji: String = "",
+    word: LessonWord? = null,
 ) {
     Row(
         modifier = Modifier
@@ -298,6 +304,7 @@ private fun LessonRow(
             status = status,
             label = label,
             emoji = emoji,
+            word = word,
             onClick = onClick,
             modifier = Modifier
                 .weight(1f)
@@ -407,6 +414,7 @@ private fun LessonCardItem(
     emoji: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    word: LessonWord? = null,
 ) {
     val locked = status == LessonStatus.Locked
     val shape = RoundedCornerShape(12.dp)
@@ -434,7 +442,13 @@ private fun LessonCardItem(
                     .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.45f)),
                 contentAlignment = Alignment.Center,
             ) {
-                Text(text = emoji, fontSize = 22.sp)
+                // Hàng bài truyền [word] (ảnh WebP nếu có, không thì emoji của từ);
+                // hàng Truyện và Mini Games không gắn với từ nào nên truyền emoji chữ.
+                if (word != null) {
+                    WordDisplayView(word = word, fontSize = 22.sp)
+                } else {
+                    Text(text = emoji.ifBlank { "📘" }, fontSize = 22.sp)
+                }
             }
             Spacer(Modifier.width(12.dp))
             Text(

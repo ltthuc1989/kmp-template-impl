@@ -69,11 +69,11 @@ import me.ltthuc.kmp.core.ui.audio.rememberAudioSession
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
 import me.ltthuc.kmp.core.ui.theme.LocalAppLanguage
 import me.ltthuc.kmp.core.ui.theme.LocalPhonicsFontFamily
+import me.ltthuc.kmp.feature.learningpath.step.common.FillingWordDisplayView
 import me.ltthuc.kmp.feature.learningpath.step.common.PuffySurface
 import me.ltthuc.kmp.feature.learningpath.step.common.PulseRings
 import me.ltthuc.kmp.feature.learningpath.step.common.StepContinueButton
 import me.ltthuc.kmp.feature.learningpath.step.common.StepHeader
-import me.ltthuc.kmp.feature.learningpath.step.common.WordDisplayView
 import me.ltthuc.kmp.feature.learningpath.step.common.wordRef
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
@@ -443,15 +443,10 @@ private fun IdentifyCard(
             bottomShadeHeight = 10.dp,
             bottomShadeAlpha = 0.08f,
         ) {
-            Box(
+            FillingWordDisplayView(
+                word = item,
                 modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center,
-            ) {
-                WordDisplayView(
-                    word = item,
-                    fontSize = 68.sp,
-                )
-            }
+            )
         }
         if (showCorrectCheck) {
             CheckBadge(

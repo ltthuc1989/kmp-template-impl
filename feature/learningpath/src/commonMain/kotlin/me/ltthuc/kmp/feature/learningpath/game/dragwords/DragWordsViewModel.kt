@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import me.ltthuc.kmp.core.audio.AudioRef
+import me.ltthuc.kmp.core.model.LessonWord
 import me.ltthuc.kmp.core.model.PhonicsLesson
 import me.ltthuc.kmp.core.repository.AudioRepository
 import me.ltthuc.kmp.core.repository.AudioSession
@@ -162,10 +163,13 @@ internal class DragWordsViewModel(
     private fun buildItems(lessons: List<PhonicsLesson>): ImmutableList<DragWordsItem> {
         // Keep each word paired with its originating lesson so we can resolve the word audio ref.
         val perLesson = lessons.mapNotNull { lesson ->
-            lesson.words.firstOrNull { !it.emoji.isNullOrBlank() }?.let { lesson to it }
+            lesson.words.firstOrNull { it.displays.isNotEmpty() }?.let { lesson to it }
         }
         val extras = lessons.flatMap { lesson ->
-            lesson.words.filter { !it.emoji.isNullOrBlank() }.map { lesson to it }
+            // lọc theo `displays` chứ KHÔNG theo `emoji`: từ có ảnh WebP riêng mà thiếu emoji
+            // thay thế sẽ bị `!emoji.isNullOrBlank()` loại oan — đúng bẫy mà KDoc của
+            // `LessonWord.emoji` cảnh báo.
+            lesson.words.filter { it.displays.isNotEmpty() }.map { lesson to it }
         }.shuffled(Random.Default)
         val seen = perLesson.map { it.second.word }.toMutableSet()
         val selected = perLesson.toMutableList()
@@ -183,7 +187,7 @@ internal class DragWordsViewModel(
             DragWordsItem(
                 id = i,
                 word = w.word,
-                emoji = w.emoji.orEmpty(),
+                picture = w,
                 tint = tint,
                 wordRef = lesson.wordRef(w.word),
             )
@@ -208,7 +212,7 @@ internal class DragWordsViewModel(
 internal data class DragWordsItem(
     val id: Int,
     val word: String,
-    val emoji: String,
+    val picture: LessonWord?,
     val tint: Color,
     val wordRef: AudioRef.Word?,
 )

@@ -163,7 +163,7 @@ private fun DragWordsCanvas(
                 ) {
                     rowItems.forEach { item ->
                         PictureSlot(
-                            emoji = item.emoji,
+                            word = item.picture,
                             filledWord = if (item.id in ui.matchedWordIndices) item.word else null,
                             shakeKey = ui.wrongAttemptKey,
                             onCenterPositioned = { center -> pictureCenters[item.id] = center },

@@ -234,6 +234,8 @@ private fun VocabularyGridCell(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center,
                 ) {
+                    // Ô vuông này đã chật kín: hình 48 + chữ + nút loa vừa đúng 123dp lòng thẻ,
+                    // nên hình KHÔNG phóng thêm được nếu không bỏ bớt thứ khác trong ô.
                     WordDisplayView(
                         word = word,
                         fontSize = EMOJI_FONT_SP.sp,

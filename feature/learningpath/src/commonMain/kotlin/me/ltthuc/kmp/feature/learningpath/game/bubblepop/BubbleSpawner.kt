@@ -99,10 +99,6 @@ internal fun spawnBubblesForRimeRound(
     return (targets + distractors).shuffled(random)
 }
 
-/** Random upper/lower case form of [letter]. */
-internal fun randomCase(letter: String, random: Random = Random.Default): String =
-    if (random.nextBoolean()) letter.uppercase() else letter.lowercase()
-
 // Total target spawns per round across upper + lower cases (5 + 5 = 10).
 // All pre-spawned at round start with staggered Y, no respawn after pop/escape.
 internal const val TARGET_COUNT = 10

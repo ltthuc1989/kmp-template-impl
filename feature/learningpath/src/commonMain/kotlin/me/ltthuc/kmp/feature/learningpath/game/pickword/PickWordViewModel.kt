@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import me.ltthuc.kmp.core.audio.AudioRef
+import me.ltthuc.kmp.core.model.LessonWord
 import me.ltthuc.kmp.core.model.PhonicsLesson
 import me.ltthuc.kmp.core.repository.AudioRepository
 import me.ltthuc.kmp.core.repository.AudioSession
@@ -142,7 +143,10 @@ internal class PickWordViewModel(
     private fun buildRounds(lessons: List<PhonicsLesson>): ImmutableList<PickWordRound> {
         // Keep each word paired with its originating lesson so we can resolve the word audio ref.
         val pool = lessons.flatMap { lesson ->
-            lesson.words.filter { !it.emoji.isNullOrBlank() }.map { lesson to it }
+            // lọc theo `displays` chứ KHÔNG theo `emoji`: từ có ảnh WebP riêng mà thiếu emoji
+            // thay thế sẽ bị `!emoji.isNullOrBlank()` loại oan — đúng bẫy mà KDoc của
+            // `LessonWord.emoji` cảnh báo.
+            lesson.words.filter { it.displays.isNotEmpty() }.map { lesson to it }
         }
         if (pool.size < 2) return persistentListOf()
         val targets = pool.shuffled(Random.Default).take(ROUND_COUNT)
@@ -151,7 +155,7 @@ internal class PickWordViewModel(
             val tint = BUBBLE_TINT_PALETTE[idx % BUBBLE_TINT_PALETTE.size]
             PickWordRound(
                 targetWord = target.word,
-                targetEmoji = target.emoji.orEmpty(),
+                picture = target,
                 choices = listOf(target.word, distractor.word).shuffled(Random.Default).toImmutableList(),
                 tint = tint,
                 wordRef = lesson.wordRef(target.word),
@@ -176,7 +180,8 @@ internal class PickWordViewModel(
 @Immutable
 internal data class PickWordRound(
     val targetWord: String,
-    val targetEmoji: String,
+    /** Từ để vẽ hình — ảnh WebP nếu có, không thì emoji. Xem `PicturePanel`. */
+    val picture: LessonWord?,
     val choices: ImmutableList<String>,
     val tint: Color,
     val wordRef: AudioRef.Word?,

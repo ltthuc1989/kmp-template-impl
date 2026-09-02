@@ -169,7 +169,7 @@ private fun SpellLettersCanvas(
 
             val round = ui.currentRound
             PicturePanel(
-                emoji = round.emoji,
+                word = round.picture,
                 modifier = Modifier
                     .fillMaxWidth(fraction = 0.40f)
                     .aspectRatio(1f),

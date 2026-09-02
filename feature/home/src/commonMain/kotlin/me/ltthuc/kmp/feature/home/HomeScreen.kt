@@ -262,7 +262,10 @@ private fun LevelCardRow(
                         progressPercent = status.progressPercent,
                     )
 
-                    LevelStatus.ReadyToStart -> ReadyCardContent(title = card.level.title)
+                    LevelStatus.ReadyToStart -> ReadyCardContent(
+                        title = card.level.title,
+                        onStart = onClick,
+                    )
 
                     is LevelStatus.Locked -> LockedCardContent(
                         title = card.level.title,
@@ -397,6 +400,7 @@ private fun ActiveCardContent(
 @Composable
 private fun ReadyCardContent(
     title: String,
+    onStart: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -418,8 +422,11 @@ private fun ReadyCardContent(
             )
         }
         Spacer(Modifier.width(12.dp))
+        // Cùng đích với cú chạm vào cả thẻ. Nút nằm ĐÈ lên thẻ nên nó nuốt cú chạm: để
+        // onClick rỗng thì bấm trúng chữ "Start" là không có gì xảy ra, dù bấm chỗ khác
+        // trên thẻ vẫn vào được — nhìn như app đơ.
         Button(
-            onClick = { /* TODO: navigate to unit selection when implemented */ },
+            onClick = onStart,
             shape = RoundedCornerShape(50),
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.primary,

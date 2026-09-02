@@ -60,10 +60,10 @@ import me.ltthuc.kmp.core.resource.step_guide_matching
 import me.ltthuc.kmp.core.ui.audio.ScreenVoicePrompt
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
 import me.ltthuc.kmp.core.ui.theme.LocalPhonicsFontFamily
+import me.ltthuc.kmp.feature.learningpath.step.common.FillingWordDisplayView
 import me.ltthuc.kmp.feature.learningpath.step.common.PuffySurface
 import me.ltthuc.kmp.feature.learningpath.step.common.StepContinueButton
 import me.ltthuc.kmp.feature.learningpath.step.common.StepHeader
-import me.ltthuc.kmp.feature.learningpath.step.common.WordDisplayView
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -664,11 +664,10 @@ private fun ImageCard(
                     .size(ART_SIZE)
                     .clip(RoundedCornerShape(12.dp))
                     .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f)),
-                contentAlignment = Alignment.Center,
             ) {
-                WordDisplayView(
+                FillingWordDisplayView(
                     word = item,
-                    fontSize = 32.sp,
+                    modifier = Modifier.fillMaxSize(),
                 )
             }
         }

@@ -235,7 +235,17 @@
                 },
                 {
                   "word": "elbow",
-                  "emoji": "💪"
+                  "emoji": "💪",
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/elbow.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "💪"
+                    }
+                  ]
                 },
                 {
                   "word": "envelope",
@@ -2300,11 +2310,31 @@
               "words": [
                 {
                   "word": "tape",
-                  "emoji": "📼"
+                  "emoji": "📼",
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/tape.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "📼"
+                    }
+                  ]
                 },
                 {
                   "word": "cape",
-                  "emoji": "🦸"
+                  "emoji": "🦸",
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/cape.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "🦸"
+                    }
+                  ]
                 },
                 {
                   "word": "cane",
@@ -2312,14 +2342,24 @@
                 },
                 {
                   "word": "mane",
-                  "emoji": "🦁"
+                  "emoji": "🦁",
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/mane.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "🦁"
+                    }
+                  ]
                 }
               ],
               "chantTexts": [
-                "T-A-P-E",
-                "C-A-P-E",
-                "C-A-N-E",
-                "M-A-N-E"
+                "ape-ape-tape",
+                "ape-ape-cape",
+                "ane-ane-cane",
+                "ane-ane-mane"
               ],
               "chantOrder": [
                 0,
@@ -2355,10 +2395,10 @@
                 }
               ],
               "chantTexts": [
-                "G-A-M-E",
-                "C-A-K-E",
-                "N-A-M-E",
-                "L-A-K-E"
+                "ame-ame-game",
+                "ake-ake-cake",
+                "ame-ame-name",
+                "ake-ake-lake"
               ],
               "chantOrder": [
                 0,
@@ -2390,14 +2430,24 @@
                 },
                 {
                   "word": "cave",
-                  "emoji": "🕳️"
+                  "emoji": "🕳️",
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/cave.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "🕳️"
+                    }
+                  ]
                 }
               ],
               "chantTexts": [
-                "G-A-T-E",
-                "W-A-V-E",
-                "S-K-A-T-E",
-                "C-A-V-E"
+                "ate-ate-gate",
+                "ave-ave-wave",
+                "ate-ate-skate",
+                "ave-ave-cave"
               ],
               "chantOrder": [
                 0,
@@ -2434,7 +2484,17 @@
                 },
                 {
                   "word": "ripe",
-                  "emoji": "🍒"
+                  "emoji": "🍒",
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/ripe.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "🍒"
+                    }
+                  ]
                 },
                 {
                   "word": "fine",
@@ -2442,10 +2502,10 @@
                 }
               ],
               "chantTexts": [
-                "K-I-T-E",
-                "P-I-N-E",
-                "R-I-P-E",
-                "F-I-N-E"
+                "ite-ite-kite",
+                "ine-ine-pine",
+                "ipe-ipe-ripe",
+                "ine-ine-fine"
               ],
               "chantOrder": [
                 0,
@@ -2477,14 +2537,14 @@
                 },
                 {
                   "word": "hike",
-                  "emoji": "🥾"
+                  "emoji": "🏕️"
                 }
               ],
               "chantTexts": [
-                "L-I-M-E",
-                "B-I-K-E",
-                "T-I-M-E",
-                "H-I-K-E"
+                "ime-ime-lime",
+                "ike-ike-bike",
+                "ime-ime-time",
+                "ike-ike-hike"
               ],
               "chantOrder": [
                 0,
@@ -2520,10 +2580,10 @@
                 }
               ],
               "chantTexts": [
-                "F-I-V-E",
-                "N-I-N-E",
-                "D-I-V-E",
-                "L-I-N-E"
+                "ive-ive-five",
+                "ine-ine-nine",
+                "ive-ive-dive",
+                "ine-ine-line"
               ],
               "chantOrder": [
                 0,
@@ -2568,10 +2628,10 @@
                 }
               ],
               "chantTexts": [
-                "H-O-M-E",
-                "B-O-N-E",
-                "C-O-N-E",
-                "R-O-P-E"
+                "ome-ome-home",
+                "one-one-bone",
+                "one-one-cone",
+                "ope-ope-rope"
               ],
               "chantOrder": [
                 0,
@@ -2607,10 +2667,10 @@
                 }
               ],
               "chantTexts": [
-                "C-U-B-E",
-                "M-U-T-E",
-                "C-U-T-E",
-                "M-U-L-E"
+                "ube-ube-cube",
+                "ute-ute-mute",
+                "ute-ute-cute",
+                "ule-ule-mule"
               ],
               "chantOrder": [
                 0,
@@ -2630,7 +2690,17 @@
               "words": [
                 {
                   "word": "tube",
-                  "emoji": "🧴"
+                  "emoji": "🧴",
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/tube.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "🧴"
+                    }
+                  ]
                 },
                 {
                   "word": "June",
@@ -2646,10 +2716,10 @@
                 }
               ],
               "chantTexts": [
-                "T-U-B-E",
-                "J-U-N-E",
-                "T-U-N-E",
-                "R-U-L-E"
+                "ube-ube-tube",
+                "une-une-june",
+                "une-une-tune",
+                "ule-ule-rule"
               ],
               "chantOrder": [
                 0,
@@ -2682,7 +2752,17 @@
                 },
                 {
                   "word": "nail",
-                  "emoji": "🔨"
+                  "emoji": "🔨",
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/nail.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "🔨"
+                    }
+                  ]
                 },
                 {
                   "word": "tail",
@@ -2704,10 +2784,10 @@
                 }
               ],
               "chantTexts": [
-                "R-A-I-N",
-                "N-A-I-L",
-                "T-A-I-L",
-                "W-A-I-T"
+                "ain-ain-rain",
+                "ail-ail-nail",
+                "ail-ail-tail",
+                "ait-ait-wait"
               ],
               "chantOrder": [
                 0,
@@ -2727,11 +2807,11 @@
               "words": [
                 {
                   "word": "bay",
-                  "emoji": "🏝️"
+                  "emoji": "🏖️"
                 },
                 {
                   "word": "day",
-                  "emoji": "📅"
+                  "emoji": "☀️"
                 },
                 {
                   "word": "say",
@@ -2743,10 +2823,10 @@
                 }
               ],
               "chantTexts": [
-                "B-A-Y",
-                "D-A-Y",
-                "S-A-Y",
-                "P-A-Y"
+                "ay-ay-bay",
+                "ay-ay-day",
+                "ay-ay-say",
+                "ay-ay-pay"
               ],
               "chantOrder": [
                 0,
@@ -2782,10 +2862,10 @@
                 }
               ],
               "chantTexts": [
-                "S-A-I-L",
-                "M-A-I-L",
-                "H-A-Y",
-                "M-A-Y"
+                "ail-ail-sail",
+                "ail-ail-mail",
+                "ay-ay-hay",
+                "ay-ay-may"
               ],
               "chantOrder": [
                 0,
@@ -2830,10 +2910,10 @@
                 }
               ],
               "chantTexts": [
-                "B-E-E",
-                "F-E-E-T",
-                "S-E-E-D",
-                "J-E-E-P"
+                "ee-ee-bee",
+                "eet-eet-feet",
+                "eed-eed-seed",
+                "eep-eep-jeep"
               ],
               "chantOrder": [
                 0,
@@ -2861,7 +2941,7 @@
                 },
                 {
                   "word": "sea",
-                  "emoji": "🌊"
+                  "emoji": "🏝️"
                 },
                 {
                   "word": "meat",
@@ -2869,10 +2949,10 @@
                 }
               ],
               "chantTexts": [
-                "L-E-A-F",
-                "E-A-T",
-                "S-E-A",
-                "M-E-A-T"
+                "eaf-eaf-leaf",
+                "ea-ea-eat",
+                "ea-ea-sea",
+                "eat-eat-meat"
               ],
               "chantOrder": [
                 0,
@@ -2908,10 +2988,10 @@
                 }
               ],
               "chantTexts": [
-                "C-A-N-D-Y",
-                "K-E-Y",
-                "H-A-P-P-Y",
-                "M-O-N-E-Y"
+                "y-y-candy",
+                "ey-ey-key",
+                "y-y-happy",
+                "ey-ey-money"
               ],
               "chantOrder": [
                 0,
@@ -2944,22 +3024,42 @@
                 },
                 {
                   "word": "night",
-                  "emoji": "🌙"
+                  "emoji": "🌃"
                 },
                 {
                   "word": "high",
-                  "emoji": "📈"
+                  "emoji": "🏔️",
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/high.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "🏔️"
+                    }
+                  ]
                 },
                 {
                   "word": "right",
-                  "emoji": "✅"
+                  "emoji": "➡️",
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/right.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "➡️"
+                    }
+                  ]
                 }
               ],
               "chantTexts": [
-                "L-I-G-H-T",
-                "N-I-G-H-T",
-                "H-I-G-H",
-                "R-I-G-H-T"
+                "ight-ight-light",
+                "ight-ight-night",
+                "igh-igh-high",
+                "ight-ight-right"
               ],
               "chantOrder": [
                 0,
@@ -2987,7 +3087,7 @@
                 },
                 {
                   "word": "lie",
-                  "emoji": "🤥"
+                  "emoji": "🛌"
                 },
                 {
                   "word": "die",
@@ -2995,10 +3095,10 @@
                 }
               ],
               "chantTexts": [
-                "P-I-E",
-                "T-I-E",
-                "L-I-E",
-                "D-I-E"
+                "ie-ie-pie",
+                "ie-ie-tie",
+                "ie-ie-lie",
+                "ie-ie-die"
               ],
               "chantOrder": [
                 0,
@@ -3030,14 +3130,24 @@
                 },
                 {
                   "word": "my",
-                  "emoji": "👇"
+                  "emoji": "👇",
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/my.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "👇"
+                    }
+                  ]
                 }
               ],
               "chantTexts": [
-                "S-P-Y",
-                "S-K-Y",
-                "C-R-Y",
-                "M-Y"
+                "y-y-spy",
+                "y-y-sky",
+                "y-y-cry",
+                "y-y-my"
               ],
               "chantOrder": [
                 0,
@@ -3066,7 +3176,7 @@
               "words": [
                 {
                   "word": "boat",
-                  "emoji": "⛵"
+                  "emoji": "🚤"
                 },
                 {
                   "word": "coat",
@@ -3082,10 +3192,10 @@
                 }
               ],
               "chantTexts": [
-                "B-O-A-T",
-                "C-O-A-T",
-                "S-O-A-P",
-                "R-O-A-D"
+                "oat-oat-boat",
+                "oat-oat-coat",
+                "oap-oap-soap",
+                "oad-oad-road"
               ],
               "chantOrder": [
                 0,
@@ -3131,10 +3241,10 @@
                 }
               ],
               "chantTexts": [
-                "B-O-W",
-                "R-O-W",
-                "Y-E-L-L-O-W",
-                "P-I-L-L-O-W"
+                "ow-ow-bow",
+                "ow-ow-row",
+                "ow-ow-yellow",
+                "ow-ow-pillow"
               ],
               "chantOrder": [
                 0,
@@ -3162,7 +3272,17 @@
                 },
                 {
                   "word": "elbow",
-                  "emoji": "💪"
+                  "emoji": "💪",
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/elbow.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "💪"
+                    }
+                  ]
                 },
                 {
                   "word": "window",
@@ -3170,10 +3290,10 @@
                 }
               ],
               "chantTexts": [
-                "G-O-A-T",
-                "T-O-A-D",
-                "E-L-B-O-W",
-                "W-I-N-D-O-W"
+                "oat-oat-goat",
+                "oad-oad-toad",
+                "ow-ow-elbow",
+                "ow-ow-window"
               ],
               "chantOrder": [
                 0,
@@ -3218,10 +3338,10 @@
                 }
               ],
               "chantTexts": [
-                "B-L-U-E",
-                "G-L-U-E",
-                "C-L-U-E",
-                "T-U-E-S-D-A-Y"
+                "ue-ue-blue",
+                "ue-ue-glue",
+                "ue-ue-clue",
+                "ue-ue-tuesday"
               ],
               "chantOrder": [
                 0,
@@ -3249,7 +3369,17 @@
                 },
                 {
                   "word": "new",
-                  "emoji": "🆕"
+                  "emoji": "🆕",
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/new.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "🆕"
+                    }
+                  ]
                 },
                 {
                   "word": "dew",
@@ -3257,10 +3387,10 @@
                 }
               ],
               "chantTexts": [
-                "F-R-U-I-T",
-                "S-U-I-T",
-                "N-E-W",
-                "D-E-W"
+                "uit-uit-fruit",
+                "uit-uit-suit",
+                "ew-ew-new",
+                "ew-ew-dew"
               ],
               "chantOrder": [
                 0,
@@ -3284,22 +3414,22 @@
                 },
                 {
                   "word": "zoo",
-                  "emoji": "🦁"
+                  "emoji": "🦒"
                 },
                 {
                   "word": "food",
-                  "emoji": "🍽️"
+                  "emoji": "🍲"
                 },
                 {
                   "word": "boot",
-                  "emoji": "🥾"
+                  "emoji": "👢"
                 }
               ],
               "chantTexts": [
-                "M-O-O-N",
-                "Z-O-O",
-                "F-O-O-D",
-                "B-O-O-T"
+                "oon-oon-moon",
+                "oo-oo-zoo",
+                "ood-ood-food",
+                "oot-oot-boot"
               ],
               "chantOrder": [
                 0,

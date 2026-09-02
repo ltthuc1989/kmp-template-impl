@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import me.ltthuc.kmp.core.audio.AudioRef
+import me.ltthuc.kmp.core.model.LessonWord
 import me.ltthuc.kmp.core.model.PhonicsLesson
 import me.ltthuc.kmp.core.repository.AudioRepository
 import me.ltthuc.kmp.core.repository.AudioSession
@@ -193,7 +194,7 @@ internal class SpellLettersViewModel(
             val tint = BUBBLE_TINT_PALETTE[idx % BUBBLE_TINT_PALETTE.size]
             SpellLettersRound(
                 word = word,
-                emoji = target.emoji.orEmpty(),
+                picture = target,
                 tileOrder = word.toList().shuffled(Random.Default).toImmutableList(),
                 tint = tint,
                 wordRef = lesson.wordRef(target.word),
@@ -220,7 +221,7 @@ internal class SpellLettersViewModel(
 @Immutable
 internal data class SpellLettersRound(
     val word: String,
-    val emoji: String,
+    val picture: LessonWord?,
     val tileOrder: ImmutableList<Char>, // shuffled letters of `word`
     val tint: Color,
     val wordRef: AudioRef.Word?,

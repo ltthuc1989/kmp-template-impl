@@ -12,6 +12,8 @@ App học phonics tiếng Anh cho trẻ 3-8 tuổi, build trên template KMP + C
 
 **Engineering playbook**: [docs/engineering/FAILURE_FIRST_PLAYBOOK.md](docs/engineering/FAILURE_FIRST_PLAYBOOK.md) — luật chống lỗi im lặng + bảng thất bại viết trước khi code. Đọc trước khi bắt đầu tính năng mới.
 
+**Sửa nội dung audio/ảnh**: [docs/engineering/CONTENT_PACK_OPERATIONS.md](docs/engineering/CONTENT_PACK_OPERATIONS.md) — 3 công thức chép-dán để thay/thêm/bỏ file nội dung tải về. Nửa dưới là phần giải thích, chỉ đọc khi gặp lỗi lạ.
+
 **Billing / IAP**: [docs/abc-phonics-kids/04-BILLING_SETUP.md](docs/abc-phonics-kids/04-BILLING_SETUP.md) — dựng RevenueCat từ đầu, thêm product cho level mới, chẩn đoán khi paywall hỏng. Viết để dùng lại cho project sau.
 
 **App display name**: "ABC Phonics Kids" (qua `app_name` string). **Code namespace**: `me.ltthuc.kmp` (đã rename từ template gốc `me.matsumo.grabee`).

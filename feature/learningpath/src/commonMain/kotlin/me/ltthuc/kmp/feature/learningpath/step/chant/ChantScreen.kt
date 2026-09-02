@@ -55,6 +55,7 @@ import me.ltthuc.kmp.core.audio.AudioRef
 import me.ltthuc.kmp.core.audio.AudioState
 import me.ltthuc.kmp.core.audio.isActiveFor
 import me.ltthuc.kmp.core.model.ChantMeta
+import me.ltthuc.kmp.core.model.LessonWord
 import me.ltthuc.kmp.core.model.PhonicsLesson
 import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.chant_listen_cd
@@ -69,6 +70,7 @@ import me.ltthuc.kmp.feature.learningpath.step.common.PulseRings
 import me.ltthuc.kmp.feature.learningpath.step.common.StepContinueButton
 import me.ltthuc.kmp.feature.learningpath.step.common.StepHeader
 import me.ltthuc.kmp.feature.learningpath.step.common.StoryStyleCard
+import me.ltthuc.kmp.feature.learningpath.step.common.WordDisplayView
 import me.ltthuc.kmp.feature.learningpath.step.common.chantRef
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -172,17 +174,26 @@ private fun ChantContent(
         if (isChanting && slideIndex == CELEBRATION_SLIDE_INDEX) slideIndex = 0
     }
 
-    // Thời lượng từng thẻ từ, ưu tiên mốc đo riêng cho từng câu dạy.
-    val slideDurations = remember(chantMeta) { chantMeta.toSlideDurations() }
+    // Mốc kết thúc của từng thẻ từ, đo trên chính file audio.
+    val slideMarks = remember(chantMeta) { chantMeta.toSlideMarks() }
 
-    // Auto-advance slides 0..3 while chanting; final celebration slide stays put.
-    // `slideDurations` nằm trong key: metadata nạp bất đồng bộ, tới trễ thì nhịp mới
-    // phải được áp ngay cho thẻ đang hiện chứ không đợi hết thẻ.
-    LaunchedEffect(currentLesson.id, slideIndex, isChanting, slideDurations) {
-        if (isChanting && slideIndex < CELEBRATION_SLIDE_INDEX) {
-            delay(slideDurations.getOrElse(slideIndex) { DEFAULT_SLIDE_DURATION_MS })
-            slideIndex = (slideIndex + 1).coerceAtMost(CELEBRATION_SLIDE_INDEX)
-        }
+    val chantPositionMs = when (val s = audioState) {
+        is AudioState.Playing -> s.positionMs
+        is AudioState.Paused -> s.positionMs
+        else -> null
+    }
+
+    // Thẻ bám theo VỊ TRÍ PHÁT chứ không đếm giờ riêng. Đếm giờ riêng luôn chạy trước
+    // tiếng đọc vì hai lẽ cộng dồn: `isChanting` bật ngay từ trạng thái Loading — tức
+    // trước khi có tiếng — và mỗi thẻ lại khởi động một `delay` mới nên độ trễ dựng
+    // hình cộng dồn qua bốn thẻ. Đọc thẳng `positionMs` (nhịp 100ms) thì không lệch.
+    val derivedSlide = if (isChanting && chantPositionMs != null) {
+        slideMarks.count { chantPositionMs >= it }.coerceAtMost(CELEBRATION_SLIDE_INDEX)
+    } else {
+        null
+    }
+    LaunchedEffect(derivedSlide) {
+        if (derivedSlide != null) slideIndex = derivedSlide
     }
 
     Scaffold(
@@ -281,15 +292,20 @@ private fun ChantHeroCard(lesson: PhonicsLesson, wordIndex: Int, isChanting: Boo
                 .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            CharacterArtwork(emoji = word?.emoji.orEmpty())
+            CharacterArtwork(word = word)
             Spacer(Modifier.height(20.dp))
             ChantText(chant = chant, isChanting = isChanting)
         }
     }
 }
 
+/**
+ * Hình của từ đang chant. Đi qua [WordDisplayView] chứ không vẽ thẳng emoji, để từ nào
+ * đã có ảnh riêng trong `files/images/vocab` thì hiện ảnh — thẻ celebration cùng màn vốn đã đi
+ * đường này, thẻ dạy trước đó thì chưa nên cùng một từ hiện hai hình khác nhau.
+ */
 @Composable
-private fun CharacterArtwork(emoji: String) {
+private fun CharacterArtwork(word: LessonWord?) {
     Box(
         modifier = Modifier
             .size(120.dp)
@@ -301,10 +317,11 @@ private fun CharacterArtwork(emoji: String) {
             ),
         contentAlignment = Alignment.Center,
     ) {
-        Text(
-            text = emoji.ifEmpty { "🎨" },
-            fontSize = 96.sp,
-        )
+        if (word != null) {
+            WordDisplayView(word = word, fontSize = 96.sp)
+        } else {
+            Text(text = "🎨", fontSize = 96.sp)
+        }
     }
 }
 
@@ -357,19 +374,20 @@ private fun ChantText(chant: String, isChanting: Boolean) {
 }
 
 /**
- * Thời lượng của 4 thẻ từ, theo thứ tự ưu tiên:
+ * Mốc KẾT THÚC của 4 thẻ từ, tính bằng mili-giây kể từ lúc audio bắt đầu, theo thứ
+ * tự ưu tiên:
  *
  *   1. `slide_starts_ms` — mốc đo riêng từng câu dạy, khớp audio sát nhất
  *   2. `slide_ms`        — một nhịp đều cho cả 4 thẻ
  *   3. [DEFAULT_SLIDE_DURATION_MS] — đường của Level 1
  *
- * Mốc trong metadata là điểm KẾT THÚC tính từ lúc audio bắt đầu, nên hiệu hai mốc
- * liền nhau mới là thời lượng của một thẻ.
+ * Trả về mốc tuyệt đối chứ không phải thời lượng: thẻ đang hiện được suy ra bằng
+ * cách đếm xem vị trí phát đã vượt qua mấy mốc, nên không có gì để cộng dồn sai.
  */
-private fun ChantMeta?.toSlideDurations(): List<Long> {
+private fun ChantMeta?.toSlideMarks(): List<Long> {
+    this?.slideStartsMs?.takeIf { it.isNotEmpty() }?.let { return it }
     val slide = this?.slideMs ?: DEFAULT_SLIDE_DURATION_MS
-    val marks = this?.slideStartsMs ?: return List(CELEBRATION_SLIDE_INDEX) { slide }
-    return marks.mapIndexed { index, mark -> mark - (marks.getOrNull(index - 1) ?: 0L) }
+    return List(CELEBRATION_SLIDE_INDEX) { (it + 1) * slide }
 }
 
 private fun String.tokenize(): List<String> {

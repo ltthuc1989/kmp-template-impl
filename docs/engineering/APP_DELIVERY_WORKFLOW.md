@@ -163,6 +163,8 @@ không cần.
 1. **Một nguồn chân lý cho nội dung** — file/DB sinh ra mọi thứ khác, không copy-paste rải rác.
 2. **Pipeline sinh nội dung bằng script**, không thao tác tay. Repo này: `build_curriculum_json.py`
    → `optimize_app_audio.py` → `build_content_manifest.py` → `publish_content.py`.
+   Sửa/thêm/xoá file trong pack **đã publish** là việc riêng, có bẫy riêng:
+   [CONTENT_PACK_OPERATIONS.md](CONTENT_PACK_OPERATIONS.md).
 3. **Quyết định sớm: nhúng trong app hay tải về.** Đổi sau sẽ đụng cả kiến trúc lẫn kích thước gói.
 4. **Test 1 mẫu trước khi chạy hàng loạt.** Thao tác sửa tại chỗ không có bản lùi.
 5. **Kiểm nội dung bằng tai/mắt người**, không bằng API tự động. Máy không phán được phát âm hay hay dở.
@@ -226,6 +228,7 @@ Bỏ qua pha này thì bị **từ chối lúc duyệt**, tức là mất cả t
    > Bẫy đã dẫm: bản EN đang chạy mở đầu bằng câu chưa từng có trong `listing.md`. Luật hiện tại:
    > **chụp lại bản live trước khi sửa bản nháp** (`marketing/store-listing/fetch-live.py`).
 3. **Asset** — icon, ảnh chụp màn hình, feature graphic, video. Có checklist kích thước riêng.
+   Video có luật riêng và dễ mất công vô ích: [../../marketing/video-production.md](../../marketing/video-production.md).
 4. **Từ khoá** — theo dõi thứ hạng, không đặt một lần rồi quên.
 
 ### 🚧 Cổng 7
@@ -233,6 +236,7 @@ Bỏ qua pha này thì bị **từ chối lúc duyệt**, tức là mất cả t
 - [ ] Mỗi locale trong phạm vi có đủ mô tả + ảnh
 - [ ] Đã chụp bản live trước khi sửa bản nháp
 - [ ] Ảnh chụp màn hình lấy từ **bản build sắp ship**, không phải bản cũ
+- [ ] Nếu có video: 16:9 (không phải Short), Public, tắt monetization, bật embedding, Made for kids
 - [ ] Xếp hạng nội dung đã điền
 
 ---

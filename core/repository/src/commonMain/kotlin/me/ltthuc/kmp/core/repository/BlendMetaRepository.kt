@@ -36,7 +36,7 @@ class BlendMetaRepository(private val dispatcher: CoroutineDispatcher) {
                     audio = chain.audio,
                     durationMs = chain.durationMs,
                     segments = chain.segments.map {
-                        BlendSegment(it.card, it.text, it.startMs, it.endMs)
+                        BlendSegment(it.card, it.text, it.startMs, it.endMs, it.row, it.slot)
                     },
                 )
             },
@@ -75,6 +75,9 @@ class BlendMetaRepository(private val dispatcher: CoroutineDispatcher) {
         val text: String = "",
         @SerialName("start_ms") val startMs: Int,
         @SerialName("end_ms") val endMs: Int,
+        // Cấp 3+ mới có; cấp 2 không ghi hai trường này nên giữ mặc định.
+        val row: Int = 0,
+        val slot: Int = 0,
     )
 
     private companion object {

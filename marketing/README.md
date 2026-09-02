@@ -8,7 +8,8 @@ Per-locale store listings, brand assets, and asset production pipeline.
 marketing/
 ├── README.md                          (this file)
 ├── brand-guidelines.md                Brand colors, typography, mascots, naming
-├── asset-pipeline.md                  Tools + workflow for creating icon/screenshots/video
+├── asset-pipeline.md                  Tools + workflow for creating icon/screenshots
+├── video-production.md                Promo video Play Store + video quảng cáo (ĐANG HOÃN — chờ L4+L5)
 ├── keywords-tracker.md                Weekly keyword rank tracking template
 └── store-listing/
     ├── fetch-live.py                  Snapshots the live store copy into */live.md
@@ -69,10 +70,15 @@ Add a locale to the `LOCALES` dict in the script once its listing goes live.
 
 ## Asset production
 
-See [asset-pipeline.md](asset-pipeline.md):
+See [asset-pipeline.md](asset-pipeline.md) — icon, screenshots, feature graphic:
 - Total budget: ~$40
-- Total time: ~24 hours core + 8 hrs/locale for video
-- Tools: IconikAI, Figma, Screenshots Pro, CapCut, ElevenLabs
+- Total time: ~24 hours core
+- Tools: IconikAI, Figma, Screenshots Pro
+
+See [video-production.md](video-production.md) — promo video + video quảng cáo:
+- **Hoãn có chủ đích** tới khi L4 + L5 có nội dung và audio (xem §0 của doc đó)
+- Đã nghiên cứu xong: 14 app đối thủ, luật Play/YouTube, storyboard, tool stack
+- Chi phí dự kiến ~$0-5 nhờ dùng lại tranh truyện + audio TTS sẵn có
 
 ## Brand consistency
 

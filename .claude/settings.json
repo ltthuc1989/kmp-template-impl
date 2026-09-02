@@ -11,6 +11,9 @@
       "Read(//Volumes/Entertainment/GeminiGenerator/opw_audio_project/data/level_1/**)",
       "Read(//Volumes/Entertainment/GeminiGenerator/opw_audio_project/data/**)",
       "Bash(python3 scripts/build_curriculum_json.py)",
+      "Bash(python3 scripts/build_content_manifest.py *)",
+      "Bash(python3 scripts/optimize_app_audio.py *)",
+      "Bash(python3 scripts/publish_content.py *)",
       "Bash(grep *)",
       "Bash(adb *)",
       "Bash($HOME/Library/Android/sdk/platform-tools/adb *)",
@@ -21,7 +24,8 @@
       "Bash(./venv/bin/python scripts/test_elevenlabs.py)",
       "Bash(./venv/bin/python scripts/test_gc_studio.py)",
       "Edit(**/*.kt)",
-      "Write(**/*.kt)"
+      "Write(**/*.kt)",
+      "WebFetch(domain:www.teachyourmonster.org)"
     ],
     "additionalDirectories": [
       "/tmp"
@@ -34,8 +38,8 @@
           {
             "type": "command",
             "command": "./gradlew :composeApp:installDebug 2>&1 | tail -3; true",
-            "statusMessage": "Auto build + install (gradle)…",
-            "timeout": 600
+            "timeout": 600,
+            "statusMessage": "Auto build + install (gradle)…"
           }
         ]
       }

@@ -32,9 +32,11 @@ import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import me.ltthuc.kmp.core.model.LessonWord
 import me.ltthuc.kmp.core.ui.theme.LocalPhonicsFontFamily
 import me.ltthuc.kmp.feature.learningpath.game.common.ReadingTextDark
 import me.ltthuc.kmp.feature.learningpath.game.common.SlotOutline
+import me.ltthuc.kmp.feature.learningpath.step.common.WordDisplayView
 
 /**
  * Picture with answer slot underneath. Reports the picture box's center to its parent via
@@ -44,7 +46,7 @@ import me.ltthuc.kmp.feature.learningpath.game.common.SlotOutline
  */
 @Composable
 internal fun PictureSlot(
-    emoji: String,
+    word: LessonWord?,
     filledWord: String?,
     shakeKey: Int,
     onCenterPositioned: (Offset) -> Unit,
@@ -86,7 +88,13 @@ internal fun PictureSlot(
                 .background(Color.White),
             contentAlignment = Alignment.Center,
         ) {
-            Text(text = emoji.ifBlank { "❓" }, fontSize = 56.sp)
+            // Ảnh WebP trước, emoji sau — xem lý do ở `PicturePanel`. Ô ảnh cố định 96dp
+            // nên cỡ ở đây là hằng số, khác `PicturePanel` (ô đó co theo bề ngang màn).
+            if (word == null) {
+                Text(text = "❓", fontSize = 56.sp)
+            } else {
+                WordDisplayView(word = word, fontSize = 72.sp)
+            }
         }
         Spacer(Modifier.height(6.dp))
         Box(

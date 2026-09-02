@@ -39,7 +39,6 @@ import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.delay
@@ -51,11 +50,11 @@ import me.ltthuc.kmp.core.resource.common_next
 import me.ltthuc.kmp.core.ui.audio.ScreenVoicePrompt
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
 import me.ltthuc.kmp.feature.learningpath.step.common.ConfettiCanvas
+import me.ltthuc.kmp.feature.learningpath.step.common.FillingWordDisplayView
 import me.ltthuc.kmp.feature.learningpath.step.common.PageDotsRow
 import me.ltthuc.kmp.feature.learningpath.step.common.StepContinueButton
 import me.ltthuc.kmp.feature.learningpath.step.common.StepHeader
 import me.ltthuc.kmp.feature.learningpath.step.common.StoryStyleCard
-import me.ltthuc.kmp.feature.learningpath.step.common.WordDisplayView
 import me.ltthuc.kmp.feature.learningpath.step.tracing.LetterGuide
 import me.ltthuc.kmp.feature.learningpath.step.tracing.drawGhostLetter
 import org.jetbrains.compose.resources.stringResource
@@ -77,9 +76,6 @@ private const val SETTLE_MS = 380
 
 /** How long the finished word (letters + picture) is held before advancing to the next word. */
 private const val WORD_PAUSE_MS = 3000L
-
-/** Word picture size inside its card. */
-private const val IMAGE_FONT_SP = 96
 
 /** Per-letter completion sequence: trace done -> [Burst] celebration -> [Fly] into the header. */
 private enum class LetterPhase { Idle, Burst, Fly }
@@ -143,7 +139,7 @@ private fun WordTracingContent(
     lesson: PhonicsLesson,
     guideDone: Boolean,
     onPlayWord: (String) -> Unit,
-    onPlayLetter: (Char) -> Unit,
+    onPlayLetter: (Char, Boolean) -> Unit,
     onClose: () -> Unit,
     onNext: () -> Unit,
     onStepJump: (Int) -> Unit,
@@ -193,11 +189,16 @@ private fun WordTracingContent(
     // skipped, so it was silent). The whole word is not spoken here at all: it is saved for the end,
     // over the picture, once the child has traced all of it.
     //
+    // The first letter is voiced as an ONSET ("lơ") and the rest as isolated phonemes — the child is
+    // starting a word on that letter, not naming it in the air. See [WordTracingViewModel.playLetter].
+    //
     // [guideDone] holds the very first letter back until the screen's spoken guide has finished;
     // after that it stays true, so no later letter ever waits. Re-running on the flip is what makes
     // whichever letter is current then get its sound.
     LaunchedEffect(lesson.id, wordIndex, letterIndex, guideDone) {
-        if (guideDone && letterIndex < word.letters.length) onPlayLetter(currentChar)
+        if (guideDone && letterIndex < word.letters.length) {
+            onPlayLetter(currentChar, letterIndex == 0)
+        }
     }
 
     // The current letter's celebration is over: it always flashes green in the header, then either
@@ -340,9 +341,9 @@ private fun WordTracingContent(
 private fun WordImageCard(word: LessonWord, modifier: Modifier = Modifier) {
     Box(modifier = modifier, contentAlignment = Alignment.Center) {
         StoryStyleCard(aspectRatio = 1f, modifier = Modifier.fillMaxWidth(0.55f)) {
-            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                WordDisplayView(word = word, fontSize = IMAGE_FONT_SP.sp)
-            }
+            // Thẻ giữ nguyên 55% bề ngang; chỉ ảnh là phóng cho kín lòng thẻ thay vì đứng
+            // giữa một hình vuông 96dp.
+            FillingWordDisplayView(word = word, modifier = Modifier.fillMaxSize())
         }
     }
 }

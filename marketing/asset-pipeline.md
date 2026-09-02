@@ -1,6 +1,7 @@
 # Asset Pipeline — Tools + Workflow
 
-End-to-end production guide for app icon, screenshots, feature graphic, promo video.
+End-to-end production guide for app icon, screenshots, feature graphic.
+Phần promo video tách sang [video-production.md](video-production.md).
 Budget: **~$40**, **~24 hrs work** (3-4 days part-time).
 
 ---
@@ -156,64 +157,18 @@ Use Figma variables for tagline text per locale.
 
 ---
 
-## 4. Promo Video (15-30s, optional — boosts conversion ~20%)
+## 4. Promo Video → [video-production.md](video-production.md)
 
-### Tools
+Toàn bộ phần video chuyển sang doc riêng: điều tra 14 app đối thủ, luật Play/YouTube, storyboard,
+tool stack, và cổng khởi động. **Đang hoãn có chủ đích** cho tới khi L4 + L5 có nội dung và audio.
 
-| Tool | Pricing | Use |
-|---|---|---|
-| **CapCut** ⭐ | Free | Easy mobile/desktop video edit |
-| DaVinci Resolve | Free | Pro-grade if learning curve OK |
-| ElevenLabs voiceover | Free tier, $5/mo Starter | Per-locale voiceover |
-| Pixabay Music | Free | Royalty-free BGM |
-| Mixkit | Free | Royalty-free BGM |
+Ba chỉ dẫn cũ ở đây đã được sửa trong doc mới, ghi lại để không ai chép lại bản sai:
 
-### Script (30s, per locale)
-
-```
-0-3s   Hook: "Bé đọc tiếng Anh sau 4 tuần?"
-       (close-up of kid hand tapping screen, app icon overlay)
-
-3-12s  Demo cuts (2-3s each):
-       - Sound Intro screen (letter A bouncing + sound wave)
-       - Identify game (kid taps correct emoji, mascot celebrates)
-       - Tracing canvas (finger draws letter)
-       - Story screen (word highlights as audio plays)
-
-12-22s Mascots reveal + level map:
-       - "26 nhân vật" lineup pan
-       - "5 cấp độ" map zoom
-
-22-30s CTA:
-       - "Miễn phí Cấp 1"
-       - App icon + Play Store badge
-       - End frame: "ABC Phonics Kids"
-```
-
-### Workflow
-
-**Step 1 — Screen recording** (1 hr):
-- Android Studio emulator → ADB screen record OR
-- Real device → built-in screen recorder
-- Capture 4 step types × 3-5 sec each at 60fps
-
-**Step 2 — Edit in CapCut** (2 hrs):
-- Import clips
-- Add background music (Pixabay "Happy Kids" tracks)
-- Add text overlays per script
-- Add app icon transitions
-- Export 1080×1920 H.264 MP4
-
-**Step 3 — Voiceover per locale** (1 hr per locale):
-- ElevenLabs: pick child-friendly voice
-- Generate VO script (Vietnamese, Indonesian, etc.)
-- Replace audio track in CapCut
-
-**Step 4 — Upload** (15 min):
-- Upload to YouTube as **unlisted**
-- Copy URL → paste in Play Console → Store listing → Video URL
-
----
+| Bản cũ (sai) | Đúng |
+|---|---|
+| Export 1080×1920 dọc | Video dọc ≤3 phút bị YouTube xếp thành **Short**, mà Play ghi rõ *"YouTube Shorts and live videos are not supported"* → master phải **16:9 landscape** |
+| "Upload lên YouTube dạng unlisted" | Trang YouTube-on-Play của Google nói video **phải Public**, tắt monetization, bật embedding, set Made for kids |
+| Mở đầu bằng *"close-up of kid hand tapping screen"* | Google nói thẳng: *"Don't include people interacting with the device (for example, fingers tapping on the device)"* |
 
 ## 5. Bundle Cost + Timeline
 
@@ -222,8 +177,8 @@ Use Figma variables for tagline text per locale.
 | App icon | IconikAI + Figma + Icon Kitchen | $0-20 | 4-6 hrs |
 | Screenshots (9 locales × 8) | Figma + Screenshots Pro | $19 | 8-10 hrs |
 | Feature graphic | Figma | $0 | 2-3 hrs |
-| Promo video | CapCut + ElevenLabs (use existing $10 budget) | $0 | 4-6 hrs (single locale) + 1 hr/extra locale |
-| **TOTAL** | — | **~$40** | **~24 hrs core + 8 hrs/extra locale video** |
+| Promo video | xem [video-production.md](video-production.md) — **đang hoãn tới khi L4+L5 xong** | ~$0-5 | ~1 ngày (VN) + 1-2h (EN) |
+| **TOTAL** | — | **~$40** | **~24 hrs core** (chưa tính video) |
 
 ## 6. Execution checklist
 
@@ -233,7 +188,7 @@ Use Figma variables for tagline text per locale.
 - [ ] Day 2: Build Figma screenshot master with locale variables
 - [ ] Day 3: Pay $19 Screenshots Pro → batch export 64 screenshots
 - [ ] Day 3: Build feature graphic master + export 9 locales
-- [ ] Day 4: Record promo video (VN first), edit, voiceover, upload YouTube
+- [ ] ~~Day 4: Record promo video~~ → tách sang [video-production.md](video-production.md), hoãn tới khi L4+L5 có nội dung + audio
 - [ ] Day 4: Upload all assets to Play Console VN locale → submit Internal Test
 - [ ] Day 5-7: Other locales follow
 
@@ -243,5 +198,5 @@ Use Figma variables for tagline text per locale.
 - [ ] Screenshots text không truncate trên 5.5" preview (smallest target)
 - [ ] Screenshots text readable ở 50% zoom (Play Store list view)
 - [ ] Feature graphic readable ở 50% size
-- [ ] Promo video first 3s convey value MUTED (Play Store autoplays muted)
+- [ ] Promo video: checklist QA riêng trong [video-production.md](video-production.md) §8
 - [ ] Native speaker QA mỗi locale (Fiverr $5-15/locale if no community tester)

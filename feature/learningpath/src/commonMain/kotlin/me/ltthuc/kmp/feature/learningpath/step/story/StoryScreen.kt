@@ -51,7 +51,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.ltthuc.kmp.core.audio.AudioRef
 import me.ltthuc.kmp.core.audio.AudioState
-import me.ltthuc.kmp.core.audio.isActive
+import me.ltthuc.kmp.core.audio.isActiveFor
 import me.ltthuc.kmp.core.content.ContentBytes
 import me.ltthuc.kmp.core.model.Story
 import me.ltthuc.kmp.core.model.StoryScene
@@ -116,9 +116,29 @@ internal fun StoryScreen(
         onDispose { viewModel.onLeaveScreen() }
     }
 
+    // Lối ra khi KHÔNG dựng được màn truyện — cấp chưa sinh `stories/level_N.json` thì
+    // `StoryRepository.loadStories` trả rỗng, `storyForUnit` trả null, và screenState là Error.
+    //
+    // Không có nó thì `ErrorView` hiện ra KHÔNG MỘT NÚT NÀO (cả `retryAction` lẫn `terminate`
+    // đều null), mà mọi lesson cuối của mọi unit đều dẫn tới đây → bé kẹt cứng. Truyền
+    // `terminate` là đưa lại nút quay về Lesson Map.
+    //
+    // CỐ Ý không tự nhảy sang game và không tự đánh dấu `STORY_PROGRESS_ID` hoàn thành: thiếu
+    // truyện là thiếu NỘI DUNG, nhảy qua êm ru thì ship cả cấp không có truyện cũng chẳng ai
+    // hay. Mini Games vẫn khoá — đó là tín hiệu, không phải lỗi thứ hai.
+    val backToLessonMap: () -> Unit = {
+        while (navBackStack.size > 1 && navBackStack.last() !is Destination.Learning.LessonMap) {
+            navBackStack.removeAt(navBackStack.lastIndex)
+        }
+        if (navBackStack.lastOrNull() !is Destination.Learning.LessonMap) {
+            navBackStack.add(Destination.Learning.LessonMap(levelId, unitId))
+        }
+    }
+
     AsyncLoadContents(
         modifier = modifier.fillMaxSize(),
         screenState = screenState,
+        terminate = backToLessonMap,
     ) { uiState ->
         val totalLessons = uiState.lessons.size
         val lastLessonIndex = (totalLessons - 1).coerceAtLeast(0)
@@ -233,7 +253,13 @@ private fun StoryContent(
     }
 
     val currentScene = scenes[currentPage]
-    val isNarrating = audioState.isActive()
+    // Kênh phát là kênh dùng chung: lúc mới vào màn nó đang đọc lời dẫn `vp_step_story`, và
+    // khi lật trang nó còn đang đóng đuôi cảnh cũ. "Có tiếng nào đó đang phát" KHÔNG phải là
+    // "cảnh này đang được đọc" — hỏi đúng ref của cảnh, nếu không chữ sẽ chạy theo lời dẫn.
+    val sceneRef = remember(story.id, currentScene.sceneNumber) {
+        AudioRef.Story(storyId = story.id, sceneNumber = currentScene.sceneNumber)
+    }
+    val isNarrating = audioState.isActiveFor(sceneRef)
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -316,13 +342,17 @@ private fun StoryContent(
             PageDotsRow(currentPage = currentPage, total = pageCount)
             Spacer(Modifier.height(16.dp))
             val positionMs = when (val s = audioState) {
-                is AudioState.Playing -> s.positionMs
-                is AudioState.Paused -> s.positionMs
+                is AudioState.Playing -> if (s.ref == sceneRef) s.positionMs else -1L
+                is AudioState.Paused -> if (s.ref == sceneRef) s.positionMs else -1L
                 else -> -1L
             }
+            // Chỉ trạng thái Playing mới cho chữ chạy. Loading cũng là "đang hoạt động" nhưng
+            // chưa có mốc thời gian nào, mà KaraokeText hết mốc thì rơi về chạy theo nhịp cố
+            // định — đúng cái cảnh chữ chạy trong khi chưa nghe thấy gì.
+            val isReadingAloud = (audioState as? AudioState.Playing)?.ref == sceneRef
             KaraokeText(
                 text = currentScene.text,
-                isPlaying = isNarrating,
+                isPlaying = isReadingAloud,
                 positionMs = positionMs,
                 wordTimings = currentScene.wordTimings,
                 modifier = Modifier

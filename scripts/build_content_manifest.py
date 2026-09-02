@@ -24,6 +24,10 @@ lực. Không cần ETag, không cần revalidate, offline vẫn đúng.
 Manifest KHÔNG chứa timestamp: chạy lại mà nội dung không đổi thì file
 ra y hệt, nên git diff sạch và biết ngay có gì thực sự thay đổi.
 
+Pack đã publish là NGUỒN CHÂN LÝ nằm trong chính manifest: file của nó
+đã bị strip khỏi repo nên quét đĩa không thấy, và chạy lại script sẽ
+chép tiếp entry cũ thay vì xoá đi.
+
 Cách chạy:
   python3 scripts/build_content_manifest.py
   python3 scripts/build_content_manifest.py --check   # CI: fail nếu lệch
@@ -121,12 +125,27 @@ def pack_for(logical_path: str, units: dict, story_units: dict) -> str:
     return CORE_PACK
 
 
+def current_manifest() -> dict:
+    return json.loads(MANIFEST.read_text()) if MANIFEST.exists() else {}
+
+
 def current_externalized() -> set[str]:
     """Pack đang được đánh dấu đã đưa ra ngoài trong manifest hiện có."""
-    if not MANIFEST.exists():
-        return set()
-    packs = json.loads(MANIFEST.read_text()).get("packs", {})
+    packs = current_manifest().get("packs", {})
     return {name for name, info in packs.items() if not info.get("bundled", True)}
+
+
+def published_assets() -> dict[str, dict]:
+    """Asset của các pack ĐÃ publish, đọc từ manifest hiện có.
+
+    Pack publish xong thì `publish_content.py --strip` xoá file khỏi repo — nội dung chỉ còn
+    trên CDN và trong chính manifest này. Script quét đĩa, nên chạy lại sau khi strip sẽ không
+    thấy file đâu và xoá sạch entry của chúng. Luật tra cứu bên app là "không có trong assets
+    → nằm trong APK", nên mất entry = mọi bài đã bán của pack đó câm tiếng, không lỗi, không
+    warning. Vì vậy manifest là NGUỒN CHÂN LÝ của pack đã publish và được chép tiếp sang bản
+    mới, chứ không sinh lại từ đĩa.
+    """
+    return current_manifest().get("assets", {})
 
 
 def content_hash(path: Path) -> str:
@@ -137,7 +156,7 @@ def content_hash(path: Path) -> str:
     return digest.hexdigest()[:HASH_LEN]
 
 
-def build(externalized: set[str]) -> dict:
+def build(externalized: set[str], drop: tuple[str, ...] = ()) -> dict:
     units = load_units()
     story_units = load_story_units()
 
@@ -167,12 +186,52 @@ def build(externalized: set[str]) -> dict:
         entry["files"] += 1
         entry["bytes"] += size
 
+    carried = carry_published(assets, packs, externalized, drop)
+
     return {
         "version": 1,
         "hashLength": HASH_LEN,
         "packs": dict(sorted(packs.items())),
-        "assets": assets,
-    }
+        "assets": dict(sorted(assets.items())),
+    }, carried
+
+
+def carry_published(assets: dict, packs: dict, externalized: set[str], drop: tuple[str, ...]) -> int:
+    """Chép tiếp entry của pack đã publish mà file không còn trên đĩa. Xem [published_assets].
+
+    [drop] là lối ra duy nhất: file đã publish rồi strip thì trên đĩa không còn, nên "xoá khỏi
+    đĩa" KHÔNG phải cách gỡ nó khỏi manifest — không có bước này thì entry cũ được chép tiếp
+    mãi mãi và app cứ tải về một file chẳng bài nào dùng.
+    """
+    carried = 0
+    dropped = set()
+    for logical, asset in published_assets().items():
+        pack = asset["pack"]
+        if any(logical.startswith(prefix) for prefix in drop):
+            dropped.add(logical)
+            continue
+        if pack not in externalized or logical in assets or (RES_FILES / logical).is_file():
+            continue
+        assets[logical] = asset
+        entry = packs.setdefault(pack, {"files": 0, "bytes": 0, "bundled": False})
+        entry["files"] += 1
+        entry["bytes"] += asset["bytes"]
+        carried += 1
+
+    # Pack khai là đã publish nhưng không có file nào — trên đĩa lẫn trong manifest cũ. Gần như
+    # chắc chắn gõ sai tên pack; im lặng cho qua là ship một manifest thiếu cả pack.
+    empty = sorted(name for name in externalized if not packs.get(name, {}).get("files"))
+    if empty:
+        raise SystemExit(f"Pack khai đã publish nhưng rỗng: {', '.join(empty)}")
+
+    # Tiền tố --drop không khớp gì = gõ sai đường dẫn. Bỏ qua im lặng thì người chạy tưởng đã
+    # gỡ xong, mà manifest vẫn y nguyên.
+    unmatched = [prefix for prefix in drop if not any(d.startswith(prefix) for d in dropped)]
+    if unmatched:
+        raise SystemExit(f"--drop không khớp asset nào: {', '.join(unmatched)}")
+    if dropped:
+        print(f"  (gỡ {len(dropped)} asset đã publish khỏi manifest — file trên CDN vẫn nằm đó)")
+    return carried
 
 
 def main() -> int:
@@ -180,19 +239,32 @@ def main() -> int:
     parser.add_argument("--check", action="store_true", help="So với file hiện có, lệch thì fail")
     parser.add_argument(
         "--externalize",
-        default="",
+        default="keep",
         help="Pack đã publish lên CDN và gỡ khỏi APK, cách nhau bằng dấu phẩy "
-             "(vd L2U3,L2U4). Mặc định rỗng = mọi thứ vẫn nằm trong APK. "
-             "Giữ nguyên danh sách hiện có: --externalize keep",
+             "(vd L2U3,L2U4). Mặc định `keep` = giữ nguyên danh sách trong manifest. "
+             "`none` = kéo mọi thứ về lại APK (chỉ đúng khi file còn đủ trong repo).",
+    )
+    parser.add_argument(
+        "--drop",
+        default="",
+        help="Tiền tố đường dẫn logic cần GỠ khỏi manifest, cách nhau bằng dấu phẩy "
+             "(vd audio/level_2/unit_05/L2U05_OLD_word/). Dùng khi nội dung đã publish bị bỏ "
+             "hẳn — xoá file khỏi đĩa là không đủ, xem [carry_published].",
     )
     args = parser.parse_args()
 
+    drop = tuple(d.strip() for d in args.drop.split(",") if d.strip())
+
+    # Mặc định là `keep`, không phải rỗng: rỗng nghĩa là "chưa publish gì cả", mà chạy như thế
+    # sau khi đã strip là xoá sạch entry của pack đã bán — xem [published_assets].
     if args.externalize == "keep":
         externalized = current_externalized()
+    elif args.externalize == "none":
+        externalized = set()
     else:
         externalized = {p.strip() for p in args.externalize.split(",") if p.strip()}
 
-    manifest = build(externalized)
+    manifest, carried = build(externalized, drop)
     rendered = json.dumps(manifest, indent=2, ensure_ascii=False) + "\n"
 
     if args.check:
@@ -207,6 +279,8 @@ def main() -> int:
 
     mb = 1024 * 1024
     print(f"{len(manifest['assets'])} asset tải về → {MANIFEST.relative_to(BASE)}")
+    if carried:
+        print(f"  (giữ nguyên {carried} asset của pack đã publish, file không còn trong repo)")
     for pack, info in manifest["packs"].items():
         label = "trong APK" if info["bundled"] else "tải về"
         print(f"  {pack:8s} {info['files']:4d} file  {info['bytes'] / mb:6.1f} MB  ({label})")

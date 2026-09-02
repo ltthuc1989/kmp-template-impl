@@ -27,6 +27,7 @@ import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
 import me.ltthuc.kmp.feature.learningpath.game.bubblepop.view.BubbleCanvas
 import me.ltthuc.kmp.feature.learningpath.game.bubblepop.view.CircularTimerWithCounter
 import me.ltthuc.kmp.feature.learningpath.game.bubblepop.view.OceanDecorations
+import me.ltthuc.kmp.feature.learningpath.game.bubblepop.view.TargetRimeCard
 import me.ltthuc.kmp.feature.learningpath.game.common.OceanBackground
 import me.ltthuc.kmp.feature.learningpath.game.common.gameSegmentsFor
 import me.ltthuc.kmp.feature.learningpath.step.common.ScoreFeedback
@@ -120,6 +121,9 @@ private fun BubblePopContent(
                 .background(brush = OceanBackground),
         ) {
             OceanDecorations()
+            ui.revealedTarget?.let { rime ->
+                TargetRimeCard(rime = rime, modifier = Modifier.align(Alignment.Center))
+            }
             if (ui.bubbles.isNotEmpty() && !ui.isRoundComplete && !ui.isGameComplete && !ui.isGuidePlaying) {
                 BubbleCanvas(
                     bubbles = ui.bubbles,

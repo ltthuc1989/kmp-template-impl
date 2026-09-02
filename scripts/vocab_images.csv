@@ -1,22 +1,34 @@
-word,image,hint
-blanket,blanket,a single folded cozy blanket made of soft fabric
-pillow,pillow,a single plump bed pillow
-quilt,quilt,a folded patchwork quilt with stitched squares
-mop,mop,a floor cleaning mop standing upright
-rag,rag,a single crumpled wrinkled cleaning cloth rag lying loose, messy soft folds, one piece, dull gray-blue color
-fig,fig,one whole purple fig fruit with a small green leaf on top
-lid,lid,a round metal pot lid seen from the side with a small knob handle
-cage,cage,an empty round metal bird cage hanging
-bib,bib,a baby bib garment with a neck strap
-belt,belt,a brown leather belt coiled with a metal buckle
-zip,zip,a metal zipper half-open on a piece of fabric
-zipper,zip,a metal zipper half-open on a piece of fabric
-whistle,whistle,a silver sports referee whistle
-sauce,sauce,a small white dish of red tomato sauce
-rhubarb,rhubarb,a bunch of fresh rhubarb stalks, red and green
-fin,fin,a single blue fish fin, just the fin shape alone
-tail,tail,a single fluffy orange cat tail, curved, just the tail
-hip,hip,a simple friendly cartoon child standing with both hands on the hips
-mud,mud,a small brown puddle of mud with a playful splash
-pull,pull,two cartoon hands pulling on a thick rope
-dam,dam,a concrete dam wall holding back blue water in a river
+word,image,kind,hint
+blanket,blanket,object,a single folded cozy blanket made of soft fabric
+pillow,pillow,object,a single plump bed pillow
+quilt,quilt,object,a folded patchwork quilt with stitched squares
+mop,mop,object,a floor cleaning mop standing upright
+rag,rag,object,a single crumpled wrinkled cleaning cloth rag lying loose
+fig,fig,object,one whole purple fig fruit with a small green leaf on top
+lid,lid,object,a round metal pot lid seen from the side with a small knob handle
+cage,cage,object,an empty round metal bird cage hanging
+bib,bib,object,a baby bib garment with a neck strap
+belt,belt,object,a brown leather belt coiled with a metal buckle
+zip,zip,object,a metal zipper half-open on a piece of fabric
+zipper,zip,object,a metal zipper half-open on a piece of fabric
+whistle,whistle,object,a silver sports referee whistle
+sauce,sauce,object,a small white dish of red tomato sauce
+rhubarb,rhubarb,object,a bunch of fresh rhubarb stalks
+fin,fin,object,a single blue fish fin
+tail,tail,callout,"a whole cartoon cat standing side-on facing LEFT with its long striped tail curling up on the right, and one arrow in the empty space to the RIGHT of the tail POINTING LEFT so its tip touches the tail"
+hip,hip,object,a simple friendly cartoon child standing with both hands on the hips
+mud,mud,object,a small brown puddle of mud with a playful splash
+pull,pull,object,two cartoon hands pulling on a thick rope
+dam,dam,object,a concrete dam wall holding back blue water in a river
+high,high,compare,"two identical red balloons in the sky, the hero one floating far up high near the top, the pale one down low near the bottom"
+right,right,object,"one big bold arrow pointing to the RIGHT, simple chunky shape, nothing else in the picture"
+new,new,compare,"two identical teddy bears, the hero one bright clean and new, the pale one old worn and patched"
+ripe,ripe,compare,"two identical cherries on one stem, the hero one deep red and ripe, the pale one small and green"
+my,my,compare,"two identical school backpacks, the hero one with a child's hand resting on it to show it is theirs, the pale one standing alone"
+nail,nail,object,"a single metal carpentry nail lying flat, flat head and sharp point"
+cape,cape,object,"a single red hero cape hanging on its own, no person wearing it"
+mane,mane,callout,"a whole cartoon lion standing side-on, the arrow pointing at the fluffy MANE around its head"
+elbow,elbow,callout,"a whole cartoon child's arm bent at the joint, the arrow pointing at the ELBOW"
+tube,tube,object,a single squeezable toothpaste tube standing upright with its cap on
+cave,cave,object,a dark rounded cave mouth in a rocky hillside
+tape,tape,object,a single roll of sticky tape with the loose end peeled up

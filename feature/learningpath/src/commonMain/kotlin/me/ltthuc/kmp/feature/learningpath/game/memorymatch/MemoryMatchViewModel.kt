@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import me.ltthuc.kmp.core.audio.AudioRef
+import me.ltthuc.kmp.core.model.LessonWord
 import me.ltthuc.kmp.core.model.PhonicsLesson
 import me.ltthuc.kmp.core.repository.AudioRepository
 import me.ltthuc.kmp.core.repository.AudioSession
@@ -28,6 +29,7 @@ import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.error_no_data
 import me.ltthuc.kmp.core.ui.screen.ScreenState
 import me.ltthuc.kmp.feature.learningpath.game.bubblepop.view.BUBBLE_TINT_PALETTE
+import me.ltthuc.kmp.feature.learningpath.game.common.rimeAudioKeys
 import me.ltthuc.kmp.feature.learningpath.step.common.wordRef
 import kotlin.random.Random
 
@@ -162,9 +164,13 @@ internal class MemoryMatchViewModel(
     }
 
     private fun playLetterSound(letter: String) {
+        // Vần của bài đi trước — ở cấp 3 khoá file không trùng nhãn (`y` → `y_eee`), xem
+        // [rimeAudioKeys]. Bảng rỗng ở cấp 1-2 nên hai cấp đó rơi thẳng xuống nhánh dưới.
+        //
         // Short letter phoneme from files/audio/phonemes/<letter>.mp3 (not the long sound-intro).
         // Vần hai ký tự không có file trong `phonemes/` (chỉ a-z) — xem BubblePopViewModel.
-        val ref = if (letter.length > 1) AudioRef.Rime(letter) else AudioRef.LetterSound(letter)
+        val ref = lessonsFlow.value.rimeAudioKeys()[letter]?.let(AudioRef::Rime)
+            ?: if (letter.length > 1) AudioRef.Rime(letter) else AudioRef.LetterSound(letter)
         audio.play(ref)
     }
 
@@ -234,20 +240,24 @@ internal class MemoryMatchViewModel(
     }
 
     /**
-     * Vòng 2 — ghép TỪ với HÌNH: một thẻ chữ ("ram"), một thẻ hình (emoji của từ đó).
+     * Vòng 2 — ghép TỪ với HÌNH: một thẻ chữ ("ram"), một thẻ hình.
      *
-     * Chỉ lấy từ nào có emoji; từ dùng ảnh WebP chưa hiện được trên thẻ nên bỏ qua, thà
-     * ít cặp còn hơn thẻ trống. Hết từ có emoji thì rơi về ghép âm để game không kẹt.
+     * Thẻ hình mang cả [me.ltthuc.kmp.core.model.LessonWord] xuống UI chứ không chỉ chuỗi
+     * emoji, nên `MemoryCard` vẽ được **ảnh WebP** của những từ đã vẽ riêng và chỉ rơi về
+     * emoji khi từ đó không có ảnh. Lọc theo `displays` chứ KHÔNG theo `emoji`: từ có ảnh
+     * riêng mà thiếu emoji thay thế sẽ bị `!emoji.isNullOrBlank()` loại oan — đúng cái bẫy
+     * mà KDoc của `LessonWord.emoji` cảnh báo. Hết từ có hình thì rơi về ghép âm để game
+     * không kẹt.
      */
     private fun buildWordImagePairs(lessons: ImmutableList<PhonicsLesson>): ImmutableList<MemoryCardSpec> {
         val picks = lessons
             .flatMap { lesson -> lesson.words.map { lesson to it } }
-            .filter { (_, word) -> !word.emoji.isNullOrBlank() }
+            .filter { (_, word) -> word.displays.isNotEmpty() }
             .shuffled(Random.Default)
             .distinctBy { (_, word) -> word.word.lowercase() }
             .take(MAX_PAIRS)
         if (picks.size < MIN_PAIRS) {
-            Napier.w(tag = TAG) { "Unit $unitId thiếu từ có emoji — quay lại vòng ghép âm" }
+            Napier.w(tag = TAG) { "Unit $unitId thiếu từ có hình — quay lại vòng ghép âm" }
             return buildSoundPairs(lessons)
         }
         var nextId = 0
@@ -259,10 +269,14 @@ internal class MemoryMatchViewModel(
             cards += MemoryCardSpec(id = nextId++, letter = text, pairKey = text, tint = tint, audio = ref)
             cards += MemoryCardSpec(
                 id = nextId++,
+                // Chỉ là giá trị dự phòng: thẻ này có [picture] nên mặt thẻ đi nhánh vẽ
+                // hình và không đọc tới `letter`. Giữ lại để nếu từ nào mất `displays`
+                // thì thẻ vẫn có gì đó thay vì trống trơn.
                 letter = word.emoji.orEmpty(),
                 pairKey = text,
                 tint = tint,
                 audio = ref,
+                picture = word,
             )
         }
         return cards.shuffled(Random.Default).toImmutableList()
@@ -300,6 +314,11 @@ internal data class MemoryCardSpec(
     val tint: Color,
     /** Tiếng phát khi lật. Null thì suy từ [letter] — xem playLetterSound. */
     val audio: AudioRef? = null,
+    /**
+     * Từ của thẻ HÌNH. Non-null thì mặt thẻ vẽ ảnh/emoji phủ gần kín thay vì in [letter];
+     * thẻ chữ và thẻ vần để null.
+     */
+    val picture: LessonWord? = null,
 )
 
 @Immutable
