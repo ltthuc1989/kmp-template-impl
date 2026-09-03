@@ -68,3 +68,7 @@ iosApp/Pods
 
 __pycache__/
 *.pyc
+
+# Store-listing paste files: generated from listing.md by make-paste.py.
+# Not tracked, so a committed copy can never drift from the document it came from.
+marketing/store-listing/*/paste.txt
