@@ -69,7 +69,6 @@ import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
 import me.ltthuc.kmp.core.ui.screen.Destination
 import me.ltthuc.kmp.core.ui.theme.LocalAppLanguage
 import me.ltthuc.kmp.core.ui.theme.LocalNavBackStack
-import me.ltthuc.kmp.core.ui.theme.LocalPhonicsFontFamily
 import me.ltthuc.kmp.feature.learningpath.STORY_PROGRESS_ID
 import me.ltthuc.kmp.feature.learningpath.step.DEFAULT_VISIBLE_STEPS
 import me.ltthuc.kmp.feature.learningpath.step.STORY_SEGMENT_INDEX
@@ -222,12 +221,17 @@ private fun StoryContent(
     val lang = LocalAppLanguage.current
     var guidePlayed by remember(story.id) { mutableStateOf(false) }
 
+    val titleRef = remember(story.id) { AudioRef.StoryTitle(story.id) }
+
     // Auto-play scene audio when user swipes/lands on a new page (including first entry).
-    // On first entry, play the spoken guide first, then the scene narration (no overlap).
+    // On first entry: spoken guide, then the story's own title, then scene 1 — one after the
+    // other, never overlapping. The title is said out loud because a child who cannot read
+    // gets nothing from it drawn on screen.
     LaunchedEffect(currentPage) {
         if (currentPage == 0 && !guidePlayed) {
             guidePlayed = true
             guideAudio.playAndAwait(AudioRef.Prompt("vp_step_story", lang), STORY_GUIDE_MAX_MS)
+            guideAudio.playAndAwait(titleRef, STORY_TITLE_MAX_MS)
         }
         onPageChange(currentPage)
     }
@@ -311,13 +315,21 @@ private fun StoryContent(
                 .padding(horizontal = 20.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Text(
+            // Fills word by word while the title clip plays, then sits static in the base
+            // colour again — same convention as the scene text below, so the child learns
+            // one rule: the coloured word is the word being said.
+            val titlePlaying = (audioState as? AudioState.Playing)?.ref == titleRef
+            val titlePositionMs = (audioState as? AudioState.Playing)
+                ?.takeIf { it.ref == titleRef }?.positionMs ?: -1L
+            KaraokeText(
                 text = story.title,
-                fontFamily = LocalPhonicsFontFamily.current,
+                isPlaying = titlePlaying,
+                positionMs = titlePositionMs,
+                wordTimings = story.titleTimings,
                 fontSize = 22.sp,
+                lineHeight = 30.sp,
                 fontWeight = FontWeight.ExtraBold,
-                color = MaterialTheme.colorScheme.onSurface,
-                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth(),
             )
             Spacer(Modifier.height(12.dp))
             StorySceneImagePager(
@@ -461,3 +473,6 @@ private fun sceneEmoji(name: String): String = when (name.lowercase()) {
 
 private const val AUTO_ADVANCE_DELAY_MS = 800L
 private const val STORY_GUIDE_MAX_MS = 6_000L
+
+/** Longest title clip is ~5s before trimming; the ceiling only guards a stuck load. */
+private const val STORY_TITLE_MAX_MS = 8_000L

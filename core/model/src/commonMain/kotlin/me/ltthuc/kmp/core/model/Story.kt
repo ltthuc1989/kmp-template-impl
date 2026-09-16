@@ -13,6 +13,12 @@ data class Story(
     val phonicsUsed: List<String>,
     val durationSeconds: Int,
     val scenes: List<StoryScene>,
+    /**
+     * Whisper timings for the spoken title, one entry per word of [title]. Empty when the
+     * title clip has not been measured yet — the karaoke text then fills at a fixed rate
+     * instead of following the voice, which is a downgrade, not a break.
+     */
+    val titleTimings: List<WordTiming> = emptyList(),
 )
 
 data class StoryScene(

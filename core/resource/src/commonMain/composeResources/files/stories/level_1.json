@@ -219,6 +219,23 @@
           }
         ]
       }
+    ],
+    "title_timings": [
+      {
+        "word": "Apple",
+        "start_ms": 0,
+        "end_ms": 900
+      },
+      {
+        "word": "and",
+        "start_ms": 900,
+        "end_ms": 2200
+      },
+      {
+        "word": "cat.",
+        "start_ms": 2200,
+        "end_ms": 3760
+      }
     ]
   },
   {
@@ -411,6 +428,28 @@
           }
         ]
       }
+    ],
+    "title_timings": [
+      {
+        "word": "Egg",
+        "start_ms": 0,
+        "end_ms": 520
+      },
+      {
+        "word": "on",
+        "start_ms": 520,
+        "end_ms": 1020
+      },
+      {
+        "word": "the",
+        "start_ms": 1020,
+        "end_ms": 1280
+      },
+      {
+        "word": "Farm",
+        "start_ms": 1280,
+        "end_ms": 1940
+      }
     ]
   },
   {
@@ -577,6 +616,18 @@
             "end_ms": 5540
           }
         ]
+      }
+    ],
+    "title_timings": [
+      {
+        "word": "A",
+        "start_ms": 0,
+        "end_ms": 360
+      },
+      {
+        "word": "gift!",
+        "start_ms": 360,
+        "end_ms": 980
       }
     ]
   },
@@ -775,6 +826,23 @@
           }
         ]
       }
+    ],
+    "title_timings": [
+      {
+        "word": "King",
+        "start_ms": 0,
+        "end_ms": 620
+      },
+      {
+        "word": "and",
+        "start_ms": 620,
+        "end_ms": 1680
+      },
+      {
+        "word": "Kite!",
+        "start_ms": 1680,
+        "end_ms": 2720
+      }
     ]
   },
   {
@@ -957,6 +1025,18 @@
           }
         ]
       }
+    ],
+    "title_timings": [
+      {
+        "word": "Monkeys",
+        "start_ms": 0,
+        "end_ms": 1040
+      },
+      {
+        "word": "nut!",
+        "start_ms": 1040,
+        "end_ms": 2040
+      }
     ]
   },
   {
@@ -1133,6 +1213,18 @@
             "end_ms": 4380
           }
         ]
+      }
+    ],
+    "title_timings": [
+      {
+        "word": "Queens",
+        "start_ms": 0,
+        "end_ms": 1100
+      },
+      {
+        "word": "quilt!",
+        "start_ms": 1100,
+        "end_ms": 2160
       }
     ]
   },
@@ -1331,6 +1423,23 @@
             "end_ms": 6380
           }
         ]
+      }
+    ],
+    "title_timings": [
+      {
+        "word": "Sun",
+        "start_ms": 0,
+        "end_ms": 780
+      },
+      {
+        "word": "and",
+        "start_ms": 780,
+        "end_ms": 2460
+      },
+      {
+        "word": "rain.",
+        "start_ms": 2460,
+        "end_ms": 3360
       }
     ]
   },
@@ -1534,6 +1643,23 @@
             "end_ms": 7780
           }
         ]
+      }
+    ],
+    "title_timings": [
+      {
+        "word": "at",
+        "start_ms": 0,
+        "end_ms": 360
+      },
+      {
+        "word": "the",
+        "start_ms": 360,
+        "end_ms": 640
+      },
+      {
+        "word": "zoo.",
+        "start_ms": 640,
+        "end_ms": 1020
       }
     ]
   }

@@ -35,6 +35,9 @@ TARGETS = [
     RES_FILES / "audio",
     RES_FILES / "sfx/prompts",
     RES_FILES / "sfx/voice",
+    # generate_story_titles.py đã encode 40k rồi, nên ở đây chúng luôn bị skip. Vẫn liệt kê
+    # để nếu có file title lọt vào ở bitrate gốc thì nó được nén, thay vì phình APK không ai hay.
+    RES_FILES / "sfx/story_titles",
 ]
 
 TARGET_BITRATE = "40k"

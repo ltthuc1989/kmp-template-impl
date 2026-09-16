@@ -229,6 +229,18 @@
           }
         ]
       }
+    ],
+    "title_timings": [
+      {
+        "word": "Dave's",
+        "start_ms": 0,
+        "end_ms": 840
+      },
+      {
+        "word": "cape!",
+        "start_ms": 840,
+        "end_ms": 1280
+      }
     ]
   },
   {
@@ -475,6 +487,18 @@
             "end_ms": 6760
           }
         ]
+      }
+    ],
+    "title_timings": [
+      {
+        "word": "Five",
+        "start_ms": 0,
+        "end_ms": 620
+      },
+      {
+        "word": "Kites",
+        "start_ms": 620,
+        "end_ms": 1540
       }
     ]
   },
@@ -723,6 +747,28 @@
           }
         ]
       }
+    ],
+    "title_timings": [
+      {
+        "word": "Hot",
+        "start_ms": 0,
+        "end_ms": 380
+      },
+      {
+        "word": "June",
+        "start_ms": 380,
+        "end_ms": 1000
+      },
+      {
+        "word": "at",
+        "start_ms": 1000,
+        "end_ms": 1500
+      },
+      {
+        "word": "home!",
+        "start_ms": 1500,
+        "end_ms": 1960
+      }
     ]
   },
   {
@@ -949,6 +995,33 @@
             "end_ms": 6860
           }
         ]
+      }
+    ],
+    "title_timings": [
+      {
+        "word": "Wait",
+        "start_ms": 0,
+        "end_ms": 440
+      },
+      {
+        "word": "for",
+        "start_ms": 440,
+        "end_ms": 860
+      },
+      {
+        "word": "a",
+        "start_ms": 860,
+        "end_ms": 1100
+      },
+      {
+        "word": "sunny",
+        "start_ms": 1100,
+        "end_ms": 1560
+      },
+      {
+        "word": "day!",
+        "start_ms": 1560,
+        "end_ms": 2220
       }
     ]
   },
@@ -1201,6 +1274,33 @@
             "end_ms": 6900
           }
         ]
+      }
+    ],
+    "title_timings": [
+      {
+        "word": "A",
+        "start_ms": 0,
+        "end_ms": 460
+      },
+      {
+        "word": "B",
+        "start_ms": 460,
+        "end_ms": 940
+      },
+      {
+        "word": "at",
+        "start_ms": 940,
+        "end_ms": 1360
+      },
+      {
+        "word": "the",
+        "start_ms": 1360,
+        "end_ms": 1540
+      },
+      {
+        "word": "C.",
+        "start_ms": 1540,
+        "end_ms": 1960
       }
     ]
   },
@@ -1701,6 +1801,23 @@
           }
         ]
       }
+    ],
+    "title_timings": [
+      {
+        "word": "My",
+        "start_ms": 0,
+        "end_ms": 440
+      },
+      {
+        "word": "Yellow",
+        "start_ms": 440,
+        "end_ms": 1020
+      },
+      {
+        "word": "Coat",
+        "start_ms": 1020,
+        "end_ms": 1960
+      }
     ]
   },
   {
@@ -1942,6 +2059,33 @@
             "end_ms": 7540
           }
         ]
+      }
+    ],
+    "title_timings": [
+      {
+        "word": "A",
+        "start_ms": 0,
+        "end_ms": 220
+      },
+      {
+        "word": "blue",
+        "start_ms": 220,
+        "end_ms": 660
+      },
+      {
+        "word": "moon",
+        "start_ms": 660,
+        "end_ms": 1320
+      },
+      {
+        "word": "on",
+        "start_ms": 1320,
+        "end_ms": 1740
+      },
+      {
+        "word": "Tuesday!",
+        "start_ms": 1740,
+        "end_ms": 2200
       }
     ]
   }

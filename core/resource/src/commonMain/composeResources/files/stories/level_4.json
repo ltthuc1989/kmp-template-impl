@@ -274,6 +274,23 @@
           }
         ]
       }
+    ],
+    "title_timings": [
+      {
+        "word": "The",
+        "start_ms": 0,
+        "end_ms": 260
+      },
+      {
+        "word": "Black",
+        "start_ms": 260,
+        "end_ms": 820
+      },
+      {
+        "word": "Fly!",
+        "start_ms": 820,
+        "end_ms": 1400
+      }
     ]
   },
   {
@@ -530,6 +547,28 @@
             "end_ms": 8200
           }
         ]
+      }
+    ],
+    "title_timings": [
+      {
+        "word": "Friday",
+        "start_ms": 0,
+        "end_ms": 580
+      },
+      {
+        "word": "at",
+        "start_ms": 580,
+        "end_ms": 1100
+      },
+      {
+        "word": "the",
+        "start_ms": 1100,
+        "end_ms": 1280
+      },
+      {
+        "word": "park!",
+        "start_ms": 1280,
+        "end_ms": 1620
       }
     ]
   },
@@ -792,6 +831,23 @@
             "end_ms": 7900
           }
         ]
+      }
+    ],
+    "title_timings": [
+      {
+        "word": "My",
+        "start_ms": 0,
+        "end_ms": 520
+      },
+      {
+        "word": "Snow",
+        "start_ms": 520,
+        "end_ms": 1020
+      },
+      {
+        "word": "Snake",
+        "start_ms": 1020,
+        "end_ms": 1700
       }
     ]
   },
@@ -1060,6 +1116,28 @@
           }
         ]
       }
+    ],
+    "title_timings": [
+      {
+        "word": "Lunch",
+        "start_ms": 0,
+        "end_ms": 420
+      },
+      {
+        "word": "on",
+        "start_ms": 420,
+        "end_ms": 980
+      },
+      {
+        "word": "the",
+        "start_ms": 980,
+        "end_ms": 1200
+      },
+      {
+        "word": "Ship.",
+        "start_ms": 1200,
+        "end_ms": 1540
+      }
     ]
   },
   {
@@ -1321,6 +1399,33 @@
             "end_ms": 9200
           }
         ]
+      }
+    ],
+    "title_timings": [
+      {
+        "word": "Three",
+        "start_ms": 0,
+        "end_ms": 660
+      },
+      {
+        "word": "toys",
+        "start_ms": 660,
+        "end_ms": 1220
+      },
+      {
+        "word": "in",
+        "start_ms": 1220,
+        "end_ms": 1800
+      },
+      {
+        "word": "the",
+        "start_ms": 1800,
+        "end_ms": 1920
+      },
+      {
+        "word": "bath.",
+        "start_ms": 1920,
+        "end_ms": 2400
       }
     ]
   },
@@ -1604,6 +1709,23 @@
           }
         ]
       }
+    ],
+    "title_timings": [
+      {
+        "word": "are",
+        "start_ms": 0,
+        "end_ms": 340
+      },
+      {
+        "word": "pink",
+        "start_ms": 340,
+        "end_ms": 820
+      },
+      {
+        "word": "tent!",
+        "start_ms": 820,
+        "end_ms": 1460
+      }
     ]
   },
   {
@@ -1855,6 +1977,28 @@
             "end_ms": 8440
           }
         ]
+      }
+    ],
+    "title_timings": [
+      {
+        "word": "My",
+        "start_ms": 0,
+        "end_ms": 480
+      },
+      {
+        "word": "being",
+        "start_ms": 480,
+        "end_ms": 980
+      },
+      {
+        "word": "at",
+        "start_ms": 980,
+        "end_ms": 1460
+      },
+      {
+        "word": "school.",
+        "start_ms": 1460,
+        "end_ms": 1880
       }
     ]
   },
@@ -2122,6 +2266,23 @@
             "end_ms": 8100
           }
         ]
+      }
+    ],
+    "title_timings": [
+      {
+        "word": "The",
+        "start_ms": 0,
+        "end_ms": 280
+      },
+      {
+        "word": "giant",
+        "start_ms": 280,
+        "end_ms": 1140
+      },
+      {
+        "word": "giraffe!",
+        "start_ms": 1140,
+        "end_ms": 2020
       }
     ]
   }

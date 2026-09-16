@@ -72,6 +72,20 @@ sealed interface AudioRef {
     }
 
     /**
+     * The story's own title, spoken once when the story screen opens, bundled at
+     * `files/sfx/story_titles/<storyId>.mp3`. A child who cannot read yet gets nothing
+     * from the title drawn on screen, so it has to be said out loud.
+     *
+     * Lives under `sfx/` on purpose, NOT in the per-level content tree: the manifest only
+     * scans `audio/` and `images/`, so anything here always ships inside the app. Putting
+     * it beside the scene audio would add a file to content packs that are already on the
+     * CDN under immutable hashes — a republish of every story pack for one short clip.
+     */
+    data class StoryTitle(val storyId: String) : AudioRef {
+        override val lessonFolder: String get() = "story_titles"
+    }
+
+    /**
      * Single-phoneme letter sound for the Bubble Pop game, bundled at
      * `files/audio/phonemes/<letter>.mp3` (lowercased). The phoneme is spoken once
      * (~1-2s) — distinct from [SoundIntro], which is the long teaching paragraph.

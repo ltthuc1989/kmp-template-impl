@@ -43,6 +43,7 @@ class StoryRepository(private val dispatcher: CoroutineDispatcher) {
         @SerialName("phonics_used") val phonicsUsed: List<String> = emptyList(),
         @SerialName("duration_seconds") val durationSeconds: Int = 0,
         val scenes: List<SceneDto> = emptyList(),
+        @SerialName("title_timings") val titleTimings: List<WordTimingDto> = emptyList(),
     ) {
         fun toModel(loadedLevel: Int) = Story(
             id = id,
@@ -52,6 +53,7 @@ class StoryRepository(private val dispatcher: CoroutineDispatcher) {
             phonicsUsed = phonicsUsed,
             durationSeconds = durationSeconds,
             scenes = scenes.map { it.toModel(loadedLevel, id) },
+            titleTimings = titleTimings.map { it.toModel() },
         )
     }
 

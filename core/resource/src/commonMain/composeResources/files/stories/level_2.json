@@ -259,6 +259,28 @@
           }
         ]
       }
+    ],
+    "title_timings": [
+      {
+        "word": "Jam",
+        "start_ms": 0,
+        "end_ms": 600
+      },
+      {
+        "word": "in",
+        "start_ms": 600,
+        "end_ms": 1120
+      },
+      {
+        "word": "a",
+        "start_ms": 1120,
+        "end_ms": 1280
+      },
+      {
+        "word": "pan!",
+        "start_ms": 1280,
+        "end_ms": 1720
+      }
     ]
   },
   {
@@ -485,6 +507,18 @@
             "end_ms": 8320
           }
         ]
+      }
+    ],
+    "title_timings": [
+      {
+        "word": "Dad's",
+        "start_ms": 0,
+        "end_ms": 800
+      },
+      {
+        "word": "Map",
+        "start_ms": 800,
+        "end_ms": 1200
       }
     ]
   },
@@ -717,6 +751,18 @@
             "end_ms": 7480
           }
         ]
+      }
+    ],
+    "title_timings": [
+      {
+        "word": "Red",
+        "start_ms": 0,
+        "end_ms": 540
+      },
+      {
+        "word": "Hen",
+        "start_ms": 540,
+        "end_ms": 1080
       }
     ]
   },
@@ -965,6 +1011,28 @@
           }
         ]
       }
+    ],
+    "title_timings": [
+      {
+        "word": "Ink",
+        "start_ms": 0,
+        "end_ms": 360
+      },
+      {
+        "word": "on",
+        "start_ms": 360,
+        "end_ms": 820
+      },
+      {
+        "word": "the",
+        "start_ms": 820,
+        "end_ms": 1020
+      },
+      {
+        "word": "bib.",
+        "start_ms": 1020,
+        "end_ms": 1440
+      }
     ]
   },
   {
@@ -1211,6 +1279,18 @@
             "end_ms": 8119
           }
         ]
+      }
+    ],
+    "title_timings": [
+      {
+        "word": "Big",
+        "start_ms": 0,
+        "end_ms": 420
+      },
+      {
+        "word": "Fig!",
+        "start_ms": 420,
+        "end_ms": 980
       }
     ]
   },
@@ -1459,6 +1539,18 @@
           }
         ]
       }
+    ],
+    "title_timings": [
+      {
+        "word": "Hot",
+        "start_ms": 0,
+        "end_ms": 440
+      },
+      {
+        "word": "pot!",
+        "start_ms": 440,
+        "end_ms": 860
+      }
     ]
   },
   {
@@ -1701,6 +1793,23 @@
           }
         ]
       }
+    ],
+    "title_timings": [
+      {
+        "word": "Pup",
+        "start_ms": 0,
+        "end_ms": 440
+      },
+      {
+        "word": "in",
+        "start_ms": 440,
+        "end_ms": 840
+      },
+      {
+        "word": "mud.",
+        "start_ms": 840,
+        "end_ms": 1400
+      }
     ]
   },
   {
@@ -1932,6 +2041,23 @@
             "end_ms": 6120
           }
         ]
+      }
+    ],
+    "title_timings": [
+      {
+        "word": "Cub",
+        "start_ms": 0,
+        "end_ms": 520
+      },
+      {
+        "word": "in",
+        "start_ms": 520,
+        "end_ms": 1100
+      },
+      {
+        "word": "Tub",
+        "start_ms": 1100,
+        "end_ms": 1640
       }
     ]
   }

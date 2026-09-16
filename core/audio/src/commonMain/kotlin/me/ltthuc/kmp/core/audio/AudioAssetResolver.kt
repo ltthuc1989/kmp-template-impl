@@ -22,6 +22,8 @@ class AudioAssetResolver {
         is AudioRef.Voice -> "sfx/voice/${ref.name}.mp3"
         is AudioRef.Music -> "sfx/music/${ref.name}.mp3"
         is AudioRef.Prompt -> "sfx/prompts/${ref.lang}/${ref.promptId}.mp3"
+        // Always in the app, never in a content pack — see [AudioRef.StoryTitle].
+        is AudioRef.StoryTitle -> "sfx/story_titles/${ref.storyId}.mp3"
         else -> "audio/${contentPath(ref)}"
     }
 
@@ -44,7 +46,7 @@ class AudioAssetResolver {
         is AudioRef.RimeBlend -> "rimes_blend/${ref.rime.lowercase()}.mp3"
         is AudioRef.FindSound -> "find_sound/${ref.letter.lowercase()}.mp3"
         is AudioRef.FindRime -> "find_rime/${ref.rime.lowercase()}.mp3"
-        is AudioRef.Sfx, is AudioRef.Voice, is AudioRef.Music, is AudioRef.Prompt ->
+        is AudioRef.Sfx, is AudioRef.Voice, is AudioRef.Music, is AudioRef.Prompt, is AudioRef.StoryTitle ->
             error("SFX refs are handled by logicalPath(), not contentPath()")
     }
 

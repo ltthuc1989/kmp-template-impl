@@ -28,6 +28,19 @@ class AudioAssetResolverTest {
         )
     }
 
+    /**
+     * The title clip must land under `sfx/`, never under `audio/`: the content manifest only
+     * scans `audio/` and `images/`, so a path change here would silently add the file to a
+     * content pack that is already on the CDN under an immutable hash.
+     */
+    @Test
+    fun storyTitleLivesUnderSfx() {
+        assertEquals(
+            "sfx/story_titles/L1_S01.mp3",
+            resolver.logicalPath(AudioRef.StoryTitle("L1_S01")),
+        )
+    }
+
     @Test
     fun singleWordIsOnlyLowercased() {
         assertEquals(
