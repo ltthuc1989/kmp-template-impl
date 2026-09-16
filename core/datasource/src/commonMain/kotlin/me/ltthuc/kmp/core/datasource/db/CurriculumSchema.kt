@@ -61,6 +61,10 @@ internal data class LessonWordDto(
     val word: String,
     val emoji: String? = null,
     val displays: List<WordDisplayDto> = emptyList(),
+    // Bảng tách bước 0 cấp 4+ (`["bl","ack"]`, mảnh pattern ở `patternIndex`). Mặc định
+    // rỗng/-1 để 4 cấp còn lại không phải khai gì.
+    val split: List<String> = emptyList(),
+    val patternIndex: Int = -1,
 )
 
 @OptIn(kotlinx.serialization.ExperimentalSerializationApi::class)
@@ -85,13 +89,20 @@ internal sealed interface WordDisplayDto {
 internal data class NormalizedLessonWord(
     val word: String,
     val displays: List<WordDisplayDto>,
+    val split: List<String> = emptyList(),
+    val patternIndex: Int = -1,
 )
 
 private fun LessonWordDto.normalize(): NormalizedLessonWord {
     val resolved = displays.ifEmpty {
         emoji?.takeIf { it.isNotEmpty() }?.let { listOf(WordDisplayDto.Emoji(it)) } ?: emptyList()
     }
-    return NormalizedLessonWord(word = word, displays = resolved)
+    return NormalizedLessonWord(
+        word = word,
+        displays = resolved,
+        split = split,
+        patternIndex = patternIndex,
+    )
 }
 
 internal data class CurriculumEntities(

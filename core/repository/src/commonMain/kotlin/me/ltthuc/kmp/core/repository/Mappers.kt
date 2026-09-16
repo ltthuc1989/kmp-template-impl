@@ -8,6 +8,7 @@ import me.ltthuc.kmp.core.datasource.db.entity.LevelEntity
 import me.ltthuc.kmp.core.datasource.db.entity.PhonicsLessonEntity
 import me.ltthuc.kmp.core.datasource.db.entity.UnitEntity
 import me.ltthuc.kmp.core.datasource.db.entity.UserProgressEntity
+import me.ltthuc.kmp.core.model.BlendSplit
 import me.ltthuc.kmp.core.model.LessonWord
 import me.ltthuc.kmp.core.model.Level
 import me.ltthuc.kmp.core.model.PhonicsLesson
@@ -21,6 +22,8 @@ private val jsonParser = Json { ignoreUnknownKeys = true }
 private data class LessonWordJson(
     val word: String,
     val displays: List<WordDisplayJson> = emptyList(),
+    val split: List<String> = emptyList(),
+    val patternIndex: Int = -1,
 )
 
 @OptIn(kotlinx.serialization.ExperimentalSerializationApi::class)
@@ -66,6 +69,11 @@ internal fun PhonicsLessonEntity.toModel(): PhonicsLesson {
                 LessonWord(
                     word = dto.word,
                     displays = dto.displays.map { it.toModel() },
+                    // Bảng tách chỉ hợp lệ khi có mảnh VÀ chỉ số pattern trỏ vào một mảnh;
+                    // dữ liệu nửa vời thì coi như không có, màn hình rơi về đường không tách.
+                    blendSplit = dto.split
+                        .takeIf { it.isNotEmpty() && dto.patternIndex in it.indices }
+                        ?.let { BlendSplit(chunks = it, patternIndex = dto.patternIndex) },
                 )
             }
     }.getOrElse { emptyList() }

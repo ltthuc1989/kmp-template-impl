@@ -484,6 +484,16 @@ def main() -> int:
                     if e is not None:
                         entry["emoji"] = e
                     apply_image_display(entry, vocab_images)
+                    # Bảng tách bước 0 (cấp 4+): cột split1..4 trong CSV, ô dạng `*bl|ack` —
+                    # dấu `*` đánh dấu mảnh mang pattern. Cùng luật với patch_l4_blend_split.py.
+                    cell = (row.get(f"split{k[-1]}") or "").strip()
+                    if cell:
+                        chunks = cell.split("|")
+                        starred = [i for i, c in enumerate(chunks) if c.startswith("*")]
+                        if len(starred) != 1:
+                            sys.exit(f"{w}: ô tách '{cell}' phải có đúng một mảnh đánh dấu *")
+                        entry["split"] = [c.lstrip("*") for c in chunks]
+                        entry["patternIndex"] = starred[0]
                     words.append(entry)
                 chant_texts = generate_chant_texts(
                     lvl, row["stretched_word"], words, row["letter"],

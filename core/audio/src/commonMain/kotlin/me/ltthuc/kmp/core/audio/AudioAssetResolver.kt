@@ -29,11 +29,11 @@ class AudioAssetResolver {
         is AudioRef.SoundIntro -> "${ref.lessonFolder.toUnitPath()}/${ref.lessonFolder}/$FILE_SOUND_INTRO"
         is AudioRef.Chant -> "${ref.lessonFolder.toUnitPath()}/${ref.lessonFolder}/$FILE_CHANT"
         is AudioRef.Word ->
-            "${ref.lessonFolder.toUnitPath()}/${ref.lessonFolder}/vocab/${(ref.index + 1).pad2()}_${ref.word.lowercase()}.mp3"
+            "${ref.lessonFolder.toUnitPath()}/${ref.lessonFolder}/vocab/${(ref.index + 1).pad2()}_${ref.word.toFileWord()}.mp3"
         is AudioRef.Sentence ->
-            "${ref.lessonFolder.toUnitPath()}/${ref.lessonFolder}/sentences/${(ref.index + 1).pad2()}_${ref.word.lowercase()}.mp3"
+            "${ref.lessonFolder.toUnitPath()}/${ref.lessonFolder}/sentences/${(ref.index + 1).pad2()}_${ref.word.toFileWord()}.mp3"
         is AudioRef.Blend ->
-            "${ref.lessonFolder.toUnitPath()}/${ref.lessonFolder}/blend/${(ref.index + 1).pad2()}_${ref.word.lowercase()}.mp3"
+            "${ref.lessonFolder.toUnitPath()}/${ref.lessonFolder}/blend/${(ref.index + 1).pad2()}_${ref.word.toFileWord()}.mp3"
         is AudioRef.SoundBlend ->
             "${ref.lessonFolder.toUnitPath()}/${ref.lessonFolder}/blend_intro/${ref.index.pad2()}_${ref.key.lowercase()}.mp3"
         is AudioRef.Phoneme -> "${ref.lessonFolder.toUnitPath()}/${ref.lessonFolder}/$FILE_PHONEME"
@@ -56,6 +56,14 @@ class AudioAssetResolver {
     }
 
     private fun Int.pad2(): String = toString().padStart(2, '0')
+
+    /**
+     * "ice cream" -> "ice_cream", "yo-yo" -> "yo_yo". The generator writes every file name this
+     * way (and `audioFolderName` builds the folder the same way), so a multi-word page asked for
+     * by its display word must be folded here or it resolves to a file that does not exist — silent,
+     * no crash, no log.
+     */
+    private fun String.toFileWord(): String = lowercase().replace(' ', '_').replace('-', '_')
 
     /** "L1U01_A_apple" -> "level_1/unit_01" */
     private fun String.toUnitPath(): String {

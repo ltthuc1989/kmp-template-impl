@@ -104,6 +104,15 @@ private const val MAX_BLEND_LETTERS = 5
 /** Cấp đầu tiên dùng bố cục "từ nguyên khối" thay cho các thẻ ghép của cấp 2. */
 private const val FIRST_PATTERN_LEVEL = 3
 
+/**
+ * Cấp đầu tiên dùng bố cục "cụm + từ hiện dần theo mảnh".
+ *
+ * Để `>=` chứ không `==`: cấp 5 chưa có nội dung, nhưng nếu mai này có thì rơi vào bố cục
+ * cụm vẫn gần đúng hơn là rơi vào cấp 3 — và từ nào thiếu bảng tách thì [ClusterBlendContent]
+ * hiện cả từ như một mảnh chứ không vỡ.
+ */
+private const val FIRST_CLUSTER_LEVEL = 4
+
 // Per-phoneme colours (short-vowel = magenta, consonant = blue), matching the reference mockup.
 internal val VowelColor = Color(0xFFE6007E)
 internal val ConsonantColor = Color(0xFF1E88E5)
@@ -142,10 +151,27 @@ internal fun VowelBlendScreen(
             value = viewModel.loadBlendMeta(currentLesson)
         }
         val audioState by viewModel.audioState.collectAsStateWithLifecycle()
+        val level = currentLesson.level() ?: 0
+        // Cấp 4 dạy CỤM (bl, sh, nd): dòng 1 cộng chữ như cấp 2, dòng 2 là từ hiện dần theo
+        // mảnh. Phải rẽ TRƯỚC cấp 3 — hai cấp cùng giữ từ nguyên khối nhưng nhịp khác hẳn,
+        // và cấp 3 tách mảnh theo nguyên âm nên áp lên `black` sẽ ra `bl·a·ck`.
+        if (level >= FIRST_CLUSTER_LEVEL) {
+            ClusterBlendContent(
+                lesson = currentLesson,
+                blendMeta = blendMeta,
+                audioState = audioState,
+                onPlayChain = { page, word -> viewModel.playChain(currentLesson, page, word) },
+                onClose = onClose,
+                onNext = onNext,
+                onStepJump = onStepJump,
+                stepSegments = stepSegments,
+            )
+            return@AsyncLoadContents
+        }
         // Cấp 3 trở đi dạy nguyên âm dài nên bố cục khác hẳn — từ giữ nguyên khối, không
         // tách thẻ. Rẽ nhánh ngay ở đây thay vì nhồi thêm chế độ vào [VowelBlendContent],
         // để cấp 2 vốn đã ship không bị đụng tới.
-        if ((currentLesson.level() ?: 0) >= FIRST_PATTERN_LEVEL) {
+        if (level >= FIRST_PATTERN_LEVEL) {
             PatternBlendContent(
                 lesson = currentLesson,
                 blendMeta = blendMeta,
@@ -533,8 +559,6 @@ private fun VowelBlendContent(
             }
             Spacer(Modifier.height(22.dp))
         }
-        val wordActive = displayActiveId == WORD_REPEAT_CARD ||
-            (chain != null && displayActiveId in WORD_RESULT_CARDS)
         // Mũi tên lật trang, đặt trên hai mép thẻ hình — cùng kiểu StoryScreen dùng.
         // Chỉ hiện sau khi cả lesson chạy xong (lúc nút Next sáng): trong lúc đang dạy mà
         // cho lật trang thì bé bấm lung tung, chuỗi phát đang chạy sẽ bị cắt ngang.
@@ -735,8 +759,9 @@ private fun TargetLetter(
     )
 }
 
+/** Dấu `+` / `=` giữa hai thẻ. Cấp 4 dùng lại để hai cấp in cùng một phép cộng. */
 @Composable
-private fun OperatorGlyph(symbol: String) {
+internal fun OperatorGlyph(symbol: String) {
     Text(
         text = symbol,
         fontFamily = LocalPhonicsFontFamily.current,
@@ -747,30 +772,33 @@ private fun OperatorGlyph(symbol: String) {
     )
 }
 
+/**
+ * Khung thẻ chữ của hàng phép cộng: bề ngang theo số ký tự, nảy lên khi đang được đọc.
+ *
+ * Tách khỏi [LetterCard] để cấp 4 dùng chung đúng một bộ bóng đổ, bo góc và nhịp nảy —
+ * chép lại các con số này sang file khác là hai màn học từ từ lệch nhau mà không ai thấy.
+ * [bounce] tắt ở thẻ đang "dồn mực" (thẻ từ của cấp 2): nó sẫm màu dần thay vì nảy.
+ */
 @Composable
-private fun LetterCard(
-    model: CardModel,
+internal fun BlendCardSurface(
+    charCount: Int,
     isActive: Boolean,
-    replayable: Boolean,
-    gradientFill: Float? = null,
-    inkProgress: Float? = null,
-    onClick: () -> Unit,
+    bounce: Boolean = true,
+    onClick: (() -> Unit)? = null,
+    content: @Composable () -> Unit,
 ) {
-    // Word cards stay put and darken instead of bouncing: [inkProgress] fades the text to black
-    // over the word audio's own length, so the ink lands exactly when the voice finishes. A bounce
-    // is a single pop that says nothing about how far along the word is.
     val scale by animateFloatAsState(
-        targetValue = if (isActive && inkProgress == null) 1.15f else 1f,
+        targetValue = if (isActive && bounce) CARD_ACTIVE_SCALE else 1f,
         animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
         label = "card-zoom",
     )
-    val cardWidth = (model.text.length * CARD_CHAR_WIDTH_DP + CARD_PADDING_DP).dp
+    val cardWidth = (charCount * CARD_CHAR_WIDTH_DP + CARD_PADDING_DP).dp
     PuffySurface(
         modifier = Modifier
             .scale(scale)
             .width(cardWidth)
             .height(CARD_HEIGHT_DP.dp)
-            .then(if (replayable) Modifier.clickable(onClick = onClick) else Modifier),
+            .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier),
         shape = RoundedCornerShape(16.dp),
         containerColor = Color.White,
         shadowElevation = if (isActive) 16.dp else 6.dp,
@@ -785,22 +813,44 @@ private fun LetterCard(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center,
         ) {
-            Text(
-                text = when {
-                    // Ink in to black across the word's audio.
-                    inkProgress != null ->
-                        inkedWord(model.text, model.style, inkProgress, MaterialTheme.colorScheme.onSurface)
-                    // Target letter colour tracks the arrow: magenta at 0 → blue at 1.
-                    gradientFill != null ->
-                        solidWord(model.text, lerp(VowelColor, ConsonantColor, gradientFill.coerceIn(0f, 1f)))
-                    else -> coloredWord(model.text, model.style)
-                },
-                fontFamily = LocalPhonicsFontFamily.current,
-                fontSize = 30.sp,
-                lineHeight = 32.sp,
-                fontWeight = FontWeight.ExtraBold,
-            )
+            content()
         }
+    }
+}
+
+@Composable
+private fun LetterCard(
+    model: CardModel,
+    isActive: Boolean,
+    replayable: Boolean,
+    gradientFill: Float? = null,
+    inkProgress: Float? = null,
+    onClick: () -> Unit,
+) {
+    // Word cards stay put and darken instead of bouncing: [inkProgress] fades the text to black
+    // over the word audio's own length, so the ink lands exactly when the voice finishes. A bounce
+    // is a single pop that says nothing about how far along the word is.
+    BlendCardSurface(
+        charCount = model.text.length,
+        isActive = isActive,
+        bounce = inkProgress == null,
+        onClick = onClick.takeIf { replayable },
+    ) {
+        Text(
+            text = when {
+                // Ink in to black across the word's audio.
+                inkProgress != null ->
+                    inkedWord(model.text, model.style, inkProgress, MaterialTheme.colorScheme.onSurface)
+                // Target letter colour tracks the arrow: magenta at 0 → blue at 1.
+                gradientFill != null ->
+                    solidWord(model.text, lerp(VowelColor, ConsonantColor, gradientFill.coerceIn(0f, 1f)))
+                else -> coloredWord(model.text, model.style)
+            },
+            fontFamily = LocalPhonicsFontFamily.current,
+            fontSize = CARD_TEXT_SP.sp,
+            lineHeight = (CARD_TEXT_SP + 2).sp,
+            fontWeight = FontWeight.ExtraBold,
+        )
     }
 }
 
@@ -954,7 +1004,9 @@ private const val FILL_MS = 550
 private const val RESULT_HOLD_MS = 450L
 private const val WORD_MS = 900L
 private const val REPLAY_POP_MS = 320L
-private const val CARD_CHAR_WIDTH_DP = 24
-private const val CARD_PADDING_DP = 28
-private const val CARD_HEIGHT_DP = 64
+internal const val CARD_TEXT_SP = 30
+internal const val CARD_ACTIVE_SCALE = 1.15f
+internal const val CARD_CHAR_WIDTH_DP = 24
+internal const val CARD_PADDING_DP = 28
+internal const val CARD_HEIGHT_DP = 64
 private const val FILL_BAR_HEIGHT = 22

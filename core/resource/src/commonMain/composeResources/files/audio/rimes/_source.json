@@ -336,6 +336,246 @@
       "piece": "vowel_long_oo.mp3",
       "from_word": "moon",
       "level": 3
+    },
+    "bl": {
+      "source": "sound_bank",
+      "piece": "onset_bl.mp3",
+      "from_word": "black",
+      "level": 4
+    },
+    "cl": {
+      "source": "sound_bank",
+      "piece": "onset_cl.mp3",
+      "from_word": "clock",
+      "level": 4
+    },
+    "br": {
+      "source": "sound_bank",
+      "piece": "onset_br.mp3",
+      "from_word": "broom",
+      "level": 4
+    },
+    "cr": {
+      "source": "sound_bank",
+      "piece": "onset_cr.mp3",
+      "from_word": "crab",
+      "level": 4
+    },
+    "fl": {
+      "source": "sound_bank",
+      "piece": "onset_fl.mp3",
+      "from_word": "fly",
+      "level": 4
+    },
+    "gl": {
+      "source": "sound_bank",
+      "piece": "onset_gl.mp3",
+      "from_word": "globe",
+      "level": 4
+    },
+    "fr": {
+      "source": "sound_bank",
+      "piece": "onset_fr.mp3",
+      "from_word": "frog",
+      "level": 4
+    },
+    "gr": {
+      "source": "sound_bank",
+      "piece": "onset_gr.mp3",
+      "from_word": "green",
+      "level": 4
+    },
+    "pl": {
+      "source": "sound_bank",
+      "piece": "onset_pl.mp3",
+      "from_word": "plate",
+      "level": 4
+    },
+    "sl": {
+      "source": "sound_bank",
+      "piece": "onset_sl.mp3",
+      "from_word": "slide",
+      "level": 4
+    },
+    "dr": {
+      "source": "sound_bank",
+      "piece": "onset_dr.mp3",
+      "from_word": "drum",
+      "level": 4
+    },
+    "tr": {
+      "source": "sound_bank",
+      "piece": "onset_tr.mp3",
+      "from_word": "truck",
+      "level": 4
+    },
+    "sm": {
+      "source": "sound_bank",
+      "piece": "onset_sm.mp3",
+      "from_word": "smile",
+      "level": 4
+    },
+    "sn": {
+      "source": "sound_bank",
+      "piece": "onset_sn.mp3",
+      "from_word": "snake",
+      "level": 4
+    },
+    "sp": {
+      "source": "sound_bank",
+      "piece": "onset_sp.mp3",
+      "from_word": "spoon",
+      "level": 4
+    },
+    "sw": {
+      "source": "sound_bank",
+      "piece": "onset_sw.mp3",
+      "from_word": "swing",
+      "level": 4
+    },
+    "st": {
+      "source": "sound_bank",
+      "piece": "onset_st.mp3",
+      "from_word": "stop",
+      "level": 4
+    },
+    "sh": {
+      "source": "sound_bank",
+      "piece": "dig_sh.mp3",
+      "from_word": "shell",
+      "level": 4
+    },
+    "ch": {
+      "source": "sound_bank",
+      "piece": "dig_ch.mp3",
+      "from_word": "chick",
+      "level": 4
+    },
+    "tch": {
+      "source": "sound_bank",
+      "piece": "dig_ch.mp3",
+      "from_word": "watch",
+      "level": 4
+    },
+    "ph": {
+      "source": "sound_bank",
+      "piece": "dig_ph.mp3",
+      "from_word": "phone",
+      "level": 4
+    },
+    "wh": {
+      "source": "sound_bank",
+      "piece": "dig_wh.mp3",
+      "from_word": "whale",
+      "level": 4
+    },
+    "th": {
+      "source": "sound_bank",
+      "piece": "dig_th_voiced.mp3",
+      "from_word": "this",
+      "level": 4
+    },
+    "ck": {
+      "source": "sound_bank",
+      "piece": "dig_ck.mp3",
+      "from_word": "duck",
+      "level": 4
+    },
+    "qu": {
+      "source": "sound_bank",
+      "piece": "dig_qu.mp3",
+      "from_word": "queen",
+      "level": 4
+    },
+    "ng": {
+      "source": "sound_bank",
+      "piece": "dig_ng.mp3",
+      "from_word": "king",
+      "level": 4
+    },
+    "nk": {
+      "source": "sound_bank",
+      "piece": "dig_nk.mp3",
+      "from_word": "bank",
+      "level": 4
+    },
+    "nd": {
+      "source": "sound_bank",
+      "piece": "coda_nd.mp3",
+      "from_word": "wind",
+      "level": 4
+    },
+    "nt": {
+      "source": "sound_bank",
+      "piece": "coda_nt.mp3",
+      "from_word": "tent",
+      "level": 4
+    },
+    "lt": {
+      "source": "sound_bank",
+      "piece": "coda_lt.mp3",
+      "from_word": "belt",
+      "level": 4
+    },
+    "mp": {
+      "source": "sound_bank",
+      "piece": "coda_mp.mp3",
+      "from_word": "lamp",
+      "level": 4
+    },
+    "sk": {
+      "source": "sound_bank",
+      "piece": "onset_sk.mp3",
+      "from_word": "skunk",
+      "level": 4
+    },
+    "sc": {
+      "source": "sound_bank",
+      "piece": "onset_sc.mp3",
+      "from_word": "scale",
+      "level": 4
+    },
+    "spr": {
+      "source": "sound_bank",
+      "piece": "onset_spr.mp3",
+      "from_word": "spray",
+      "level": 4
+    },
+    "str": {
+      "source": "sound_bank",
+      "piece": "onset_str.mp3",
+      "from_word": "string",
+      "level": 4
+    },
+    "spl": {
+      "source": "sound_bank",
+      "piece": "onset_spl.mp3",
+      "from_word": "splash",
+      "level": 4
+    },
+    "squ": {
+      "source": "sound_bank",
+      "piece": "onset_squ.mp3",
+      "from_word": "squid",
+      "level": 4
+    },
+    "c_sss": {
+      "source": "sound_bank",
+      "piece": "dig_c_soft.mp3",
+      "from_word": "rice",
+      "level": 4
+    },
+    "g_juh": {
+      "source": "sound_bank",
+      "piece": "dig_g_soft.mp3",
+      "from_word": "giraffe",
+      "level": 4
+    },
+    "s_zzz": {
+      "source": "sound_bank",
+      "piece": "dig_s_voiced.mp3",
+      "from_word": "rose",
+      "level": 4
     }
   }
 }

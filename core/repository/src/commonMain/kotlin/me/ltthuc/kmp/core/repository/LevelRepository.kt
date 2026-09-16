@@ -59,8 +59,8 @@ class LevelRepository(
         unitDao.observeAll(),
         learningProgressDao.observe(),
         appSettingRepository.setting,
-    ) { levels, units, progress, _ ->
-        buildLevelCards(levels, units, progress)
+    ) { levels, units, progress, setting ->
+        buildLevelCards(levels, units, progress, setting.developerMode)
     }.onStart {
         seeder.syncCurriculum()
     }.flowOn(dispatcher)
@@ -85,6 +85,7 @@ class LevelRepository(
         levels: List<LevelEntity>,
         units: List<UnitEntity>,
         progress: LearningProgressEntity?,
+        developerMode: Boolean,
     ): List<LevelCard> {
         val unitsByLevel = units.groupBy { it.levelId }
 
@@ -97,7 +98,12 @@ class LevelRepository(
             val status = when {
                 // Premium levels stay ComingSoon until their content ships (see LAUNCHED_PREMIUM_LEVELS).
                 // L2 has launched, so it falls through to the normal ReadyToStart/Active flow below.
-                entity.isPremium && entity.id !in LAUNCHED_PREMIUM_LEVELS -> LevelStatus.ComingSoon
+                //
+                // Trừ khi đang bật developer mode: level chưa ship phải VÀO ĐƯỢC để soát nội dung
+                // trên máy thật trước khi mở bán. Đây KHÔNG phải mở bán — [LAUNCHED_PREMIUM_LEVELS]
+                // vẫn là chỗ duy nhất quyết định điều đó cho người dùng thường.
+                entity.isPremium && entity.id !in LAUNCHED_PREMIUM_LEVELS && !developerMode ->
+                    LevelStatus.ComingSoon
                 progress != null && entity.id == progress.activeLevelId ->
                     activeStatus(entity = entity, progress = progress, unitsByLevel = unitsByLevel)
                 else -> LevelStatus.ReadyToStart

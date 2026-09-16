@@ -50,6 +50,49 @@ class PhonicsPatternsTest {
     }
 
     @Test
+    fun `cấp 4 - mã letter tách đúng thành pattern`() {
+        // Chép tay từ `data/level_4/phonics.csv` sau khi đổi mã 2026-09-07
+        // (TH-voiced→TH-1, TH-unvoiced→TH-2, SOFT-C→C, SOFT-G→G, VOICED-S→S).
+        val golden = listOf(
+            "BL-CL" to listOf("bl", "cl"),
+            "BR-CR" to listOf("br", "cr"),
+            "FL-GL" to listOf("fl", "gl"),
+            "FR-GR" to listOf("fr", "gr"),
+            "PL-SL" to listOf("pl", "sl"),
+            "DR-TR" to listOf("dr", "tr"),
+            "SM-SN" to listOf("sm", "sn"),
+            "SP-SW" to listOf("sp", "sw"),
+            "ST" to listOf("st"),
+            "SH" to listOf("sh"),
+            "CH-TCH" to listOf("ch", "tch"),
+            "PH-WH" to listOf("ph", "wh"),
+            "TH-1" to listOf("th"),
+            "TH-2" to listOf("th"),
+            "CK-QU" to listOf("ck", "qu"),
+            "NG-NK" to listOf("ng", "nk"),
+            "ND-NT" to listOf("nd", "nt"),
+            "LT-MP" to listOf("lt", "mp"),
+            "SK-SC" to listOf("sk", "sc"),
+            "SPR-STR" to listOf("spr", "str"),
+            "SPL-SQU" to listOf("spl", "squ"),
+            "C" to listOf("c"),
+            "G" to listOf("g"),
+            "S" to listOf("s"),
+        )
+        assertEquals(24, golden.size, "Cấp 4 có đúng 24 lesson")
+        for ((letter, want) in golden) {
+            assertEquals(want, parsePatterns(letter, 4), "letter=$letter")
+        }
+    }
+
+    @Test
+    fun `mã cũ có từ mô tả không còn được chấp nhận - phải đổi dữ liệu chứ không vá parser`() {
+        // Bảo vệ quyết định 2026-09-07: dữ liệu L4 đã đổi sang mã sạch. Nếu ai đưa lại mã
+        // kiểu "TH-voiced" thì test này đỏ để nhắc, thay vì parser âm thầm đẻ pattern "voiced".
+        assertEquals(listOf("th", "voiced"), parsePatterns("TH-voiced", 4))
+    }
+
+    @Test
     fun `cấp 2 giữ nguyên hành vi cũ - lesson nguyên âm đơn trả rỗng`() {
         assertEquals(emptyList(), parsePatterns("SHORT-A", 2))
         assertEquals(listOf("am"), parsePatterns("SHORT-A-AM", 2))

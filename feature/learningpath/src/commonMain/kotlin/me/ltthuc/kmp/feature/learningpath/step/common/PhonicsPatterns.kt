@@ -27,6 +27,9 @@ internal fun PhonicsLesson.level(): Int? =
  *       "U_E-1"          → ["u_e"]         (đuôi số chỉ để tách 2 lesson trùng vần)
  *       "AI-AY"          → ["ai", "ay"]
  *       "IGH"            → ["igh"]
+ *       "BL-CL"          → ["bl", "cl"]    (cấp 4: cụm phụ âm)
+ *       "TH-1" / "TH-2"  → ["th"]          (cấp 4: hai bài th cùng chữ, khác âm)
+ *       "C"              → ["c"]           (cấp 4: soft c; âm nằm ở soundSpelling)
  *
  * Với cấp 3, kết quả LUÔN bằng `displayLetter` tách theo dấu cách. Đó là bất biến
  * mà golden test khoá lại: chữ hiện trên màn hình và vần dùng để suy tên file audio
@@ -43,14 +46,18 @@ internal fun PhonicsLesson.lessonPatterns(): List<String> =
 
 /** Nhân của [lessonPatterns], tách riêng để test được mà không cần dựng `PhonicsLesson`. */
 internal fun parsePatterns(letter: String, level: Int): List<String> {
-    val segs = letter.trim().lowercase().split('-').filter { it.isNotEmpty() }
+    val raw = letter.trim().lowercase().split('-').filter { it.isNotEmpty() }
+    if (raw.isEmpty()) return emptyList()
+    if (level <= FIRST_PATTERN_LEVEL) return raw.drop(2)
+    // Đoạn toàn số chỉ để tách hai lesson cùng pattern ("u_e-1"/"u_e-2" cấp 3,
+    // "th-1"/"th-2" cấp 4) — không phải pattern, bỏ ở MỌI vị trí. Trước đây chỉ bỏ
+    // trong nhánh magic-e nên "TH-1" sẽ đẻ ra pattern rác "1" (soát L4 2026-08-31).
+    val segs = raw.filterNot { seg -> seg.all { it.isDigit() } }
     if (segs.isEmpty()) return emptyList()
-    if (level <= FIRST_PATTERN_LEVEL) return segs.drop(2)
     if (segs[0].contains('_')) {
         // "a_e" là cách VIẾT vần chứ không phải vần đọc lên được, nên bỏ đi khi
-        // lesson có vần thật đi kèm. Đoạn toàn số ("u_e-1") chỉ để tách lesson.
-        val rest = segs.drop(1).filterNot { seg -> seg.all { it.isDigit() } }
-        return rest.ifEmpty { listOf(segs[0]) }
+        // lesson có vần thật đi kèm.
+        return segs.drop(1).ifEmpty { listOf(segs[0]) }
     }
     return segs
 }
