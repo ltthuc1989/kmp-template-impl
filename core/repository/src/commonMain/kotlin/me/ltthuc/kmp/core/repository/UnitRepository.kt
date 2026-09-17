@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import me.ltthuc.kmp.core.datasource.db.dao.LearningProgressDao
+import me.ltthuc.kmp.core.datasource.db.dao.LevelDao
 import me.ltthuc.kmp.core.datasource.db.dao.PhonicsLessonDao
 import me.ltthuc.kmp.core.datasource.db.dao.UnitDao
 import me.ltthuc.kmp.core.model.FREE_UNITS_PER_LEVEL
@@ -18,10 +19,12 @@ import me.ltthuc.kmp.core.model.MONETIZATION_ENABLED
 import me.ltthuc.kmp.core.model.PhonicsLesson
 import me.ltthuc.kmp.core.model.PhonicsUnit
 import me.ltthuc.kmp.core.model.UnitCard
+import me.ltthuc.kmp.core.model.UnitLessons
 import me.ltthuc.kmp.core.model.UnitLetterPreview
 import me.ltthuc.kmp.core.model.UnitStatus
 
 class UnitRepository(
+    private val levelDao: LevelDao,
     private val unitDao: UnitDao,
     private val phonicsLessonDao: PhonicsLessonDao,
     private val unitCompletionRepository: UnitCompletionRepository,
@@ -43,6 +46,33 @@ class UnitRepository(
     fun observeLessons(unitId: String): Flow<List<PhonicsLesson>> =
         phonicsLessonDao.observeByUnit(unitId).map { lessons -> lessons.map { it.toModel() } }
             .flowOn(dispatcher)
+
+    /**
+     * Mọi unit của mọi level kèm lesson, xếp đúng thứ tự học: level theo `orderIndex` của level,
+     * unit theo `orderIndex` trong level.
+     *
+     * Không xếp theo chuỗi `levelId` như [UnitDao.observeAll]: "L10" đứng trước "L2" khi so chuỗi,
+     * và game nào "lùi về unit trước" sẽ lặng lẽ lùi sai chỗ.
+     *
+     * Unit không có lesson nào (dữ liệu hỏng) vẫn giữ chỗ trong danh sách với `lessons` rỗng, để
+     * chỉ số "unit trước / unit sau" không bị xô lệch.
+     */
+    fun observeCurriculum(): Flow<List<UnitLessons>> = combine(
+        levelDao.observeAll(),
+        unitDao.observeAll(),
+        phonicsLessonDao.observeAll(),
+    ) { levels, units, lessons ->
+        val levelOrder = levels.associate { it.id to it.orderIndex }
+        val lessonsByUnit = lessons.map { it.toModel() }.groupBy { it.unitId }
+        units
+            .sortedWith(compareBy({ levelOrder[it.levelId] ?: Int.MAX_VALUE }, { it.orderIndex }))
+            .map { unit ->
+                UnitLessons(
+                    unit = unit.toModel(),
+                    lessons = lessonsByUnit[unit.id].orEmpty().sortedBy { it.orderIndex },
+                )
+            }
+    }.flowOn(dispatcher)
 
     /**
      * Per-lesson lock state for the Lesson Map. First lesson is always Unlocked; each

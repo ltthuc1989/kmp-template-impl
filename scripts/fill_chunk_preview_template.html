@@ -1,0 +1,475 @@
+<title>Soát game Điền vần</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Quicksand:wght@500;700&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+:root {
+  --ground: #FFFBF5;
+  --surface: #FFFFFF;
+  --surface-2: #F1F6F4;
+  --ink: #103A42;
+  --ink-soft: #587179;
+  --line: #E2E9E6;
+  --accent: #0E7C8A;
+  --accent-ink: #FFFFFF;
+  --slot: #FFD9E7;
+  --slot-edge: #E0578C;
+  --prev-bg: #EFE6F6;
+  --prev-ink: #5A3D78;
+  --next-bg: #FFEBD1;
+  --next-ink: #8A4A0C;
+  --warn: #9A5A06;
+  --warn-bg: #FFF3DD;
+  --crit: #B42318;
+  --crit-bg: #FDEBE8;
+  --shadow: 0 1px 0 rgba(16, 58, 66, .06), 0 6px 18px -10px rgba(16, 58, 66, .25);
+  --f-word: "Quicksand", "Nunito", system-ui, sans-serif;
+  --f-body: "Be Vietnam Pro", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground: #0D191B; --surface: #142326; --surface-2: #1A2D30; --ink: #E3EFED; --ink-soft: #97AEB1;
+    --line: #25393C; --accent: #4CC3D0; --accent-ink: #062327; --slot: #4A2436; --slot-edge: #F08DB5;
+    --prev-bg: #2D2440; --prev-ink: #D7C3EE; --next-bg: #37280F; --next-ink: #F4C58C;
+    --warn: #F0B45C; --warn-bg: #30240E; --crit: #FF8B7C; --crit-bg: #381A16;
+    --shadow: 0 1px 0 rgba(0,0,0,.3), 0 8px 20px -12px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"] {
+  --ground: #0D191B; --surface: #142326; --surface-2: #1A2D30; --ink: #E3EFED; --ink-soft: #97AEB1;
+  --line: #25393C; --accent: #4CC3D0; --accent-ink: #062327; --slot: #4A2436; --slot-edge: #F08DB5;
+  --prev-bg: #2D2440; --prev-ink: #D7C3EE; --next-bg: #37280F; --next-ink: #F4C58C;
+  --warn: #F0B45C; --warn-bg: #30240E; --crit: #FF8B7C; --crit-bg: #381A16;
+  --shadow: 0 1px 0 rgba(0,0,0,.3), 0 8px 20px -12px rgba(0,0,0,.7);
+}
+
+* { box-sizing: border-box; }
+body { background: var(--ground); color: var(--ink); font-family: var(--f-body); font-size: 15px; line-height: 1.55; }
+.wrap { max-width: 1180px; margin: 0 auto; padding-inline: 20px; padding-block: 28px 64px; }
+h1, h2, h3 { text-wrap: balance; margin: 0; line-height: 1.2; }
+h2 { font-size: 22px; font-weight: 700; }
+h3 { font-size: 16px; font-weight: 600; }
+p { margin: 0; }
+code, .mono { font-family: var(--f-mono); font-size: .86em; }
+section { margin-top: 44px; }
+.eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-soft); font-weight: 600; }
+.lede { max-width: 64ch; color: var(--ink-soft); font-size: 16px; }
+.sec-head { display: flex; flex-direction: column; gap: 6px; margin-bottom: 18px; }
+
+/* ---------- hero ---------- */
+.hero { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 32px; align-items: center; }
+.hero h1 { font-size: clamp(28px, 4.2vw, 42px); font-weight: 700; margin-block: 8px 12px; }
+.stage { background: var(--surface); border-radius: 28px; box-shadow: var(--shadow); padding: 24px; display: grid; gap: 18px; justify-items: center; }
+.stage .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; }
+.stage .col { background: var(--surface-2); border-radius: 18px; padding: 14px 10px; display: grid; gap: 10px; justify-items: center; text-align: center; }
+.stage .col .tag { font-size: 12px; font-weight: 600; color: var(--ink-soft); }
+.stage .pic img { width: 88px; height: 88px; object-fit: contain; }
+.bigword { font-family: var(--f-word); font-weight: 700; font-size: 34px; letter-spacing: .01em; display: inline-flex; align-items: center; }
+.slot { display: inline-block; width: 1.25em; height: .95em; margin-inline: .08em; border-radius: .22em; background: var(--slot); border: 2px dashed var(--slot-edge); vertical-align: middle; }
+.opts { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+.opt { font-family: var(--f-word); font-weight: 700; font-size: 17px; min-width: 40px; padding: 3px 10px; border-radius: 999px; border: 2px solid var(--line); background: var(--surface); text-align: center; position: relative; }
+.opt.ok { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.opt.prev { background: var(--prev-bg); border-color: transparent; color: var(--prev-ink); }
+.opt.next { background: var(--next-bg); border-color: transparent; color: var(--next-ink); }
+.opt small { font-family: var(--f-mono); font-size: 9px; font-weight: 500; margin-left: 3px; opacity: .85; }
+.opt.other { border: 2px dotted var(--prev-ink); }
+.opt.makes { text-decoration: underline wavy var(--warn); text-underline-offset: 4px; }
+.stage .old .bigword, .stage .old .opts { opacity: .8; }
+
+/* ---------- rules ---------- */
+.rules { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.rule { background: var(--surface); border-radius: 16px; padding: 18px; border: 1px solid var(--line); display: grid; gap: 8px; align-content: start; }
+.rule .step { font-family: var(--f-mono); font-size: 12px; color: var(--accent); font-weight: 500; }
+.rule ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; }
+.ex { font-family: var(--f-word); font-weight: 700; white-space: nowrap; }
+.ex .slot { width: 1em; height: .85em; border-width: 1.5px; }
+
+/* ---------- decisions ---------- */
+.decisions { display: grid; gap: 12px; }
+.dec { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 18px; display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 4px 16px; }
+.dec .id { font-family: var(--f-mono); font-size: 20px; color: var(--accent); grid-row: span 3; }
+.dec .q { font-weight: 600; font-size: 16px; }
+.dec .choices { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 8px; }
+.choice { border-radius: 12px; padding: 10px 12px; background: var(--surface-2); font-size: 14px; }
+.choice b { display: block; margin-bottom: 2px; }
+.choice.rec { outline: 2px solid var(--accent); outline-offset: -2px; }
+.choice.rec b::after { content: "đã chọn"; font-size: 11px; font-weight: 600; color: var(--accent); margin-left: 8px; letter-spacing: .04em; text-transform: uppercase; }
+
+/* ---------- plan ---------- */
+.plan { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+.plan ol { margin: 0; padding-left: 22px; display: grid; gap: 10px; }
+.plan li::marker { font-family: var(--f-mono); color: var(--accent); }
+.table-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 12px; font-weight: 600; color: var(--ink-soft); letter-spacing: .03em; background: var(--surface-2); }
+tr:last-child td { border-bottom: 0; }
+td.num { font-variant-numeric: tabular-nums; text-align: right; }
+th.num { text-align: right; }
+td .z { color: var(--ink-soft); opacity: .6; }
+td .w { color: var(--warn); font-weight: 600; }
+td .c { color: var(--crit); font-weight: 600; }
+
+/* ---------- review board ---------- */
+.board-bar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--ground); padding-block: 12px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); }
+.seg { display: inline-flex; background: var(--surface-2); border-radius: 999px; padding: 3px; gap: 2px; flex-wrap: wrap; }
+.seg button { font: inherit; font-size: 14px; font-weight: 600; border: 0; background: transparent; color: var(--ink-soft); padding: 6px 14px; border-radius: 999px; cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: var(--shadow); }
+.seg button:focus-visible, .unit-jump a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.legend { display: flex; flex-wrap: wrap; gap: 8px 14px; font-size: 13px; color: var(--ink-soft); align-items: center; margin-top: 14px; }
+.legend .opt { font-size: 13px; padding: 1px 8px; }
+.level-note { margin-top: 16px; padding: 14px 16px; border-radius: 14px; background: var(--crit-bg); color: var(--crit); font-size: 14px; }
+.level-note b { color: inherit; }
+.unit { margin-top: 30px; }
+.unit-head { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: baseline; margin-bottom: 12px; }
+.unit-head h3 { font-family: var(--f-mono); font-size: 15px; font-weight: 500; }
+.unit-head .chips { display: flex; flex-wrap: wrap; gap: 5px; }
+.unit-head .chips .opt { font-size: 14px; padding: 0 8px; }
+.unit-head .borrow { font-size: 13px; color: var(--ink-soft); display: flex; flex-wrap: wrap; gap: 5px; align-items: center; }
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(208px, 1fr)); gap: 10px; }
+.card { background: var(--surface); border-radius: 16px; border: 1px solid var(--line); padding: 12px; display: grid; gap: 8px; align-content: start; }
+.card.has-crit { border-color: var(--crit); }
+.card-top { display: flex; justify-content: space-between; align-items: center; gap: 6px; }
+.card-top code { color: var(--ink-soft); font-size: 11px; }
+.card-top .word-label { font-size: 12px; color: var(--ink-soft); }
+.card .row { display: flex; align-items: center; gap: 10px; min-height: 56px; }
+.card .pic { width: 52px; height: 52px; flex: none; display: grid; place-items: center; font-size: 36px; line-height: 1; }
+.card .pic img { width: 52px; height: 52px; object-fit: contain; }
+.card .bigword { font-size: 25px; flex-wrap: wrap; min-width: 0; overflow-wrap: anywhere; }
+.card .opts { justify-content: flex-start; }
+.card .opt { font-size: 15px; min-width: 34px; padding: 2px 8px; }
+.flags { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.flags li { font-size: 12px; line-height: 1.4; padding: 4px 8px; border-radius: 8px; }
+.flags li.warn { background: var(--warn-bg); color: var(--warn); }
+.flags li.crit { background: var(--crit-bg); color: var(--crit); font-weight: 600; }
+.flags li.info { background: var(--surface-2); color: var(--ink-soft); }
+.excluded { margin-top: 10px; font-size: 13px; color: var(--ink-soft); }
+.excluded code { font-size: 11px; }
+.empty { padding: 18px; color: var(--ink-soft); }
+.muted { color: var(--ink-soft); }
+
+@media (max-width: 860px) {
+  .hero, .plan, .rules { grid-template-columns: minmax(0, 1fr); }
+  .dec { grid-template-columns: minmax(0, 1fr); }
+  .dec .id { grid-row: auto; }
+  .dec .choices { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 440px) {
+  .wrap { padding-inline: 16px; }
+  .stage .compare { grid-template-columns: minmax(0, 1fr); }
+  .cards { grid-template-columns: minmax(0, 1fr); }
+}
+</style>
+
+<div class="wrap">
+  <header class="hero">
+    <div>
+      <div class="eyebrow">ABC Phonics Kids · Fill Letter · game thứ 3 sau Story</div>
+      <h1>Khuyết vần, không khuyết chữ đầu</h1>
+      <p class="lede">Mỗi vòng che đúng phần bài vừa dạy trong từ. Bé chọn 1 trong 4 thẻ cùng loại, cùng độ dài; unit chưa đủ thì mượn unit trước. Luật đã chốt ngày 17/09 và đã vào app cho L1–L4. Trang chạy đúng luật đó trên <b id="stat-words">—</b> từ của cả 5 level — mỗi thẻ có mã, báo lỗi theo mã.</p>
+    </div>
+    <div class="stage" id="hero-stage"></div>
+  </header>
+
+  <section>
+    <div class="sec-head">
+      <div class="eyebrow">Luật đề xuất</div>
+      <h2>Chọn đáp án và 3 thẻ nhiễu thế nào</h2>
+    </div>
+    <div class="rules">
+      <div class="rule">
+        <span class="step">bước 1 · đáp án</span>
+        <h3>Phần bài dạy, ở đúng chỗ nó đứng trong từ</h3>
+        <ul>
+          <li><b>L1</b> chữ cái của bài: <span class="ex">fo<i class="slot"></i></span> = x. Game cũ che chữ đầu (<span class="ex"><i class="slot"></i>ox</span> = f — không phải chữ đang học).</li>
+          <li><b>L2</b> nguyên âm <span class="ex">c<i class="slot"></i>t</span> = a, hoặc vần cuối <span class="ex">r<i class="slot"></i></span> = am</li>
+          <li><b>L3</b> tổ hợp nguyên âm <span class="ex">r<i class="slot"></i>n</span> = ai · vần magic-e <span class="ex">g<i class="slot"></i></span> = ame · magic-e tách 2 ô <span class="ex">h<i class="slot"></i>m<i class="slot"></i></span> = o_e</li>
+          <li><b>L4</b> chữ hồng trong bảng tách: <span class="ex">fa<i class="slot"></i>er</span> = th · <span class="ex">ri<i class="slot"></i>e</span> = c · <span class="ex">wa<i class="slot"></i></span> = tch</li>
+          <li><b>L5</b> chưa có bảng tách — chỉ mô phỏng tạm</li>
+        </ul>
+      </div>
+      <div class="rule">
+        <span class="step">bước 2 · cùng loại, cùng độ dài</span>
+        <h3>Nguyên âm đấu nguyên âm, thẻ ngắn đấu thẻ ngắn</h3>
+        <p>Bốn loại: nguyên âm · vần · magic-e tách · cụm phụ âm. Loại khác không nhét vừa ô (<span class="ex">h<i class="slot"></i>m<i class="slot"></i></span> không nhận được thẻ <b>ai</b>) hoặc vô nghĩa (<span class="ex">c<i class="slot"></i>t</span> nhận thẻ <b>am</b>).</p>
+        <p>Độ dài chia hai nhóm: <b>1–2 chữ</b> và <b>3–4 chữ</b>. 4 thẻ luôn cùng nhóm với đáp án — không để <b>tch</b> đứng giữa sh · ch · ph.</p>
+        <p class="muted">Chữ a e i o u của L1 dạy đúng âm ngắn của L2 (ahh, ehh…) nên tính là nguyên âm đã học.</p>
+      </div>
+      <div class="rule">
+        <span class="step">bước 3 · thiếu thì lùi</span>
+        <h3>Unit trước gần nhất, lùi tiếp được sang level trước</h3>
+        <p>L4U5 chỉ có th · ck · qu → lấy thêm 1 thẻ bốc từ sh ch ph wh của L4U4 (tch dài nên bị loại). Hết đường lùi mới lấy unit <i>sau</i> và gắn cờ <b>chưa học</b>: L1U1, vần am/an của L2U1, và <span class="ex">wa<i class="slot"></i></span> / <span class="ex">ca<i class="slot"></i></span> — thẻ 3 chữ duy nhất trước đó là chính tch, nên phải lấy spr str spl squ của L4U7.</p>
+      </div>
+      <div class="rule">
+        <span class="step">bước 4 · vẫn thiếu thì lấy khác loại</span>
+        <h3>Giữ độ dài, nới loại</h3>
+        <p>Chỉ <b>igh</b> (L3U6) rơi vào đây: không có nguyên âm 3 chữ nào khác, nên lấy vần ime · ike · ive · ine đã học ở L3U2.</p>
+        <p class="muted">Một mặt chữ chỉ hiện một thẻ: <b>th</b> hữu thanh và vô thanh, <b>y</b> đọc /iː/ và /aɪ/. Thẻ trong unit được ưu tiên; thẻ mượn chỉ bù phần thiếu, bốc ngẫu nhiên.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <div class="eyebrow">Đã chốt 17/09</div>
+      <h2>Cả 5 chỗ chọn phương án A, thêm luật độ dài</h2>
+      <p class="lede">Ô viền đậm là phương án đã chọn. Bảng soát bên dưới chạy đúng các lựa chọn này.</p>
+    </div>
+    <div class="decisions">
+      <div class="dec">
+        <span class="id">D1</span>
+        <p class="q">Ô trống hiện thế nào?</p>
+        <div class="choices">
+          <div class="choice rec"><b>A · Một ô cố định</b>Không lộ số chữ. <span class="ex">wa<i class="slot"></i></span> với tch / ch / sh / ph — bé phải nghe, không đếm chữ mà loại.</div>
+          <div class="choice"><b>B · Gạch theo số chữ</b><span class="ex">wa _ _ _</span> — tch lộ ngay vì là thẻ 3 chữ duy nhất; tương tự spr/str với sk/sc ở L4U7.</div>
+        </div>
+      </div>
+      <div class="dec">
+        <span class="id">D2</span>
+        <p class="q">Nhiễu có bắt buộc cùng loại không?</p>
+        <div class="choices">
+          <div class="choice rec"><b>A · Có</b>Như bước 2. L3U4 (ai ay) khi đó mượn nguyên âm ngắn o/u của L2 — tương phản rain/ran đúng trọng tâm bài vần dài.</div>
+          <div class="choice"><b>B · Trộn mọi vần của unit</b>Đúng nguyên văn yêu cầu, nhưng <span class="ex">c<i class="slot"></i>t</span> nhận am/an, <span class="ex">r<i class="slot"></i>n</span> nhận ime/ike. Magic-e tách vẫn buộc cùng loại vì không nhét vừa ô.</div>
+        </div>
+      </div>
+      <div class="dec">
+        <span class="id">D3</span>
+        <p class="q">L3 unit 1–2: 8 từ chỉ mang vần bao a_e / i_e (tape, cape, cane, mane, kite, pine, ripe, fine)</p>
+        <div class="choices">
+          <div class="choice rec"><b>A · Bỏ khỏi game này</b>Cùng luật Bubble Pop đã chốt 2026-08-31. Mỗi unit còn 8 từ với đủ 4 vần ame ake ate ave / ime ike ive ine.</div>
+          <div class="choice"><b>B · Giữ, khuyết 2 ô</b><span class="ex">t<i class="slot"></i>p<i class="slot"></i></span> — nhưng trước đó chưa có magic-e tách nào khác, phải lấy i_e o_e u_e của unit sau (chưa học).</div>
+        </div>
+      </div>
+      <div class="dec">
+        <span class="id">D4</span>
+        <p class="q">Nhiễu ghép ra một từ khác có trong app — <span class="ex">c<i class="slot"></i></span> + at = cat trong khi hình là cap (<b id="stat-collide">—</b> từ có nguy cơ)</p>
+        <div class="choices">
+          <div class="choice rec"><b>A · Giữ, và đọc từ khi vào vòng</b>Họ vần vốn thế; hình + tiếng phân định, và đây đúng là chỗ bé phải nghe kỹ. Game hiện chỉ đọc từ SAU khi chọn đúng.</div>
+          <div class="choice"><b>B · Loại nhiễu đó</b>L2U2, L2U5, L2U8 chỉ có đúng 4 vần — loại là phải mượn unit khác, và thẻ mượn lại ghép ra từ khác (can, cap, cat…).</div>
+        </div>
+      </div>
+      <div class="dec">
+        <span class="id">D5</span>
+        <p class="q">Không có unit trước đủ vần: L1U1 (a b c) và vần am / an của L2U1</p>
+        <div class="choices">
+          <div class="choice rec"><b>A · Lấy unit sau, gắn cờ chưa học</b>Chỉ 2 chỗ. L1U1 thêm 1 chữ của L1U2; L2U1 thêm 2 vần của L2U2.</div>
+          <div class="choice"><b>B · Giữ như game cũ</b>L1U1 thêm chữ ngẫu nhiên a–z; L2U1 chơi 3 thẻ ở vòng vần.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <div class="eyebrow">Đã làm — nhánh level4, chưa commit</div>
+      <h2>Đổi logic, giữ bố cục màn chơi</h2>
+    </div>
+    <div class="plan">
+      <ol>
+        <li><b>Hàm thuần <code>FillChunk.kt</code></b> trong <code>game/filletter</code>: tìm phần khuyết (chữ · vị trí · loại) và gom nhiễu theo bước 2–4. Dùng lại <code>parsePatterns</code>, <code>blendParts</code>, <code>wordHasPattern</code>, <code>BlendSplit</code>; tách luật vần bao khỏi <code>BubblePopViewModel</code> sang <code>game/common</code> để hai game chung một luật.</li>
+        <li><b><code>UnitRepository</code></b> thêm luồng lesson của mọi unit theo thứ tự curriculum (level → unit) — cần để lùi sang unit trước, kể cả level trước.</li>
+        <li><b><code>FillLetterViewModel</code></b>: vòng chơi mang đáp án dạng chuỗi + danh sách ô trống; <code>onChoiceTapped(String)</code>; bỏ từ lặp trong pool (jug có 2 lần ở L2U7).</li>
+        <li><b>Màn chơi giữ bố cục</b> hình · từ · hàng 4 thẻ: <code>WordWithBlank</code> vẽ 1–2 ô; <code>LetterCircle</code> nhận chuỗi và nới ngang khi ≥ 2 chữ; tay chỉ dẫn tra theo chuỗi; D4-A thì đọc từ khi vào vòng. Muốn đổi hình thức thẻ thì gửi mockup.</li>
+        <li><b>Golden test <code>FillChunkTest</code></b> (15 ca, bảng chép tay): father → th, fox → x, home → o_e, rice → c, ice cream, watch → tch; L4U5 mượn thẻ ngắn của L4U4; L4U8 mượn sk/sc chứ không phải spr; igh lấy vần L3U2; o_e chỉ đi với magic-e tách; nguyên âm L2 mượn chữ L1. Quét đủ mọi từ thì chạy script dựng trang này.</li>
+        <li>77 test của learningpath, repository, datasource đều qua; detekt sạch trên mọi file đã sửa; đã cài lên máy ảo.</li>
+      </ol>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>Chỗ có thể hỏng</th><th>Nếu im lặng thì bé thấy</th><th>Xử lý</th></tr></thead>
+          <tbody>
+            <tr><td>Không tìm ra phần khuyết (split ghép không ra từ, vần không có trong từ)</td><td>Ô trống sai chỗ hoặc đáp án rỗng</td><td>Log kèm mã từ, bỏ từ khỏi pool; golden test chặn từ trước</td></tr>
+            <tr><td>Lùi + tiến hết mà vẫn &lt; 3 nhiễu</td><td>Vòng 2–3 thẻ, không ai biết</td><td>Log lỗi; chơi với số thẻ có được</td></tr>
+            <tr><td>Nhiễu trùng mặt chữ với đáp án</td><td>Hai thẻ đúng, bấm thẻ nào cũng lắc</td><td>So chữ thường, loại trùng; test khoá</td></tr>
+            <tr><td>Luồng lesson toàn curriculum rỗng / chậm</td><td>Game đứng ở Loading</td><td>Vẫn dựng vòng bằng vần trong unit, log cảnh báo — không chờ</td></tr>
+            <tr><td>Pool từ &lt; 4 sau khi lọc</td><td>Ít vòng hơn</td><td>Chơi số vòng có được; &lt; 2 từ → màn lỗi như hiện tại</td></tr>
+            <tr><td>L5 bật khi chưa có split</td><td>pencil khuyết e thay vì i (âm ơ)</td><td>Game loại từ L5 thiếu split + log; golden test L5 báo đỏ</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <div class="eyebrow">Tổng quan</div>
+      <h2>Mỗi level chạy luật ra sao</h2>
+    </div>
+    <div class="table-scroll">
+      <table id="summary"></table>
+    </div>
+  </section>
+
+  <section id="board">
+    <div class="sec-head">
+      <div class="eyebrow">Bảng soát</div>
+      <h2>Từng từ, từng thẻ</h2>
+      <p class="lede">4 thẻ trên mỗi ô là <b>một lần bốc mẫu</b> — trong app thẻ mượn được bốc lại và xáo mỗi lần chơi. Cờ “ghép ra từ có trong app” xét cả kho nhiễu, không chỉ 3 thẻ đang hiện.</p>
+    </div>
+    <div class="board-bar">
+      <div class="seg" id="level-tabs" role="group" aria-label="Chọn level"></div>
+      <div class="seg" id="filter" role="group" aria-label="Lọc">
+        <button type="button" id="f-all" data-f="all" aria-pressed="true">Tất cả</button>
+        <button type="button" id="f-flag" data-f="flag" aria-pressed="false">Chỉ ô có cờ</button>
+      </div>
+    </div>
+    <div class="legend">
+      <span class="opt ok">th</span> đáp án
+      <span class="opt">qu</span> vần của unit
+      <span class="opt prev">sh<small>U4</small></span> mượn unit trước
+      <span class="opt next">d<small>U2</small></span> lấy unit sau (chưa học)
+      <span class="opt prev other">ime<small>U2</small></span> khác loại (bước 4)
+      <span class="opt makes">at</span> ghép ra từ khác có trong app
+    </div>
+    <div id="level-view"></div>
+  </section>
+</div>
+
+<script>
+const DATA = __DATA__;
+const IMAGES = __IMAGES__;
+
+const $ = (sel, root = document) => root.querySelector(sel);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+const shortUnit = id => id.replace(/^L\d+/, "");
+
+function pic(w) {
+  if (w.image && IMAGES[w.image]) return `<img src="${IMAGES[w.image]}" alt="${esc(w.word)}">`;
+  return esc(w.emoji || "·");
+}
+function wordHtml(w) {
+  return w.segments.map(s => s.blank ? '<i class="slot" aria-label="ô trống"></i>' : esc(s.t)).join("");
+}
+function optHtml(o, level) {
+  if (o.correct) return `<span class="opt ok">${esc(o.label)}</span>`;
+  const cls = ["opt"];
+  if (o.tag === "prev") cls.push("prev");
+  if (o.tag === "next") cls.push("next");
+  if (o.otherKind) cls.push("other");
+  if (o.vocab) cls.push("makes");
+  const src = o.tag === "unit" ? "" : `<small>${esc(o.src.startsWith(level) ? shortUnit(o.src) : o.src)}</small>`;
+  const title = [o.tag === "prev" ? `mượn ${o.src}` : o.tag === "next" ? `lấy ${o.src} — chưa học` : "",
+                 o.vocab ? `ghép ra “${o.makes}”` : ""].filter(Boolean).join(" · ");
+  return `<span class="${cls.join(" ")}"${title ? ` title="${esc(title)}"` : ""}>${esc(o.label)}${src}</span>`;
+}
+function flagsOf(w) {
+  const out = (w.flags || []).map(f => ({ ...f }));
+  if (w.collisions && w.collisions.length) {
+    out.push({ kind: "warn", text: "nhiễu ghép ra từ có trong app: " + w.collisions.map(c => `${c.label} → ${c.makes}`).join(", ") });
+  }
+  if (w.note && !out.some(f => f.kind === "crit")) out.push({ kind: "info", text: "L5 " + w.note });
+  return out;
+}
+function isFlagged(w) { return flagsOf(w).some(f => f.kind !== "info"); }
+
+function card(w, level) {
+  const flags = flagsOf(w);
+  const crit = flags.some(f => f.kind === "crit");
+  return `<article class="card${crit ? " has-crit" : ""}">
+    <div class="card-top"><code>${esc(w.code)}</code><span class="word-label">${esc(w.word)}</span></div>
+    <div class="row"><div class="pic">${pic(w)}</div><div class="bigword">${wordHtml(w)}</div></div>
+    <div class="opts">${w.options.map(o => optHtml(o, level)).join("")}</div>
+    ${flags.length ? `<ul class="flags">${flags.map(f => `<li class="${f.kind}">${esc(f.text)}</li>`).join("")}</ul>` : ""}
+  </article>`;
+}
+
+function summaryTable() {
+  const head = `<thead><tr><th>Level</th><th class="num">Từ vào game</th><th class="num">Bị loại</th><th class="num">Mượn unit trước</th><th class="num">Lấy unit sau</th><th class="num">Nhiễu ghép ra từ khác</th><th class="num">Lỗi chặn</th><th>Ghi chú</th></tr></thead>`;
+  const notes = {
+    L1: "Sửa luôn lỗi cũ: unit X che chữ đầu (▢ox = f). Thẻ mượn thay cho chữ ngẫu nhiên.",
+    L2: "Họ vần -at -ap -ag… ghép ra từ thật là chuyện thường — xem D4.",
+    L3: "8 từ vần bao bị loại (D3). o_e / u_e khuyết 2 ô. igh lấy vần L3U2 (khác loại).",
+    L4: "Dùng đúng bảng tách split. L4U5, L4U8 mượn 1 thẻ ngắn; watch/catch lấy thẻ dài của L4U7.",
+    L5: "Chưa làm được: cần cột split trong phonics.csv như L4.",
+  };
+  const cell = (n, cls) => n ? `<span class="${cls}">${n}</span>` : `<span class="z">0</span>`;
+  const rows = DATA.map(L => {
+    const s = L.stats;
+    return `<tr><td><b>${L.id}</b> <span class="muted">${esc(L.title)}</span></td>
+      <td class="num">${s.playable}</td><td class="num">${cell(s.excluded, "")}</td><td class="num">${cell(s.prev, "")}</td>
+      <td class="num">${cell(s.next, "w")}</td><td class="num">${cell(s.collide, "w")}</td><td class="num">${cell(s.crit, "c")}</td>
+      <td>${esc(notes[L.id] || "")}</td></tr>`;
+  }).join("");
+  $("#summary").innerHTML = head + `<tbody>${rows}</tbody>`;
+}
+
+function hero() {
+  const L4 = DATA.find(L => L.id === "L4");
+  const w = L4 && L4.units.flatMap(u => u.words).find(x => x.word === "father");
+  if (!w) return;
+  const demo = { ...w, options: [
+    { label: "th", correct: true }, { label: "qu", tag: "unit" }, { label: "ck", tag: "unit" }, { label: "sh", tag: "prev", src: "L4U4" },
+  ] };
+  const old = `<div class="col old"><span class="tag">Game hiện tại</span><div class="bigword"><i class="slot"></i>ather</div>
+    <div class="opts"><span class="opt ok">f</span><span class="opt">m</span><span class="opt">t</span><span class="opt">b</span></div></div>`;
+  const neu = `<div class="col"><span class="tag">Luật mới · L4U5</span><div class="bigword">${wordHtml(demo)}</div>
+    <div class="opts">${demo.options.map(o => optHtml(o, "L4")).join("")}</div></div>`;
+  $("#hero-stage").innerHTML = `<div class="pic">${pic(w)}</div><div class="compare">${old}${neu}</div>`;
+}
+
+let state = { level: "L4", filter: "all" };
+try {
+  const saved = JSON.parse(localStorage.getItem("fill-chunk-view") || "null");
+  if (saved && DATA.some(L => L.id === saved.level)) state = { ...state, ...saved };
+} catch (e) { /* bộ nhớ trình duyệt bị chặn — dùng mặc định */ }
+
+function save() { try { localStorage.setItem("fill-chunk-view", JSON.stringify(state)); } catch (e) {} }
+
+function renderTabs() {
+  $("#level-tabs").innerHTML = DATA.map(L =>
+    `<button type="button" id="tab-${L.id}" data-level="${L.id}" aria-pressed="${L.id === state.level}">${L.id}</button>`).join("");
+  document.querySelectorAll("#filter button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.f === state.filter)));
+}
+
+function renderLevel() {
+  const L = DATA.find(x => x.id === state.level);
+  let html = "";
+  if (L.id === "L5") {
+    html += `<div class="level-note"><b>L5 chưa bật được game này.</b> Chưa có bảng tách split nên phần khuyết chỉ dò chuỗi: sai vị trí ở 6 từ âm ơ / nguyên âm mở, và <b>ear</b> bị khuyết cả từ. <code>parsePatterns</code> cũng đọc mã L5 thành rác (“open”, “schwa”) — trang này tạm dùng displayLetter.</div>`;
+  }
+  let shown = 0;
+  for (const u of L.units) {
+    const words = u.words.filter(w => !w.excluded && (state.filter === "all" || isFlagged(w)));
+    const excluded = u.words.filter(w => w.excluded);
+    if (state.filter === "flag" && !words.length) continue;
+    shown += words.length;
+    const borrowed = new Map();
+    u.words.forEach(w => (w.tiers || []).forEach(t => {
+      if (t.tag === "unit") return;
+      const key = `${t.tag}|${t.src}`;
+      if (!borrowed.has(key)) borrowed.set(key, new Set());
+      t.labels.forEach(l => borrowed.get(key).add(l));
+    }));
+    const borrowHtml = [...borrowed.entries()].map(([k, labels]) => {
+      const [tag, src] = k.split("|");
+      return `<span class="borrow">${tag === "prev" ? "mượn" : "lấy (chưa học)"} <code>${esc(src)}</code> ${[...labels].map(l => `<span class="opt ${tag}">${esc(l)}</span>`).join("")}</span>`;
+    }).join("");
+    html += `<div class="unit" id="u-${u.id}">
+      <div class="unit-head"><h3>${esc(u.id)}</h3>
+        <div class="chips">${u.labels.map(x => `<span class="opt">${esc(x.label)}</span>`).join("")}</div>
+        ${borrowHtml}
+      </div>
+      ${words.length ? `<div class="cards">${words.map(w => card(w, L.id)).join("")}</div>` : ""}
+      ${excluded.length && state.filter === "all" ? `<p class="excluded">Không vào game: ${excluded.map(w => `<code>${esc(w.code)}</code> ${esc(w.word)} — ${esc(w.excluded)}`).join(" · ")}</p>` : ""}
+    </div>`;
+  }
+  if (!shown && state.filter === "flag") html += `<p class="empty">${L.id} không có ô nào gắn cờ.</p>`;
+  $("#level-view").innerHTML = html;
+}
+
+document.addEventListener("click", e => {
+  const lv = e.target.closest("#level-tabs button");
+  const f = e.target.closest("#filter button");
+  if (lv) state.level = lv.dataset.level;
+  else if (f) state.filter = f.dataset.f;
+  else return;
+  save(); renderTabs(); renderLevel();
+});
+
+$("#stat-words").textContent = DATA.reduce((n, L) => n + L.stats.total, 0);
+$("#stat-collide").textContent = DATA.filter(L => L.id !== "L5").reduce((n, L) => n + L.stats.collide, 0);
+hero();
+summaryTable();
+renderTabs();
+renderLevel();
+</script>

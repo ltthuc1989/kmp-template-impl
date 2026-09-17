@@ -27,7 +27,7 @@ import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.error_no_data
 import me.ltthuc.kmp.core.ui.screen.ScreenState
 import me.ltthuc.kmp.feature.learningpath.game.common.rimeAudioKeys
-import me.ltthuc.kmp.feature.learningpath.game.common.wordHasPattern
+import me.ltthuc.kmp.feature.learningpath.game.common.umbrellaPatterns
 
 /**
  * Drives BubblePop v5: 30s round, kid races to pop up to [TARGET_POOL] target letter bubbles.
@@ -363,19 +363,11 @@ private fun List<PhonicsLesson>.gameTargets(): List<String> =
     }
 
 /**
- * Bỏ những vần ÔM TRỌN unit khỏi danh sách vòng chơi.
- *
- * `a_e` của unit 1 và `i_e` của unit 2 là vần BAO — mọi từ trong unit đều khớp (`tape`
- * `game` `cake` … đều tách ra nguyên âm `a_e`). Vòng đó không có "từ của riêng nó",
- * trái với luật mỗi vòng ứng với một vần, nên user chốt bỏ (2026-08-31).
- *
- * Nhận diện bằng dữ liệu chứ không liệt kê `a_e`/`i_e` bằng tay: cấp 4-5 còn vần bao
- * khác, và mỗi lần liệt kê tay là một lần quên. Unit 3 giữ đủ hai vòng vì `o_e` chỉ
- * khớp 4/12 từ và `u_e` khớp 8/12 — không vần nào ôm trọn.
+ * Bỏ những vần ÔM TRỌN unit khỏi danh sách vòng chơi — luật ở [umbrellaPatterns].
  */
 private fun List<PhonicsLesson>.dropUmbrellaPatterns(patterns: List<String>): List<String> {
-    val allWords = flatMap { it.words }.map { it.word }
-    val kept = patterns.filterNot { p -> allWords.all { wordHasPattern(it, p) } }
+    val umbrella = umbrellaPatterns(patterns)
+    val kept = patterns.filterNot { it in umbrella }
     // Không giữ được vần nào (dữ liệu lạ) thì thà chơi bằng bộ cũ còn hơn màn trống.
     return kept.ifEmpty { patterns }
 }

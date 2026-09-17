@@ -40,7 +40,7 @@ internal fun wordHasPattern(word: String, pattern: String): Boolean {
  * nhưng nó là cách VIẾT nguyên âm, không phải vần đọc lên được — cho nó đi luật đuôi thì
  * `tape` phải kết thúc bằng "a_e", không từ nào khớp và vòng chơi rỗng.
  */
-private fun String.isMagicERime(): Boolean =
+internal fun String.isMagicERime(): Boolean =
     '_' !in this && length == 3 && this[0] in VOWELS && this[1] !in VOWELS && this[2] == 'e'
 
 private const val VOWELS = "aeiou"

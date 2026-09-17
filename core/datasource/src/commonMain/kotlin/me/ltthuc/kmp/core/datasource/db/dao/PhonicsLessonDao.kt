@@ -12,6 +12,9 @@ interface PhonicsLessonDao {
     @Query("SELECT * FROM phonics_lesson WHERE unitId = :unitId ORDER BY orderIndex ASC")
     fun observeByUnit(unitId: String): Flow<List<PhonicsLessonEntity>>
 
+    @Query("SELECT * FROM phonics_lesson ORDER BY unitId ASC, orderIndex ASC")
+    fun observeAll(): Flow<List<PhonicsLessonEntity>>
+
     @Query("SELECT COUNT(*) FROM phonics_lesson")
     suspend fun count(): Int
 
