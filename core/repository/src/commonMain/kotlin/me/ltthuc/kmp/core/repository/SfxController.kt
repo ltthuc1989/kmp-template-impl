@@ -47,6 +47,9 @@ class SfxController(
     // without swallowing the chime that answered the tap in the same instant.
     private var currentKind: Kind? = null
 
+    // App đang ở nền — xem [onAppHidden].
+    private var appHidden = false
+
     private val sfxEnabled = MutableStateFlow(true)
     private val voiceEnabled = MutableStateFlow(true)
     private val musicEnabled = MutableStateFlow(true)
@@ -147,6 +150,23 @@ class SfxController(
     }
 
     /**
+     * App vào nền: dừng hẳn, và không phát gì cho tới [onAppShown].
+     *
+     * Không phát tiếp khi quay lại, khác [AudioRepository]: chuông quá ngắn để đáng nối, còn lời dẫn
+     * thì màn hình đã hết giờ chờ nó ([playPromptAndAwait]) và đi tiếp — đọc nốt lúc đó là chồng lên
+     * tiếng bài học. `pause()` sau `stop()` là để chặn lệnh phát đang nằm sẵn trong hàng đợi của player.
+     */
+    fun onAppHidden() {
+        appHidden = true
+        stop()
+        player.pause()
+    }
+
+    fun onAppShown() {
+        appHidden = false
+    }
+
+    /**
      * Resolves upcoming SFX ahead of time so the first tap-to-sound stays under ~50ms.
      * Nothing is copied to disk — this only pays the one-time "is it really bundled?"
      * probe, so the play path is a straight `Res.getUri` lookup.
@@ -156,13 +176,14 @@ class SfxController(
     }
 
     private fun play(ref: AudioRef, kind: Kind) {
+        if (appHidden) return
         currentPromptId = null
         currentKind = kind
         loadJob?.cancel()
         player.stop()
         loadJob = scope.launch {
             runCatching { bundledUri(ref) }
-                .onSuccess { uri -> player.playUri(uri) }
+                .onSuccess { uri -> if (!appHidden) player.playUri(uri) }
                 .onFailure { Napier.e("SfxController play failed for $ref", it) }
         }
     }

@@ -34,7 +34,14 @@ actual class AudioPlayer(context: Context) {
             }
 
             override fun onIsPlayingChanged(isPlaying: Boolean) {
-                if (!isPlaying && playbackState != Player.STATE_ENDED) {
+                // A resume after pause() stays in STATE_READY, so onPlaybackStateChanged never fires
+                // again — restart the ticker here, or state stays Paused (and karaoke frozen) until
+                // the clip ends. Matches the iOS actual, whose resume() restarts its timer.
+                if (isPlaying) {
+                    startProgressLoop()
+                    return
+                }
+                if (playbackState != Player.STATE_ENDED) {
                     stopProgressLoop()
                     if (playbackState == Player.STATE_READY) {
                         _events.value = PlayerEvent.Paused
@@ -75,8 +82,16 @@ actual class AudioPlayer(context: Context) {
         }
     }
 
-    actual fun pause() = runOnMain {
-        if (exo.isPlaying) exo.pause()
+    // No `isPlaying` guard: a clip still preparing is not "playing" yet, but it will start on its own
+    // the moment it is ready unless playWhenReady is cleared — that is how audio leaked out of an app
+    // sent to the background mid-load. Pausing an idle player is harmless.
+    //
+    // Paused twice: now, and once more from the back of the main queue. Loaders call [playUri] from a
+    // background thread, so a play can already be waiting in that queue when the app is hidden; the
+    // inline pause runs ahead of it and the clip would then start anyway. The queued pause lands after.
+    actual fun pause() {
+        runOnMain { exo.pause() }
+        handler.post { exo.pause() }
     }
 
     actual fun resume() = runOnMain {

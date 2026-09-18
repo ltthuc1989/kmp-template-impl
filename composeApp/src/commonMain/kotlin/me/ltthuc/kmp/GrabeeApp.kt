@@ -3,14 +3,17 @@ package me.ltthuc.kmp
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.LifecycleStartEffect
 import coil3.ImageLoader
 import coil3.compose.setSingletonImageLoaderFactory
 import coil3.request.crossfade
 import io.github.vinceglb.filekit.coil.addPlatformFileSupport
 import me.ltthuc.kmp.core.model.AppSetting
+import me.ltthuc.kmp.core.repository.AudioRepository
 import me.ltthuc.kmp.core.repository.SfxController
 import me.ltthuc.kmp.core.ui.screen.Destination
 import me.ltthuc.kmp.core.ui.theme.GrabeeTheme
@@ -42,6 +45,8 @@ internal fun GrabeeApp(
         )
     }
 
+    AppAudioLifecycle(sfx)
+
     GrabeeTheme(setting) {
         // Khôi phục màn cuối khi mở lại app: trong unit → Lesson Map, Unit list → Unit list.
         // Người mới (NONE) rơi vào nhánh cuối: màn chọn level.
@@ -67,6 +72,33 @@ internal fun GrabeeApp(
                 modifier = Modifier.fillMaxSize(),
             )
             overlay()
+        }
+    }
+}
+
+/**
+ * Hai player là singleton sống theo tiến trình, không theo màn hình — không ai dừng thì chúng đọc
+ * tiếp sau khi bé bấm Home, và cả sau khi thoát app bằng nút Back (tiến trình còn sống).
+ *
+ * - vào nền (ON_STOP): tạm dừng tiếng bài học, dừng chuông và lời dẫn
+ * - quay lại (ON_START): phát tiếp tiếng bài học
+ * - thoát app (Activity bị huỷ → composition bị huỷ): dừng hẳn, để mở lại app không phát tiếp bài cũ
+ */
+@Composable
+private fun AppAudioLifecycle(sfx: SfxController) {
+    val audio = koinInject<AudioRepository>()
+    LifecycleStartEffect(audio, sfx) {
+        audio.onAppShown()
+        sfx.onAppShown()
+        onStopOrDispose {
+            audio.onAppHidden()
+            sfx.onAppHidden()
+        }
+    }
+    DisposableEffect(audio, sfx) {
+        onDispose {
+            audio.stop()
+            sfx.stop()
         }
     }
 }

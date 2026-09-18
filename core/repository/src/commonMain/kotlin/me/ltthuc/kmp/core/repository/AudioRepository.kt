@@ -51,6 +51,17 @@ class AudioRepository(
     private var queue: List<AudioRef> = emptyList()
     private var queueIndex = 0
 
+    // App đang ở nền (xem [onAppHidden]). Không lưu trong [state]: màn hình không cần biết, và
+    // một trạng thái Paused do app ẩn thì không được lẫn với Paused do bé bấm nút.
+    private var appHidden = false
+
+    // Đang phát lúc app bị ẩn → quay lại thì phát tiếp. Bé đã tự bấm dừng thì để yên.
+    private var resumeWhenShown = false
+
+    // Bài nạp xong trong lúc app ở nền — giữ lại, quay lại mới phát. Chuỗi [playAll] hay màn
+    // chơi tự sang vòng vẫn chạy tiếp khi app ẩn, nên không giữ thì tiếng vọng ra ngoài app.
+    private var heldPlayable: Playable? = null
+
     init {
         scope.launch {
             player.events.collect { event ->
@@ -115,6 +126,9 @@ class AudioRepository(
 
     private fun playInternal(ref: AudioRef) {
         loadJob?.cancel()
+        heldPlayable = null
+        // Bài mới thay bài cũ: quay lại app thì phát bài mới (giữ ở [heldPlayable]), không phát tiếp bài cũ.
+        resumeWhenShown = false
         player.stop()
         currentRef = ref
         _state.value = AudioState.Loading(ref)
@@ -124,10 +138,7 @@ class AudioRepository(
                 .onSuccess { playable ->
                     // Guard against late completion racing a newer play() call.
                     if (currentRef != ref) return@onSuccess
-                    when (playable) {
-                        is Playable.Bundled -> player.playUri(playable.uri)
-                        is Playable.LocalFile -> player.playFile(playable.path)
-                    }
+                    if (appHidden) heldPlayable = playable else start(playable)
                 }
                 .onFailure { cause ->
                     Napier.e("AudioRepository load failed for $ref", cause)
@@ -136,8 +147,45 @@ class AudioRepository(
         }
     }
 
+    private fun start(playable: Playable) {
+        when (playable) {
+            is Playable.Bundled -> player.playUri(playable.uri)
+            is Playable.LocalFile -> player.playFile(playable.path)
+        }
+    }
+
     fun pause() = player.pause()
     fun resume() = player.resume()
+
+    /**
+     * App vào nền (bấm Home, tắt màn hình, một Activity khác che lên): tạm dừng bài đang phát, và
+     * không cho bài nào bắt đầu cho tới [onAppShown].
+     *
+     * Player là singleton sống theo tiến trình, không theo màn hình — không ai dừng thì nó cứ đọc
+     * tiếp sau khi bé đã rời app (lỗi user báo 2026-09-17).
+     */
+    fun onAppHidden() {
+        if (appHidden) return
+        appHidden = true
+        // Loading cũng tính: bài có thể đã giao cho player và đang chuẩn bị phát — pause() chặn cả
+        // lúc đó. Bài chưa nạp xong thì rơi vào [heldPlayable] thay vì phát.
+        val state = _state.value
+        resumeWhenShown = state is AudioState.Playing || state is AudioState.Loading
+        if (resumeWhenShown) player.pause()
+    }
+
+    /** App quay lại: phát tiếp bài bị dừng vì app ẩn, hoặc phát bài đã nạp xong trong lúc ẩn. */
+    fun onAppShown() {
+        if (!appHidden) return
+        appHidden = false
+        val held = heldPlayable
+        heldPlayable = null
+        when {
+            held != null && currentRef != null -> start(held)
+            resumeWhenShown -> player.resume()
+        }
+        resumeWhenShown = false
+    }
 
     fun stop() {
         clearQueue()
@@ -145,6 +193,8 @@ class AudioRepository(
         player.stop()
         currentRef = null
         currentOwner = null
+        heldPlayable = null
+        resumeWhenShown = false
         _state.value = AudioState.Idle
     }
 
