@@ -1,5 +1,6 @@
 package me.ltthuc.kmp.feature.learningpath.game.filletter
 
+import me.ltthuc.kmp.core.audio.AudioRef
 import me.ltthuc.kmp.core.model.BlendSplit
 import me.ltthuc.kmp.core.model.LessonWord
 import me.ltthuc.kmp.core.model.PhonicsLesson
@@ -250,6 +251,34 @@ class FillChunkTest {
         assertEquals(listOf("x"), pickDistractors(listOf(listOf("x")), count = 3, random = Random(0)))
     }
 
+    // ------------------------------------------------------------------ tiếng của thẻ
+
+    @Test
+    fun choiceSoundUsesTheFileSetBubblePopShips() {
+        assertEquals(AudioRef.LetterSound("x"), lesson("L1U8_X", "X", "Xx").chunkSound("x"))
+        assertEquals(AudioRef.LetterSound("a"), lesson("L2U1_a", "SHORT-A", "a").chunkSound("a"))
+        assertEquals(AudioRef.Rime("am"), lesson("L2U1_am", "SHORT-A-AM", "am").chunkSound("am"))
+        assertEquals(AudioRef.Rime("o_e"), lesson("L3U3_o_e", "O_E", "o_e").chunkSound("o_e"))
+        assertEquals(AudioRef.Rime("tch"), lesson("L4U4_ch_tch", "CH-TCH", "ch tch").chunkSound("tch"))
+        // Nhãn một chữ từ cấp 3 mang theo âm: `c` mềm của L4U8 là /s/, không phải /k/ của chữ C cấp 1.
+        assertEquals(AudioRef.Rime("c_sss"), lesson("L4U8_soft_c", "C", "c", soundSpelling = "sss").chunkSound("c"))
+        assertEquals(AudioRef.Rime("y_eee"), lesson("L3U5_y_ey", "Y-EY", "y ey", soundSpelling = "eee").chunkSound("y"))
+        assertEquals(AudioRef.Rime("ey"), lesson("L3U5_y_ey", "Y-EY", "y ey", soundSpelling = "eee").chunkSound("ey"))
+    }
+
+    @Test
+    fun borrowedChoiceSpeaksWithTheUnitItWasBorrowedFrom() {
+        val units = listOf(
+            listOf(lesson("L3U5_y_ey", "Y-EY", "y ey", soundSpelling = "eee")),
+            listOf(lesson("L3U6_igh", "IGH", "igh", soundSpelling = "eye"), lesson("L3U6_y", "Y", "y", soundSpelling = "eye")),
+            listOf(lesson("L3U7_oa", "OA", "oa", soundSpelling = "ohh"), lesson("L3U7_ow", "OW", "ow", soundSpelling = "ohh")),
+        )
+        // Ở L3U7, thẻ `y` được mượn từ L3U6 (unit trước gần nhất) nên đọc /aɪ/, không phải /iː/ của L3U5.
+        assertEquals(AudioRef.Rime("y_eye"), choiceSounds(unitIndex = 2, units = units)["y"])
+        assertEquals(AudioRef.Rime("y_eee"), choiceSounds(unitIndex = 0, units = units)["y"])
+        assertEquals(AudioRef.Rime("oa"), choiceSounds(unitIndex = 2, units = units)["oa"])
+    }
+
     @Test
     fun maskShowsOneBlankPerSpanWhateverItsLength() {
         assertEquals("fa_er", maskWord("father", listOf(2..3)))
@@ -287,12 +316,18 @@ class FillChunkTest {
         blendSplit = if (chunks.isEmpty()) null else BlendSplit(chunks.toList(), patternIndex),
     )
 
-    private fun lesson(id: String, letter: String, displayLetter: String, vararg words: LessonWord) = PhonicsLesson(
+    private fun lesson(
+        id: String,
+        letter: String,
+        displayLetter: String,
+        vararg words: LessonWord,
+        soundSpelling: String = "",
+    ) = PhonicsLesson(
         id = id,
         unitId = id.substringBefore('_'),
         letter = letter,
         displayLetter = displayLetter,
-        soundSpelling = "",
+        soundSpelling = soundSpelling,
         sentence = "",
         stretchedWord = "",
         orderIndex = 0,

@@ -68,6 +68,9 @@ internal class FillLetterViewModel(
 
     private var lastUnitIdLoaded: String? = null
 
+    // Tiếng của từng thẻ, dựng cùng lúc với các vòng chơi. Xem [choiceSounds].
+    private var choiceSounds: Map<String, AudioRef> = emptyMap()
+
     val screenState: StateFlow<ScreenState<FillLetterUiState>> =
         combine(
             unitRepository.observeLessons(unitId),
@@ -115,6 +118,8 @@ internal class FillLetterViewModel(
         if (choice == round.answer) {
             triggerAdvance(state, rounds)
         } else {
+            // Thẻ sai cũng đọc tiếng của nó — bé học bằng cách chạm thử, như Bubble Pop.
+            soundFor(choice)?.let(audio::play)
             val newWrongCount = state.wrongCount + 1
             Napier.v(tag = TAG) { "Wrong FillLetter tap: $choice vs target ${round.answer} (count=$newWrongCount)" }
             if (newWrongCount >= WRONG_THRESHOLD) {
@@ -138,8 +143,10 @@ internal class FillLetterViewModel(
         sfxController.playSfx("correct")
         stateFlow.value = state.copy(lastWrongPick = null, isResolving = true, wrongCount = 0)
         viewModelScope.launch {
-            // Play the just-completed word's audio and wait for it to finish before advancing.
-            playWordAndAwait(rounds.getOrNull(state.currentRoundIndex)?.wordRef)
+            val round = rounds.getOrNull(state.currentRoundIndex)
+            // The chunk first, then the whole word it completes: "th" … "father".
+            round?.let { soundFor(it.answer) }?.let { audio.playAndAwait(it, CHUNK_AUDIO_MAX_MS) }
+            playWordAndAwait(round?.wordRef)
             val next = state.currentRoundIndex + 1
             if (next >= rounds.size) {
                 // Final round: auto-advance to next game (no completion praise / overlay).
@@ -151,6 +158,12 @@ internal class FillLetterViewModel(
                 )
             }
         }
+    }
+
+    private fun soundFor(choice: String): AudioRef? {
+        val ref = choiceSounds[choice]
+        if (ref == null) Napier.w(tag = TAG) { "No sound for choice '$choice' in $unitId — tap stays silent" }
+        return ref
     }
 
     private suspend fun playWordAndAwait(ref: AudioRef.Word?) {
@@ -182,8 +195,10 @@ internal class FillLetterViewModel(
             return persistentListOf()
         }
 
-        val unitLabels = unitLabelsFor(lessons, curriculum)
+        val unitLessons = unitLessonsFor(lessons, curriculum)
+        val unitLabels = unitLessons.map { unit -> unit.flatMap { it.fillLabels() } }
         val unitIndex = curriculum.indexOfFirst { it.unit.id == unitId }.coerceAtLeast(0)
+        choiceSounds = choiceSounds(unitIndex, unitLessons)
         val targets = pool.shuffled(Random.Default).take(ROUND_COUNT)
         return targets.mapIndexed { idx, candidate ->
             val chunk = candidate.chunk
@@ -221,16 +236,16 @@ internal class FillLetterViewModel(
         }
 
     /**
-     * Thẻ vần của từng unit theo thứ tự học. Luồng curriculum rỗng hoặc thiếu unit này (DB chưa
+     * Lesson của từng unit theo thứ tự học. Luồng curriculum rỗng hoặc thiếu unit này (DB chưa
      * seed xong, dữ liệu lệch) thì vẫn chơi được bằng thẻ của riêng unit — nhưng log, vì khi đó
      * unit thiếu vần sẽ ra vòng dưới 4 thẻ.
      */
-    private fun unitLabelsFor(lessons: List<PhonicsLesson>, curriculum: List<UnitLessons>): List<List<ChunkLabel>> {
+    private fun unitLessonsFor(lessons: List<PhonicsLesson>, curriculum: List<UnitLessons>): List<List<PhonicsLesson>> {
         if (curriculum.none { it.unit.id == unitId }) {
             Napier.w(tag = TAG) { "Curriculum (${curriculum.size} units) lacks $unitId — distractors from this unit only" }
-            return listOf(lessons.flatMap { it.fillLabels() })
+            return listOf(lessons)
         }
-        return curriculum.map { unit -> unit.lessons.flatMap { it.fillLabels() } }
+        return curriculum.map { it.lessons }
     }
 
     /** Games swap in place, so leaving one must not leave its audio talking over the next. */
@@ -244,6 +259,9 @@ internal class FillLetterViewModel(
         const val TAG = "FillLetterViewModel"
         const val SUBSCRIPTION_TIMEOUT_MS = 5_000L
         const val AUDIO_MAX_MS = 6_000L
+
+        /** Tiếng vần dài nhất (~1,5s) cộng lề; quá mức thì vẫn sang tiếng cả từ. */
+        const val CHUNK_AUDIO_MAX_MS = 3_000L
         const val ROUND_COUNT = 4
         const val MIN_WORD_LEN = 3
         const val WRONG_THRESHOLD = 5

@@ -1,8 +1,10 @@
 package me.ltthuc.kmp.feature.learningpath.game.filletter
 
+import me.ltthuc.kmp.core.audio.AudioRef
 import me.ltthuc.kmp.core.model.LessonWord
 import me.ltthuc.kmp.core.model.PhonicsLesson
 import me.ltthuc.kmp.feature.learningpath.game.common.isMagicERime
+import me.ltthuc.kmp.feature.learningpath.game.common.rimeAudioKey
 import me.ltthuc.kmp.feature.learningpath.game.common.wordHasPattern
 import me.ltthuc.kmp.feature.learningpath.step.common.BlendPieceKind
 import me.ltthuc.kmp.feature.learningpath.step.common.blendParts
@@ -163,6 +165,44 @@ internal fun distractorTiers(
     return sameKind + anyKind
 }
 
+/**
+ * Tiếng phát khi bé chạm thẻ [label] của lesson này — cùng bộ file Bubble Pop đang dùng:
+ *
+ *     cấp 1–2, một chữ    phonemes/<chữ>.mp3      x · a (âm ngắn /æ/)
+ *     cấp 1–2, vần        rimes/<vần>.mp3         am · ad
+ *     cấp 3+              rimes/<khoá>.mp3        ame · o_e · th · y_eee · c_sss
+ *
+ * Cấp 3+ đi qua [rimeAudioKey] vì nhãn một chữ ở đó đọc nhiều cách: `y` của L3U5 là /iː/, của
+ * L3U6 là /aɪ/; `c` của L4U8 là /s/ chứ không phải /k/ của chữ C cấp 1.
+ */
+internal fun PhonicsLesson.chunkSound(label: String): AudioRef {
+    val lv = level() ?: 1
+    return when {
+        lv >= FIRST_KEYED_SOUND_LEVEL -> AudioRef.Rime(rimeAudioKey(label, soundSpelling))
+        label.length == 1 -> AudioRef.LetterSound(label)
+        else -> AudioRef.Rime(label)
+    }
+}
+
+/**
+ * Tiếng cho mọi thẻ có thể xuất hiện trong unit [unitIndex], quét cùng thứ tự với
+ * [distractorTiers] — unit mình → lùi → tiến. Nhãn trùng giữ lần gặp ĐẦU, đúng lesson mà thẻ được
+ * lấy ra: `y` hiện ở L3U7 là `y` mượn của L3U6 nên đọc /aɪ/, không phải /iː/ của L3U5.
+ */
+internal fun choiceSounds(unitIndex: Int, units: List<List<PhonicsLesson>>): Map<String, AudioRef> {
+    if (unitIndex !in units.indices) return emptyMap()
+    val order = listOf(unitIndex) + (unitIndex - 1 downTo 0) + (unitIndex + 1 until units.size)
+    return buildMap {
+        for (i in order) {
+            for (lesson in units[i]) {
+                for (chunk in lesson.fillLabels()) {
+                    if (chunk.label !in this) put(chunk.label, lesson.chunkSound(chunk.label))
+                }
+            }
+        }
+    }
+}
+
 /** Bốc [count] thẻ: hết tầng trên mới sang tầng dưới, trong một tầng thì bốc ngẫu nhiên. */
 internal fun pickDistractors(tiers: List<List<String>>, count: Int, random: Random): List<String> {
     val picked = mutableListOf<String>()
@@ -257,6 +297,9 @@ private fun PhonicsLesson.displayTokens(): List<String> =
 
 private const val VOWELS = "aeiou"
 private const val LONG_LABEL_MIN_LETTERS = 3
+
+/** Cấp đầu tiên mà tiếng thẻ tra theo khoá của [rimeAudioKey] — cùng mốc với khoá đó. */
+private const val FIRST_KEYED_SOUND_LEVEL = 3
 
 /** Cấp cuối cùng mà `lessonPatterns` đọc đúng mã `letter`. */
 private const val LAST_CODE_PATTERN_LEVEL = 4
