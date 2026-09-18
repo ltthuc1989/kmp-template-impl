@@ -1,6 +1,6 @@
 package me.ltthuc.kmp.feature.home
 
-import androidx.compose.foundation.background
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,16 +38,24 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import io.github.aakira.napier.Napier
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import me.ltthuc.kmp.core.content.ContentBytes
+import me.ltthuc.kmp.core.model.Level
 import me.ltthuc.kmp.core.model.LevelCard
 import me.ltthuc.kmp.core.model.LevelStatus
 import me.ltthuc.kmp.core.resource.Res
@@ -69,7 +77,9 @@ import me.ltthuc.kmp.core.ui.theme.LocalAppLanguage
 import me.ltthuc.kmp.core.ui.theme.LocalAppLocale
 import me.ltthuc.kmp.core.ui.theme.LocalNavBackStack
 import me.ltthuc.kmp.core.ui.utils.fadeOutBottom
+import org.jetbrains.compose.resources.decodeToImageBitmap
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -252,7 +262,7 @@ private fun LevelCardRow(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            LevelCardThumbnail(status = card.status)
+            LevelCardThumbnail(level = card.level, status = card.status)
             Box(modifier = Modifier.weight(1f)) {
                 when (val status = card.status) {
                     is LevelStatus.Active -> ActiveCardContent(
@@ -281,41 +291,80 @@ private fun LevelCardRow(
 
 @Composable
 private fun LevelCardThumbnail(
+    level: Level,
     status: LevelStatus,
     modifier: Modifier = Modifier,
 ) {
-    val color = when (status) {
-        is LevelStatus.Active -> MaterialTheme.colorScheme.primaryContainer
-        LevelStatus.ReadyToStart -> MaterialTheme.colorScheme.tertiaryContainer
-        is LevelStatus.Locked -> MaterialTheme.colorScheme.surfaceVariant
-        LevelStatus.ComingSoon -> MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.6f)
-    }
     val iconTint = when (status) {
         is LevelStatus.Active -> MaterialTheme.colorScheme.onPrimaryContainer
         LevelStatus.ReadyToStart -> MaterialTheme.colorScheme.onTertiaryContainer
         is LevelStatus.Locked -> MaterialTheme.colorScheme.onSurfaceVariant
         LevelStatus.ComingSoon -> MaterialTheme.colorScheme.onTertiaryContainer
     }
-    val icon: ImageVector = when (status) {
+    // Khoá / sắp ra mắt giữ nguyên biểu tượng cũ: ổ khoá và đồng hồ là TRẠNG THÁI, còn hình
+    // của level nói level dạy gì — trộn hai thứ vào một ô thì mất nghĩa của cả hai.
+    val stateIcon: ImageVector? = when (status) {
         is LevelStatus.Locked -> Icons.Outlined.Lock
         LevelStatus.ComingSoon -> Icons.Outlined.Schedule
-        else -> Icons.AutoMirrored.Outlined.MenuBook
+        else -> null
     }
+    val art = levelArt(level.number)
 
+    // Không ô nền phía sau (chốt 2026-09-18): nhân vật đã có nét viền và màu riêng, đặt thêm một ô
+    // màu sau lưng là hai lớp nền chồng nhau trên cùng một thẻ. Bỏ ô đi thì hình được vẽ to hơn
+    // trong cùng khoảng chỗ cũ.
     Box(
-        modifier = modifier
-            .size(width = 64.dp, height = 80.dp)
-            .clip(RoundedCornerShape(12.dp))
-            .background(color),
+        modifier = modifier.size(width = 64.dp, height = 80.dp),
         contentAlignment = Alignment.Center,
     ) {
-        Icon(
-            modifier = Modifier.size(32.dp),
-            imageVector = icon,
-            contentDescription = null,
-            tint = iconTint,
-        )
+        when {
+            stateIcon != null -> Icon(
+                modifier = Modifier.size(32.dp),
+                imageVector = stateIcon,
+                contentDescription = null,
+                tint = iconTint,
+            )
+
+            art != null -> Image(
+                bitmap = art,
+                contentDescription = null,
+                contentScale = ContentScale.Fit,
+                modifier = Modifier.size(64.dp),
+            )
+
+            // Ảnh chưa nạp xong hoặc thiếu file: vẫn phải có gì đó trong ô, nếu không thẻ
+            // trông như đang hỏng. Quyển sách cũ làm đúng việc đó.
+            else -> Icon(
+                modifier = Modifier.size(32.dp),
+                imageVector = Icons.AutoMirrored.Outlined.MenuBook,
+                contentDescription = null,
+                tint = iconTint,
+            )
+        }
     }
+}
+
+/**
+ * Hình của level, nằm sẵn trong app tại `files/images/levels/level_<n>.webp` — cùng nét vẽ với
+ * ảnh từ vựng (sinh bằng `opw_audio_project/scripts/generate_level_icons.py`).
+ *
+ * Thiếu file thì trả null và GHI LOG: thẻ rơi về quyển sách, nhìn vẫn bình thường, nên không log
+ * là không ai biết ảnh đã rụng.
+ */
+@Composable
+private fun levelArt(number: Int): ImageBitmap? {
+    val contentBytes: ContentBytes = koinInject()
+    return produceState<ImageBitmap?>(initialValue = null, number) {
+        val path = "files/images/levels/level_$number.webp"
+        value = withContext(Dispatchers.Default) {
+            runCatching {
+                val bytes = contentBytes.load(path) ?: error("no bytes")
+                bytes.decodeToImageBitmap()
+            }
+                .onFailure { Napier.w(tag = "HomeScreen") { "No level art at $path — falling back to the book icon" } }
+                .getOrNull()
+        }
+    }.value
 }
 
 @Composable
@@ -355,9 +404,12 @@ private fun ActiveCardContent(
 
         Spacer(Modifier.height(4.dp))
 
+        // Dòng nội dung của thẻ in ĐẬM: ở cỡ bodyMedium nét thường, "Unit 5: th th ck qu" chìm
+        // xuống dưới tiêu đề level và mắt không bắt được nó (user báo 2026-09-18).
         Text(
             text = stringResource(Res.string.home_unit_label, unitNumber, unitTitle),
             style = MaterialTheme.typography.bodyMedium,
+            fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
 
@@ -418,6 +470,7 @@ private fun ReadyCardContent(
             Text(
                 text = stringResource(Res.string.home_badge_ready),
                 style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
