@@ -7,6 +7,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
@@ -38,6 +39,7 @@ import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.collections.immutable.ImmutableList
@@ -57,6 +59,7 @@ import me.ltthuc.kmp.feature.learningpath.step.common.StepHeader
 import me.ltthuc.kmp.feature.learningpath.step.common.StoryStyleCard
 import me.ltthuc.kmp.feature.learningpath.step.tracing.LetterGuide
 import me.ltthuc.kmp.feature.learningpath.step.tracing.drawGhostLetter
+import me.ltthuc.kmp.feature.learningpath.step.tracing.scaledGuidePaths
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
@@ -173,11 +176,11 @@ private fun WordTracingContent(
     // After the last letter of a word: focus cleared, word + picture held for a beat before the next.
     var wordPaused by remember(lesson.id) { mutableStateOf(false) }
 
-    // Bounds (in root coords) of the trace canvas (source) and the current header cell (target),
-    // used to animate the finished letter up into the word above.
+    // Bounds (in root coords) of the trace canvas (source) and the current header letter's glyph box
+    // (target), used to animate the finished letter up into the word above.
     var rootOrigin by remember(lesson.id) { mutableStateOf(Offset.Zero) }
     var canvasBounds by remember(lesson.id) { mutableStateOf<Rect?>(null) }
-    var headerCellBounds by remember(lesson.id) { mutableStateOf<Rect?>(null) }
+    var headerGlyphBounds by remember(lesson.id) { mutableStateOf<Rect?>(null) }
 
     val safeWord = wordIndex.coerceIn(0, words.lastIndex)
     val word = words[safeWord]
@@ -224,7 +227,7 @@ private fun WordTracingContent(
                 // Start the fly partway through the burst so the letter lifts off while the
                 // particles are still spreading.
                 delay(BURST_LEAD_MS)
-                phase = if (canvasBounds != null && headerCellBounds != null) {
+                phase = if (canvasBounds != null && headerGlyphBounds != null) {
                     LetterPhase.Fly
                 } else {
                     finishLetter()
@@ -284,7 +287,7 @@ private fun WordTracingContent(
                 letterIndex = letterIndex,
                 landedIndex = landedIndex,
                 landedSettle = settle.value,
-                onCurrentCellBounds = { headerCellBounds = it },
+                onCurrentGlyphBounds = { headerGlyphBounds = it },
             )
             Spacer(Modifier.height(8.dp))
             // Big middle area: the trace surface while tracing; the word picture once the word is
@@ -320,7 +323,7 @@ private fun WordTracingContent(
         }
 
         val src = canvasBounds
-        val dst = headerCellBounds
+        val dst = headerGlyphBounds
         if (phase == LetterPhase.Fly && src != null && dst != null) {
             FlyingGlyph(
                 guide = guide,
@@ -348,19 +351,13 @@ private fun WordImageCard(word: LessonWord, modifier: Modifier = Modifier) {
     }
 }
 
-/** The just-finished glyph, drawn mid-flight from the trace canvas ([source]) into its header cell ([target]). */
+/**
+ * The just-finished glyph, drawn mid-flight from the trace canvas ([source]) into its header letter's
+ * glyph box ([target] — the exact box the header draws that letter in, so it lands at the same size).
+ */
 @Composable
 private fun FlyingGlyph(guide: LetterGuide, fraction: Float, source: Rect, target: Rect) {
-    // The header cell paints its glyph inside a 4.dp pad, so shrink the target to that inner area
-    // for an exact landing.
-    val inset = with(LocalDensity.current) { HEADER_CELL_PAD_DP.dp.toPx() }
-    val landing = Rect(
-        left = target.left + inset,
-        top = target.top + inset,
-        right = target.right - inset,
-        bottom = target.bottom - inset,
-    )
-    val rect = lerp(source, landing, fraction)
+    val rect = lerp(source, target, fraction)
     // Soft fade over the last stretch so it "merges" rather than snapping.
     val alpha = if (fraction < 0.85f) 1f else ((1f - fraction) / 0.15f).coerceIn(0f, 1f)
     Canvas(modifier = Modifier.fillMaxSize()) {
@@ -423,68 +420,125 @@ private fun WordHeader(
     letterIndex: Int,
     landedIndex: Int,
     landedSettle: Float,
-    onCurrentCellBounds: (Rect) -> Unit,
+    onCurrentGlyphBounds: (Rect) -> Unit,
 ) {
-    Row(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        letters.forEachIndexed { index, ch ->
-            val letterState = when {
-                index < letterIndex -> LetterState.Done
-                index == letterIndex -> LetterState.Current
-                else -> LetterState.Upcoming
+    val guides = remember(letters) { letters.map(DuolingoGlyphs::get) }
+    val inkHalfWidth = remember(letters) { guides.maxOf(::inkHalfWidth) }
+    BoxWithConstraints(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
+        val density = LocalDensity.current
+        // A long word ("cellphone" = 9 x 60dp) doesn't fit one line. Room comes out of the gaps first:
+        // cells narrow to share the row, letters keep their size. Floored to whole px so the cells
+        // add up to no more than the row. Only if the widest letter would then run into its
+        // neighbour does the glyph itself shrink.
+        val cellWidth = if (constraints.hasBoundedWidth) {
+            with(density) { (constraints.maxWidth / letters.length.coerceAtLeast(1)).toDp() }
+                .coerceAtMost(HEADER_CELL_W_DP.dp)
+        } else {
+            HEADER_CELL_W_DP.dp
+        }
+        val glyphBox = minOf(
+            HEADER_GLYPH_BOX_DP.dp,
+            (cellWidth - HEADER_MIN_INK_GAP_DP.dp) * (GLYPH_VIEW_BOX / (2f * inkHalfWidth)),
+        )
+        val glyphBoxPx = with(density) { glyphBox.toPx() }
+        val padPx = with(density) { HEADER_CELL_PAD_DP.dp.toPx() }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            letters.indices.forEach { index ->
+                val letterState = when {
+                    index < letterIndex -> LetterState.Done
+                    index == letterIndex -> LetterState.Current
+                    else -> LetterState.Upcoming
+                }
+                val isCurrent = letterState == LetterState.Current
+                // The just-landed letter flashes green then fades to its normal (dark) color.
+                val glyphColor = when {
+                    index == landedIndex -> lerpColor(TraceDoneGreen, TraceInkDark, landedSettle)
+                    letterState == LetterState.Upcoming -> TraceUpcomingGlyphGray
+                    else -> TraceInkDark
+                }
+                LetterCell(
+                    guide = guides[index],
+                    cellWidth = cellWidth,
+                    glyphBox = glyphBox,
+                    highlighted = isCurrent,
+                    glyphColor = glyphColor,
+                    modifier = if (isCurrent) {
+                        Modifier.onGloballyPositioned { coords ->
+                            // Report the box the glyph is drawn in, not the cell: the flying
+                            // letter must land at exactly this size.
+                            val cell = coords.boundsInRoot()
+                            onCurrentGlyphBounds(
+                                Rect(
+                                    left = cell.center.x - glyphBoxPx / 2f,
+                                    top = cell.top + padPx,
+                                    right = cell.center.x + glyphBoxPx / 2f,
+                                    bottom = cell.bottom - padPx,
+                                ),
+                            )
+                        }
+                    } else {
+                        Modifier
+                    },
+                )
             }
-            val isCurrent = letterState == LetterState.Current
-            // The just-landed letter flashes green then fades to its normal (dark) color.
-            val glyphColor = when {
-                index == landedIndex -> lerpColor(TraceDoneGreen, TraceInkDark, landedSettle)
-                letterState == LetterState.Upcoming -> TraceUpcomingGlyphGray
-                else -> TraceInkDark
-            }
-            LetterCell(
-                ch = ch,
-                highlighted = isCurrent,
-                glyphColor = glyphColor,
-                modifier = if (isCurrent) {
-                    Modifier.onGloballyPositioned { onCurrentCellBounds(it.boundsInRoot()) }
-                } else {
-                    Modifier
-                },
-            )
         }
     }
 }
 
 @Composable
 private fun LetterCell(
-    ch: Char,
+    guide: LetterGuide,
+    cellWidth: Dp,
+    glyphBox: Dp,
     highlighted: Boolean,
     glyphColor: Color,
     modifier: Modifier = Modifier,
 ) {
-    val guide = remember(ch) { DuolingoGlyphs.get(ch) }
     val cellBg = if (highlighted) TraceHighlightGreen else Color.Transparent
     Box(
         modifier = modifier
             // Taller than wide on purpose — see [HEADER_CELL_H_DP]. The clip (which rounds the
             // green highlight) is also what cuts a descender off, so the cell has to be tall
             // enough to hold one.
-            .size(width = HEADER_CELL_W_DP.dp, height = HEADER_CELL_H_DP.dp)
+            .size(width = cellWidth, height = HEADER_CELL_H_DP.dp)
             .clip(RoundedCornerShape(6.dp))
             .background(cellBg),
     ) {
         Canvas(modifier = Modifier.fillMaxSize().padding(HEADER_CELL_PAD_DP.dp)) {
-            drawGuideLines(handwritingLines(size))
-            drawGhostLetter(
-                guide = guide,
-                canvasSize = size,
-                color = glyphColor,
-                strokeWidthPx = minOf(size.width, size.height) * HEADER_GLYPH_FRACTION,
-            )
+            // The glyph keeps its own [glyphBox]-wide box centered on the cell, even when the cell
+            // is narrower: only the empty viewBox margin spills past the edge, never the ink (see
+            // [inkHalfWidth]). Guide lines take their Y's from that same box.
+            val box = Size(glyphBox.toPx(), size.height)
+            drawGuideLines(handwritingLines(box))
+            translate(left = (size.width - box.width) / 2f) {
+                drawGhostLetter(
+                    guide = guide,
+                    canvasSize = box,
+                    color = glyphColor,
+                    strokeWidthPx = minOf(box.width, box.height) * HEADER_GLYPH_FRACTION,
+                )
+            }
         }
     }
+}
+
+/**
+ * How far [guide]'s ink reaches either side of the viewBox's center line (x = 50), in viewBox units,
+ * stroke thickness included. Every header glyph is centered on its cell, so this — not the glyph's
+ * width — is what has to fit in half a cell (`q`'s tail makes it lopsided). Path bounds include
+ * Bézier control points, so it can over-estimate slightly, which only errs toward more room.
+ */
+private fun inkHalfWidth(guide: LetterGuide): Float {
+    val center = GLYPH_VIEW_BOX / 2f
+    val reach = scaledGuidePaths(guide, Size(GLYPH_VIEW_BOX, GLYPH_VIEW_BOX)).maxOfOrNull { path ->
+        val bounds = path.getBounds()
+        maxOf(center - bounds.left, bounds.right - center)
+    } ?: 0f
+    return reach + GLYPH_VIEW_BOX * HEADER_GLYPH_FRACTION / 2f
 }
 
 private const val HEADER_CELL_W_DP = 60
@@ -501,3 +555,11 @@ private const val HEADER_CELL_W_DP = 60
 private const val HEADER_CELL_H_DP = 74
 private const val HEADER_CELL_PAD_DP = 4
 private const val HEADER_GLYPH_FRACTION = 0.11f
+
+/** Full-size glyph box: the viewBox side inside a full-width cell. Narrow cells never enlarge it. */
+private const val HEADER_GLYPH_BOX_DP = HEADER_CELL_W_DP - 2 * HEADER_CELL_PAD_DP
+
+/** Least clear space between two neighbouring letters' ink once cells have narrowed. */
+private const val HEADER_MIN_INK_GAP_DP = 4
+
+private const val GLYPH_VIEW_BOX = 100f
