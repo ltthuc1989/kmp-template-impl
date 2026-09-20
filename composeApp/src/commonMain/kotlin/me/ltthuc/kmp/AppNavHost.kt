@@ -89,7 +89,7 @@ internal fun AppNavHost(
                 // A screen that covers itself with a full-screen overlay (the parental gate) also
                 // hides the pill: it is hosted here, above the entries, so it would float on top of
                 // that overlay instead of being covered by it.
-                if (currentTab != null && floatingNavVisibility.isVisible) {
+                if (SHOW_FLOATING_NAV && currentTab != null && floatingNavVisibility.isVisible) {
                     AppBottomNavBar(currentTab = currentTab)
                 }
             },
@@ -140,6 +140,14 @@ internal fun AppNavHost(
         }
     }
 }
+
+/**
+ * Tạm tắt thanh nav nổi (chốt 2026-09-19): nó chỉ có 2 tab Home + Settings, mà Home đã có nút
+ * bánh răng trên top bar đi qua cùng cổng phụ huynh — thanh nổi chỉ che mất cuối danh sách level.
+ * Bật lại = đổi thành true; mọi thứ khác (AppBottomNavBar, LocalFloatingNavHeight, fadeOutBottom)
+ * vẫn giữ nguyên và tự về 0 khi thanh không hiện.
+ */
+private const val SHOW_FLOATING_NAV = false
 
 private fun NavKey?.toBottomNavTabOrNull(): AppBottomNavTab? = when (this) {
     Destination.Home -> AppBottomNavTab.Home
