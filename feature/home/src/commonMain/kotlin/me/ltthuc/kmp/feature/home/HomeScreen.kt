@@ -3,6 +3,7 @@ package me.ltthuc.kmp.feature.home
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -17,6 +18,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.MenuBook
 import androidx.compose.material.icons.filled.Person
@@ -44,11 +46,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.aakira.napier.Napier
 import kotlinx.collections.immutable.ImmutableList
@@ -255,44 +262,86 @@ private fun LevelCardRow(
         onClick = onClick,
         enabled = isInteractive,
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-        ) {
-            LevelCardThumbnail(level = card.level, status = card.status)
-            Box(modifier = Modifier.weight(1f)) {
-                when (val status = card.status) {
-                    is LevelStatus.Active -> ActiveCardContent(
-                        title = card.level.title,
-                        unitNumber = status.currentUnit.number,
-                        unitTitle = status.currentUnit.title,
-                        progressPercent = status.progressPercent,
-                    )
+        BoxWithConstraints {
+            // Máy nhỏ (thẻ hẹp hơn 360dp, tức màn dưới ~392dp): hình, khe, lề thẻ và nút Start cùng
+            // thu lại để nhường chỗ cho chữ — "Letter Combinations" cạnh nút Start vẫn nằm trên
+            // một dòng ở cỡ chữ thường. Hẹp hơn nữa thì [OneLineCardText] tự thu cỡ chữ.
+            val compact = maxWidth < COMPACT_CARD_WIDTH
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(if (compact) 12.dp else 16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(if (compact) 12.dp else 16.dp),
+            ) {
+                LevelCardThumbnail(
+                    level = card.level,
+                    status = card.status,
+                    artSize = if (compact) COMPACT_ART_SIZE else ART_SIZE,
+                )
+                Box(modifier = Modifier.weight(1f)) {
+                    when (val status = card.status) {
+                        is LevelStatus.Active -> ActiveCardContent(
+                            title = card.level.title,
+                            unitNumber = status.currentUnit.number,
+                            unitTitle = status.currentUnit.title,
+                            progressPercent = status.progressPercent,
+                        )
 
-                    LevelStatus.ReadyToStart -> ReadyCardContent(
-                        title = card.level.title,
-                        onStart = onClick,
-                    )
+                        LevelStatus.ReadyToStart -> ReadyCardContent(
+                            title = card.level.title,
+                            onStart = onClick,
+                            compact = compact,
+                        )
 
-                    is LevelStatus.Locked -> LockedCardContent(
-                        title = card.level.title,
-                        prerequisiteTitle = status.prerequisiteLevel?.title,
-                    )
+                        is LevelStatus.Locked -> LockedCardContent(
+                            title = card.level.title,
+                            prerequisiteTitle = status.prerequisiteLevel?.title,
+                        )
 
-                    LevelStatus.ComingSoon -> ComingSoonCardContent(title = card.level.title)
+                        LevelStatus.ComingSoon -> ComingSoonCardContent(title = card.level.title)
+                    }
                 }
             }
         }
     }
 }
 
+/**
+ * Chữ trên thẻ level luôn nằm MỘT dòng: thiếu chỗ thì chữ nhỏ dần (tới [CARD_TEXT_MIN_SIZE]), chỉ
+ * khi nhỏ hết cỡ vẫn không vừa mới cắt "…". Tiêu đề gãy đôi ("Letter / Combinations") làm thẻ cao
+ * lệch các thẻ khác và trông như lỗi (user báo 2026-09-19, máy màn nhỏ).
+ */
+@Composable
+private fun OneLineCardText(
+    text: String,
+    style: TextStyle,
+    color: Color,
+    fontWeight: FontWeight,
+    modifier: Modifier = Modifier,
+) {
+    val maxSize = style.fontSize.takeIf { it.isSp } ?: CARD_TEXT_FALLBACK_SIZE
+    Text(
+        modifier = modifier,
+        text = text,
+        style = style,
+        fontWeight = fontWeight,
+        color = color,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+        autoSize = TextAutoSize.StepBased(
+            minFontSize = if (maxSize.value < CARD_TEXT_MIN_SIZE.value) maxSize else CARD_TEXT_MIN_SIZE,
+            maxFontSize = maxSize,
+            stepSize = 0.5.sp,
+        ),
+    )
+}
+
 @Composable
 private fun LevelCardThumbnail(
     level: Level,
     status: LevelStatus,
+    artSize: Dp,
     modifier: Modifier = Modifier,
 ) {
     val iconTint = when (status) {
@@ -314,7 +363,7 @@ private fun LevelCardThumbnail(
     // màu sau lưng là hai lớp nền chồng nhau trên cùng một thẻ. Bỏ ô đi thì hình được vẽ to hơn
     // trong cùng khoảng chỗ cũ.
     Box(
-        modifier = modifier.size(width = 64.dp, height = 80.dp),
+        modifier = modifier.size(width = artSize, height = artSize + 16.dp),
         contentAlignment = Alignment.Center,
     ) {
         when {
@@ -329,7 +378,7 @@ private fun LevelCardThumbnail(
                 bitmap = art,
                 contentDescription = null,
                 contentScale = ContentScale.Fit,
-                modifier = Modifier.size(64.dp),
+                modifier = Modifier.size(artSize),
             )
 
             // Ảnh chưa nạp xong hoặc thiếu file: vẫn phải có gì đó trong ô, nếu không thẻ
@@ -381,7 +430,7 @@ private fun ActiveCardContent(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            Text(
+            OneLineCardText(
                 modifier = Modifier.weight(1f),
                 text = title,
                 style = MaterialTheme.typography.titleMedium,
@@ -406,7 +455,7 @@ private fun ActiveCardContent(
 
         // Dòng nội dung của thẻ in ĐẬM: ở cỡ bodyMedium nét thường, "Unit 5: th th ck qu" chìm
         // xuống dưới tiêu đề level và mắt không bắt được nó (user báo 2026-09-18).
-        Text(
+        OneLineCardText(
             text = stringResource(Res.string.home_unit_label, unitNumber, unitTitle),
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.Bold,
@@ -453,6 +502,7 @@ private fun ActiveCardContent(
 private fun ReadyCardContent(
     title: String,
     onStart: () -> Unit,
+    compact: Boolean,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -461,20 +511,20 @@ private fun ReadyCardContent(
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
         Column(modifier = Modifier.weight(1f)) {
-            Text(
+            OneLineCardText(
                 text = title,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface,
             )
-            Text(
+            OneLineCardText(
                 text = stringResource(Res.string.home_badge_ready),
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
-        Spacer(Modifier.width(12.dp))
+        Spacer(Modifier.width(if (compact) 8.dp else 12.dp))
         // Cùng đích với cú chạm vào cả thẻ. Nút nằm ĐÈ lên thẻ nên nó nuốt cú chạm: để
         // onClick rỗng thì bấm trúng chữ "Start" là không có gì xảy ra, dù bấm chỗ khác
         // trên thẻ vẫn vào được — nhìn như app đơ.
@@ -485,6 +535,7 @@ private fun ReadyCardContent(
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary,
             ),
+            contentPadding = if (compact) COMPACT_START_PADDING else ButtonDefaults.ContentPadding,
         ) {
             Text(
                 text = stringResource(Res.string.home_start_button),
@@ -502,7 +553,7 @@ private fun LockedCardContent(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
-        Text(
+        OneLineCardText(
             text = title,
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
@@ -527,7 +578,7 @@ private fun ComingSoonCardContent(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
-        Text(
+        OneLineCardText(
             text = title,
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
@@ -550,3 +601,10 @@ private fun ComingSoonCardContent(
 }
 
 private const val PERCENT_DIVISOR = 100f
+
+private val COMPACT_CARD_WIDTH = 360.dp
+private val ART_SIZE = 64.dp
+private val COMPACT_ART_SIZE = 52.dp
+private val COMPACT_START_PADDING = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+private val CARD_TEXT_MIN_SIZE = 12.sp
+private val CARD_TEXT_FALLBACK_SIZE = 16.sp
