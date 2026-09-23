@@ -143,7 +143,7 @@ internal fun SettingOthersSection(
 
     if (isShowDeveloperModeDialog) {
         SettingDeveloperModeDialog(
-            onDeveloperModeEnabled = {
+            onPinAccepted = {
                 onDeveloperModeChanged.invoke(true)
                 isShowDeveloperModeDialog = false
             },

@@ -1,8 +1,10 @@
 package me.ltthuc.kmp.feature.setting
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,6 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -42,8 +45,10 @@ import me.ltthuc.kmp.core.resource.setting_share_message
 import me.ltthuc.kmp.core.ui.dialog.ParentalGateScreen
 import me.ltthuc.kmp.core.ui.isDebugBuild
 import me.ltthuc.kmp.core.ui.screen.Destination
+import me.ltthuc.kmp.core.ui.theme.LocalAppConfig
 import me.ltthuc.kmp.core.ui.theme.LocalNavBackStack
 import me.ltthuc.kmp.feature.setting.components.SettingActionButton
+import me.ltthuc.kmp.feature.setting.components.SettingDeveloperModeDialog
 import me.ltthuc.kmp.feature.setting.components.SettingTopAppBar
 import me.ltthuc.kmp.feature.setting.components.section.SettingGeneralSection
 import me.ltthuc.kmp.feature.setting.components.section.SettingOthersSection
@@ -51,6 +56,8 @@ import me.ltthuc.kmp.feature.setting.components.section.SettingParentControlSect
 import me.ltthuc.kmp.feature.setting.components.section.SettingSupportSection
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import kotlin.time.TimeMark
+import kotlin.time.TimeSource
 
 private const val PRIVACY_URL = "https://abc-phonics-kids.web.app/privacy"
 private const val TERMS_URL = "https://abc-phonics-kids.web.app/terms"
@@ -67,6 +74,16 @@ internal fun SettingScreen(
     val levels by viewModel.levels.collectAsStateWithLifecycle()
     val levelPrices by viewModel.levelPrices.collectAsStateWithLifecycle()
     val shareMessage = stringResource(Res.string.setting_share_message)
+
+    val appConfig = LocalAppConfig.current
+    val unlockResult by viewModel.unlockResult.collectAsStateWithLifecycle()
+
+    // Hidden reviewer unlock: REVIEWER_UNLOCK_TAPS quick taps on the version line open the PIN
+    // prompt. Google Play's App access declaration needs some way in to the paid units, and the
+    // app has no accounts to hand out. See ReviewerUnlock.kt.
+    var versionTaps by remember { mutableIntStateOf(0) }
+    var lastVersionTap by remember { mutableStateOf<TimeMark?>(null) }
+    var showUnlockPin by remember { mutableStateOf(false) }
 
     var showResetGate by remember { mutableStateOf(false) }
     var showResetConfirm by remember { mutableStateOf(false) }
@@ -171,8 +188,19 @@ internal fun SettingScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 24.dp),
+                        versionLabel = "v${appConfig.versionName} (${appConfig.versionCode})",
                         onTerms = { uriHandler.openUri(TERMS_URL) },
                         onPrivacy = { uriHandler.openUri(PRIVACY_URL) },
+                        onVersionTap = {
+                            val since = lastVersionTap?.elapsedNow()?.inWholeMilliseconds
+                                ?: Long.MAX_VALUE
+                            lastVersionTap = TimeSource.Monotonic.markNow()
+                            versionTaps = advanceTapCount(versionTaps, since)
+                            if (versionTaps >= REVIEWER_UNLOCK_TAPS) {
+                                versionTaps = 0
+                                showUnlockPin = true
+                            }
+                        },
                     )
                 }
             }
@@ -187,6 +215,29 @@ internal fun SettingScreen(
                     action?.invoke()
                 },
                 onDismiss = { pendingParentAction = null },
+            )
+        }
+
+        if (showUnlockPin) {
+            SettingDeveloperModeDialog(
+                onPinAccepted = {
+                    showUnlockPin = false
+                    viewModel.unlockAllLevelsAsPurchased()
+                },
+                onDismissRequest = { showUnlockPin = false },
+                // A store reviewer following the App access instructions lands here. The stock
+                // developer-mode copy ("you will not be able to receive any support") would read
+                // as a warning they broke something.
+                title = "Reviewer access",
+                description = "Enter the PIN from the Play Console App access instructions " +
+                    "to open every paid level.",
+            )
+        }
+
+        unlockResult?.let { outcome ->
+            UnlockResultDialog(
+                outcome = outcome,
+                onDismiss = viewModel::clearUnlockResult,
             )
         }
 
@@ -234,6 +285,36 @@ internal fun SettingScreen(
 
 @Composable
 private fun SettingsFooter(
+    versionLabel: String,
+    onTerms: () -> Unit,
+    onPrivacy: () -> Unit,
+    onVersionTap: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        LinkRow(onTerms = onTerms, onPrivacy = onPrivacy)
+
+        // No ripple and no affordance: this has to read as a plain version stamp, or the way in
+        // stops being hidden. Support staff still get a version to ask for.
+        Text(
+            modifier = Modifier.clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null,
+                onClick = onVersionTap,
+            ),
+            text = versionLabel,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+}
+
+@Composable
+private fun LinkRow(
     onTerms: () -> Unit,
     onPrivacy: () -> Unit,
     modifier: Modifier = Modifier,
@@ -262,4 +343,41 @@ private fun SettingsFooter(
             textDecoration = TextDecoration.Underline,
         )
     }
+}
+
+/**
+ * Outcome of the hidden unlock. Wording is English on purpose: the only person who ever reaches
+ * this dialog is a store reviewer following the App access instructions, and the existing PIN
+ * dialog is English too.
+ */
+@Composable
+private fun UnlockResultDialog(
+    outcome: ReviewerUnlockOutcome,
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val title: String
+    val body: String
+    when (outcome) {
+        is ReviewerUnlockOutcome.Unlocked -> {
+            title = "Unlocked"
+            body = "All ${outcome.levelIds.size} levels are now open, exactly as after a purchase."
+        }
+
+        ReviewerUnlockOutcome.NoLevelsLoaded -> {
+            title = "Not unlocked"
+            body = "The lesson list has not finished loading. Leave Settings, wait a moment, " +
+                "then try again."
+        }
+    }
+
+    AlertDialog(
+        modifier = modifier,
+        onDismissRequest = onDismiss,
+        title = { Text(title) },
+        text = { Text(body) },
+        confirmButton = {
+            TextButton(onClick = onDismiss) { Text("OK") }
+        },
+    )
 }

@@ -1,8 +1,18 @@
 package me.ltthuc.kmp.core.content
 
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.mock.MockEngine
+import io.ktor.client.engine.mock.respond
+import io.ktor.client.engine.mock.respondError
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.headersOf
+import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runTest
+import kotlin.coroutines.cancellation.CancellationException
 import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
@@ -176,6 +186,67 @@ class ContentPackDownloaderTest {
         assertEquals(0L, subject.pendingBytes("L9U9"))
     }
 
+    @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
+    @Test
+    fun leavingTheScreenSurfacesAsCancellationNotADownloadFailure() = runTest {
+        // A parent backing out mid-download is not a failure. `runCatching` in the retry ladder
+        // used to swallow the cancellation, burn the remaining attempts and then report
+        // "Unable to download ... after 3 attempts" -- which paints the unit with a retry badge
+        // for something the parent did on purpose.
+        val files = FakePackFiles()
+        val subject = downloaderWith(stallingClient(deadHash = "nothing", stallMillis = 30_000), files)
+        var caught: Throwable? = null
+
+        val job = launch {
+            try {
+                subject.download("L1U3").collect { }
+            } catch (t: Throwable) {
+                caught = t
+                throw t
+            }
+        }
+        advanceTimeBy(ADVANCE_INTO_FLIGHT_MS)
+        job.cancelAndJoin()
+
+        assertTrue(
+            caught is CancellationException,
+            "expected cancellation, got ${caught?.let { it::class.simpleName }}: ${caught?.message}",
+        )
+    }
+
+    /** Fails every request for [deadHash]; stalls every other one long enough to be cancelled. */
+    private fun stallingClient(
+        deadHash: String,
+        stallMillis: Long,
+        hits: MutableList<String> = mutableListOf(),
+    ) = HttpClient(
+        MockEngine { request ->
+            hits += request.url.toString()
+            if (request.url.toString().contains(deadHash)) {
+                respondError(HttpStatusCode.InternalServerError)
+            } else {
+                delay(stallMillis)
+                respond(
+                    content = ByteArray(8) { 7 },
+                    status = HttpStatusCode.OK,
+                    headers = headersOf("Content-Type", "audio/mpeg"),
+                )
+            }
+        },
+    )
+
+    private fun downloaderWith(client: HttpClient, files: FakePackFiles): ContentPackDownloader {
+        val source: ManifestSource = FakeManifestSource(manifest)
+        val index = PackIndex(files)
+        return ContentPackDownloader(
+            client,
+            source,
+            AssetLocator(source, files, index, "https://cdn.test/content"),
+            files,
+            index,
+        )
+    }
+
     @Test
     fun fetchOneStoresTheFileAndReturnsItsPath() = runTest {
         val files = FakePackFiles()
@@ -183,5 +254,10 @@ class ContentPackDownloaderTest {
 
         assertEquals("/packs/hash-d", path)
         assertTrue(files.has("hash-d"))
+    }
+
+    private companion object {
+        /** Long enough for every file to be in flight, short enough that none has finished. */
+        const val ADVANCE_INTO_FLIGHT_MS = 50L
     }
 }

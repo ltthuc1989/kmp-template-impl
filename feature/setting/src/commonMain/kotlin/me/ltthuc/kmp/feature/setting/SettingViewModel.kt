@@ -2,6 +2,7 @@ package me.ltthuc.kmp.feature.setting
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -45,6 +46,13 @@ class SettingViewModel(
     val levels: StateFlow<List<Level>> = levelRepository.observeLevelCards()
         .map { cards -> cards.filterNot { it.status is LevelStatus.ComingSoon }.map { it.level } }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    /**
+     * Result of the last "unlock everything" attempt, or null when there is nothing to report.
+     * Exists so the attempt can never end in a screen that looks unchanged (playbook R1).
+     */
+    private val _unlockResult = MutableStateFlow<ReviewerUnlockOutcome?>(null)
+    internal val unlockResult: StateFlow<ReviewerUnlockOutcome?> = _unlockResult.asStateFlow()
 
     /** Real localized unlock price per level (levelId → priceString) from the store / fake billing. */
     private val _levelPrices = MutableStateFlow<Map<String, String>>(emptyMap())
@@ -139,10 +147,27 @@ class SettingViewModel(
      */
     fun unlockAllLevelsAsPurchased() {
         viewModelScope.launch {
-            repository.setOwnedLevelIds(levels.value.map { it.id }.toSet())
-            // No download here: a real purchase only fills the active level, and entering any
-            // other one fills it then. Grabbing all five would be a QA-only behaviour.
+            // `levels` starts empty and fills in from Room. Unlocking before it arrives used to
+            // write an empty set — zero levels opened, no log, and a screen that looked fine.
+            val outcome = reviewerUnlockOutcome(levels.value.map { it.id }.toSet())
+            when (outcome) {
+                is ReviewerUnlockOutcome.Unlocked -> {
+                    repository.setOwnedLevelIds(outcome.levelIds)
+                    // No download here: a real purchase only fills the active level, and entering
+                    // any other one fills it then. Grabbing all five would be a QA-only behaviour.
+                    Napier.i(tag = TAG) { "Unlocked ${outcome.levelIds.size} levels as purchased" }
+                }
+
+                ReviewerUnlockOutcome.NoLevelsLoaded ->
+                    Napier.e(tag = TAG) { "Unlock refused: level list not loaded yet" }
+            }
+            _unlockResult.value = outcome
         }
+    }
+
+    /** Dismisses the unlock result dialog. */
+    fun clearUnlockResult() {
+        _unlockResult.value = null
     }
 
     /** QA: delete downloaded lesson content so the download flow starts from zero again. */
@@ -155,5 +180,9 @@ class SettingViewModel(
             progressResetRepository.resetAllProgress()
             onDone()
         }
+    }
+
+    private companion object {
+        const val TAG = "SettingViewModel"
     }
 }

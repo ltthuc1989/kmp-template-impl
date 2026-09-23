@@ -23,5 +23,8 @@ kotlin {
 
             implementation(libs.libraries.ui)
         }
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+        }
     }
 }

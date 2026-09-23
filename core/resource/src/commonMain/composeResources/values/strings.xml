@@ -156,7 +156,7 @@
     <string name="setting_other_developer_mode">Developer Mode</string>
     <string name="setting_other_developer_mode_description">[Warning] Do not enable this mode if you are not a developer.</string>
     <string name="setting_other_developer_mode_dialog_title">Developer Mode</string>
-    <string name="setting_other_developer_mode_dialog_description">You are trying to turn on this mode.Please enter the developer\'s PIN.\n\n[Warning] When this mode is turned on, you will not be able to receive any support.</string>
+    <string name="setting_other_developer_mode_dialog_description">You are trying to turn on this mode. Please enter the developer's PIN.\n\n[Warning] When this mode is turned on, you will not be able to receive any support.</string>
 
     <!-- Setting Paywall -->
     <string name="setting_paywall_title">Pro</string>

@@ -9,7 +9,9 @@ import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.sync.Mutex
@@ -151,17 +153,28 @@ class ContentPackDownloader(
                 response.bodyAsBytes()
             }
 
-            result.onSuccess { bytes ->
+            result.getOrNull()?.let { bytes ->
                 packFiles.put(asset.hash, bytes)
                 return
-            }.onFailure { cause ->
-                lastError = cause
-                Napier.w("Pack fetch attempt ${attempt + 1} failed for $logicalPath: ${cause.message}")
-                // Back off before trying again. Three retries fired back-to-back all hit the same
-                // half-second of bad signal and fail together, which is a slower way of not
-                // retrying at all. Test time is virtual, so this costs the suite nothing.
-                if (attempt < MAX_ATTEMPTS - 1) delay(RETRY_BACKOFF_MS * (attempt + 1))
             }
+
+            // Ask whether *this* coroutine is still wanted before believing the exception.
+            // When a sibling's permanent failure cancels the pack, Ktor re-throws the scope's
+            // cancellation cause -- the dead file's IllegalStateException, not a
+            // CancellationException -- and `runCatching` hands it over as if this file had
+            // failed. That logged "attempt 1 failed for 03_vet.mp3: Unable to download
+            // scene_2.mp3", against a file that was never even requested, and sent a real
+            // debugging session after an innocent clip. Checking the job, not the exception
+            // type, is the only reading that survives whatever the client chooses to throw.
+            currentCoroutineContext().ensureActive()
+
+            val cause = result.exceptionOrNull()
+            lastError = cause
+            Napier.w("Pack fetch attempt ${attempt + 1} failed for $logicalPath: ${cause?.message}")
+            // Back off before trying again. Three retries fired back-to-back all hit the same
+            // half-second of bad signal and fail together, which is a slower way of not
+            // retrying at all. Test time is virtual, so this costs the suite nothing.
+            if (attempt < MAX_ATTEMPTS - 1) delay(RETRY_BACKOFF_MS * (attempt + 1))
         }
 
         throw IllegalStateException("Unable to download $logicalPath after $MAX_ATTEMPTS attempts", lastError)

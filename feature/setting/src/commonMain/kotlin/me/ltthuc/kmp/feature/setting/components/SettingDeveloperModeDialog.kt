@@ -23,11 +23,18 @@ import me.ltthuc.kmp.core.resource.setting_other_developer_mode_dialog_title
 import me.ltthuc.kmp.core.ui.theme.LocalAppConfig
 import org.jetbrains.compose.resources.stringResource
 
+/**
+ * PIN prompt shared by the debug-only Developer Mode switch and the hidden reviewer unlock in
+ * the Settings footer. It only reports that the PIN matched; what that unlocks is the caller's
+ * decision.
+ */
 @Composable
 internal fun SettingDeveloperModeDialog(
-    onDeveloperModeEnabled: () -> Unit,
+    onPinAccepted: () -> Unit,
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
+    title: String = stringResource(Res.string.setting_other_developer_mode_dialog_title),
+    description: String = stringResource(Res.string.setting_other_developer_mode_dialog_description),
 ) {
     val appConfig = LocalAppConfig.current
 
@@ -42,16 +49,14 @@ internal fun SettingDeveloperModeDialog(
         modifier = modifier,
         onDismissRequest = onDismissRequest,
         title = {
-            Text(text = stringResource(Res.string.setting_other_developer_mode_dialog_title))
+            Text(text = title)
         },
         text = {
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                Text(
-                    text = stringResource(Res.string.setting_other_developer_mode_dialog_description),
-                )
+                Text(text = description)
 
                 OutlinedTextField(
                     modifier = Modifier.fillMaxWidth(),
@@ -75,7 +80,7 @@ internal fun SettingDeveloperModeDialog(
             TextButton(
                 onClick = {
                     if (pin == appConfig.developerPin) {
-                        onDeveloperModeEnabled.invoke()
+                        onPinAccepted.invoke()
                     } else {
                         error = true
                     }
