@@ -99,10 +99,16 @@
   },
   {
     "lesson_id": "L2U06_SHORT-O_fox",
-    "start_ms": 10360,
+    "start_ms": 10080,
     "speed_ms": 746,
     "edge_speed_ms": 600,
-    "slide_ms": 2590
+    "slide_ms": 2520,
+    "slide_starts_ms": [
+      2795,
+      5262,
+      7761,
+      10080
+    ]
   },
   {
     "lesson_id": "L2U06_SHORT-O-OP_top",

@@ -92,15 +92,15 @@
   },
   {
     "lesson_id": "L4U02_DR-TR_drum",
-    "start_ms": 15384,
+    "start_ms": 14760,
     "speed_ms": 1213,
     "edge_speed_ms": 600,
-    "slide_ms": 3846,
+    "slide_ms": 3690,
     "slide_starts_ms": [
-      3847,
-      8076,
-      11341,
-      15194
+      3288,
+      6923,
+      10543,
+      14371
     ]
   },
   {

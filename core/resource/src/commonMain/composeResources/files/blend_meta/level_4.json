@@ -5845,7 +5845,7 @@
       {
         "word": "strong",
         "audio": "04_strong.mp3",
-        "duration_ms": 9160,
+        "duration_ms": 8824,
         "segments": [
           {
             "card": "preview",
@@ -5877,31 +5877,31 @@
             "row": 2,
             "slot": -1,
             "start_ms": 3654,
-            "end_ms": 4830
+            "end_ms": 4662
           },
           {
             "card": "4on",
             "text": "str",
             "row": 2,
             "slot": 0,
-            "start_ms": 5830,
-            "end_ms": 6480
+            "start_ms": 5662,
+            "end_ms": 6312
           },
           {
             "card": "4ch",
             "text": "ong",
             "row": 2,
             "slot": 1,
-            "start_ms": 6980,
-            "end_ms": 7484
+            "start_ms": 6812,
+            "end_ms": 7316
           },
           {
             "card": "2r",
             "text": "strong",
             "row": 2,
             "slot": -1,
-            "start_ms": 7984,
-            "end_ms": 9160
+            "start_ms": 7816,
+            "end_ms": 8824
           }
         ]
       }
@@ -6008,7 +6008,7 @@
       {
         "word": "splint",
         "audio": "02_splint.mp3",
-        "duration_ms": 11052,
+        "duration_ms": 9196,
         "segments": [
           {
             "card": "preview",
@@ -6040,31 +6040,31 @@
             "row": 2,
             "slot": -1,
             "start_ms": 3928,
-            "end_ms": 5776
+            "end_ms": 4848
           },
           {
             "card": "4on",
             "text": "spl",
             "row": 2,
             "slot": 0,
-            "start_ms": 6776,
-            "end_ms": 7664
+            "start_ms": 5848,
+            "end_ms": 6736
           },
           {
             "card": "4ch",
             "text": "int",
             "row": 2,
             "slot": 1,
-            "start_ms": 8164,
-            "end_ms": 8704
+            "start_ms": 7236,
+            "end_ms": 7776
           },
           {
             "card": "2r",
             "text": "splint",
             "row": 2,
             "slot": -1,
-            "start_ms": 9204,
-            "end_ms": 11052
+            "start_ms": 8276,
+            "end_ms": 9196
           }
         ]
       },

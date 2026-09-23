@@ -67,7 +67,7 @@
     <string name="media_type_animated_gif">GIF</string>
 
     <!-- Home -->
-    <string name="home_title">Hành trình tiếng Anh</string>
+    <string name="home_title">Chọn cấp độ</string>
     <string name="home_level_1_title">Bảng chữ cái</string>
     <string name="home_level_2_title">Nguyên âm ngắn</string>
     <string name="home_level_3_title">Nguyên âm dài</string>

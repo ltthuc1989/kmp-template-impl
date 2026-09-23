@@ -67,7 +67,7 @@
     <string name="media_type_animated_gif">GIF</string>
 
     <!-- Home -->
-    <string name="home_title">English Quest</string>
+    <string name="home_title">Choose a Level</string>
     <string name="home_level_1_title">The Alphabet</string>
     <string name="home_level_2_title">Short Vowels</string>
     <string name="home_level_3_title">Long Vowels</string>

@@ -9,8 +9,10 @@ KHÁC với scripts/optimize_audio.py bên opw_audio_project: script kia
 encode ĐÈ LÊN MASTER. Script này chỉ đụng bản copy trong app; master
 ở opw_audio_project/output/ giữ nguyên chất lượng gốc.
 
-- Bỏ qua file đã ≤ SKIP_ABOVE_BITRATE (nhóm chant vốn đã 32k) — encode
-  lại chỉ làm tệ thêm mà không giảm được size.
+- Bỏ qua file đã ĐÚNG ĐỊNH DẠNG (22050Hz mono, dưới 64k) hoặc đã ≤ 48k
+  (nhóm chant vốn 32k) — encode lại chỉ làm tệ thêm mà không giảm được size.
+  Xét theo định dạng chứ không theo mình bitrate: clip 0.4s nén đúng chuẩn
+  vẫn đo ra 49-51k vì phần đầu file cố định chia cho thời lượng quá ngắn.
 - Bỏ qua chime UI ngắn (sfx/*.mp3): tổng 28KB, không đáng đổi chất lượng.
 - In-place atomic: ghi .tmp rồi rename, hỏng giữa chừng không mất file gốc.
 
@@ -44,8 +46,22 @@ TARGET_BITRATE = "40k"
 TARGET_SAMPLE_RATE = "22050"
 TARGET_CHANNELS = "1"
 
-# File đã ở dưới ngưỡng này thì bỏ qua (đã tối ưu từ trước).
+# File đã ở dưới ngưỡng này thì bỏ qua (đã tối ưu từ trước). Giữ vế này cho nhóm chant:
+# chant sinh bằng Gemini là 24000Hz 32k, không khớp vế "đúng định dạng" bên dưới.
 SKIP_AT_OR_BELOW_BPS = 48_000
+
+# Vế thứ hai — hỏi "ĐÚNG ĐỊNH DẠNG chưa" thay vì "nhẹ chưa" (user chốt 2026-09-21).
+#
+# Bitrate trung bình KHÔNG đọc được trạng thái của clip ngắn: phần đầu file cố định (thẻ ID3 +
+# khung thông tin của bộ nén, ~500 byte) chia cho thời lượng tí xíu là con số vọt lên. Đo thật:
+# `phonemes/a` 0.43s encode ở 40k mà đo ra 51k, trong khi `drum` 1.08s cùng lò ra 44k. Vì thế
+# 100 file ĐÃ nén đúng chuẩn vẫn bị encode lại mỗi lần chạy script — nén chồng nén làm tiếng mất
+# dần (nặng nhất là bộ phoneme, thứ bé nghe nhiều nhất), và đổi byte là đổi mã băm → đường dẫn
+# CDN mới, một lần đẩy lên mạng, bản cũ nằm lại vĩnh viễn dù nội dung không đổi.
+#
+# Định dạng thì không trôi theo độ dài clip. Trần 64k để file 22050 mono nhưng còn ở 96-128k
+# (tức CHƯA nén) vẫn bị bắt. Cùng cách xét với `opw_audio_project/scripts/optimize_audio.py`.
+FORMAT_OK_MAX_BPS = 64_000
 
 
 def bitrate_of(path: Path) -> int:
@@ -55,6 +71,25 @@ def bitrate_of(path: Path) -> int:
         text=True,
     ).stdout.strip()
     return int(out) if out.isdigit() else 0
+
+
+def stream_format(path: Path) -> tuple:
+    """(tần số, số kênh) — '' nếu ffprobe không đọc được."""
+    out = subprocess.run(
+        ["ffprobe", "-v", "error", "-select_streams", "a:0",
+         "-show_entries", "stream=sample_rate,channels", "-of", "csv=p=0", str(path)],
+        capture_output=True,
+        text=True,
+    ).stdout.strip().split(",")
+    return (out + ["", ""])[:2]
+
+
+def already_optimized(path: Path) -> bool:
+    bps = bitrate_of(path)
+    if bps <= SKIP_AT_OR_BELOW_BPS:
+        return True
+    rate, channels = stream_format(path)
+    return rate == TARGET_SAMPLE_RATE and channels == TARGET_CHANNELS and bps <= FORMAT_OK_MAX_BPS
 
 
 def encode(path: Path) -> None:
@@ -90,7 +125,7 @@ def main() -> int:
         size_before = path.stat().st_size
         before_total += size_before
 
-        if bitrate_of(path) <= SKIP_AT_OR_BELOW_BPS:
+        if already_optimized(path):
             skipped += 1
             after_total += size_before
             continue

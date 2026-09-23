@@ -30,10 +30,11 @@ private val DEFAULT_VISIBLE_STEPS = listOf(0, 1, 2, 3, 5, 6)
 // in UnitRepository). Other premium levels stay "Coming soon" until their content lands.
 //
 // L3 mở từ 2026-08-21; audio đã sinh đủ 8 unit từ 2026-08-31 nên cấp 3 học được bình thường.
+// L4 mở từ 2026-09-21: nội dung soát xong, pack L4U3-L4U8 đã publish lên CDN.
 // Mở ở đây cũng là mở BÁN: level rời ComingSoon là nó xuất hiện trong mục mua của Settings
 // (SettingViewModel.levels) và các unit trả tiền dựng paywall. Đưa một level vào set này
 // trước khi product `phonics_level_N` bật ở Play + RevenueCat thì paywall chỉ ra error_billing.
-private val LAUNCHED_PREMIUM_LEVELS = setOf("L2", "L3")
+private val LAUNCHED_PREMIUM_LEVELS = setOf("L2", "L3", "L4")
 
 class LevelRepository(
     private val levelDao: LevelDao,
