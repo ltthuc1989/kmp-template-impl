@@ -17,6 +17,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
 import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.setting_other_developer_mode_dialog_description
 import me.ltthuc.kmp.core.resource.setting_other_developer_mode_dialog_title
@@ -48,6 +49,11 @@ internal fun SettingDeveloperModeDialog(
     AlertDialog(
         modifier = modifier,
         onDismissRequest = onDismissRequest,
+        // Only Submit and Cancel close this. The way in is seven quick taps on the version line,
+        // and a reviewer following the instructions overshoots easily -- the eighth tap landed on
+        // the scrim and dismissed the prompt they had just opened, which reads as the app
+        // refusing them. Back still works, so nobody is trapped.
+        properties = DialogProperties(dismissOnClickOutside = false),
         title = {
             Text(text = title)
         },

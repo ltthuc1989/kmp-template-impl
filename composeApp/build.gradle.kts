@@ -138,7 +138,12 @@ buildkonfig {
         setField("VERSION_NAME", libs.versions.versionName.get())
         setField("VERSION_CODE", libs.versions.versionCode.get())
 
-        setField("DEVELOPER_PIN", "1234")
+        // Đặt mặc định ở đây, không ở local.properties: PIN này đi vào phần hướng dẫn App
+        // access trên Play Console, nên mọi bản build phải ra cùng một số. Để nó trong
+        // local.properties thì một bản build từ máy khác sẽ âm thầm rơi về giá trị khác và
+        // người duyệt gõ đúng PIN vẫn bị từ chối. Cũng không phải bí mật: BuildKonfig biên
+        // dịch nó thành chuỗi thường, ai giải nén APK cũng đọc được.
+        setField("DEVELOPER_PIN", "070689")
         setField("PURCHASE_ANDROID_API_KEY")
         setField("PURCHASE_IOS_API_KEY")
 
