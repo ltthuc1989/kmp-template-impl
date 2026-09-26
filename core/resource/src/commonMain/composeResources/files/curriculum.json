@@ -620,7 +620,17 @@
               "words": [
                 {
                   "word": "monkey",
-                  "emoji": "🐵"
+                  "emoji": "🐵",
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/monkey.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "🐵"
+                    }
+                  ]
                 },
                 {
                   "word": "milk",
@@ -953,7 +963,17 @@
                 },
                 {
                   "word": "teacher",
-                  "emoji": "👩‍🏫"
+                  "emoji": "👩‍🏫",
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/teacher.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "👩‍🏫"
+                    }
+                  ]
                 }
               ],
               "chantTexts": [
@@ -1075,7 +1095,17 @@
                 },
                 {
                   "word": "water",
-                  "emoji": "💧"
+                  "emoji": "💧",
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/splash.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "💧"
+                    }
+                  ]
                 },
                 {
                   "word": "watch",
@@ -5772,26 +5802,58 @@
               "words": [
                 {
                   "word": "car",
-                  "emoji": "🚗"
+                  "emoji": "🚗",
+                  "split": [
+                    "c",
+                    "ar"
+                  ],
+                  "patternIndex": 1
                 },
                 {
                   "word": "farm",
-                  "emoji": "🏡"
+                  "emoji": "🏡",
+                  "split": [
+                    "f",
+                    "ar",
+                    "m"
+                  ],
+                  "patternIndex": 1
                 },
                 {
                   "word": "park",
-                  "emoji": "🏞️"
+                  "emoji": "🏞️",
+                  "split": [
+                    "p",
+                    "ar",
+                    "k"
+                  ],
+                  "patternIndex": 1,
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/park.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "🏞️"
+                    }
+                  ]
                 },
                 {
                   "word": "star",
-                  "emoji": "⭐"
+                  "emoji": "⭐",
+                  "split": [
+                    "st",
+                    "ar"
+                  ],
+                  "patternIndex": 1
                 }
               ],
               "chantTexts": [
-                "C-A-R",
-                "F-A-R-M",
-                "P-A-R-K",
-                "S-T-A-R"
+                "car-car-car",
+                "farm-farm-farm",
+                "park-park-park",
+                "star-star-star"
               ],
               "chantOrder": [
                 0,
@@ -5811,26 +5873,70 @@
               "words": [
                 {
                   "word": "bird",
-                  "emoji": "🐦"
+                  "emoji": "🐦",
+                  "split": [
+                    "b",
+                    "ir",
+                    "d"
+                  ],
+                  "patternIndex": 1
                 },
                 {
                   "word": "girl",
-                  "emoji": "👧"
+                  "emoji": "👧",
+                  "split": [
+                    "g",
+                    "ir",
+                    "l"
+                  ],
+                  "patternIndex": 1
                 },
                 {
                   "word": "nurse",
-                  "emoji": "👩‍⚕️"
+                  "emoji": "👩‍⚕️",
+                  "split": [
+                    "n",
+                    "ur",
+                    "se"
+                  ],
+                  "patternIndex": 1,
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/nurse.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "👩‍⚕️"
+                    }
+                  ]
                 },
                 {
                   "word": "purple",
-                  "emoji": "🟣"
+                  "emoji": "🟣",
+                  "split": [
+                    "p",
+                    "ur",
+                    "ple"
+                  ],
+                  "patternIndex": 1,
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/purple.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "🟣"
+                    }
+                  ]
                 }
               ],
               "chantTexts": [
-                "B-I-R-D",
-                "G-I-R-L",
-                "N-U-R-S-E",
-                "P-U-R-P-L-E"
+                "bird-bird-bird",
+                "girl-girl-girl",
+                "nurse-nurse-nurse",
+                "purple-purple-purple"
               ],
               "chantOrder": [
                 0,
@@ -5850,26 +5956,76 @@
               "words": [
                 {
                   "word": "teacher",
-                  "emoji": "👩‍🏫"
+                  "emoji": "👩‍🏫",
+                  "split": [
+                    "teach",
+                    "er"
+                  ],
+                  "patternIndex": 1,
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/teacher.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "👩‍🏫"
+                    }
+                  ]
                 },
                 {
                   "word": "sister",
-                  "emoji": "👭"
+                  "emoji": "👭",
+                  "split": [
+                    "sist",
+                    "er"
+                  ],
+                  "patternIndex": 1,
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/sister.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "👭"
+                    }
+                  ]
                 },
                 {
                   "word": "doctor",
-                  "emoji": "👨‍⚕️"
+                  "emoji": "👨‍⚕️",
+                  "split": [
+                    "doct",
+                    "or"
+                  ],
+                  "patternIndex": 1,
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/doctor.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "👨‍⚕️"
+                    }
+                  ]
                 },
                 {
                   "word": "tractor",
-                  "emoji": "🚜"
+                  "emoji": "🚜",
+                  "split": [
+                    "tract",
+                    "or"
+                  ],
+                  "patternIndex": 1
                 }
               ],
               "chantTexts": [
-                "T-E-A-C-H-E-R",
-                "S-I-S-T-E-R",
-                "D-O-C-T-O-R",
-                "T-R-A-C-T-O-R"
+                "teacher-teacher-teacher",
+                "sister-sister-sister",
+                "doctor-doctor-doctor",
+                "tractor-tractor-tractor"
               ],
               "chantOrder": [
                 0,
@@ -5898,26 +6054,59 @@
               "words": [
                 {
                   "word": "mouse",
-                  "emoji": "🐭"
+                  "emoji": "🐭",
+                  "split": [
+                    "m",
+                    "ou",
+                    "se"
+                  ],
+                  "patternIndex": 1
                 },
                 {
                   "word": "house",
-                  "emoji": "🏠"
+                  "emoji": "🏠",
+                  "split": [
+                    "h",
+                    "ou",
+                    "se"
+                  ],
+                  "patternIndex": 1
                 },
                 {
                   "word": "cow",
-                  "emoji": "🐄"
+                  "emoji": "🐄",
+                  "split": [
+                    "c",
+                    "ow"
+                  ],
+                  "patternIndex": 1
                 },
                 {
                   "word": "brown",
-                  "emoji": "🟫"
+                  "emoji": "🟫",
+                  "split": [
+                    "br",
+                    "ow",
+                    "n"
+                  ],
+                  "patternIndex": 1,
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/brown.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "🟫"
+                    }
+                  ]
                 }
               ],
               "chantTexts": [
-                "M-O-U-S-E",
-                "H-O-U-S-E",
-                "C-O-W",
-                "B-R-O-W-N"
+                "mouse-mouse-mouse",
+                "house-house-house",
+                "cow-cow-cow",
+                "brown-brown-brown"
               ],
               "chantOrder": [
                 0,
@@ -5937,26 +6126,78 @@
               "words": [
                 {
                   "word": "coin",
-                  "emoji": "🪙"
+                  "emoji": "🪙",
+                  "split": [
+                    "c",
+                    "oi",
+                    "n"
+                  ],
+                  "patternIndex": 1,
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/coin.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "🪙"
+                    }
+                  ]
                 },
                 {
                   "word": "soil",
-                  "emoji": "🪴"
+                  "emoji": "🪴",
+                  "split": [
+                    "s",
+                    "oi",
+                    "l"
+                  ],
+                  "patternIndex": 1,
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/soil.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "🪴"
+                    }
+                  ]
                 },
                 {
                   "word": "toy",
-                  "emoji": "🧸"
+                  "emoji": "🧸",
+                  "split": [
+                    "t",
+                    "oy"
+                  ],
+                  "patternIndex": 1,
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/toy.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "🧸"
+                    }
+                  ]
                 },
                 {
                   "word": "boy",
-                  "emoji": "👦"
+                  "emoji": "👦",
+                  "split": [
+                    "b",
+                    "oy"
+                  ],
+                  "patternIndex": 1
                 }
               ],
               "chantTexts": [
-                "C-O-I-N",
-                "S-O-I-L",
-                "T-O-Y",
-                "B-O-Y"
+                "coin-coin-coin",
+                "soil-soil-soil",
+                "toy-toy-toy",
+                "boy-boy-boy"
               ],
               "chantOrder": [
                 0,
@@ -5976,15 +6217,43 @@
               "words": [
                 {
                   "word": "book",
-                  "emoji": "📚"
+                  "emoji": "📚",
+                  "split": [
+                    "b",
+                    "oo",
+                    "k"
+                  ],
+                  "patternIndex": 1
                 },
                 {
                   "word": "foot",
-                  "emoji": "🦶"
+                  "emoji": "🦶",
+                  "split": [
+                    "f",
+                    "oo",
+                    "t"
+                  ],
+                  "patternIndex": 1
                 },
                 {
                   "word": "bush",
-                  "emoji": "🌿"
+                  "emoji": "🌿",
+                  "split": [
+                    "b",
+                    "u",
+                    "sh"
+                  ],
+                  "patternIndex": 1,
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/grass.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "🌿"
+                    }
+                  ]
                 },
                 {
                   "word": "pull",
@@ -5998,14 +6267,20 @@
                       "type": "emoji",
                       "char": "🤜"
                     }
-                  ]
+                  ],
+                  "split": [
+                    "p",
+                    "u",
+                    "ll"
+                  ],
+                  "patternIndex": 1
                 }
               ],
               "chantTexts": [
-                "B-O-O-K",
-                "F-O-O-T",
-                "B-U-S-H",
-                "P-U-L-L"
+                "book-book-book",
+                "foot-foot-foot",
+                "bush-bush-bush",
+                "pull-pull-pull"
               ],
               "chantOrder": [
                 0,
@@ -6044,26 +6319,68 @@
                       "type": "emoji",
                       "char": "🥣"
                     }
-                  ]
+                  ],
+                  "split": [
+                    "s",
+                    "au",
+                    "ce"
+                  ],
+                  "patternIndex": 1
                 },
                 {
                   "word": "August",
-                  "emoji": "📅"
+                  "emoji": "📅",
+                  "split": [
+                    "Au",
+                    "gust"
+                  ],
+                  "patternIndex": 0,
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/august.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "📅"
+                    }
+                  ]
                 },
                 {
                   "word": "prawn",
-                  "emoji": "🦐"
+                  "emoji": "🦐",
+                  "split": [
+                    "pr",
+                    "aw",
+                    "n"
+                  ],
+                  "patternIndex": 1
                 },
                 {
                   "word": "draw",
-                  "emoji": "✏️"
+                  "emoji": "✏️",
+                  "split": [
+                    "dr",
+                    "aw"
+                  ],
+                  "patternIndex": 1,
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/draw.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "✏️"
+                    }
+                  ]
                 }
               ],
               "chantTexts": [
-                "S-A-U-C-E",
-                "A-U-G-U-S-T",
-                "P-R-A-W-N",
-                "D-R-A-W"
+                "sauce-sauce-sauce",
+                "August-August-August",
+                "prawn-prawn-prawn",
+                "draw-draw-draw"
               ],
               "chantOrder": [
                 0,
@@ -6083,26 +6400,66 @@
               "words": [
                 {
                   "word": "ball",
-                  "emoji": "⚽"
+                  "emoji": "⚽",
+                  "split": [
+                    "b",
+                    "all"
+                  ],
+                  "patternIndex": 1
                 },
                 {
                   "word": "tall",
-                  "emoji": "📏"
+                  "emoji": "📏",
+                  "split": [
+                    "t",
+                    "all"
+                  ],
+                  "patternIndex": 1,
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/tall.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "📏"
+                    }
+                  ]
                 },
                 {
                   "word": "water",
-                  "emoji": "💧"
+                  "emoji": "💧",
+                  "split": [
+                    "wa",
+                    "ter"
+                  ],
+                  "patternIndex": 0,
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/splash.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "💧"
+                    }
+                  ]
                 },
                 {
                   "word": "walk",
-                  "emoji": "🚶"
+                  "emoji": "🚶",
+                  "split": [
+                    "wa",
+                    "lk"
+                  ],
+                  "patternIndex": 0
                 }
               ],
               "chantTexts": [
-                "B-A-L-L",
-                "T-A-L-L",
-                "W-A-T-E-R",
-                "W-A-L-K"
+                "ball-ball-ball",
+                "tall-tall-tall",
+                "water-water-water",
+                "walk-walk-walk"
               ],
               "chantOrder": [
                 0,
@@ -6122,26 +6479,69 @@
               "words": [
                 {
                   "word": "horse",
-                  "emoji": "🐴"
+                  "emoji": "🐴",
+                  "split": [
+                    "h",
+                    "or",
+                    "se"
+                  ],
+                  "patternIndex": 1
                 },
                 {
                   "word": "fork",
-                  "emoji": "🍴"
+                  "emoji": "🍴",
+                  "split": [
+                    "f",
+                    "or",
+                    "k"
+                  ],
+                  "patternIndex": 1
                 },
                 {
                   "word": "roar",
-                  "emoji": "🦁"
+                  "emoji": "🦁",
+                  "split": [
+                    "r",
+                    "oar"
+                  ],
+                  "patternIndex": 1,
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/roar.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "🦁"
+                    }
+                  ]
                 },
                 {
                   "word": "board",
-                  "emoji": "🪵"
+                  "emoji": "🪵",
+                  "split": [
+                    "b",
+                    "oar",
+                    "d"
+                  ],
+                  "patternIndex": 1,
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/board.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "🪵"
+                    }
+                  ]
                 }
               ],
               "chantTexts": [
-                "H-O-R-S-E",
-                "F-O-R-K",
-                "R-O-A-R",
-                "B-O-A-R-D"
+                "horse-horse-horse",
+                "fork-fork-fork",
+                "roar-roar-roar",
+                "board-board-board"
               ],
               "chantOrder": [
                 0,
@@ -6180,26 +6580,66 @@
                       "type": "emoji",
                       "char": "🟦"
                     }
-                  ]
+                  ],
+                  "split": [
+                    "squ",
+                    "are"
+                  ],
+                  "patternIndex": 1
                 },
                 {
                   "word": "share",
-                  "emoji": "🤝"
+                  "emoji": "🤝",
+                  "split": [
+                    "sh",
+                    "are"
+                  ],
+                  "patternIndex": 1,
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/share.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "🤝"
+                    }
+                  ]
                 },
                 {
                   "word": "chair",
-                  "emoji": "🪑"
+                  "emoji": "🪑",
+                  "split": [
+                    "ch",
+                    "air"
+                  ],
+                  "patternIndex": 1
                 },
                 {
                   "word": "hair",
-                  "emoji": "💇"
+                  "emoji": "💇",
+                  "split": [
+                    "h",
+                    "air"
+                  ],
+                  "patternIndex": 1,
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/hair.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "💇"
+                    }
+                  ]
                 }
               ],
               "chantTexts": [
-                "S-Q-U-A-R-E",
-                "S-H-A-R-E",
-                "C-H-A-I-R",
-                "H-A-I-R"
+                "square-square-square",
+                "share-share-share",
+                "chair-chair-chair",
+                "hair-hair-hair"
               ],
               "chantOrder": [
                 0,
@@ -6219,26 +6659,58 @@
               "words": [
                 {
                   "word": "bread",
-                  "emoji": "🍞"
+                  "emoji": "🍞",
+                  "split": [
+                    "br",
+                    "ea",
+                    "d"
+                  ],
+                  "patternIndex": 1
                 },
                 {
                   "word": "head",
-                  "emoji": "🗣️"
+                  "emoji": "🗣️",
+                  "split": [
+                    "h",
+                    "ea",
+                    "d"
+                  ],
+                  "patternIndex": 1,
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/head.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "🗣️"
+                    }
+                  ]
                 },
                 {
                   "word": "bear",
-                  "emoji": "🐻"
+                  "emoji": "🐻",
+                  "split": [
+                    "b",
+                    "ear"
+                  ],
+                  "patternIndex": 1
                 },
                 {
                   "word": "pear",
-                  "emoji": "🍐"
+                  "emoji": "🍐",
+                  "split": [
+                    "p",
+                    "ear"
+                  ],
+                  "patternIndex": 1
                 }
               ],
               "chantTexts": [
-                "B-R-E-A-D",
-                "H-E-A-D",
-                "B-E-A-R",
-                "P-E-A-R"
+                "bread-bread-bread",
+                "head-head-head",
+                "bear-bear-bear",
+                "pear-pear-pear"
               ],
               "chantOrder": [
                 0,
@@ -6258,26 +6730,65 @@
               "words": [
                 {
                   "word": "ear",
-                  "emoji": "👂"
+                  "emoji": "👂",
+                  "split": [
+                    "ear"
+                  ],
+                  "patternIndex": 0
                 },
                 {
                   "word": "clear",
-                  "emoji": "💎"
+                  "emoji": "💎",
+                  "split": [
+                    "cl",
+                    "ear"
+                  ],
+                  "patternIndex": 1,
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/clear.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "💎"
+                    }
+                  ]
                 },
                 {
                   "word": "deer",
-                  "emoji": "🦌"
+                  "emoji": "🦌",
+                  "split": [
+                    "d",
+                    "eer"
+                  ],
+                  "patternIndex": 1
                 },
                 {
                   "word": "cheer",
-                  "emoji": "📣"
+                  "emoji": "📣",
+                  "split": [
+                    "ch",
+                    "eer"
+                  ],
+                  "patternIndex": 1,
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/cheer.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "📣"
+                    }
+                  ]
                 }
               ],
               "chantTexts": [
-                "E-A-R",
-                "C-L-E-A-R",
-                "D-E-E-R",
-                "C-H-E-E-R"
+                "ear-ear-ear",
+                "clear-clear-clear",
+                "deer-deer-deer",
+                "cheer-cheer-cheer"
               ],
               "chantOrder": [
                 0,
@@ -6297,7 +6808,7 @@
           "lessons": [
             {
               "id": "L5U5_a_open",
-              "letter": "A-OPEN",
+              "letter": "A-1",
               "displayLetter": "a",
               "soundSpelling": "aaay",
               "sentence": "A lady and a baby.",
@@ -6306,26 +6817,69 @@
               "words": [
                 {
                   "word": "acorn",
-                  "emoji": "🌰"
+                  "emoji": "🌰",
+                  "split": [
+                    "a",
+                    "corn"
+                  ],
+                  "patternIndex": 0
                 },
                 {
                   "word": "baby",
-                  "emoji": "👶"
+                  "emoji": "👶",
+                  "split": [
+                    "b",
+                    "a",
+                    "by"
+                  ],
+                  "patternIndex": 1
                 },
                 {
                   "word": "elevator",
-                  "emoji": "🛗"
+                  "emoji": "🛗",
+                  "split": [
+                    "elev",
+                    "a",
+                    "tor"
+                  ],
+                  "patternIndex": 1,
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/elevator.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "🛗"
+                    }
+                  ]
                 },
                 {
                   "word": "lady",
-                  "emoji": "👩"
+                  "emoji": "👩",
+                  "split": [
+                    "l",
+                    "a",
+                    "dy"
+                  ],
+                  "patternIndex": 1,
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/lady.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "👩"
+                    }
+                  ]
                 }
               ],
               "chantTexts": [
-                "A-C-O-R-N",
-                "B-A-B-Y",
-                "E-L-E-V-A-T-O-R",
-                "L-A-D-Y"
+                "acorn-acorn-acorn",
+                "baby-baby-baby",
+                "elevator-elevator-elevator",
+                "lady-lady-lady"
               ],
               "chantOrder": [
                 0,
@@ -6336,7 +6890,7 @@
             },
             {
               "id": "L5U5_e_i_open",
-              "letter": "E-I-OPEN",
+              "letter": "E-I-1",
               "displayLetter": "e i",
               "soundSpelling": "eee-eye",
               "sentence": "He and she are kind.",
@@ -6345,26 +6899,58 @@
               "words": [
                 {
                   "word": "he",
-                  "emoji": "👨"
+                  "emoji": "👨",
+                  "split": [
+                    "h",
+                    "e"
+                  ],
+                  "patternIndex": 1
                 },
                 {
                   "word": "she",
-                  "emoji": "👩"
+                  "emoji": "👩",
+                  "split": [
+                    "sh",
+                    "e"
+                  ],
+                  "patternIndex": 1
                 },
                 {
                   "word": "tiger",
-                  "emoji": "🐯"
+                  "emoji": "🐯",
+                  "split": [
+                    "t",
+                    "i",
+                    "ger"
+                  ],
+                  "patternIndex": 1
                 },
                 {
                   "word": "child",
-                  "emoji": "🧒"
+                  "emoji": "🧒",
+                  "split": [
+                    "ch",
+                    "i",
+                    "ld"
+                  ],
+                  "patternIndex": 1,
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/child.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "🧒"
+                    }
+                  ]
                 }
               ],
               "chantTexts": [
-                "H-E",
-                "S-H-E",
-                "T-I-G-E-R",
-                "C-H-I-L-D"
+                "he-he-he",
+                "she-she-she",
+                "tiger-tiger-tiger",
+                "child-child-child"
               ],
               "chantOrder": [
                 0,
@@ -6375,7 +6961,7 @@
             },
             {
               "id": "L5U5_o_u_open",
-              "letter": "O-U-OPEN",
+              "letter": "O-U-1",
               "displayLetter": "o u",
               "soundSpelling": "ohh-yoo",
               "sentence": "Music in the hotel.",
@@ -6384,26 +6970,59 @@
               "words": [
                 {
                   "word": "cold",
-                  "emoji": "🥶"
+                  "emoji": "🥶",
+                  "split": [
+                    "c",
+                    "o",
+                    "ld"
+                  ],
+                  "patternIndex": 1
                 },
                 {
                   "word": "hotel",
-                  "emoji": "🏨"
+                  "emoji": "🏨",
+                  "split": [
+                    "h",
+                    "o",
+                    "tel"
+                  ],
+                  "patternIndex": 1,
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/hotel.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "🏨"
+                    }
+                  ]
                 },
                 {
                   "word": "uniform",
-                  "emoji": "👔"
+                  "emoji": "👔",
+                  "split": [
+                    "u",
+                    "niform"
+                  ],
+                  "patternIndex": 0
                 },
                 {
                   "word": "music",
-                  "emoji": "🎵"
+                  "emoji": "🎵",
+                  "split": [
+                    "m",
+                    "u",
+                    "sic"
+                  ],
+                  "patternIndex": 1
                 }
               ],
               "chantTexts": [
-                "C-O-L-D",
-                "H-O-T-E-L",
-                "U-N-I-F-O-R-M",
-                "M-U-S-I-C"
+                "cold-cold-cold",
+                "hotel-hotel-hotel",
+                "uniform-uniform-uniform",
+                "music-music-music"
               ],
               "chantOrder": [
                 0,
@@ -6423,7 +7042,7 @@
           "lessons": [
             {
               "id": "L5U6_schwa_a",
-              "letter": "SCHWA-A",
+              "letter": "A-2",
               "displayLetter": "a",
               "soundSpelling": "uh",
               "sentence": "A panda with an umbrella.",
@@ -6432,26 +7051,46 @@
               "words": [
                 {
                   "word": "panda",
-                  "emoji": "🐼"
+                  "emoji": "🐼",
+                  "split": [
+                    "pand",
+                    "a"
+                  ],
+                  "patternIndex": 1
                 },
                 {
                   "word": "gorilla",
-                  "emoji": "🦍"
+                  "emoji": "🦍",
+                  "split": [
+                    "gorill",
+                    "a"
+                  ],
+                  "patternIndex": 1
                 },
                 {
                   "word": "banana",
-                  "emoji": "🍌"
+                  "emoji": "🍌",
+                  "split": [
+                    "banan",
+                    "a"
+                  ],
+                  "patternIndex": 1
                 },
                 {
                   "word": "umbrella",
-                  "emoji": "☂️"
+                  "emoji": "☂️",
+                  "split": [
+                    "umbrell",
+                    "a"
+                  ],
+                  "patternIndex": 1
                 }
               ],
               "chantTexts": [
-                "P-A-N-D-A",
-                "G-O-R-I-L-L-A",
-                "B-A-N-A-N-A",
-                "U-M-B-R-E-L-L-A"
+                "panda-panda-panda",
+                "gorilla-gorilla-gorilla",
+                "banana-banana-banana",
+                "umbrella-umbrella-umbrella"
               ],
               "chantOrder": [
                 0,
@@ -6462,7 +7101,7 @@
             },
             {
               "id": "L5U6_schwa_eiou",
-              "letter": "SCHWA-EIOU",
+              "letter": "E-I-O-U-2",
               "displayLetter": "e i o u",
               "soundSpelling": "uh",
               "sentence": "A lemon surprise.",
@@ -6471,26 +7110,69 @@
               "words": [
                 {
                   "word": "chicken",
-                  "emoji": "🐔"
+                  "emoji": "🐔",
+                  "split": [
+                    "chick",
+                    "e",
+                    "n"
+                  ],
+                  "patternIndex": 1,
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/chicken.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "🐔"
+                    }
+                  ]
                 },
                 {
                   "word": "pencil",
-                  "emoji": "✏️"
+                  "emoji": "✏️",
+                  "split": [
+                    "penc",
+                    "i",
+                    "l"
+                  ],
+                  "patternIndex": 1
                 },
                 {
                   "word": "lemon",
-                  "emoji": "🍋"
+                  "emoji": "🍋",
+                  "split": [
+                    "lem",
+                    "o",
+                    "n"
+                  ],
+                  "patternIndex": 1
                 },
                 {
                   "word": "surprise",
-                  "emoji": "🎁"
+                  "emoji": "🎁",
+                  "split": [
+                    "sur",
+                    "prise"
+                  ],
+                  "patternIndex": 0,
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/surprise.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "🎁"
+                    }
+                  ]
                 }
               ],
               "chantTexts": [
-                "C-H-I-C-K-E-N",
-                "P-E-N-C-I-L",
-                "L-E-M-O-N",
-                "S-U-R-P-R-I-S-E"
+                "chicken-chicken-chicken",
+                "pencil-pencil-pencil",
+                "lemon-lemon-lemon",
+                "surprise-surprise-surprise"
               ],
               "chantOrder": [
                 0,
@@ -6501,7 +7183,7 @@
             },
             {
               "id": "L5U6_schwa_o",
-              "letter": "SCHWA-O",
+              "letter": "O-2",
               "displayLetter": "o",
               "soundSpelling": "uh",
               "sentence": "My son loves honey.",
@@ -6510,26 +7192,80 @@
               "words": [
                 {
                   "word": "monkey",
-                  "emoji": "🐵"
+                  "emoji": "🐵",
+                  "split": [
+                    "m",
+                    "o",
+                    "nkey"
+                  ],
+                  "patternIndex": 1,
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/monkey.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "🐵"
+                    }
+                  ]
                 },
                 {
                   "word": "love",
-                  "emoji": "❤️"
+                  "emoji": "❤️",
+                  "split": [
+                    "l",
+                    "o",
+                    "ve"
+                  ],
+                  "patternIndex": 1,
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/love.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "❤️"
+                    }
+                  ]
                 },
                 {
                   "word": "son",
-                  "emoji": "👦"
+                  "emoji": "👦",
+                  "split": [
+                    "s",
+                    "o",
+                    "n"
+                  ],
+                  "patternIndex": 1,
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/son.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "👦"
+                    }
+                  ]
                 },
                 {
                   "word": "honey",
-                  "emoji": "🍯"
+                  "emoji": "🍯",
+                  "split": [
+                    "h",
+                    "o",
+                    "ney"
+                  ],
+                  "patternIndex": 1
                 }
               ],
               "chantTexts": [
-                "M-O-N-K-E-Y",
-                "L-O-V-E",
-                "S-O-N",
-                "H-O-N-E-Y"
+                "monkey-monkey-monkey",
+                "love-love-love",
+                "son-son-son",
+                "honey-honey-honey"
               ],
               "chantOrder": [
                 0,
@@ -6558,26 +7294,78 @@
               "words": [
                 {
                   "word": "knife",
-                  "emoji": "🔪"
+                  "emoji": "🔪",
+                  "split": [
+                    "kn",
+                    "ife"
+                  ],
+                  "patternIndex": 0,
+                  "silent": [
+                    0
+                  ]
                 },
                 {
                   "word": "knee",
-                  "emoji": "🦵"
+                  "emoji": "🦵",
+                  "split": [
+                    "kn",
+                    "ee"
+                  ],
+                  "patternIndex": 0,
+                  "silent": [
+                    0
+                  ],
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/knee.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "🦵"
+                    }
+                  ]
                 },
                 {
                   "word": "write",
-                  "emoji": "✍️"
+                  "emoji": "✍️",
+                  "split": [
+                    "wr",
+                    "ite"
+                  ],
+                  "patternIndex": 0,
+                  "silent": [
+                    0
+                  ]
                 },
                 {
                   "word": "wrong",
-                  "emoji": "❌"
+                  "emoji": "❌",
+                  "split": [
+                    "wr",
+                    "ong"
+                  ],
+                  "patternIndex": 0,
+                  "silent": [
+                    0
+                  ],
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/wrong.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "❌"
+                    }
+                  ]
                 }
               ],
               "chantTexts": [
-                "K-N-I-F-E",
-                "K-N-E-E",
-                "W-R-I-T-E",
-                "W-R-O-N-G"
+                "knife-knife-knife",
+                "knee-knee-knee",
+                "write-write-write",
+                "wrong-wrong-wrong"
               ],
               "chantOrder": [
                 0,
@@ -6597,26 +7385,78 @@
               "words": [
                 {
                   "word": "lamb",
-                  "emoji": "🐑"
+                  "emoji": "🐑",
+                  "split": [
+                    "la",
+                    "mb"
+                  ],
+                  "patternIndex": 1,
+                  "silent": [
+                    3
+                  ]
                 },
                 {
                   "word": "comb",
-                  "emoji": "🪮"
+                  "emoji": "🪮",
+                  "split": [
+                    "co",
+                    "mb"
+                  ],
+                  "patternIndex": 1,
+                  "silent": [
+                    3
+                  ],
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/comb.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "🪮"
+                    }
+                  ]
                 },
                 {
                   "word": "glove",
-                  "emoji": "🧤"
+                  "emoji": "🧤",
+                  "split": [
+                    "glov",
+                    "e"
+                  ],
+                  "patternIndex": 1,
+                  "silent": [
+                    4
+                  ]
                 },
                 {
                   "word": "live",
-                  "emoji": "🎙️"
+                  "emoji": "🎙️",
+                  "split": [
+                    "liv",
+                    "e"
+                  ],
+                  "patternIndex": 1,
+                  "silent": [
+                    3
+                  ],
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/live.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "🎙️"
+                    }
+                  ]
                 }
               ],
               "chantTexts": [
-                "L-A-M-B",
-                "C-O-M-B",
-                "G-L-O-V-E",
-                "L-I-V-E"
+                "lamb-lamb-lamb",
+                "comb-comb-comb",
+                "glove-glove-glove",
+                "live-live-live"
               ],
               "chantOrder": [
                 0,
@@ -6636,7 +7476,15 @@
               "words": [
                 {
                   "word": "rhino",
-                  "emoji": "🦏"
+                  "emoji": "🦏",
+                  "split": [
+                    "rh",
+                    "ino"
+                  ],
+                  "patternIndex": 0,
+                  "silent": [
+                    1
+                  ]
                 },
                 {
                   "word": "rhubarb",
@@ -6650,6 +7498,14 @@
                       "type": "emoji",
                       "char": "🌱"
                     }
+                  ],
+                  "split": [
+                    "rh",
+                    "ubarb"
+                  ],
+                  "patternIndex": 0,
+                  "silent": [
+                    1
                   ]
                 },
                 {
@@ -6664,18 +7520,36 @@
                       "type": "emoji",
                       "char": "🎽"
                     }
+                  ],
+                  "split": [
+                    "whi",
+                    "st",
+                    "le"
+                  ],
+                  "patternIndex": 1,
+                  "silent": [
+                    4
                   ]
                 },
                 {
                   "word": "castle",
-                  "emoji": "🏰"
+                  "emoji": "🏰",
+                  "split": [
+                    "ca",
+                    "st",
+                    "le"
+                  ],
+                  "patternIndex": 1,
+                  "silent": [
+                    3
+                  ]
                 }
               ],
               "chantTexts": [
-                "R-H-I-N-O",
-                "R-H-U-B-A-R-B",
-                "W-H-I-S-T-L-E",
-                "C-A-S-T-L-E"
+                "rhino-rhino-rhino",
+                "rhubarb-rhubarb-rhubarb",
+                "whistle-whistle-whistle",
+                "castle-castle-castle"
               ],
               "chantOrder": [
                 0,
@@ -6704,26 +7578,76 @@
               "words": [
                 {
                   "word": "picture",
-                  "emoji": "🖼️"
+                  "emoji": "🖼️",
+                  "split": [
+                    "pic",
+                    "ture"
+                  ],
+                  "patternIndex": 1
                 },
                 {
                   "word": "nature",
-                  "emoji": "🌿"
+                  "emoji": "🌿",
+                  "split": [
+                    "na",
+                    "ture"
+                  ],
+                  "patternIndex": 1,
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/nature.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "🌿"
+                    }
+                  ]
                 },
                 {
                   "word": "treasure",
-                  "emoji": "💎"
+                  "emoji": "💎",
+                  "split": [
+                    "trea",
+                    "sure"
+                  ],
+                  "patternIndex": 1,
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/treasure.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "💎"
+                    }
+                  ]
                 },
                 {
                   "word": "measure",
-                  "emoji": "📏"
+                  "emoji": "📏",
+                  "split": [
+                    "mea",
+                    "sure"
+                  ],
+                  "patternIndex": 1,
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/measure.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "📏"
+                    }
+                  ]
                 }
               ],
               "chantTexts": [
-                "P-I-C-T-U-R-E",
-                "N-A-T-U-R-E",
-                "T-R-E-A-S-U-R-E",
-                "M-E-A-S-U-R-E"
+                "picture-picture-picture",
+                "nature-nature-nature",
+                "treasure-treasure-treasure",
+                "measure-measure-measure"
               ],
               "chantOrder": [
                 0,
@@ -6743,26 +7667,66 @@
               "words": [
                 {
                   "word": "station",
-                  "emoji": "🚉"
+                  "emoji": "🚉",
+                  "split": [
+                    "sta",
+                    "tion"
+                  ],
+                  "patternIndex": 1
                 },
                 {
                   "word": "competition",
-                  "emoji": "🏆"
+                  "emoji": "🏆",
+                  "split": [
+                    "competi",
+                    "tion"
+                  ],
+                  "patternIndex": 1,
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/competition.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "🏆"
+                    }
+                  ]
                 },
                 {
                   "word": "television",
-                  "emoji": "📺"
+                  "emoji": "📺",
+                  "split": [
+                    "televi",
+                    "sion"
+                  ],
+                  "patternIndex": 1
                 },
                 {
                   "word": "excursion",
-                  "emoji": "🗺️"
+                  "emoji": "🗺️",
+                  "split": [
+                    "excur",
+                    "sion"
+                  ],
+                  "patternIndex": 1,
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/excursion.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "🗺️"
+                    }
+                  ]
                 }
               ],
               "chantTexts": [
-                "S-T-A-T-I-O-N",
-                "C-O-M-P-E-T-I-T-I-O-N",
-                "T-E-L-E-V-I-S-I-O-N",
-                "E-X-C-U-R-S-I-O-N"
+                "station-station-station",
+                "competition-competition-competition",
+                "television-television-television",
+                "excursion-excursion-excursion"
               ],
               "chantOrder": [
                 0,
@@ -6782,26 +7746,86 @@
               "words": [
                 {
                   "word": "famous",
-                  "emoji": "⭐"
+                  "emoji": "⭐",
+                  "split": [
+                    "fam",
+                    "ous"
+                  ],
+                  "patternIndex": 1,
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/famous.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "⭐"
+                    }
+                  ]
                 },
                 {
                   "word": "dangerous",
-                  "emoji": "☢️"
+                  "emoji": "☢️",
+                  "split": [
+                    "danger",
+                    "ous"
+                  ],
+                  "patternIndex": 1,
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/dangerous.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "☢️"
+                    }
+                  ]
                 },
                 {
                   "word": "beautiful",
-                  "emoji": "🌸"
+                  "emoji": "🌸",
+                  "split": [
+                    "beauti",
+                    "ful"
+                  ],
+                  "patternIndex": 1,
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/beautiful.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "🌸"
+                    }
+                  ]
                 },
                 {
                   "word": "helpful",
-                  "emoji": "🙋"
+                  "emoji": "🙋",
+                  "split": [
+                    "help",
+                    "ful"
+                  ],
+                  "patternIndex": 1,
+                  "displays": [
+                    {
+                      "type": "image",
+                      "path": "files/images/vocab/helpful.webp"
+                    },
+                    {
+                      "type": "emoji",
+                      "char": "🙋"
+                    }
+                  ]
                 }
               ],
               "chantTexts": [
-                "F-A-M-O-U-S",
-                "D-A-N-G-E-R-O-U-S",
-                "B-E-A-U-T-I-F-U-L",
-                "H-E-L-P-F-U-L"
+                "famous-famous-famous",
+                "dangerous-dangerous-dangerous",
+                "beautiful-beautiful-beautiful",
+                "helpful-helpful-helpful"
               ],
               "chantOrder": [
                 0,

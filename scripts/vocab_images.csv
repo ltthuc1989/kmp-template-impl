@@ -102,3 +102,47 @@ orange,orange,object,one whole round orange fruit with a small green leaf
 giant,giant,compare,"two identical cartoon men in red shirts side by side, the hero one an enormous towering giant, the pale one tiny"
 rose,rose,object,a single red rose on a green stem with two leaves
 legs,legs,callout,"a whole cartoon child standing in shorts and sneakers, the arrow pointing at the LEGS"
+bush,grass,object,a thick tuft of bright green grass blades
+water,splash,object,a big blue water splash with drops flying up
+park,park,object,a green park bench with a small leafy tree beside it standing on a round patch of grass
+purple,purple,object,a big purple paint splat blob with a few small purple drops around it
+sister,sister,object,"two cartoon sisters standing together, a taller girl with her arm around a smaller girl, both in dresses, smiling"
+doctor,doctor,object,"a friendly cartoon doctor in a white coat with a stethoscope around the neck, standing and smiling"
+brown,brown,object,a big brown paint splat blob with a few small brown drops around it
+coin,coin,object,"one thick shiny gold coin seen from the front with a ridged rim and a raised star shape embossed in the middle, plus two more coins stacked flat behind it"
+soil,soil,object,a mound of dark brown soil with a few small stones and one tiny green sprout on top
+toy,toy,object,a colourful wooden toy train with bright red and yellow blocks and round wheels
+August,august,text,"a flip calendar page for the month of August: the single word AUGUST written across the top band in big bold capital letters, spelled A-U-G-U-S-T, below it a plain grid of empty day squares, and a small bright sun in one corner"
+draw,draw,object,"a child's hand holding a yellow pencil, drawing a simple blue wavy line on a sheet of white paper"
+tall,tall,compare_arrow,a very tall grown-up and a short little child standing side by side on the same ground; the arrow points at the TALL grown-up
+roar,roar,object,"a cartoon lion facing front with its mouth wide open roaring, a few curved sound lines coming out on both sides"
+board,board,object,"a single flat wooden plank board with visible wood grain, lying at a slight angle"
+share,share,object,"two cartoon children each holding one half of the same red apple, offering it to each other"
+hair,hair,callout,"a whole cartoon girl standing facing the viewer with long wavy brown hair falling down past her shoulders; ONE small arrow comes in from the left at SHOULDER height, well below her face, and its tip lands on the LONG HAIR hanging beside her shoulder — not on her head, not on her face"
+head,head,callout,a whole cartoon boy standing in a T-shirt and shorts; ONE arrow comes straight down from above and its tip lands on the top of his HEAD
+clear,clear,callout,"a whole cartoon boy holding a clear see-through plastic sheet in front of his face with both hands, his smiling face clearly visible through the sheet; ONE small arrow comes in from the right and its tip lands on the CLEAR SEE-THROUGH SHEET"
+cheer,cheer,object,"two cartoon children jumping with both arms raised and big happy smiles, small curved excitement lines around them"
+elevator,elevator,object,"an elevator with its metal double doors WIDE OPEN showing the empty lit cabin inside, and a small panel of plain round buttons on the wall beside it"
+lady,lady,object,"a friendly cartoon woman standing on her own in a green dress, smiling, nobody else in the picture"
+child,child,object,"one cartoon child standing on their own in a striped T-shirt and shorts, smiling"
+hotel,hotel,object,"a tall hotel building with rows of windows, a wide entrance canopy, a small flag on the roof and a luggage trolley standing by the door, nothing written anywhere on the building"
+chicken,chicken,object,a plump white and brown hen standing side-on with a red comb on her head
+surprise,surprise,object,a cartoon child with wide round eyes and both hands on their cheeks beside an open gift box with a few sparkles popping out
+monkey,monkey,object,"a brown cartoon monkey sitting and holding a banana, facing front"
+love,love,object,"a cartoon girl in a pink dress and a cartoon boy in a blue shirt hugging each other, with one small red heart floating above them"
+son,son,callout,"a cartoon father in a blue shirt standing next to his young son, a small boy in a green shirt; ONE arrow comes in from the right and its tip lands on the SMALL BOY, the son — the arrow must not touch the father"
+knee,knee,callout,"a whole cartoon child STANDING UPRIGHT facing the viewer wearing shorts, both bare legs showing from the hem of the shorts down to the shoes; ONE small arrow comes in from the left and its tip lands on the KNEE — the round joint in the middle of the bare leg, halfway between the shorts and the foot — and that knee is drawn slightly bigger with a rosy tint"
+wrong,wrong,callout,a test paper with four answer rows; the second row is marked with a big red cross X and the other rows have small green ticks; ONE small arrow comes in from the right exactly level with the RED CROSS row and its tip touches that red cross
+comb,comb,object,"a single hair comb with a row of teeth and a handle, seen from the side"
+live,live,object,a small cosy house with a smiling child standing in the open front doorway waving
+nature,nature,object,a leafy green tree with a small bird on one branch and two flowers growing at its base
+treasure,treasure,object,"an open wooden treasure chest with a rounded lid, gold coins and a few jewels spilling over the front"
+measure,measure,object,"two cartoon hands holding a yellow tape measure stretched across a wooden block, plain blank strip, no numbers"
+competition,competition,object,"two cartoon children racing side by side towards a red finish ribbon, speed lines behind them"
+excursion,excursion,object,"three cartoon children wearing backpacks walking in a line behind their teacher, one child pointing at a tree"
+famous,famous,object,"a cartoon singer on a small stage holding a microphone in a bright spotlight, three pale audience silhouettes below"
+dangerous,dangerous,text,"a road with a big dark hole broken open in the middle of it, a red and white striped barrier fence standing in front of the hole, and a yellow warning sign on a post beside it with the single word DANGEROUS written on it"
+beautiful,beautiful,object,"one cartoon girl standing alone in a gorgeous sparkling ball gown with a flower crown in her hair, smiling, a few small sparkles around her"
+helpful,helpful,object,"one cartoon child helping another child who has fallen down: the helper stands and pulls the fallen child up by the hand, the fallen child still sitting on the ground with a dropped book beside them"
+nurse,nurse,object,"a friendly cartoon nurse in a blue uniform with a small white cap, holding a clipboard, standing and smiling"
+teacher,teacher,object,"a friendly cartoon teacher standing beside a blank green chalkboard, pointing at it with a stick, no writing on the board"
