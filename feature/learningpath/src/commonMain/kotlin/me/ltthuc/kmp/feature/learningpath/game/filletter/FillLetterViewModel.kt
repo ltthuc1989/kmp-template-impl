@@ -148,11 +148,11 @@ internal class FillLetterViewModel(
         stateFlow.value = state.copy(lastWrongPick = null, isResolving = true, wrongCount = 0)
         viewModelScope.launch {
             val round = rounds.getOrNull(state.currentRoundIndex)
-            // User chốt 2026-10-03: đọc thẻ → nghỉ → ghép vào từ → đọc cả từ → nghỉ → sang từ kế.
-            // Ghép ngay lúc chạm thì bé thấy từ đầy đủ trước khi nghe vần, mất nhịp "th" … "father".
+            // User chốt 2026-10-03 (lần 2): đọc thẻ → ghép ngay vào từ → nghỉ 0,5s → đọc cả từ
+            // → nghỉ 1s → sang từ kế. Ghép lúc chạm thì bé thấy từ đầy đủ trước khi nghe vần.
             round?.answerSound?.let { audio.playAndAwait(it, CHUNK_AUDIO_MAX_MS) }
-            delay(BEAT_MS)
             stateFlow.value = stateFlow.value.copy(isFilled = true)
+            delay(FILLED_TO_WORD_MS)
             playWordAndAwait(round?.wordRef)
             val next = state.currentRoundIndex + 1
             if (next >= rounds.size) {
@@ -276,11 +276,11 @@ internal class FillLetterViewModel(
         /** Tiếng vần dài nhất (~1,5s) cộng lề; quá mức thì vẫn sang tiếng cả từ. */
         const val CHUNK_AUDIO_MAX_MS = 3_000L
 
-        /** Nhịp nghỉ giữa tiếng thẻ → ghép chữ vào từ. */
-        const val BEAT_MS = 1_000L
+        /** Từ đã ghép đầy đủ → nghỉ chừng này rồi mới đọc cả từ. */
+        const val FILLED_TO_WORD_MS = 500L
 
-        /** Nghỉ sau tiếng cả từ rồi mới sang từ kế (user chốt 1,5s, 2026-10-03). */
-        const val NEXT_WORD_PAUSE_MS = 1_500L
+        /** Nghỉ sau tiếng cả từ rồi mới sang từ kế (user chốt 1s, 2026-10-03). */
+        const val NEXT_WORD_PAUSE_MS = 1_000L
         const val ROUND_COUNT = 4
         const val MIN_WORD_LEN = 3
         const val WRONG_THRESHOLD = 5

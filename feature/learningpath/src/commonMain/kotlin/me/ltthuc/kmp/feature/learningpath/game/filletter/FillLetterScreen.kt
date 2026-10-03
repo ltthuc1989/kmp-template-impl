@@ -91,7 +91,7 @@ internal fun FillLetterScreen(
         // (isComplete is only set after playWordAndAwait completes in the ViewModel).
         LaunchedEffect(ui.isComplete) {
             if (ui.isComplete) {
-                // Cùng nhịp nghỉ sau tiếng cả từ như giữa các vòng (user chốt 1,5s, 2026-10-03).
+                // Cùng nhịp nghỉ sau tiếng cả từ như giữa các vòng (user chốt 1s, 2026-10-03).
                 delay(GAME_END_PAUSE_MS)
                 onGameComplete()
             }
@@ -223,4 +223,4 @@ internal fun FillLetterScreen(
 private const val ROUND_WORD_DELAY_MS = 400L
 
 /** Nghỉ sau tiếng cả từ của vòng cuối rồi mới sang game kế. */
-private const val GAME_END_PAUSE_MS = 1_500L
+private const val GAME_END_PAUSE_MS = 1_000L

@@ -147,7 +147,7 @@ internal fun PickWordScreen(
                     )
                     Spacer(Modifier.height(20.dp))
                     AnswerSlot(
-                        filledWord = if (ui.isResolving) round.targetWord else null,
+                        filledWord = if (ui.isFilled) round.targetWord else null,
                         // Nới theo từ thay vì cố định 220dp: `competition` 28sp dài hơn ô cũ.
                         modifier = Modifier.height(64.dp).widthIn(min = 220.dp),
                     )

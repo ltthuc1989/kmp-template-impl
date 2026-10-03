@@ -8,6 +8,7 @@ import io.github.aakira.napier.Napier
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -34,6 +35,9 @@ import kotlin.random.Random
  * of words-with-emoji and pairs it with a distractor (different word from the same pool).
  *
  * Forgiving: wrong taps don't penalize, just trigger a visual shake (handled in Screen).
+ *
+ * Every tap speaks the word that was tapped (user báo 2026-10-03: "chọn word không đọc đáp án")
+ * — a wrong pick too, like Fill Letter's choices, so the kid hears what they chose.
  */
 internal class PickWordViewModel(
     private val unitId: String,
@@ -50,6 +54,8 @@ internal class PickWordViewModel(
         val currentRoundIndex: Int = 0,
         val lastWrongPick: String? = null,
         val isResolving: Boolean = false,
+        /** Từ đã vào ô đáp án — bật ngay khi chọn đúng, TRƯỚC tiếng của từ. */
+        val isFilled: Boolean = false,
         val isComplete: Boolean = false,
         val wrongCount: Int = 0,
     )
@@ -58,6 +64,9 @@ internal class PickWordViewModel(
     private val stateFlow = MutableStateFlow(InternalState())
 
     private var lastUnitIdLoaded: String? = null
+
+    // Tiếng của MỌI từ trong unit, để chạm thẻ sai cũng đọc được từ của thẻ đó.
+    private var wordSounds: Map<String, AudioRef.Word> = emptyMap()
 
     val screenState: StateFlow<ScreenState<PickWordUiState>> =
         combine(
@@ -86,6 +95,7 @@ internal class PickWordViewModel(
                             totalRounds = rounds.size,
                             lastWrongPick = state.lastWrongPick,
                             isResolving = state.isResolving,
+                            isFilled = state.isFilled,
                             isComplete = state.isComplete,
                         ),
                     )
@@ -105,6 +115,7 @@ internal class PickWordViewModel(
         if (word == round.targetWord) {
             triggerAdvance(state, rounds)
         } else {
+            soundFor(word)?.let(audio::play)
             val newWrongCount = state.wrongCount + 1
             Napier.v(tag = TAG) { "Wrong PickWord tap: $word vs target ${round.targetWord} (count=$newWrongCount)" }
             if (newWrongCount >= WRONG_THRESHOLD) {
@@ -120,19 +131,32 @@ internal class PickWordViewModel(
         sfxController.playSfx("correct")
         stateFlow.value = state.copy(lastWrongPick = null, isResolving = true, wrongCount = 0)
         viewModelScope.launch {
-            // Play the just-completed word's audio and wait for it to finish before advancing.
-            playWordAndAwait(rounds.getOrNull(state.currentRoundIndex)?.wordRef)
+            // User chốt 2026-10-03: ghép từ vào ô → nghỉ 0,5s (cùng nhịp Fill Letter) → đọc từ →
+            // nghỉ 1s → sang hình kế. Vòng cuối không nghỉ ở đây: màn hình tự chờ 1s.
+            val round = rounds.getOrNull(state.currentRoundIndex)
+            if (round?.wordRef == null) Napier.w(tag = TAG) { "No audio for '${round?.targetWord}' in $unitId" }
+            stateFlow.value = stateFlow.value.copy(isFilled = true)
+            delay(FILLED_TO_WORD_MS)
+            playWordAndAwait(round?.wordRef)
             val next = state.currentRoundIndex + 1
             if (next >= rounds.size) {
                 // Final round: auto-advance to next game (no completion praise / overlay).
                 stateFlow.value = stateFlow.value.copy(isComplete = true, isResolving = false)
             } else {
+                delay(NEXT_WORD_PAUSE_MS)
                 stateFlow.value = stateFlow.value.copy(
                     currentRoundIndex = next,
                     isResolving = false,
+                    isFilled = false,
                 )
             }
         }
+    }
+
+    private fun soundFor(word: String): AudioRef.Word? {
+        val ref = wordSounds[word]
+        if (ref == null) Napier.w(tag = TAG) { "No sound for word '$word' in $unitId — tap stays silent" }
+        return ref
     }
 
     private suspend fun playWordAndAwait(ref: AudioRef.Word?) {
@@ -148,6 +172,7 @@ internal class PickWordViewModel(
             // `LessonWord.emoji` cảnh báo.
             lesson.words.filter { it.displays.isNotEmpty() }.map { lesson to it }
         }
+        wordSounds = pool.mapNotNull { (lesson, w) -> lesson.wordRef(w.word)?.let { w.word to it } }.toMap()
         if (pool.size < 2) return persistentListOf()
         val targets = pool.shuffled(Random.Default).take(ROUND_COUNT)
         return targets.mapIndexed { idx, (lesson, target) ->
@@ -174,6 +199,12 @@ internal class PickWordViewModel(
         const val AUDIO_MAX_MS = 6_000L
         const val ROUND_COUNT = 4
         const val WRONG_THRESHOLD = 5
+
+        /** Từ đã vào ô → nghỉ chừng này rồi mới đọc. */
+        const val FILLED_TO_WORD_MS = 500L
+
+        /** Nghỉ sau tiếng của từ rồi mới sang hình kế. */
+        const val NEXT_WORD_PAUSE_MS = 1_000L
     }
 }
 
@@ -194,6 +225,7 @@ internal data class PickWordUiState(
     val totalRounds: Int,
     val lastWrongPick: String?,
     val isResolving: Boolean,
+    val isFilled: Boolean,
     val isComplete: Boolean,
 ) {
     val currentRound: PickWordRound get() = rounds[currentRoundIndex]
