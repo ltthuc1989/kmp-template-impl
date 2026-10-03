@@ -9,7 +9,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
@@ -81,12 +80,16 @@ internal fun PickWordChoice(
             .padding(horizontal = 24.dp, vertical = 14.dp),
         contentAlignment = Alignment.Center,
     ) {
+        // Một dòng: `ChoiceRows` đo bề ngang tự nhiên của thẻ để quyết định xếp hàng, chữ được
+        // phép bẻ dòng thì phép đo đó sai.
         Text(
             text = word,
             fontFamily = LocalPhonicsFontFamily.current,
             fontSize = 28.sp,
             fontWeight = FontWeight.ExtraBold,
             color = ReadingTextDark,
+            maxLines = 1,
+            softWrap = false,
         )
     }
 }
@@ -151,16 +154,16 @@ internal fun AnswerSlot(
             .padding(horizontal = 28.dp, vertical = 14.dp),
         contentAlignment = Alignment.Center,
     ) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            if (filledWord != null) {
-                Text(
-                    text = filledWord,
-                    fontFamily = LocalPhonicsFontFamily.current,
-                    fontSize = 28.sp,
-                    fontWeight = FontWeight.ExtraBold,
-                    color = ReadingTextDark,
-                )
-            }
+        if (filledWord != null) {
+            Text(
+                text = filledWord,
+                fontFamily = LocalPhonicsFontFamily.current,
+                fontSize = 28.sp,
+                fontWeight = FontWeight.ExtraBold,
+                color = ReadingTextDark,
+                maxLines = 1,
+                softWrap = false,
+            )
         }
     }
 }

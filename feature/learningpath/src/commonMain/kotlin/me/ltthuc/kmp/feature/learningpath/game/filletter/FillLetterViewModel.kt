@@ -8,6 +8,7 @@ import io.github.aakira.napier.Napier
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -59,6 +60,8 @@ internal class FillLetterViewModel(
         val currentRoundIndex: Int = 0,
         val lastWrongPick: String? = null,
         val isResolving: Boolean = false,
+        /** Đáp án đã ghép vào từ — bật SAU tiếng của thẻ, không phải lúc chạm. */
+        val isFilled: Boolean = false,
         val isComplete: Boolean = false,
         val wrongCount: Int = 0,
     )
@@ -99,6 +102,7 @@ internal class FillLetterViewModel(
                             totalRounds = rounds.size,
                             lastWrongPick = state.lastWrongPick,
                             isResolving = state.isResolving,
+                            isFilled = state.isFilled,
                             isComplete = state.isComplete,
                         ),
                     )
@@ -144,17 +148,23 @@ internal class FillLetterViewModel(
         stateFlow.value = state.copy(lastWrongPick = null, isResolving = true, wrongCount = 0)
         viewModelScope.launch {
             val round = rounds.getOrNull(state.currentRoundIndex)
-            // The chunk first, then the whole word it completes: "th" … "father".
+            // User chốt 2026-10-03: đọc thẻ → nghỉ → ghép vào từ → đọc cả từ → nghỉ → sang từ kế.
+            // Ghép ngay lúc chạm thì bé thấy từ đầy đủ trước khi nghe vần, mất nhịp "th" … "father".
             round?.answerSound?.let { audio.playAndAwait(it, CHUNK_AUDIO_MAX_MS) }
+            delay(BEAT_MS)
+            stateFlow.value = stateFlow.value.copy(isFilled = true)
             playWordAndAwait(round?.wordRef)
             val next = state.currentRoundIndex + 1
             if (next >= rounds.size) {
-                // Final round: auto-advance to next game (no completion praise / overlay).
+                // Final round: auto-advance to next game (no completion praise / overlay). Màn
+                // hình tự chờ 1s trước khi sang game kế, nên không nghỉ thêm ở đây.
                 stateFlow.value = stateFlow.value.copy(isComplete = true, isResolving = false)
             } else {
+                delay(NEXT_WORD_PAUSE_MS)
                 stateFlow.value = stateFlow.value.copy(
                     currentRoundIndex = next,
                     isResolving = false,
+                    isFilled = false,
                 )
             }
         }
@@ -265,6 +275,12 @@ internal class FillLetterViewModel(
 
         /** Tiếng vần dài nhất (~1,5s) cộng lề; quá mức thì vẫn sang tiếng cả từ. */
         const val CHUNK_AUDIO_MAX_MS = 3_000L
+
+        /** Nhịp nghỉ giữa tiếng thẻ → ghép chữ vào từ. */
+        const val BEAT_MS = 1_000L
+
+        /** Nghỉ sau tiếng cả từ rồi mới sang từ kế (user chốt 1,5s, 2026-10-03). */
+        const val NEXT_WORD_PAUSE_MS = 1_500L
         const val ROUND_COUNT = 4
         const val MIN_WORD_LEN = 3
         const val WRONG_THRESHOLD = 5
@@ -296,6 +312,7 @@ internal data class FillLetterUiState(
     val totalRounds: Int,
     val lastWrongPick: String?,
     val isResolving: Boolean,
+    val isFilled: Boolean,
     val isComplete: Boolean,
 ) {
     val currentRound: FillLetterRound get() = rounds[currentRoundIndex]

@@ -1,17 +1,15 @@
 package me.ltthuc.kmp.feature.learningpath.game.pickword
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -39,6 +37,7 @@ import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.pick_word_guide
 import me.ltthuc.kmp.core.ui.audio.ScreenVoicePrompt
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
+import me.ltthuc.kmp.feature.learningpath.game.common.ChoiceRows
 import me.ltthuc.kmp.feature.learningpath.game.common.CreamBackground
 import me.ltthuc.kmp.feature.learningpath.game.common.GUIDE_IDLE_MS
 import me.ltthuc.kmp.feature.learningpath.game.common.GameHandGuide
@@ -149,13 +148,16 @@ internal fun PickWordScreen(
                     Spacer(Modifier.height(20.dp))
                     AnswerSlot(
                         filledWord = if (ui.isResolving) round.targetWord else null,
-                        modifier = Modifier.size(width = 220.dp, height = 64.dp),
+                        // Nới theo từ thay vì cố định 220dp: `competition` 28sp dài hơn ô cũ.
+                        modifier = Modifier.height(64.dp).widthIn(min = 220.dp),
                     )
                     Spacer(Modifier.weight(1f, fill = true))
 
-                    Row(
+                    // Hai thẻ không vừa một hàng (từ cấp 5 dài) thì mỗi thẻ một hàng.
+                    ChoiceRows(
+                        spacing = 20.dp,
+                        perRowWhenWrapped = 1,
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(20.dp, Alignment.CenterHorizontally),
                     ) {
                         round.choices.forEachIndexed { idx, word ->
                             val tint = if (idx == 0) round.tint else round.tint.copy(alpha = 0.75f)

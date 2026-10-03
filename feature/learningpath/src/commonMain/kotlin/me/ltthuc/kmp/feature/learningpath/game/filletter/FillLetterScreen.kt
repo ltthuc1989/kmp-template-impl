@@ -3,10 +3,8 @@ package me.ltthuc.kmp.feature.learningpath.game.filletter
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -40,6 +38,7 @@ import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.fill_letter_guide
 import me.ltthuc.kmp.core.ui.audio.ScreenVoicePrompt
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
+import me.ltthuc.kmp.feature.learningpath.game.common.ChoiceRows
 import me.ltthuc.kmp.feature.learningpath.game.common.CreamBackground
 import me.ltthuc.kmp.feature.learningpath.game.common.GUIDE_IDLE_MS
 import me.ltthuc.kmp.feature.learningpath.game.common.GameHandGuide
@@ -92,7 +91,8 @@ internal fun FillLetterScreen(
         // (isComplete is only set after playWordAndAwait completes in the ViewModel).
         LaunchedEffect(ui.isComplete) {
             if (ui.isComplete) {
-                delay(1_000L)
+                // Cùng nhịp nghỉ sau tiếng cả từ như giữa các vòng (user chốt 1,5s, 2026-10-03).
+                delay(GAME_END_PAUSE_MS)
                 onGameComplete()
             }
         }
@@ -171,17 +171,16 @@ internal fun FillLetterScreen(
                     WordWithBlank(
                         word = round.fullWord,
                         blankSpans = round.blankSpans,
-                        isFilled = ui.isResolving,
+                        isFilled = ui.isFilled,
                     )
                     Spacer(Modifier.weight(1f, fill = true))
 
                     val longestLabel = round.choices.maxOf { it.length }
-                    Row(
+                    // Bốn thẻ không vừa một hàng thì xếp 2×2, chứ không ép chữ trong thẻ xuống dòng.
+                    ChoiceRows(
+                        spacing = choiceSpacing(longestLabel),
+                        perRowWhenWrapped = 2,
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(
-                            choiceSpacing(longestLabel),
-                            Alignment.CenterHorizontally,
-                        ),
                     ) {
                         round.choices.forEachIndexed { idx, choice ->
                             val isWrongPick = ui.lastWrongPick == choice
@@ -222,3 +221,6 @@ internal fun FillLetterScreen(
 
 /** Beat between a new round appearing and its word being spoken. */
 private const val ROUND_WORD_DELAY_MS = 400L
+
+/** Nghỉ sau tiếng cả từ của vòng cuối rồi mới sang game kế. */
+private const val GAME_END_PAUSE_MS = 1_500L

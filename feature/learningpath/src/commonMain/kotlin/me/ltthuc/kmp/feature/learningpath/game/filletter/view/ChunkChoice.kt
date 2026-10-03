@@ -9,6 +9,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -25,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
@@ -33,6 +35,7 @@ import androidx.compose.ui.unit.sp
 import kotlinx.collections.immutable.ImmutableList
 import me.ltthuc.kmp.core.ui.theme.LocalPhonicsFontFamily
 import me.ltthuc.kmp.feature.learningpath.game.common.ReadingTextDark
+import me.ltthuc.kmp.feature.learningpath.game.common.SingleLineFit
 
 /**
  * Choice for FillLetter: a letter or a chunk (`th`, `spr`, `o_e`). White fill + pastel-tint ring +
@@ -126,19 +129,24 @@ internal fun WordWithBlank(
     isFilled: Boolean,
     modifier: Modifier = Modifier,
 ) {
-    Box(
-        modifier = modifier,
-        contentAlignment = Alignment.Center,
-    ) {
-        Text(
-            text = if (isFilled) word else maskWord(word, blankSpans),
-            fontFamily = LocalPhonicsFontFamily.current,
-            fontSize = 64.sp,
-            fontWeight = FontWeight.ExtraBold,
-            color = ReadingTextDark,
-        )
+    val style = TextStyle(fontFamily = LocalPhonicsFontFamily.current, fontWeight = FontWeight.ExtraBold)
+    // Cỡ chữ đo theo TỪ ĐẦY ĐỦ (dài nhất), không theo bản có `_`: đo theo bản che thì lúc ghép
+    // đáp án vào chữ sẽ nhảy cỡ.
+    SingleLineFit(text = word, style = style, maxSize = WORD_SIZE, modifier = modifier) { size ->
+        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+            Text(
+                text = if (isFilled) word else maskWord(word, blankSpans),
+                style = style,
+                fontSize = size,
+                color = ReadingTextDark,
+                maxLines = 1,
+                softWrap = false,
+            )
+        }
     }
 }
+
+private val WORD_SIZE = 64.sp
 
 /** `father` + [2..3] → `fa_er`. Spans outside the word are ignored rather than crashing. */
 internal fun maskWord(word: String, blankSpans: List<IntRange>): String = buildString {
