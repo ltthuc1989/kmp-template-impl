@@ -86,6 +86,30 @@ class PaywallDecisionsTest {
     }
 
     @Test
+    fun restoreThatBroughtBackOtherLevelsNamesThemInsteadOfNothingFound() {
+        // Owns L3 and L1, restores on the L2 paywall: those two did unlock, so "nothing to
+        // restore" would be false. Sorted by level number, the missing level kept separate.
+        assertEquals(
+            PurchaseUiState.RestoredOtherLevels(missingLevelId = "L2", restoredLevelIds = listOf("L1", "L3")),
+            restoreOutcome(PurchaseResult.Success, ownsTarget = false, targetLevelId = "L2", ownedLevelIds = setOf("L3", "L1")),
+        )
+    }
+
+    @Test
+    fun restoreWithNoLevelInMindNeverReportsOtherLevels() {
+        assertEquals(
+            PurchaseUiState.NoSubscriptionToRestore,
+            restoreOutcome(PurchaseResult.Success, ownsTarget = false, targetLevelId = null, ownedLevelIds = setOf("L1")),
+        )
+    }
+
+    @Test
+    fun levelNumberParsesOnlyLevelIds() {
+        assertEquals(3, levelNumberOf("L3"))
+        assertEquals(null, levelNumberOf("bundle"))
+    }
+
+    @Test
     fun restoreErrorCarriesItsMessage() {
         assertEquals(
             PurchaseUiState.Error("network"),

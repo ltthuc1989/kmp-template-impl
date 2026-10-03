@@ -106,7 +106,12 @@ class PaywallViewModel(
         viewModelScope.launch {
             _purchaseState.value = PurchaseUiState.Loading
             val result = billingRepository.restorePurchases()
-            _purchaseState.value = restoreOutcome(result, ownsThisLevel())
+            _purchaseState.value = restoreOutcome(
+                result = result,
+                ownsTarget = ownsThisLevel(),
+                targetLevelId = levelId,
+                ownedLevelIds = billingRepository.ownedLevelIds(),
+            )
         }
     }
 }
@@ -123,5 +128,11 @@ sealed interface PurchaseUiState {
     data object Success : PurchaseUiState
     data object PurchaseFailed : PurchaseUiState
     data object NoSubscriptionToRestore : PurchaseUiState
+
+    /** Restore unlocked other levels, but not the one this paywall sells — so it stays open. */
+    data class RestoredOtherLevels(
+        val missingLevelId: String,
+        val restoredLevelIds: List<String>,
+    ) : PurchaseUiState
     data class Error(val message: String) : PurchaseUiState
 }

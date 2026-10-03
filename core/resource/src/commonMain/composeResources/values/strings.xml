@@ -186,6 +186,8 @@
     <string name="paywall_subtitle_all">Every level — built for kids 3–8.</string>
     <string name="paywall_feature_unlimited_downloads">Unlock all of %1$s</string>
     <string name="paywall_feature_unlimited_downloads_desc">All %1$d units of %2$s.</string>
+    <string name="paywall_feature_all_levels">Unlock all 5 levels</string>
+    <string name="paywall_feature_all_levels_desc">Every unit of every level — one purchase.</string>
     <string name="paywall_feature_high_quality">Offline Mode</string>
     <string name="paywall_feature_high_quality_desc">Learn anywhere — no internet needed.</string>
     <string name="paywall_feature_no_ads">No Ads</string>
@@ -209,6 +211,8 @@
     <string name="paywall_terms">Terms of Service</string>
     <string name="paywall_privacy">Privacy Policy</string>
     <string name="paywall_error_purchase_failed">Purchase failed.</string>
+    <string name="paywall_level_short">Level %1$d</string>
+    <string name="paywall_restored_other_levels">%1$s not purchased yet — restored %2$s.</string>
     <string name="paywall_error_no_subscription_to_restore">No restorable purchases found.</string>
 
     <!-- Parental Gate (kids COPPA protection) -->

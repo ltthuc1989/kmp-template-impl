@@ -39,6 +39,8 @@ import me.ltthuc.kmp.core.resource.common_close
 import me.ltthuc.kmp.core.resource.level_name
 import me.ltthuc.kmp.core.resource.paywall_error_no_subscription_to_restore
 import me.ltthuc.kmp.core.resource.paywall_error_purchase_failed
+import me.ltthuc.kmp.core.resource.paywall_level_short
+import me.ltthuc.kmp.core.resource.paywall_restored_other_levels
 import me.ltthuc.kmp.core.ui.dialog.ParentalGateScreen
 import me.ltthuc.kmp.core.ui.screen.AsyncLoadContents
 import me.ltthuc.kmp.core.ui.theme.LocalNavBackStack
@@ -46,6 +48,7 @@ import me.ltthuc.kmp.feature.billing.components.PaywallFeatureList
 import me.ltthuc.kmp.feature.billing.components.PaywallFooter
 import me.ltthuc.kmp.feature.billing.components.PaywallHeader
 import me.ltthuc.kmp.feature.billing.components.PaywallPlanSelector
+import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -85,6 +88,20 @@ internal fun PaywallScreen(
 
             is PurchaseUiState.NoSubscriptionToRestore -> {
                 snackbarHostState.showSnackbar(noSubscriptionMessage)
+            }
+
+            is PurchaseUiState.RestoredOtherLevels -> {
+                val state = purchaseState as PurchaseUiState.RestoredOtherLevels
+                // Unparseable ids fall back to the raw id rather than dropping the level silently.
+                suspend fun label(id: String): String =
+                    levelNumberOf(id)?.let { getString(Res.string.paywall_level_short, it) } ?: id
+                snackbarHostState.showSnackbar(
+                    getString(
+                        Res.string.paywall_restored_other_levels,
+                        label(state.missingLevelId),
+                        state.restoredLevelIds.map { label(it) }.joinToString(", "),
+                    ),
+                )
             }
 
             is PurchaseUiState.Error -> {
@@ -147,7 +164,13 @@ private fun PaywallContent(
     val isLoading = purchaseState is PurchaseUiState.Loading
     // "Level 2: Short Vowels" — the same naming the unit list header uses, so the parent recognises
     // what they tapped. Null until the level loads (or when no single level is being sold).
-    val levelName = level?.let { stringResource(Res.string.level_name, it.number, it.title) }
+    // Picking the bundle card must switch the copy too: it used to keep naming the single level
+    // while the parent was about to buy all five.
+    val levelName = if (selectedPlan.isBundle) {
+        null
+    } else {
+        level?.let { stringResource(Res.string.level_name, it.number, it.title) }
+    }
 
     Scaffold(
         modifier = modifier,
@@ -189,6 +212,7 @@ private fun PaywallContent(
             PaywallFeatureList(
                 levelName = levelName,
                 unitCount = level?.totalUnits ?: 0,
+                isBundle = selectedPlan.isBundle,
                 modifier = Modifier.fillMaxWidth(),
             )
 

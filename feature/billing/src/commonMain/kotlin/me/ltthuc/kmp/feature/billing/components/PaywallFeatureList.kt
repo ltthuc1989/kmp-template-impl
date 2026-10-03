@@ -22,6 +22,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import me.ltthuc.kmp.core.resource.Res
+import me.ltthuc.kmp.core.resource.paywall_feature_all_levels
+import me.ltthuc.kmp.core.resource.paywall_feature_all_levels_desc
 import me.ltthuc.kmp.core.resource.paywall_feature_high_quality
 import me.ltthuc.kmp.core.resource.paywall_feature_high_quality_desc
 import me.ltthuc.kmp.core.resource.paywall_feature_unlimited_downloads
@@ -33,6 +35,7 @@ import org.jetbrains.compose.resources.stringResource
 internal fun PaywallFeatureList(
     levelName: String?,
     unitCount: Int,
+    isBundle: Boolean,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -44,7 +47,13 @@ internal fun PaywallFeatureList(
         // Named after the level being sold. These lines used to be fixed text that said
         // "Level 1" no matter which level the parent had tapped. Dropped entirely when there is no
         // single level, rather than naming an empty one.
-        if (levelName != null) {
+        if (isBundle) {
+            PaywallFeatureItem(
+                icon = Icons.Default.Download,
+                title = stringResource(Res.string.paywall_feature_all_levels),
+                description = stringResource(Res.string.paywall_feature_all_levels_desc),
+            )
+        } else if (levelName != null) {
             PaywallFeatureItem(
                 icon = Icons.Default.Download,
                 title = stringResource(Res.string.paywall_feature_unlimited_downloads, levelName),

@@ -186,6 +186,8 @@
     <string name="paywall_subtitle_all">Mọi cấp độ — dành cho bé 3–8 tuổi.</string>
     <string name="paywall_feature_unlimited_downloads">Mở khoá toàn bộ %1$s</string>
     <string name="paywall_feature_unlimited_downloads_desc">Đủ %1$d unit của %2$s.</string>
+    <string name="paywall_feature_all_levels">Mở khoá cả 5 cấp độ</string>
+    <string name="paywall_feature_all_levels_desc">Toàn bộ unit của mọi cấp độ — mua một lần.</string>
     <string name="paywall_feature_high_quality">Chế độ ngoại tuyến</string>
     <string name="paywall_feature_high_quality_desc">Học mọi nơi — không cần internet.</string>
     <string name="paywall_feature_no_ads">Không quảng cáo</string>
@@ -209,6 +211,8 @@
     <string name="paywall_terms">Điều khoản dịch vụ</string>
     <string name="paywall_privacy">Chính sách bảo mật</string>
     <string name="paywall_error_purchase_failed">Mua hàng thất bại.</string>
+    <string name="paywall_level_short">Cấp độ %1$d</string>
+    <string name="paywall_restored_other_levels">%1$s chưa mua — đã khôi phục %2$s.</string>
     <string name="paywall_error_no_subscription_to_restore">Không tìm thấy giao dịch nào để khôi phục.</string>
 
     <!-- Parental Gate (kids COPPA protection) -->
