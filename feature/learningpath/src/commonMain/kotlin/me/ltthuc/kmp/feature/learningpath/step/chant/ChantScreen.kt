@@ -12,6 +12,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -39,8 +40,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
@@ -339,32 +342,56 @@ private fun ChantText(chant: String, isChanting: Boolean) {
 
     val baseColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.35f)
     val activeColor = MaterialTheme.colorScheme.primary
+    val fontFamily = LocalPhonicsFontFamily.current
+    val measurer = rememberTextMeasurer()
 
-    val annotated = buildAnnotatedString {
-        tokens.forEachIndexed { i, token ->
-            val proximity = if (isChanting) {
-                val rawDist = abs(phase - i.toFloat())
-                val wrappedDist = min(rawDist, tokens.size - rawDist)
-                (1f - wrappedDist).coerceIn(0f, 1f)
-            } else {
-                1f
-            }
-            val fontSize = (BASE_FONT_SP + FONT_BUMP_SP * proximity).sp
-            val color = lerp(baseColor, activeColor, proximity)
-            withStyle(SpanStyle(color = color, fontSize = fontSize)) {
-                append(token)
-            }
-            if (i < tokens.lastIndex) append(" ")
+    // LUÔN MỘT DÒNG (user 2026-10-03): `famous- famous-` / `famous` ngắt dòng giữa các lần lặp
+    // làm bé không thấy đó là một câu ba nhịp. Từ dài (cấp 5: beautiful, competition) thì thu
+    // cả câu xuống theo tỉ lệ cho vừa bề ngang. Đo ở cỡ LỚN NHẤT (mọi token đều phồng) để token
+    // đang phồng lên không bao giờ đẩy câu tràn ra.
+    BoxWithConstraints(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+        val widthPx = constraints.maxWidth.toFloat()
+        val scale = remember(chant, widthPx, fontFamily) {
+            val full = measurer.measure(
+                text = tokens.joinToString(" "),
+                style = TextStyle(
+                    fontFamily = fontFamily,
+                    fontWeight = FontWeight.ExtraBold,
+                    fontSize = (BASE_FONT_SP + FONT_BUMP_SP).sp,
+                ),
+                softWrap = false,
+            ).size.width
+            if (full <= 0 || full <= widthPx) 1f else widthPx / full
         }
-    }
 
-    Text(
-        text = annotated,
-        fontFamily = LocalPhonicsFontFamily.current,
-        fontWeight = FontWeight.ExtraBold,
-        textAlign = TextAlign.Center,
-        lineHeight = LINE_HEIGHT_SP.sp,
-    )
+        val annotated = buildAnnotatedString {
+            tokens.forEachIndexed { i, token ->
+                val proximity = if (isChanting) {
+                    val rawDist = abs(phase - i.toFloat())
+                    val wrappedDist = min(rawDist, tokens.size - rawDist)
+                    (1f - wrappedDist).coerceIn(0f, 1f)
+                } else {
+                    1f
+                }
+                val fontSize = ((BASE_FONT_SP + FONT_BUMP_SP * proximity) * scale).sp
+                val color = lerp(baseColor, activeColor, proximity)
+                withStyle(SpanStyle(color = color, fontSize = fontSize)) {
+                    append(token)
+                }
+                if (i < tokens.lastIndex) append(" ")
+            }
+        }
+
+        Text(
+            text = annotated,
+            fontFamily = fontFamily,
+            fontWeight = FontWeight.ExtraBold,
+            textAlign = TextAlign.Center,
+            lineHeight = LINE_HEIGHT_SP.sp,
+            maxLines = 1,
+            softWrap = false,
+        )
+    }
 }
 
 /**

@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -36,10 +37,16 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 import me.ltthuc.kmp.core.model.LessonWord
 import me.ltthuc.kmp.core.model.PhonicsLesson
 import me.ltthuc.kmp.core.model.WordTiming
@@ -164,14 +171,21 @@ internal fun ChantCelebrationCard(
                     .fillMaxWidth()
                     .height(CELEBRATION_HEIGHT_DP.dp),
             ) {
-                val widthPx = with(LocalDensity.current) { maxWidth.toPx() }
+                val density = LocalDensity.current
+                val widthPx = with(density) { maxWidth.toPx() }
+                // Mỗi thẻ một ô bằng nhau W/N, tâm thẻ ở giữa ô. Trước đây chia W/(N+1) cho 5
+                // nhịp nốt bằng nhau, nhưng ô chỉ còn ~62dp mà thẻ rộng cố định 72dp: nhãn cấp 5
+                // (`dangerous` ~69dp, `competition` ~84dp) đè sang thẻ bên cạnh (user 2026-10-03,
+                // bài `ous ful`). Giờ hai nhịp ở mép ngắn bằng nửa nhịp giữa — nốt vẫn nhảy đủ.
+                val slotPx = widthPx / cardCount
                 val cardCenters = remember(widthPx, cardCount) {
-                    // Use (cardCount + 1) so all 5 bounce segments (leftEdge → word1 → ...
-                    // → word4 → rightEdge) have equal width = W / (N+1). Cards cluster
-                    // closer to center than a SpaceEvenly row.
-                    val span = widthPx / (cardCount + 1)
-                    List(cardCount) { idx -> span * (idx + 1) }
+                    List(cardCount) { idx -> slotPx * (idx + 0.5f) }
                 }
+                val labelSize = rememberLabelFontSize(
+                    words = remember(orderedWords) { orderedWords.map { it.word }.toImmutableList() },
+                    slotWidthPx = slotPx - with(density) { LABEL_SIDE_PAD_DP.dp.toPx() },
+                )
+                val slotWidth = with(density) { slotPx.toDp() }
                 val arcHeightPx = with(LocalDensity.current) { ARC_HEIGHT_DP.dp.toPx() }
                 val baselineY = with(LocalDensity.current) {
                     (CELEBRATION_HEIGHT_DP - BASELINE_BOTTOM_INSET_DP).dp.toPx()
@@ -232,7 +246,7 @@ internal fun ChantCelebrationCard(
                 )
 
                 // Word cards positioned at exact bounce points so the note lands on each
-                // card center (matches the now-even W/5 segment spacing).
+                // card center (one W/N slot per card).
                 Box(modifier = Modifier.fillMaxSize()) {
                     orderedWords.forEachIndexed { idx, word ->
                         val cardCenterX = cardCenters[idx]
@@ -240,6 +254,8 @@ internal fun ChantCelebrationCard(
                         WordCelebrationCard(
                             word = word,
                             isHighlighted = isHit,
+                            width = slotWidth,
+                            labelSize = labelSize,
                             modifier = Modifier
                                 .align(Alignment.BottomStart)
                                 .layout { measurable, constraints ->
@@ -263,6 +279,8 @@ internal fun ChantCelebrationCard(
 private fun WordCelebrationCard(
     word: LessonWord,
     isHighlighted: Boolean,
+    width: Dp,
+    labelSize: TextUnit,
     modifier: Modifier = Modifier,
 ) {
     val scale = remember { androidx.compose.animation.core.Animatable(1f) }
@@ -275,7 +293,7 @@ private fun WordCelebrationCard(
     Box(
         modifier = modifier
             .scale(scale.value)
-            .width(72.dp)
+            .width(width)
             .height(CELEBRATION_HEIGHT_DP.dp),
     ) {
         WordDisplayView(
@@ -288,13 +306,46 @@ private fun WordCelebrationCard(
         Text(
             text = word.word,
             fontFamily = LocalPhonicsFontFamily.current,
-            fontSize = 13.sp,
+            fontSize = labelSize,
             fontWeight = FontWeight.SemiBold,
             color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.Center,
             maxLines = 1,
-            modifier = Modifier.align(Alignment.BottomCenter),
+            // Không bao giờ ngắt giữa từ: bé đang học đọc nhận từ theo cả khối chữ.
+            softWrap = false,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .wrapContentWidth(unbounded = true),
         )
+    }
+}
+
+/**
+ * Cỡ chữ CHUNG cho 4 nhãn: 13sp, chỉ thu khi từ dài nhất không vừa ô, và không dưới 12sp.
+ * Chung một cỡ để 4 nhãn trông cùng một hàng — mỗi nhãn một cỡ thì từ dài trông "kém quan
+ * trọng" hơn. Ở 12sp mà vẫn tràn (chưa có từ nào như vậy) thì chấp nhận tràn chứ không ngắt.
+ */
+@Composable
+private fun rememberLabelFontSize(words: ImmutableList<String>, slotWidthPx: Float): TextUnit {
+    val measurer = rememberTextMeasurer()
+    val fontFamily = LocalPhonicsFontFamily.current
+    return remember(words, slotWidthPx, fontFamily) {
+        val widest = words.maxOfOrNull { word ->
+            measurer.measure(
+                text = word,
+                style = TextStyle(
+                    fontFamily = fontFamily,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = LABEL_MAX_SP.sp,
+                ),
+                softWrap = false,
+            ).size.width
+        } ?: 0
+        if (widest <= slotWidthPx || widest == 0) {
+            LABEL_MAX_SP.sp
+        } else {
+            (LABEL_MAX_SP * slotWidthPx / widest).coerceAtLeast(LABEL_MIN_SP).sp
+        }
     }
 }
 
@@ -408,3 +459,6 @@ private const val BASELINE_BOTTOM_INSET_DP = 16
 private const val CELEBRATION_HEIGHT_DP = 180
 private const val LAST_ARC_MS = 400
 private const val POST_END_BOUNCE_MS = 200
+private const val LABEL_MAX_SP = 13f
+private const val LABEL_MIN_SP = 12f
+private const val LABEL_SIDE_PAD_DP = 6
