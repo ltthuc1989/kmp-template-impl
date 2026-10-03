@@ -23,7 +23,7 @@ Thay bảng này khi copy sang app khác.
 |---|---|
 | Package name | `com.beely.phonicskids` |
 | Mô hình giá | Mua đứt từng level, **one-time non-consumable** |
-| Product ID | `phonics_level_1` … `phonics_level_5`, `phonics_all_levels` |
+| Product ID | `phonics_level_1` … `phonics_level_5`, bundle: Android **`phonics_all_level`** (không có `s` — tạo nhầm 2026-10-03, Play không cho đổi/dùng lại ID) · iOS `phonics_all_levels` |
 | Entitlement ID | `level_1` … `level_5` |
 | Curriculum level ID | `L1` … `L5` |
 | Enum trong code | `core/billing/.../model/SubscriptionPlan.kt` |
@@ -194,7 +194,7 @@ cho một quyền vào cửa.
 | Product | Attach vào entitlement |
 |---|---|
 | `phonics_level_1` … `phonics_level_5` | `level_1` … `level_5` (một-một) |
-| `phonics_all_levels` (bundle) | **cả 5**: `level_1` … `level_5` |
+| `phonics_all_level` (bundle, Android — iOS là `phonics_all_levels`) | **cả 5**: `level_1` … `level_5` |
 
 Bundle chỉ là một product attach vào 5 entitlement. Nhờ vậy code không cần một dòng `if` nào cho
 bundle — `entitlementId`/`levelId` của `SubscriptionPlan.BUNDLE` để null là có chủ đích.

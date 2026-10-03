@@ -26,7 +26,11 @@ enum class SubscriptionPlan(
     LEVEL_3("phonics_level_3", "phonics_level_3", "level_3", "L3"),
     LEVEL_4("phonics_level_4", "phonics_level_4", "level_4", "L4"),
     LEVEL_5("phonics_level_5", "phonics_level_5", "level_5", "L5"),
-    BUNDLE("phonics_all_levels", "phonics_all_levels", null, null),
+    // Android id has NO trailing "s": the Play product was created as `phonics_all_level` by
+    // mistake (2026-10-03) and Play never lets an id be renamed or reused. iOS keeps the planned
+    // `phonics_all_levels` since that product does not exist yet. Must match Play + RevenueCat
+    // character for character, or the bundle silently drops off the paywall.
+    BUNDLE("phonics_all_level", "phonics_all_levels", null, null),
     ;
 
     val isBundle: Boolean get() = this == BUNDLE

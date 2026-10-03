@@ -37,6 +37,7 @@ class SubscriptionPlanTest {
     @Test
     fun fromProductIdResolvesLevelAndBundle() {
         assertEquals(SubscriptionPlan.LEVEL_4, SubscriptionPlan.fromProductId("phonics_level_4"))
+        assertEquals(SubscriptionPlan.BUNDLE, SubscriptionPlan.fromProductId("phonics_all_level"))
         assertEquals(SubscriptionPlan.BUNDLE, SubscriptionPlan.fromProductId("phonics_all_levels"))
         assertNull(SubscriptionPlan.fromProductId("unknown"))
     }
@@ -70,7 +71,9 @@ class SubscriptionPlanTest {
             assertEquals(plan, SubscriptionPlan.fromProductId(productId), "fromProductId($productId)")
         }
 
-        assertEquals("phonics_all_levels", SubscriptionPlan.BUNDLE.androidProductId)
+        // Play product id as actually created — no trailing "s" (cannot be renamed on Play).
+        assertEquals("phonics_all_level", SubscriptionPlan.BUNDLE.androidProductId)
+        assertEquals("phonics_all_levels", SubscriptionPlan.BUNDLE.iosProductId)
     }
 
     @Test
