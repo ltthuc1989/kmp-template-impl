@@ -18,13 +18,18 @@ class BillingRepository(
     }
 
     /**
-     * The single level this paywall is for. The all-levels bundle stays out of it until enough
-     * levels exist to be worth bundling — with two shipped, it would charge for three that are
-     * not there yet.
+     * What the paywall for [levelId] sells: that level, then the all-levels bundle.
+     *
+     * The bundle was held back while only two levels had shipped — it would have charged for three
+     * that did not exist yet. With all five launched (2026-10-03) it goes back on sale. Level comes
+     * FIRST: the paywall pre-selects the first product, and a parent who opened one level's paywall
+     * should not land on the bigger purchase by default. A store without the bundle product just
+     * returns the level alone.
      */
     suspend fun getProductsForLevel(levelId: String?): List<ProductInfo> {
         val plan = levelId?.let { SubscriptionPlan.forLevel(it) } ?: return emptyList()
-        return billingDataSource.getProducts(listOf(plan))
+        return billingDataSource.getProducts(listOf(plan, SubscriptionPlan.BUNDLE))
+            .sortedBy { it.plan.isBundle }
     }
 
     suspend fun getProducts(): List<ProductInfo> =
@@ -49,7 +54,10 @@ class BillingRepository(
      * Settings "Unlock" entry where the parent already decided — hides billing types from callers.
      */
     suspend fun purchaseLevel(levelId: String): Boolean {
-        val product = getProductsForLevel(levelId).firstOrNull() ?: return false
+        // Exactly this level's product — never the bundle, even when the level product is missing
+        // from the store and the bundle is the only thing [getProductsForLevel] returned.
+        val plan = SubscriptionPlan.forLevel(levelId) ?: return false
+        val product = getProductsForLevel(levelId).firstOrNull { it.plan == plan } ?: return false
         return purchase(product) == PurchaseResult.Success && isLevelOwned(levelId)
     }
 
