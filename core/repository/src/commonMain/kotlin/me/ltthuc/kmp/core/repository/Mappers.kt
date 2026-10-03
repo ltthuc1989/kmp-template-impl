@@ -24,6 +24,7 @@ private data class LessonWordJson(
     val displays: List<WordDisplayJson> = emptyList(),
     val split: List<String> = emptyList(),
     val patternIndex: Int = -1,
+    val silent: List<Int> = emptyList(),
 )
 
 @OptIn(kotlinx.serialization.ExperimentalSerializationApi::class)
@@ -74,6 +75,9 @@ internal fun PhonicsLessonEntity.toModel(): PhonicsLesson {
                     blendSplit = dto.split
                         .takeIf { it.isNotEmpty() && dto.patternIndex in it.indices }
                         ?.let { BlendSplit(chunks = it, patternIndex = dto.patternIndex) },
+                    // Lọc chỉ số trỏ ra ngoài từ: dữ liệu lệch thì bỏ chữ câm đó chứ đừng
+                    // để màn hình tô nhạt nhầm một chữ đang có tiếng.
+                    silentIndices = dto.silent.filter { it in dto.word.indices }.toSet(),
                 )
             }
     }.getOrElse { emptyList() }

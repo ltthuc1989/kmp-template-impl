@@ -140,4 +140,94 @@ class ClusterBlendTest {
     fun `cụm không có trong mảnh thì tô cả mảnh chứ không bỏ trống`() {
         assertEquals("0011" to "sh", trace("fish", listOf("fi", "sh"), 1, "zz"))
     }
+
+    // ---- Cấp 5 -------------------------------------------------------------------------
+    // Bảng dưới chép tay từ `data/level_5/phonics.csv` (cột `split1..4`, `silent`), dựng
+    // theo bản scan sách OPW5. Cấp 5 KHÔNG có bài nào kiểu phép cộng.
+
+    @Test
+    fun `cấp 5 - mọi cụm đều là kiểu một âm, không có phép cộng`() {
+        val patterns = listOf(
+            "ar", "ir", "ur", "er", "or", "ou", "ow", "oi", "oy", "oo", "u",
+            "au", "aw", "all", "wa", "oar", "are", "air", "ea", "ear", "eer",
+            "a", "e", "i", "o", "kn", "wr", "mb", "rh", "st", "ture", "sure",
+            "tion", "sion", "ous", "ful",
+        )
+        for (pattern in patterns) {
+            assertEquals(ClusterKind.Single, clusterKind(pattern, level = 5), "pattern=$pattern")
+            assertEquals(emptyList(), equationOperands(pattern, level = 5), "pattern=$pattern")
+        }
+    }
+
+    @Test
+    fun `cùng một cụm vẫn cộng được ở cấp 4 - luật mới không kéo lùi cấp cũ`() {
+        // `st` là bài phép cộng của cấp 4 (`s + t = st`) nhưng là chữ CÂM ở cấp 5 (`whistle`).
+        assertEquals(ClusterKind.Addition, clusterKind("st", level = 4))
+        assertEquals(listOf("s", "t"), equationOperands("st", level = 4))
+        // Không truyền cấp thì giữ nguyên hành vi cấp 4 — mọi chỗ gọi cũ không đổi nghĩa.
+        assertEquals(ClusterKind.Addition, clusterKind("st"))
+        assertEquals(listOf("s", "t"), equationOperands("st"))
+    }
+
+    @Test
+    fun `cấp 5 - xếp ký tự vào mảnh và tô hồng đúng tổ hợp đang dạy`() {
+        // Vần r-controlled: onset · vần · coda.
+        assertEquals("011" to "ar", trace("car", listOf("c", "ar"), 1, "ar"))
+        assertEquals("0112" to "ar", trace("farm", listOf("f", "ar", "m"), 1, "ar"))
+        assertEquals("0011" to "ar", trace("star", listOf("st", "ar"), 1, "ar"))
+        // Vần nằm CUỐI từ nhiều âm tiết.
+        assertEquals("0000011" to "er", trace("teacher", listOf("teach", "er"), 1, "er"))
+        // Nguyên âm âm tiết mở: chữ pattern đứng riêng một mảnh, ở đầu hoặc giữa từ.
+        assertEquals("01111" to "a", trace("acorn", listOf("a", "corn"), 0, "a"))
+        assertEquals("00001222" to "a", trace("elevator", listOf("elev", "a", "tor"), 1, "a"))
+        // Schwa ở cuối từ.
+        assertEquals("00001" to "a", trace("panda", listOf("pand", "a"), 1, "a"))
+        // Hậu tố — cả mảnh là pattern.
+        assertEquals("0001111" to "tion", trace("station", listOf("sta", "tion"), 1, "tion"))
+        assertEquals("000111" to "ous", trace("famous", listOf("fam", "ous"), 1, "ous"))
+    }
+
+    @Test
+    fun `cấp 5 - chữ câm đánh dấu riêng, vẫn thuộc cụm đang dạy`() {
+        // `knife`: `k` câm, `n` kêu — cả hai đều là chữ của cụm `kn` nên đều hồng.
+        val knife = clusterLetters("knife", BlendSplit(listOf("kn", "ife"), 0), "kn", setOf(0))
+        assertEquals("kn", knife.filter { it.isPink }.joinToString("") { it.char.toString() })
+        assertEquals("k", knife.filter { it.isSilent }.joinToString("") { it.char.toString() })
+        assertTrue(knife[0].isPink, "chữ câm vẫn là chữ của cụm đang dạy")
+        // Thẻ dòng 1 vẽ `kn` với ký tự thứ 0 nhạt.
+        assertEquals(setOf(0), silentPatternOffsets(knife))
+
+        // `lamb`: `b` câm nằm CUỐI cụm `mb` → ký tự thứ 1 của thẻ.
+        val lamb = clusterLetters("lamb", BlendSplit(listOf("la", "mb"), 1), "mb", setOf(3))
+        assertEquals("b", lamb.filter { it.isSilent }.joinToString("") { it.char.toString() })
+        assertEquals(setOf(1), silentPatternOffsets(lamb))
+
+        // `glove`: bài `ve`, và từ này KHÔNG tách mảnh (user chốt 2026-09-30) — cả từ là
+        // một mảnh. Hồng vẫn chỉ hai chữ `ve` chứ không phải cả mảnh: màu lấy theo chỗ
+        // pattern NẰM TRONG mảnh. Nếu ai đó đổi `pinkOffsets` thành "cả mảnh pattern"
+        // thì `glove` sẽ hồng nguyên từ — test này chặn đúng chỗ đó.
+        val glove = clusterLetters("glove", BlendSplit(listOf("glove"), 0), "ve", setOf(4))
+        assertEquals("ve", glove.filter { it.isPink }.joinToString("") { it.char.toString() })
+        assertEquals("glo", glove.filterNot { it.isPink }.joinToString("") { it.char.toString() })
+        assertEquals("e", glove.filter { it.isSilent }.joinToString("") { it.char.toString() })
+        assertEquals(setOf(1), silentPatternOffsets(glove))
+
+        // `rhubarb` có hai chữ `b` mà không chữ nào câm — chữ câm là `h` ở vị trí 1.
+        // Đây là lý do chỉ số tính theo TỪ chứ không tìm ký tự trong cả từ.
+        val rhubarb = clusterLetters("rhubarb", BlendSplit(listOf("rh", "ubarb"), 0), "rh", setOf(1))
+        assertEquals("h", rhubarb.filter { it.isSilent }.joinToString("") { it.char.toString() })
+        assertEquals(setOf(1), silentPatternOffsets(rhubarb))
+
+        // `whistle`: cụm `st` ở GIỮA từ, `t` câm.
+        val whistle = clusterLetters("whistle", BlendSplit(listOf("whi", "st", "le"), 1), "st", setOf(4))
+        assertEquals("st", whistle.filter { it.isPink }.joinToString("") { it.char.toString() })
+        assertEquals(setOf(1), silentPatternOffsets(whistle))
+    }
+
+    @Test
+    fun `không khai chữ câm thì không ký tự nào nhạt`() {
+        val car = clusterLetters("car", BlendSplit(listOf("c", "ar"), 1), "ar")
+        assertTrue(car.none { it.isSilent })
+        assertEquals(emptySet(), silentPatternOffsets(car))
+    }
 }

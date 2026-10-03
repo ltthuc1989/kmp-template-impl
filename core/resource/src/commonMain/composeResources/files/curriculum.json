@@ -7376,8 +7376,8 @@
             },
             {
               "id": "L5U7_mb_e",
-              "letter": "MB-E",
-              "displayLetter": "mb e",
+              "letter": "MB-VE",
+              "displayLetter": "mb ve",
               "soundSpelling": "mm",
               "sentence": "A lamb and a glove.",
               "stretchedWord": "L-A-M",
@@ -7421,10 +7421,9 @@
                   "word": "glove",
                   "emoji": "🧤",
                   "split": [
-                    "glov",
-                    "e"
+                    "glove"
                   ],
-                  "patternIndex": 1,
+                  "patternIndex": 0,
                   "silent": [
                     4
                   ]
@@ -7433,10 +7432,9 @@
                   "word": "live",
                   "emoji": "🎙️",
                   "split": [
-                    "liv",
-                    "e"
+                    "live"
                   ],
-                  "patternIndex": 1,
+                  "patternIndex": 0,
                   "silent": [
                     3
                   ],

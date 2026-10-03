@@ -26,18 +26,36 @@ private val SINGLE_SOUND_PATTERNS = setOf(
     "sh", "ch", "tch", "ph", "wh", "th", "ck", "qu", "ng", "nk", "c", "g", "s",
 )
 
-internal fun clusterKind(pattern: String): ClusterKind =
-    if (pattern.trim().lowercase() in SINGLE_SOUND_PATTERNS) ClusterKind.Single else ClusterKind.Addition
+/**
+ * Cấp đầu tiên mà MỌI bài đều là [ClusterKind.Single].
+ *
+ * Cấp 5 dạy tổ hợp chữ cái (`ar`, `ou`, `tion`, `kn`), không cụm nào cộng được từ âm của
+ * từng chữ: `a` + `r` không ra /ɑr/, `k` + `n` không ra /n/ (k còn câm). Sách OPW5 cũng
+ * không in dấu `+` ở bài nào — panel "Listen and learn" của nó luôn là một thẻ pattern.
+ * Nên gác theo CẤP thay vì nhét 40 cụm mới vào [SINGLE_SOUND_PATTERNS]: bảng đó nói "cụm
+ * này đọc thành một âm", còn đây là một luật của cả cấp.
+ */
+internal const val ALL_SINGLE_SOUND_LEVEL = 5
+
+/** Cấp mặc định khi chỗ gọi không biết cấp — cấp 4, nơi hai kiểu panel cùng tồn tại. */
+private const val DEFAULT_CLUSTER_LEVEL = 4
+
+internal fun clusterKind(pattern: String, level: Int = DEFAULT_CLUSTER_LEVEL): ClusterKind = when {
+    level >= ALL_SINGLE_SOUND_LEVEL -> ClusterKind.Single
+    pattern.trim().lowercase() in SINGLE_SOUND_PATTERNS -> ClusterKind.Single
+    else -> ClusterKind.Addition
+}
 
 /**
  * Các toán hạng của dòng 1: `bl` → `b` + `l`, `spr` → `s` + `p` + `r`, `squ` → `s` + `qu`.
  *
  * `qu` giữ nguyên khối vì `q` một mình không có âm trong tiếng Anh — sách cũng in `s + qu = squ`.
  * Bài kiểu [ClusterKind.Single] trả rỗng: dòng 1 của nó chỉ có một thẻ, không có phép cộng.
+ * Từ cấp [ALL_SINGLE_SOUND_LEVEL] trở lên luôn rỗng.
  */
-internal fun equationOperands(pattern: String): List<String> {
+internal fun equationOperands(pattern: String, level: Int = DEFAULT_CLUSTER_LEVEL): List<String> {
     val p = pattern.trim().lowercase()
-    if (p.isEmpty() || clusterKind(p) == ClusterKind.Single) return emptyList()
+    if (p.isEmpty() || clusterKind(p, level) == ClusterKind.Single) return emptyList()
     if (p.length > QU.length && p.endsWith(QU)) {
         return p.dropLast(QU.length).map { it.toString() } + QU
     }
@@ -87,6 +105,12 @@ internal data class ClusterLetter(
     val char: Char,
     val chunkIndex: Int,
     val isPink: Boolean,
+    /**
+     * Chữ CÂM — vẽ hồng nhạt (cấp 5 unit 7: `k` của `knife`, `b` của `lamb`, `e` của `glove`).
+     *
+     * Luôn là chữ của cụm đang dạy nên đi kèm [isPink]; nhạt để bé thấy "chữ này không kêu".
+     */
+    val isSilent: Boolean = false,
 )
 
 /**
@@ -99,12 +123,17 @@ internal data class ClusterLetter(
  *
  * Dấu cách giữ một chỗ hẹp ([SPACE_CHUNK]) để `ice cream` không dính thành `icecream`.
  */
-internal fun clusterLetters(word: String, split: BlendSplit, pattern: String): List<ClusterLetter> {
+internal fun clusterLetters(
+    word: String,
+    split: BlendSplit,
+    pattern: String,
+    silentIndices: Set<Int> = emptySet(),
+): List<ClusterLetter> {
     val pinkOffsets = pinkOffsets(split.patternChunk, pattern)
     var chunk = 0
     var used = 0
-    return word.map { ch ->
-        if (ch == ' ') return@map ClusterLetter(ch, SPACE_CHUNK, isPink = false)
+    return word.mapIndexed { index, ch ->
+        if (ch == ' ') return@mapIndexed ClusterLetter(ch, SPACE_CHUNK, isPink = false)
         // Nhảy mảnh khi mảnh hiện tại đã đủ ký tự. Dừng ở mảnh cuối để ký tự thừa (dữ liệu
         // lệch mà lọt qua [splitMatchesWord]) vẫn có chỗ đứng thay vì văng chỉ số.
         while (chunk < split.chunks.lastIndex && used >= split.chunks[chunk].length) {
@@ -113,9 +142,23 @@ internal fun clusterLetters(word: String, split: BlendSplit, pattern: String): L
         }
         val pink = chunk == split.patternIndex && used in pinkOffsets
         used++
-        ClusterLetter(ch, chunk, pink)
+        ClusterLetter(ch, chunk, pink, isSilent = index in silentIndices)
     }
 }
+
+/**
+ * Chỉ số (trong chuỗi [pattern]) của những chữ câm, để thẻ dòng 1 vẽ `k n` với `k` nhạt.
+ *
+ * Suy từ chính [letters] chứ không tính lại từ chỉ số trong từ: những ký tự tô hồng CHÍNH LÀ
+ * các chữ của pattern, đúng thứ tự — nên vị trí thứ i trong nhóm hồng là ký tự thứ i của thẻ.
+ * Tính lại bằng `pattern.indexOf(ch)` thì sai ở cụm có chữ lặp.
+ */
+internal fun silentPatternOffsets(letters: List<ClusterLetter>): Set<Int> =
+    letters.filter { it.isPink }
+        .withIndex()
+        .filter { it.value.isSilent }
+        .map { it.index }
+        .toSet()
 
 /**
  * Vị trí (trong MẢNH) của những ký tự thuộc cụm đang dạy.

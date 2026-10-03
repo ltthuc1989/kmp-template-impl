@@ -86,7 +86,50 @@ class PhonicsPatternsTest {
     }
 
     @Test
+    fun `cấp 5 - mã letter tách đúng thành pattern`() {
+        // Chép tay từ `data/level_5/phonics.csv` sau khi đổi mã 2026-09-24
+        // (A-OPEN→A-1, E-I-OPEN→E-I-1, O-U-OPEN→O-U-1, SCHWA-A→A-2,
+        //  SCHWA-EIOU→E-I-O-U-2, SCHWA-O→O-2).
+        val golden = listOf(
+            "AR" to listOf("ar"),
+            "IR-UR" to listOf("ir", "ur"),
+            "ER-OR" to listOf("er", "or"),
+            "OU-OW" to listOf("ou", "ow"),
+            "OI-OY" to listOf("oi", "oy"),
+            "OO-U" to listOf("oo", "u"),
+            "AU-AW" to listOf("au", "aw"),
+            "ALL-WA" to listOf("all", "wa"),
+            "OR-OAR" to listOf("or", "oar"),
+            "ARE-AIR" to listOf("are", "air"),
+            "EA-EAR" to listOf("ea", "ear"),
+            "EAR-EER" to listOf("ear", "eer"),
+            // Sáu mã của unit 5/6: đoạn TOÀN SỐ chỉ để tách hai bài cùng chữ cái
+            // (`a` âm tiết mở ở unit 5 vs `a` đọc "ơ" ở unit 6), không phải pattern.
+            "A-1" to listOf("a"),
+            "E-I-1" to listOf("e", "i"),
+            "O-U-1" to listOf("o", "u"),
+            "A-2" to listOf("a"),
+            "E-I-O-U-2" to listOf("e", "i", "o", "u"),
+            "O-2" to listOf("o"),
+            "KN-WR" to listOf("kn", "wr"),
+            "MB-VE" to listOf("mb", "ve"),
+            "RH-ST" to listOf("rh", "st"),
+            "TURE-SURE" to listOf("ture", "sure"),
+            "TION-SION" to listOf("tion", "sion"),
+            "OUS-FUL" to listOf("ous", "ful"),
+        )
+        assertEquals(24, golden.size, "Cấp 5 có đúng 24 lesson")
+        for ((letter, want) in golden) {
+            assertEquals(want, parsePatterns(letter, 5), "letter=$letter")
+        }
+    }
+
+    @Test
     fun `mã cũ có từ mô tả không còn được chấp nhận - phải đổi dữ liệu chứ không vá parser`() {
+        // Cấp 5 cũng vậy: `A-OPEN`/`SCHWA-EIOU` là mã cũ, đã đổi ở dữ liệu 2026-09-24.
+        assertEquals(listOf("a", "open"), parsePatterns("A-OPEN", 5))
+        assertEquals(listOf("schwa", "eiou"), parsePatterns("SCHWA-EIOU", 5))
+
         // Bảo vệ quyết định 2026-09-07: dữ liệu L4 đã đổi sang mã sạch. Nếu ai đưa lại mã
         // kiểu "TH-voiced" thì test này đỏ để nhắc, thay vì parser âm thầm đẻ pattern "voiced".
         assertEquals(listOf("th", "voiced"), parsePatterns("TH-voiced", 4))

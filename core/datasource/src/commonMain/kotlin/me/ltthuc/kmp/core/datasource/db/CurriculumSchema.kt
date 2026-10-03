@@ -65,6 +65,9 @@ internal data class LessonWordDto(
     // rỗng/-1 để 4 cấp còn lại không phải khai gì.
     val split: List<String> = emptyList(),
     val patternIndex: Int = -1,
+    // Chỉ số ký tự CÂM trong từ (`knife` → [0], `lamb` → [3]) — cấp 5 unit 7, sách in
+    // chữ câm màu hồng nhạt. Rỗng ở mọi cấp khác.
+    val silent: List<Int> = emptyList(),
 )
 
 @OptIn(kotlinx.serialization.ExperimentalSerializationApi::class)
@@ -91,9 +94,12 @@ internal data class NormalizedLessonWord(
     val displays: List<WordDisplayDto>,
     val split: List<String> = emptyList(),
     val patternIndex: Int = -1,
+    val silent: List<Int> = emptyList(),
 )
 
-private fun LessonWordDto.normalize(): NormalizedLessonWord {
+// `internal` chứ không `private`: `CurriculumWordFieldsTest` gọi thẳng vào đây để khoá
+// việc mọi trường của một từ đi hết ba tầng khai kiểu (xem docstring của test đó).
+internal fun LessonWordDto.normalize(): NormalizedLessonWord {
     val resolved = displays.ifEmpty {
         emoji?.takeIf { it.isNotEmpty() }?.let { listOf(WordDisplayDto.Emoji(it)) } ?: emptyList()
     }
@@ -102,6 +108,7 @@ private fun LessonWordDto.normalize(): NormalizedLessonWord {
         displays = resolved,
         split = split,
         patternIndex = patternIndex,
+        silent = silent,
     )
 }
 

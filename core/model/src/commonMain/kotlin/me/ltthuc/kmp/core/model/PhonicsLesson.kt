@@ -27,6 +27,18 @@ data class LessonWord(
      * còn hơn hai thuật toán ở hai repo rình rập lệch nhau.
      */
     val blendSplit: BlendSplit? = null,
+    /**
+     * Chỉ số những ký tự CÂM trong [word] (`knife` → {0}, `lamb` → {3}), rỗng khi từ không có.
+     *
+     * Chỉ cấp 5 unit 7 dùng: sách OPW5 in chữ câm màu hồng NHẠT ngay trên thẻ pattern
+     * (`k n`, `w r`, `m b`, `s t`, và `e` của `glove`) — đó chính là bài học, không phải
+     * trang trí. Cũng đến từ `phonics.csv` (cột `silent`) qua `curriculum.json`, cùng lý do
+     * với [blendSplit]: một bảng người duyệt, không suy bằng thuật toán.
+     *
+     * Để theo TỪNG TỪ chứ không theo lesson vì màn hình tô theo ký tự, và vì cùng một chữ
+     * có thể xuất hiện hai lần trong từ mà chỉ một chỗ câm (`rhubarb` có hai `b`).
+     */
+    val silentIndices: Set<Int> = emptySet(),
 ) {
     val text: String get() = word
 

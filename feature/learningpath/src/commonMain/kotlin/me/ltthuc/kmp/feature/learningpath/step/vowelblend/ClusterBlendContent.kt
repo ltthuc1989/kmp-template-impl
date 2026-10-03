@@ -24,6 +24,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
@@ -37,18 +38,24 @@ import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.aakira.napier.Napier
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.ImmutableSet
+import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withTimeoutOrNull
@@ -66,7 +73,9 @@ import me.ltthuc.kmp.feature.learningpath.step.common.StepChevronButton
 import me.ltthuc.kmp.feature.learningpath.step.common.clusterLetters
 import me.ltthuc.kmp.feature.learningpath.step.common.equationOperands
 import me.ltthuc.kmp.feature.learningpath.step.common.lessonPatterns
+import me.ltthuc.kmp.feature.learningpath.step.common.level
 import me.ltthuc.kmp.feature.learningpath.step.common.patternForChunk
+import me.ltthuc.kmp.feature.learningpath.step.common.silentPatternOffsets
 import me.ltthuc.kmp.feature.learningpath.step.common.splitMatchesWord
 import me.ltthuc.kmp.feature.learningpath.step.common.wholeWordSplit
 import org.jetbrains.compose.resources.stringResource
@@ -221,7 +230,21 @@ internal fun ClusterBlendContent(
                 EquationCards(page = page, activeSlot = shownSlot)
                 Spacer(Modifier.height(20.dp))
             }
-            WordRow(letters = page.letters, beat = shownBeat)
+            // Cấp 5 KHÔNG phóng to chữ đang đọc (user chốt 2026-09-29): ô đã chừa sẵn chỗ,
+            // chữ chỉ hiện vào đúng ô đó. Cấp 4 giữ nguyên hiệu ứng cũ.
+            val level5up = (lesson.level() ?: DEFAULT_LEVEL) >= ZOOMLESS_LEVEL
+            // Mỗi trang một bộ ô MỚI. Không có key thì Compose dùng lại ô theo vị trí: trang trước
+            // kết thúc với cả từ hiện (alpha 1), lật trang thì chữ của từ MỚI nhận luôn alpha 1 đó
+            // rồi mới mờ về 0 — bé thấy từ mới loé lên một cái, mất, rồi mới hiện lại ở nhịp
+            // "nhìn cả từ" (user bắt 2026-10-03). Ô mới thì alpha khởi đầu đúng bằng 0.
+            key(lesson.id, safePage) {
+                WordRow(
+                    letters = page.letters,
+                    beat = shownBeat,
+                    zoom = !level5up,
+                    cumulative = level5up,
+                )
+            }
         }
 
         Spacer(Modifier.height(22.dp))
@@ -300,18 +323,45 @@ private fun EquationCards(page: ClusterPage, activeSlot: Int?) {
                 ClusterCard(text = operand, isActive = activeSlot == index)
             }
             if (page.operands.isNotEmpty()) OperatorGlyph("=")
-            ClusterCard(text = page.pattern, isActive = activeSlot == resultSlot)
+            ClusterCard(
+                text = page.pattern,
+                isActive = activeSlot == resultSlot,
+                silentOffsets = page.silentInPattern,
+            )
         }
     }
 }
 
-/** Thẻ chữ của dòng 1. Cả hàng đều là cụm đang dạy nên chữ luôn hồng. */
+/**
+ * Thẻ chữ của dòng 1. Cả hàng đều là cụm đang dạy nên chữ luôn hồng.
+ *
+ * [silentOffsets] là những ký tự CÂM, vẽ nhạt đi — thẻ `kn` của cấp 5 hiện `k` mờ, `n` đậm,
+ * đúng như sách in. Vẽ bằng `AnnotatedString` chứ không xếp nhiều `Text` cạnh nhau: nhiều
+ * Text thì mỗi chữ một hộp, khoảng cách giữa chúng không còn là khoảng cách chữ của font.
+ */
 @Composable
-private fun ClusterCard(text: String, isActive: Boolean) {
+private fun ClusterCard(
+    text: String,
+    isActive: Boolean,
+    silentOffsets: ImmutableSet<Int> = persistentSetOf(),
+) {
     BlendCardSurface(charCount = text.length, isActive = isActive) {
         Text(
-            text = text,
-            color = VowelColor,
+            text = buildAnnotatedString {
+                text.forEachIndexed { index, ch ->
+                    withStyle(
+                        SpanStyle(
+                            color = if (index in silentOffsets) {
+                                VowelColor.copy(alpha = SILENT_ALPHA)
+                            } else {
+                                VowelColor
+                            },
+                        ),
+                    ) {
+                        append(ch)
+                    }
+                }
+            },
             fontFamily = LocalPhonicsFontFamily.current,
             fontSize = CARD_TEXT_SP.sp,
             lineHeight = (CARD_TEXT_SP + 2).sp,
@@ -332,7 +382,12 @@ private fun ClusterCard(text: String, isActive: Boolean) {
  * phóng to theo cài đặt hệ thống chỉ làm từ tràn ra ngoài màn.
  */
 @Composable
-private fun WordRow(letters: ImmutableList<ClusterLetter>, beat: WordBeat?) {
+private fun WordRow(
+    letters: ImmutableList<ClusterLetter>,
+    beat: WordBeat?,
+    zoom: Boolean = true,
+    cumulative: Boolean = false,
+) {
     val measurer = rememberTextMeasurer()
     val fontFamily = LocalPhonicsFontFamily.current
     val density = LocalDensity.current
@@ -351,7 +406,8 @@ private fun WordRow(letters: ImmutableList<ClusterLetter>, beat: WordBeat?) {
     BoxWithConstraints(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
         val gaps = with(density) { LETTER_GAP_DP.dp.toPx() } * (letters.size - 1).coerceAtLeast(0)
         // Chừa chỗ cho chữ đang đọc phóng to ở hai mép hàng, nếu không nó lại bị xén.
-        val needed = glyphs.widths.sum() + (glyphs.widths.maxOrNull() ?: 0f) * (HOT_SCALE - 1f)
+        val needed = glyphs.widths.sum() +
+            if (zoom) (glyphs.widths.maxOrNull() ?: 0f) * (HOT_SCALE - 1f) else 0f
         val refFontPx = with(density) { REF_FONT_SP.sp.toPx() }
         val capScale = with(density) { MAX_FONT_DP.dp.toPx() } / refFontPx
         val scale = if (needed > 0f) minOf((constraints.maxWidth - gaps) / needed, capScale) else capScale
@@ -367,10 +423,11 @@ private fun WordRow(letters: ImmutableList<ClusterLetter>, beat: WordBeat?) {
                     slotWidth = with(density) { (glyphs.widths[index] * scale).toDp() },
                     slotHeight = slotHeight,
                     fontSize = fontSize,
-                    shown = beat.shows(letter),
+                    shown = beat.shows(letter, cumulative),
                     hot = beat is WordBeat.Chunk && letter.chunkIndex == beat.index,
                     inked = beat == WordBeat.Preview || beat == WordBeat.Whole,
                     inkInstant = beat == WordBeat.Preview,
+                    zoom = zoom,
                 )
             }
         }
@@ -387,6 +444,7 @@ private fun LetterSlot(
     hot: Boolean,
     inked: Boolean,
     inkInstant: Boolean,
+    zoom: Boolean = true,
 ) {
     if (letter.char == ' ') {
         Spacer(Modifier.width(slotWidth))
@@ -398,7 +456,11 @@ private fun LetterSlot(
         label = "letter-alpha",
     )
     val scale by animateFloatAsState(
+        // [zoom] tắt = chữ chỉ HIỆN vào ô đã chừa sẵn, không phóng to, không nảy. Cấp 5
+        // dùng đường này: từ dài tới 11 chữ (`competition`), chữ đang đọc phồng lên 1.34×
+        // làm cả hàng phải co lại cho vừa, nhìn giật.
         targetValue = when {
+            !zoom -> 1f
             hot -> HOT_SCALE
             shown -> 1f
             else -> HIDDEN_SCALE
@@ -408,7 +470,12 @@ private fun LetterSlot(
     )
     // Cụm đang dạy màu hồng, còn lại xanh — theo bảng tách đã chốt, KHÔNG theo "ký tự có
     // phải nguyên âm không": `a` trong `black` là nguyên âm nhưng bài đang dạy `bl`.
-    val base = if (letter.isPink) VowelColor else ConsonantColor
+    // Chữ CÂM vẫn hồng nhưng nhạt hẳn (cấp 5 unit 7) — xem [SILENT_ALPHA].
+    val base = when {
+        letter.isSilent -> VowelColor.copy(alpha = SILENT_ALPHA)
+        letter.isPink -> VowelColor
+        else -> ConsonantColor
+    }
     val color by animateColorAsState(
         targetValue = if (inked) lerp(base, Color.Black, INK_STRENGTH) else base,
         // Nhịp "nhìn từ trước" phải ĐEN NGAY: nó là ảnh chụp cả từ, không phải nhịp đọc dần.
@@ -470,12 +537,20 @@ private sealed interface WordBeat {
     data object Whole : WordBeat
 }
 
-/** Ký tự này có hiện ở nhịp hiện tại không. Chưa tới nhịp nào thì dòng 2 để trống. */
-private fun WordBeat?.shows(letter: ClusterLetter): Boolean = when (this) {
-    null -> false
-    WordBeat.Preview, WordBeat.Whole -> true
-    is WordBeat.Chunk -> letter.chunkIndex == index
-}
+/**
+ * Ký tự này có hiện ở nhịp hiện tại không. Chưa tới nhịp nào thì dòng 2 để trống.
+ *
+ * [cumulative] = từ được DỰNG DẦN: mảnh đã đọc thì ở lại trên màn, mảnh sau hiện thêm
+ * vào bên cạnh (`c` → `c ar` → `car`). Cấp 5 dùng đường này (user chốt 2026-09-30) —
+ * bé thấy từ lớn dần nên hiểu ghép vần là cộng thêm, chứ không phải các mảnh thay nhau
+ * chớp tắt ở cùng một chỗ. Cấp 4 giữ kiểu cũ (mỗi lúc chỉ một mảnh).
+ */
+private fun WordBeat?.shows(letter: ClusterLetter, cumulative: Boolean = false): Boolean =
+    when (this) {
+        null -> false
+        WordBeat.Preview, WordBeat.Whole -> true
+        is WordBeat.Chunk -> if (cumulative) letter.chunkIndex <= index else letter.chunkIndex == index
+    }
 
 /**
  * `slot` của `blend_meta` → nhịp dòng 2. Hợp đồng với bộ lắp audio (`assemble_blend_pages`
@@ -499,6 +574,8 @@ private data class ClusterPage(
     val pattern: String,
     val operands: ImmutableList<String>,
     val letters: ImmutableList<ClusterLetter>,
+    /** Chỉ số chữ CÂM trong [pattern], để thẻ dòng 1 vẽ `k n` với `k` nhạt (cấp 5 unit 7). */
+    val silentInPattern: ImmutableSet<Int>,
     val chunkCount: Int,
     /** Trang đầu của mỗi cụm mới có dòng 1; các trang sau ẩn hẳn dòng 1. */
     val readsEquation: Boolean,
@@ -506,6 +583,8 @@ private data class ClusterPage(
 
 private fun buildClusterPages(lesson: PhonicsLesson): List<ClusterPage> {
     val patterns = lesson.lessonPatterns()
+    // Cấp 5 không có phép cộng ở bài nào (`a` + `r` ≠ /ɑr/) — xem ALL_SINGLE_SOUND_LEVEL.
+    val level = lesson.level() ?: DEFAULT_LEVEL
     var previousPattern: String? = null
     return lesson.words.map { word ->
         // Bảng tách là NGUỒN DUY NHẤT, và phải khớp với từ. Thiếu hoặc lệch thì hiện cả từ
@@ -519,12 +598,14 @@ private fun buildClusterPages(lesson: PhonicsLesson): List<ClusterPage> {
                 wholeWordSplit(word.text)
             }
         val pattern = patternForChunk(patterns, split.patternChunk)
+        val letters = clusterLetters(word.text, split, pattern, word.silentIndices)
         val page = ClusterPage(
             word = word,
             pattern = pattern,
             // Kiểu B trả rỗng → dòng 1 chỉ có thẻ cụm, không có phép cộng.
-            operands = equationOperands(pattern).toImmutableList(),
-            letters = clusterLetters(word.text, split, pattern).toImmutableList(),
+            operands = equationOperands(pattern, level).toImmutableList(),
+            letters = letters.toImmutableList(),
+            silentInPattern = silentPatternOffsets(letters).toImmutableSet(),
             chunkCount = split.chunks.size,
             readsEquation = pattern != previousPattern,
         )
@@ -578,3 +659,21 @@ private const val SPELL_REPEATS = 2
 private const val CHAIN_TIMEOUT_PAD_MS = 2_000L
 private const val LETTER_FADE_MS = 160
 private const val INK_MS = 260
+
+/** Cấp dùng khi không suy được từ id bài — cấp 4, nơi màn hình này ra đời. */
+private const val DEFAULT_LEVEL = 4
+
+/** Từ cấp này trở lên thì chữ đang đọc KHÔNG phóng to nữa — xem [WordRow]. */
+private const val ZOOMLESS_LEVEL = 5
+
+/**
+ * Độ đậm của chữ CÂM so với chữ pattern thường.
+ *
+ * Sách OPW5 in `k` của `k n` và `b` của `m b` bằng đúng màu hồng nhưng nhạt hẳn — bé nhìn
+ * ra ngay chữ nào không kêu. Nhạt bằng alpha chứ không đổi sang màu xám: xám thành "chữ
+ * không thuộc bài", trong khi chữ câm VẪN là chữ của cụm đang dạy.
+ *
+ * 0.4 là mức user chốt sau khi xem trên máy 2026-09-29 (0.36 nhạt quá, 0.5 đậm quá) —
+ * đối chiếu bản in `pages/p066.jpg`: thẻ `m b` và chữ `e` của `glove`.
+ */
+private const val SILENT_ALPHA = 0.4f
