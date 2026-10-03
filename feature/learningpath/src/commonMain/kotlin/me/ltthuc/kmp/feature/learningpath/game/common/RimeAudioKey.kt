@@ -25,6 +25,13 @@ import me.ltthuc.kmp.feature.learningpath.step.common.level
  * đó nhãn một ký tự là NGUYÊN ÂM ĐƠN ("a" của `L2U1_a`) — `phonemes/a.mp3` chính là âm
  * cần phát, không có gì để tách.
  *
+ * Từ [FIRST_LESSON_KEY_LEVEL] khoá đổi hẳn sang theo BÀI — xem [rimeAudioKeyFor].
+ *
+ * Nhãn trùng giữa hai bài của cùng unit thì bài SAU thắng: `ear` của L5U4 là bài
+ * `ear_eer` (/ɪr/ — ear, clear) chứ không phải `ea_ear` (/ɛr/ — bear), user chốt
+ * 2026-10-03. Bubble Pop và Memory Match chỉ có MỘT vòng/một thẻ cho mỗi nhãn nên phải
+ * chọn một âm; Fill Letter thì đọc theo đúng bài của từ đang chơi nên không vướng.
+ *
  * Cùng công thức phía sinh audio: `opw_audio_project/scripts/prompts.py:rime_audio_key()`.
  * Sửa bên nào thì sửa cả bên kia rồi chạy golden test hai phía.
  */
@@ -32,10 +39,33 @@ internal fun List<PhonicsLesson>.rimeAudioKeys(): Map<String, String> = buildMap
     for (lesson in this@rimeAudioKeys) {
         if ((lesson.level() ?: 1) < FIRST_SPLIT_KEY_LEVEL) continue
         for (pattern in lesson.lessonPatterns()) {
-            put(pattern, rimeAudioKey(pattern, lesson.soundSpelling))
+            put(pattern, lesson.rimeAudioKeyFor(pattern))
         }
     }
 }
+
+/**
+ * Khoá file của nhãn [pattern] trong bài này.
+ *
+ * Cấp 3-4: [rimeAudioKey] — tên nhãn, nhãn một ký tự gắn thêm âm.
+ *
+ * Cấp 5+: `<mã bài>_<nhãn>` (`l5u1_er_or_or`). Luật theo nhãn hết đường dùng ở cấp 5:
+ * `ow` `oo` `ea` `st` đã là file cấp 3/4 đọc âm KHÁC (cow /aʊ/ ≠ bow /oʊ/), ghi vào là đè
+ * bản đã ship; trong cấp 5 `or` (doctor /ɚ/ ≠ horse /ɔr/) và `ear` (bear ≠ ear) cũng hai
+ * âm một tên; còn `soundSpelling` của hậu tố hai chữ đẻ khoá vô nghĩa `e_eee-eye`. Gắn mã
+ * bài thì không trùng được nữa — giá phải trả là hai bài cùng âm (`o` của hai bài schwa)
+ * mang hai file giống hệt, vài KB.
+ */
+internal fun PhonicsLesson.rimeAudioKeyFor(pattern: String): String =
+    if ((level() ?: 1) >= FIRST_LESSON_KEY_LEVEL) {
+        lessonRimeAudioKey(id, pattern)
+    } else {
+        rimeAudioKey(pattern, soundSpelling)
+    }
+
+/** Nhân của [rimeAudioKeyFor] cho cấp 5+, tách riêng để test không cần dựng [PhonicsLesson]. */
+internal fun lessonRimeAudioKey(lessonId: String, pattern: String): String =
+    "${lessonId.trim().lowercase()}_${pattern.trim().lowercase()}"
 
 /** Nhân của [rimeAudioKeys], tách riêng để test được mà không cần dựng [PhonicsLesson]. */
 internal fun rimeAudioKey(pattern: String, soundSpelling: String): String {
@@ -47,3 +77,6 @@ internal fun rimeAudioKey(pattern: String, soundSpelling: String): String {
 
 /** Cấp đầu tiên có nhãn vần đụng nhau giữa các unit, nên phải gắn thêm âm vào khoá. */
 private const val FIRST_SPLIT_KEY_LEVEL = 3
+
+/** Cấp đầu tiên khoá theo mã bài thay vì theo nhãn — xem [rimeAudioKeyFor]. */
+private const val FIRST_LESSON_KEY_LEVEL = 5

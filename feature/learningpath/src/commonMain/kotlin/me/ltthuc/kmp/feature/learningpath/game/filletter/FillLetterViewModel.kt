@@ -145,7 +145,7 @@ internal class FillLetterViewModel(
         viewModelScope.launch {
             val round = rounds.getOrNull(state.currentRoundIndex)
             // The chunk first, then the whole word it completes: "th" … "father".
-            round?.let { soundFor(it.answer) }?.let { audio.playAndAwait(it, CHUNK_AUDIO_MAX_MS) }
+            round?.answerSound?.let { audio.playAndAwait(it, CHUNK_AUDIO_MAX_MS) }
             playWordAndAwait(round?.wordRef)
             val next = state.currentRoundIndex + 1
             if (next >= rounds.size) {
@@ -221,6 +221,9 @@ internal class FillLetterViewModel(
                 tint = BUBBLE_TINT_PALETTE[idx % BUBBLE_TINT_PALETTE.size],
                 // Resolve with original-case word so wordRef's exact match succeeds.
                 wordRef = candidate.lesson.wordRef(candidate.word.word),
+                // Theo bài CỦA TỪ, không tra [choiceSounds]: bảng đó giữ một tiếng cho mỗi mặt
+                // chữ (bài gặp đầu), mà `ear` của L5U4 đọc /ɛr/ ở `bear` nhưng /ɪr/ ở `clear`.
+                answerSound = candidate.lesson.chunkSound(chunk.label),
             )
         }.toImmutableList()
     }
@@ -228,7 +231,7 @@ internal class FillLetterViewModel(
     private fun candidateFor(lesson: PhonicsLesson, word: LessonWord, umbrella: Set<String>): Candidate? =
         when (val lookup = fillChunkFor(lesson, word, umbrella)) {
             is ChunkLookup.Found -> Candidate(lesson, word, lookup.chunk)
-            ChunkLookup.Umbrella -> null
+            ChunkLookup.Umbrella, ChunkLookup.WholeWord -> null
             is ChunkLookup.Broken -> {
                 Napier.w(tag = TAG) { "Skipping '${word.word}' in ${lesson.id}: ${lookup.reason}" }
                 null
@@ -282,6 +285,8 @@ internal data class FillLetterRound(
     val choices: ImmutableList<String>,
     val tint: Color,
     val wordRef: AudioRef.Word?,
+    /** Tiếng của thẻ đáp án, đọc khi bé chọn đúng — trước tiếng cả từ. */
+    val answerSound: AudioRef? = null,
 )
 
 @Immutable

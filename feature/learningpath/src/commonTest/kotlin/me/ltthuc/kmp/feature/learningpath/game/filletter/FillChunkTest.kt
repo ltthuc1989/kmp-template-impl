@@ -301,6 +301,33 @@ class FillChunkTest {
         assertEquals(FillChunk(label, spans, kind), lookup.chunk, text)
     }
 
+    @Test
+    fun wordThatIsOnlyThePatternIsSkippedNotBlankedWhole() {
+        // `ear` của L5U4: sách tô hồng cả ba chữ nên mảnh pattern là cả từ — che đi thì bé không
+        // còn chữ nào để nhìn. Từ khác của cùng bài vẫn chơi bình thường.
+        val earEer = lesson(
+            "L5U4_ear_eer",
+            "EAR-EER",
+            "ear eer",
+            word("ear", "ear"),
+            word("clear", "cl", "ear", patternIndex = 1),
+        )
+        assertEquals(ChunkLookup.WholeWord, fillChunkFor(earEer, earEer.words.first()))
+        assertChunk(earEer, "clear", "ear", listOf(2..4), ChunkKind.Combo)
+    }
+
+    @Test
+    fun level5ChunkSoundIsKeyedByLesson() {
+        // Cùng thẻ `ear` mà hai bài đọc hai âm: bear /ɛr/, clear /ɪr/. Khoá theo nhãn thì bài sau
+        // đè bài trước; khoá theo bài thì mỗi từ đọc đúng âm của nó.
+        val eaEar = lesson("L5U4_ea_ear", "EA-EAR", "ea ear", soundSpelling = "air")
+        val earEer = lesson("L5U4_ear_eer", "EAR-EER", "ear eer", soundSpelling = "eer")
+        assertEquals(AudioRef.Rime("l5u4_ea_ear_ear"), eaEar.chunkSound("ear"))
+        assertEquals(AudioRef.Rime("l5u4_ear_eer_ear"), earEer.chunkSound("ear"))
+        // Cấp 4 giữ khoá cũ — bộ file đã ship.
+        assertEquals(AudioRef.Rime("c_sss"), lesson("L4U8_soft_c", "C", "c", soundSpelling = "sss").chunkSound("c"))
+    }
+
     private fun chunk(label: String, kind: ChunkKind) = FillChunk(label, listOf(0..0), kind)
 
     /**

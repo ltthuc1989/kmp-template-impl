@@ -2,7 +2,7 @@ package me.ltthuc.kmp.feature.learningpath.game.spellletters
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -47,6 +47,7 @@ import me.ltthuc.kmp.feature.learningpath.game.common.ReadingTextDark
 import me.ltthuc.kmp.feature.learningpath.game.common.gameSegmentsFor
 import me.ltthuc.kmp.feature.learningpath.game.pickword.view.PicturePanel
 import me.ltthuc.kmp.feature.learningpath.game.spellletters.view.DraggableLetterTile
+import me.ltthuc.kmp.feature.learningpath.game.spellletters.view.LETTER_TILE_SIZE
 import me.ltthuc.kmp.feature.learningpath.game.spellletters.view.WordSlot
 import me.ltthuc.kmp.feature.learningpath.step.common.StepHeader
 import org.jetbrains.compose.resources.stringResource
@@ -152,11 +153,16 @@ private fun SpellLettersCanvas(
         }
     }
 
-    Box(modifier = modifier.onGloballyPositioned { boxOrigin = it.boundsInWindow().topLeft }) {
+    BoxWithConstraints(modifier = modifier.onGloballyPositioned { boxOrigin = it.boundsInWindow().topLeft }) {
+        // Cấp 5 có từ 5–6 chữ (`nature`, `famous`): 6 ô 72dp + khe là ~550dp, tràn màn điện
+        // thoại. Hàng ô kéo (khe 14dp, rộng hơn hàng ô trống) là hàng chật nhất nên tính theo nó.
+        val letterCount = ui.currentRound.word.length.coerceAtLeast(1)
+        val tileSize = ((maxWidth - SIDE_PADDING * 2 - TILE_GAP * (letterCount - 1)) / letterCount)
+            .coerceAtMost(LETTER_TILE_SIZE)
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 24.dp, vertical = 12.dp),
+                .padding(horizontal = SIDE_PADDING, vertical = 12.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Text(
@@ -187,6 +193,7 @@ private fun SpellLettersCanvas(
                         WordSlot(
                             letter = char,
                             filled = slotIdx in ui.filledSlots,
+                            tileSize = tileSize,
                             onCenterPositioned = { slotCenters[slotIdx] = it },
                         )
                     }
@@ -196,12 +203,13 @@ private fun SpellLettersCanvas(
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(14.dp, Alignment.CenterHorizontally),
+                    horizontalArrangement = Arrangement.spacedBy(TILE_GAP, Alignment.CenterHorizontally),
                 ) {
                     round.tileOrder.forEachIndexed { tileIdx, letter ->
                         DraggableLetterTile(
                             letter = letter,
                             tint = round.tint,
+                            tileSize = tileSize,
                             isUsed = usedTiles[tileIdx] == true,
                             snapTarget = matchedSnapTargets[tileIdx],
                             onCenterPositioned = { tileOrigins[tileIdx] = it },
@@ -258,3 +266,5 @@ private fun nearestSlot(
 }
 
 private const val SNAP_RADIUS_DP = 80
+private val SIDE_PADDING = 24.dp
+private val TILE_GAP = 14.dp

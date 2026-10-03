@@ -28,6 +28,7 @@ import me.ltthuc.kmp.core.resource.Res
 import me.ltthuc.kmp.core.resource.error_no_data
 import me.ltthuc.kmp.core.ui.screen.ScreenState
 import me.ltthuc.kmp.feature.learningpath.game.bubblepop.view.BUBBLE_TINT_PALETTE
+import me.ltthuc.kmp.feature.learningpath.step.common.level
 import me.ltthuc.kmp.feature.learningpath.step.common.wordRef
 import kotlin.random.Random
 
@@ -40,7 +41,9 @@ import kotlin.random.Random
  *
  * Constraints to keep gameplay clean:
  * - Words must have **unique letters** (so each tile maps unambiguously to one slot).
- * - Word length 3-4 (kid 3-8 can manage; longer is overwhelming).
+ * - Word length 3-4 (kid 3-8 can manage; longer is overwhelming). Level 5 goes up to 6: its
+ *   unit 8 (picture, station, famous…) has no 3-4 letter word at all, and an empty pool is an
+ *   error screen the kid cannot get past (user chose 2026-10-03). Tiles shrink to fit.
  *
  * 3 rounds; each round shuffles tile order.
  */
@@ -181,7 +184,7 @@ internal class SpellLettersViewModel(
         val pool = lessons.flatMap { lesson ->
             lesson.words.filter {
                 val w = it.word.lowercase()
-                w.length in MIN_LEN..MAX_LEN && w.toSet().size == w.length // unique letters only
+                w.length in MIN_LEN..maxLenFor(lesson) && w.toSet().size == w.length // unique letters only
             }.map { lesson to it }
         }
         if (pool.size < ROUND_COUNT) {
@@ -207,6 +210,9 @@ internal class SpellLettersViewModel(
         audio.stop()
     }
 
+    private fun maxLenFor(lesson: PhonicsLesson): Int =
+        if ((lesson.level() ?: 1) >= FIRST_LONG_WORD_LEVEL) MAX_LEN_LONG_WORDS else MAX_LEN
+
     private companion object {
         const val TAG = "SpellLettersViewModel"
         const val SUBSCRIPTION_TIMEOUT_MS = 5_000L
@@ -215,6 +221,10 @@ internal class SpellLettersViewModel(
         const val WRONG_THRESHOLD = 5
         const val MIN_LEN = 3
         const val MAX_LEN = 4
+        const val MAX_LEN_LONG_WORDS = 6
+
+        /** Cấp đầu tiên nhận từ dài tới [MAX_LEN_LONG_WORDS]. */
+        const val FIRST_LONG_WORD_LEVEL = 5
     }
 }
 

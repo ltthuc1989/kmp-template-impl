@@ -4,7 +4,7 @@ import me.ltthuc.kmp.core.audio.AudioRef
 import me.ltthuc.kmp.core.model.LessonWord
 import me.ltthuc.kmp.core.model.PhonicsLesson
 import me.ltthuc.kmp.feature.learningpath.game.common.isMagicERime
-import me.ltthuc.kmp.feature.learningpath.game.common.rimeAudioKey
+import me.ltthuc.kmp.feature.learningpath.game.common.rimeAudioKeyFor
 import me.ltthuc.kmp.feature.learningpath.game.common.wordHasPattern
 import me.ltthuc.kmp.feature.learningpath.step.common.BlendPieceKind
 import me.ltthuc.kmp.feature.learningpath.step.common.blendParts
@@ -55,6 +55,12 @@ internal sealed interface ChunkLookup {
 
     /** Cố ý không chơi: từ chỉ mang vần bao `a_e`/`i_e` (chốt D3). Không phải lỗi. */
     data object Umbrella : ChunkLookup
+
+    /**
+     * Cố ý không chơi: phần bài dạy là CẢ từ (`ear` của L5U4 — sách tô hồng cả ba chữ), che
+     * đi thì không còn chữ nào để đoán (user chốt 2026-10-03). Không phải lỗi.
+     */
+    data object WholeWord : ChunkLookup
 
     /**
      * Dữ liệu không khớp luật. Chỗ gọi PHẢI log — bỏ từ mà im lặng thì bé chỉ thấy ít vòng
@@ -109,7 +115,7 @@ internal fun PhonicsLesson.fillLabels(): List<ChunkLabel> {
  * `e` lẫn `i` mà chỉ `i` là âm ơ — dò chuỗi là khuyết sai âm. Thiếu split → [ChunkLookup.Broken].
  *
  * [umbrella] là các vần bao của unit (xem `umbrellaPatterns`); từ chỉ mang vần bao trả
- * [ChunkLookup.Umbrella].
+ * [ChunkLookup.Umbrella]. Phần khuyết che hết mọi chữ của từ thì trả [ChunkLookup.WholeWord].
  */
 internal fun fillChunkFor(
     lesson: PhonicsLesson,
@@ -118,13 +124,18 @@ internal fun fillChunkFor(
 ): ChunkLookup {
     val lv = lesson.level() ?: 1
     val lower = word.word.lowercase()
-    return when {
+    val lookup = when {
         lv <= 1 -> letterChunk(lesson.letter.trim().lowercase(), lower)
         lv == 2 -> level2Chunk(lesson, lower)
         lv == 3 -> level3Chunk(lesson, lower, umbrella)
         else -> splitChunk(lesson, word, lv)
     }
+    return if (lookup is ChunkLookup.Found && lookup.chunk.coversWholeWord(lower)) ChunkLookup.WholeWord else lookup
 }
+
+/** Mọi chữ cái (bỏ dấu cách) của [word] đều nằm trong phần khuyết. */
+private fun FillChunk.coversWholeWord(word: String): Boolean =
+    word.indices.filter { word[it] != ' ' }.all { i -> spans.any { i in it } }
 
 /**
  * Kho nhiễu cho [answer], chia TẦNG theo thứ tự lấy: hết tầng trên mới xuống tầng dưới.
@@ -170,15 +181,16 @@ internal fun distractorTiers(
  *
  *     cấp 1–2, một chữ    phonemes/<chữ>.mp3      x · a (âm ngắn /æ/)
  *     cấp 1–2, vần        rimes/<vần>.mp3         am · ad
- *     cấp 3+              rimes/<khoá>.mp3        ame · o_e · th · y_eee · c_sss
+ *     cấp 3–4             rimes/<khoá>.mp3        ame · o_e · th · y_eee · c_sss
+ *     cấp 5+              rimes/<bài>_<nhãn>.mp3  l5u4_ea_ear_ear
  *
- * Cấp 3+ đi qua [rimeAudioKey] vì nhãn một chữ ở đó đọc nhiều cách: `y` của L3U5 là /iː/, của
- * L3U6 là /aɪ/; `c` của L4U8 là /s/ chứ không phải /k/ của chữ C cấp 1.
+ * Cấp 3+ đi qua [rimeAudioKeyFor] vì nhãn một chữ ở đó đọc nhiều cách: `y` của L3U5 là /iː/, của
+ * L3U6 là /aɪ/; `c` của L4U8 là /s/ chứ không phải /k/ của chữ C cấp 1. Cấp 5 khoá theo bài.
  */
 internal fun PhonicsLesson.chunkSound(label: String): AudioRef {
     val lv = level() ?: 1
     return when {
-        lv >= FIRST_KEYED_SOUND_LEVEL -> AudioRef.Rime(rimeAudioKey(label, soundSpelling))
+        lv >= FIRST_KEYED_SOUND_LEVEL -> AudioRef.Rime(rimeAudioKeyFor(label))
         label.length == 1 -> AudioRef.LetterSound(label)
         else -> AudioRef.Rime(label)
     }
@@ -298,7 +310,7 @@ private fun PhonicsLesson.displayTokens(): List<String> =
 private const val VOWELS = "aeiou"
 private const val LONG_LABEL_MIN_LETTERS = 3
 
-/** Cấp đầu tiên mà tiếng thẻ tra theo khoá của [rimeAudioKey] — cùng mốc với khoá đó. */
+/** Cấp đầu tiên mà tiếng thẻ tra theo khoá của [rimeAudioKeyFor] — cùng mốc với khoá đó. */
 private const val FIRST_KEYED_SOUND_LEVEL = 3
 
 /** Cấp cuối cùng mà `lessonPatterns` đọc đúng mã `letter`. */

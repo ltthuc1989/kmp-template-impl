@@ -576,6 +576,282 @@
       "piece": "dig_s_voiced.mp3",
       "from_word": "rose",
       "level": 4
+    },
+    "l5u1_ar_ar": {
+      "source": "sound_bank",
+      "piece": "vowel_ar.mp3",
+      "from_word": "car",
+      "level": 5
+    },
+    "l5u1_ir_ur_ir": {
+      "source": "sound_bank",
+      "piece": "vowel_er_stressed.mp3",
+      "from_word": "bird",
+      "level": 5
+    },
+    "l5u1_ir_ur_ur": {
+      "source": "sound_bank",
+      "piece": "vowel_er_stressed.mp3",
+      "from_word": "nurse",
+      "level": 5
+    },
+    "l5u1_er_or_er": {
+      "source": "sound_bank",
+      "piece": "vowel_er_weak.mp3",
+      "from_word": "teacher",
+      "level": 5
+    },
+    "l5u1_er_or_or": {
+      "source": "sound_bank",
+      "piece": "vowel_er_weak.mp3",
+      "from_word": "doctor",
+      "level": 5
+    },
+    "l5u2_ou_ow_ou": {
+      "source": "sound_bank",
+      "piece": "vowel_ow.mp3",
+      "from_word": "mouse",
+      "level": 5
+    },
+    "l5u2_ou_ow_ow": {
+      "source": "sound_bank",
+      "piece": "vowel_ow.mp3",
+      "from_word": "cow",
+      "level": 5
+    },
+    "l5u2_oi_oy_oi": {
+      "source": "sound_bank",
+      "piece": "vowel_oy.mp3",
+      "from_word": "coin",
+      "level": 5
+    },
+    "l5u2_oi_oy_oy": {
+      "source": "sound_bank",
+      "piece": "vowel_oy.mp3",
+      "from_word": "toy",
+      "level": 5
+    },
+    "l5u2_oo_u_oo": {
+      "source": "sound_bank",
+      "piece": "vowel_oo_short.mp3",
+      "from_word": "book",
+      "level": 5
+    },
+    "l5u2_oo_u_u": {
+      "source": "sound_bank",
+      "piece": "vowel_oo_short.mp3",
+      "from_word": "bush",
+      "level": 5
+    },
+    "l5u3_au_aw_au": {
+      "source": "sound_bank",
+      "piece": "vowel_aw.mp3",
+      "from_word": "sauce",
+      "level": 5
+    },
+    "l5u3_au_aw_aw": {
+      "source": "sound_bank",
+      "piece": "vowel_aw.mp3",
+      "from_word": "prawn",
+      "level": 5
+    },
+    "l5u3_all_wa_all": {
+      "source": "sound_bank",
+      "piece": "rime_all.mp3",
+      "from_word": "ball",
+      "level": 5
+    },
+    "l5u3_all_wa_wa": {
+      "source": "sound_bank",
+      "piece": "onset_wa.mp3",
+      "from_word": "water",
+      "level": 5
+    },
+    "l5u3_or_oar_or": {
+      "source": "sound_bank",
+      "piece": "vowel_or.mp3",
+      "from_word": "horse",
+      "level": 5
+    },
+    "l5u3_or_oar_oar": {
+      "source": "sound_bank",
+      "piece": "vowel_or.mp3",
+      "from_word": "roar",
+      "level": 5
+    },
+    "l5u4_are_air_are": {
+      "source": "sound_bank",
+      "piece": "vowel_air.mp3",
+      "from_word": "square",
+      "level": 5
+    },
+    "l5u4_are_air_air": {
+      "source": "sound_bank",
+      "piece": "vowel_air.mp3",
+      "from_word": "chair",
+      "level": 5
+    },
+    "l5u4_ea_ear_ea": {
+      "source": "sound_bank",
+      "piece": "vowel_e.mp3",
+      "from_word": "bread",
+      "level": 5
+    },
+    "l5u4_ea_ear_ear": {
+      "source": "sound_bank",
+      "piece": "vowel_air.mp3",
+      "from_word": "bear",
+      "level": 5
+    },
+    "l5u4_ear_eer_ear": {
+      "source": "sound_bank",
+      "piece": "vowel_eer.mp3",
+      "from_word": "ear",
+      "level": 5
+    },
+    "l5u4_ear_eer_eer": {
+      "source": "sound_bank",
+      "piece": "vowel_eer.mp3",
+      "from_word": "deer",
+      "level": 5
+    },
+    "l5u5_a_open_a": {
+      "source": "sound_bank",
+      "piece": "vowel_long_a.mp3",
+      "from_word": "acorn",
+      "level": 5
+    },
+    "l5u5_e_i_open_e": {
+      "source": "sound_bank",
+      "piece": "vowel_long_e.mp3",
+      "from_word": "he",
+      "level": 5
+    },
+    "l5u5_e_i_open_i": {
+      "source": "sound_bank",
+      "piece": "vowel_long_i.mp3",
+      "from_word": "tiger",
+      "level": 5
+    },
+    "l5u5_o_u_open_o": {
+      "source": "sound_bank",
+      "piece": "vowel_long_o.mp3",
+      "from_word": "cold",
+      "level": 5
+    },
+    "l5u5_o_u_open_u": {
+      "source": "sound_bank",
+      "piece": "vowel_long_u.mp3",
+      "from_word": "uniform",
+      "level": 5
+    },
+    "l5u6_schwa_a_a": {
+      "source": "sound_bank",
+      "piece": "schwa.mp3",
+      "from_word": "panda",
+      "level": 5
+    },
+    "l5u6_schwa_eiou_e": {
+      "source": "sound_bank",
+      "piece": "schwa.mp3",
+      "from_word": "chicken",
+      "level": 5
+    },
+    "l5u6_schwa_eiou_i": {
+      "source": "sound_bank",
+      "piece": "schwa.mp3",
+      "from_word": "pencil",
+      "level": 5
+    },
+    "l5u6_schwa_eiou_o": {
+      "source": "sound_bank",
+      "piece": "schwa.mp3",
+      "from_word": "lemon",
+      "level": 5
+    },
+    "l5u6_schwa_eiou_u": {
+      "source": "sound_bank",
+      "piece": "schwa.mp3",
+      "from_word": "surprise",
+      "level": 5
+    },
+    "l5u6_schwa_o_o": {
+      "source": "sound_bank",
+      "piece": "schwa.mp3",
+      "from_word": "monkey",
+      "level": 5
+    },
+    "l5u7_kn_wr_kn": {
+      "source": "sound_bank",
+      "piece": "onset_n.mp3",
+      "from_word": "knife",
+      "level": 5
+    },
+    "l5u7_kn_wr_wr": {
+      "source": "sound_bank",
+      "piece": "onset_r.mp3",
+      "from_word": "write",
+      "level": 5
+    },
+    "l5u7_mb_e_mb": {
+      "source": "sound_bank",
+      "piece": "coda_m_pure.mp3",
+      "from_word": "lamb",
+      "level": 5
+    },
+    "l5u7_mb_e_ve": {
+      "source": "sound_bank",
+      "piece": "coda_v_pure.mp3",
+      "from_word": "glove",
+      "level": 5
+    },
+    "l5u7_rh_st_rh": {
+      "source": "sound_bank",
+      "piece": "onset_r.mp3",
+      "from_word": "rhino",
+      "level": 5
+    },
+    "l5u7_rh_st_st": {
+      "source": "sound_bank",
+      "piece": "coda_s_pure.mp3",
+      "from_word": "whistle",
+      "level": 5
+    },
+    "l5u8_ture_sure_ture": {
+      "source": "sound_bank",
+      "piece": "suffix_ture.mp3",
+      "from_word": "picture",
+      "level": 5
+    },
+    "l5u8_ture_sure_sure": {
+      "source": "sound_bank",
+      "piece": "suffix_sure.mp3",
+      "from_word": "treasure",
+      "level": 5
+    },
+    "l5u8_tion_sion_tion": {
+      "source": "sound_bank",
+      "piece": "suffix_tion.mp3",
+      "from_word": "station",
+      "level": 5
+    },
+    "l5u8_tion_sion_sion": {
+      "source": "sound_bank",
+      "piece": "suffix_sion.mp3",
+      "from_word": "television",
+      "level": 5
+    },
+    "l5u8_ous_ful_ous": {
+      "source": "sound_bank",
+      "piece": "suffix_ous.mp3",
+      "from_word": "famous",
+      "level": 5
+    },
+    "l5u8_ous_ful_ful": {
+      "source": "sound_bank",
+      "piece": "suffix_ful.mp3",
+      "from_word": "beautiful",
+      "level": 5
     }
   }
 }

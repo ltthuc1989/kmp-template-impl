@@ -32,7 +32,9 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
@@ -58,6 +60,7 @@ internal fun DraggableLetterTile(
     onCenterPositioned: (Offset) -> Unit,
     onDragEnd: (currentCenter: Offset) -> Boolean,
     modifier: Modifier = Modifier,
+    tileSize: Dp = LETTER_TILE_SIZE,
 ) {
     val dragOffset = remember { Animatable(Offset.Zero, Offset.VectorConverter) }
     val scale = remember { Animatable(1f) }
@@ -75,7 +78,7 @@ internal fun DraggableLetterTile(
 
     Box(
         modifier = modifier
-            .size(72.dp)
+            .size(tileSize)
             .onGloballyPositioned { coords ->
                 val pos = coords.positionInWindow()
                 val size = coords.size
@@ -129,7 +132,7 @@ internal fun DraggableLetterTile(
         Text(
             text = letter.toString(),
             fontFamily = LocalPhonicsFontFamily.current,
-            fontSize = 36.sp,
+            fontSize = letterFontSize(tileSize),
             fontWeight = FontWeight.ExtraBold,
             color = ReadingTextDark,
         )
@@ -147,12 +150,13 @@ internal fun WordSlot(
     filled: Boolean,
     onCenterPositioned: (Offset) -> Unit,
     modifier: Modifier = Modifier,
+    tileSize: Dp = LETTER_TILE_SIZE,
 ) {
     val shape = RoundedCornerShape(14.dp)
     var lastReportedCenter by remember { mutableStateOf(Offset.Zero) }
     Box(
         modifier = modifier
-            .size(72.dp)
+            .size(tileSize)
             .onGloballyPositioned { coords ->
                 val pos = coords.positionInWindow()
                 val size = coords.size
@@ -171,10 +175,16 @@ internal fun WordSlot(
             Text(
                 text = letter.toString(),
                 fontFamily = LocalPhonicsFontFamily.current,
-                fontSize = 36.sp,
+                fontSize = letterFontSize(tileSize),
                 fontWeight = FontWeight.ExtraBold,
                 color = ReadingTextDark,
             )
         }
     }
 }
+
+/** Cỡ ô chữ chuẩn — từ 3–4 chữ luôn đủ chỗ ở cỡ này. */
+internal val LETTER_TILE_SIZE: Dp = 72.dp
+
+/** Chữ co theo ô, giữ đúng tỉ lệ 36sp trên ô 72dp. */
+private fun letterFontSize(tileSize: Dp): TextUnit = (36f * tileSize.value / LETTER_TILE_SIZE.value).sp

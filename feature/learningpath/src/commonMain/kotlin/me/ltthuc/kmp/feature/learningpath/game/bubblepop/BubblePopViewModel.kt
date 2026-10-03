@@ -312,7 +312,14 @@ internal class BubblePopViewModel(
         const val TICK_MS = 100L
         const val TARGET_POOL = 10
         const val ROUND_START_DELAY_MS = 500L
-        const val GUIDE_AUDIO_MAX_MS = 4_000L
+
+        /**
+         * Trần chờ câu hỏi đầu vòng — chỉ để file hỏng không treo vòng chơi, KHÔNG phải nhịp.
+         * Phải dài hơn câu dài nhất: câu ghép "Can you find thee … sound?" cấp 3 là 5.2s, cấp 5
+         * tới 5.6s. Trần 4s cũ hết giờ giữa câu, rồi tiếng vần của thẻ (phát sau [REVEAL_DELAY_MS])
+         * chiếm kênh và cắt mất chữ "sound?".
+         */
+        const val GUIDE_AUDIO_MAX_MS = 7_000L
 
         /** Nghỉ giữa lúc câu hỏi dứt và lúc thẻ vần hiện ra. */
         const val REVEAL_DELAY_MS = 1_000L

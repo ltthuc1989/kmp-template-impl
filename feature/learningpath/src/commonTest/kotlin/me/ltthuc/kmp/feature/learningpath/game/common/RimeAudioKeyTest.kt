@@ -50,4 +50,14 @@ class RimeAudioKeyTest {
         assertEquals("y", rimeAudioKey("y", ""))
         assertEquals("y", rimeAudioKey("y", "   "))
     }
+
+    @Test
+    fun `cấp 5 khoá theo mã bài`() {
+        // Bốn nhãn trùng file cấp 3/4 đã ship (ow oo ea st) và hai nhãn hai âm trong cấp (or, ear).
+        assertEquals("l5u2_ou_ow_ow", lessonRimeAudioKey("L5U2_ou_ow", "ow"))
+        assertEquals("l5u1_er_or_or", lessonRimeAudioKey("L5U1_er_or", "or"))
+        assertEquals("l5u3_or_oar_or", lessonRimeAudioKey("L5U3_or_oar", "or"))
+        assertEquals("l5u5_e_i_open_e", lessonRimeAudioKey("L5U5_e_i_open", "e"))
+        assertEquals("l5u7_rh_st_st", lessonRimeAudioKey(" L5U7_rh_st ", " ST "))
+    }
 }

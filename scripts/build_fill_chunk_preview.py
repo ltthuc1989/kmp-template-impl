@@ -35,15 +35,17 @@ CURRICULUM = ROOT / "core/resource/src/commonMain/composeResources/files/curricu
 VOWELS = "aeiou"
 MIN_WORD_LEN = 3
 
-# L5 chưa có bảng tách: phép dò chuỗi ra SAI vị trí ở những từ này (soát tay 2026-09-17).
-# Chính là bằng chứng L5 phải có cột split như L4 trước khi bật game.
-L5_KNOWN_WRONG = {
-    "tiger": "phải khuyết i (ti·ger), dò ra e",
-    "uniform": "phải khuyết u đầu từ, dò ra o",
-    "panda": "phải khuyết a CUỐI (âm ơ), dò ra a đầu (âm a ngắn)",
-    "pencil": "phải khuyết i (âm ơ), dò ra e",
-    "lemon": "phải khuyết o (âm ơ), dò ra e",
-    "surprise": "phải khuyết u (sur·prise), dò ra e câm cuối",
+# Sáu từ cấp 5 mà phép DÒ CHUỖI (đường cũ, trước khi có cột split) khuyết sai chỗ — soát
+# tay 2026-09-17, và chính là bằng chứng đòi cột split. Cột split đã có 2026-09-24 nên
+# đường dò đã bỏ; giữ bảng này làm PHÉP KIỂM NGƯỢC: chỗ khuyết bây giờ phải KHÁC chỗ mà
+# phép dò cũ ra. Chữ thứ hai là chữ đúng phải khuyết.
+L5_SPLIT_FIXED = {
+    "tiger": "i",
+    "uniform": "u",
+    "panda": "a",
+    "pencil": "i",
+    "lemon": "o",
+    "surprise": "u",
 }
 CHOICES = 4
 
@@ -188,7 +190,20 @@ def word_index_map(word: str):
 
 
 def chunk_for_word(lesson, w, level, umbrella):
-    """(label, spans, note) hoặc (None, None, lý do loại)."""
+    """(label, spans, note) hoặc (None, None, lý do loại).
+
+    Phần khuyết che HẾT chữ của từ (`ear` của L5U4) thì loại — bản port của
+    `ChunkLookup.WholeWord` trong `FillChunk.fillChunkFor` (user chốt 2026-10-03).
+    """
+    label, spans, note = _chunk_for_word(lesson, w, level, umbrella)
+    if label is not None:
+        letters = [i for i, c in enumerate(w["word"]) if c != " "]
+        if all(any(a <= i < b for a, b in spans) for i in letters):
+            return None, None, "phần bài dạy là cả từ — che hết không còn gì để đoán"
+    return label, spans, note
+
+
+def _chunk_for_word(lesson, w, level, umbrella):
     word = w["word"]
     lw = word.lower()
     if level == 1:
@@ -223,27 +238,24 @@ def chunk_for_word(lesson, w, level, umbrella):
                 if kind == "Vowel" and lab == p:
                     return p, spans, None
         return None, None, f"blendParts không ra {'/'.join(pats)}"
-    if level == 4:
-        split, pi = w.get("split"), w.get("patternIndex")
-        if not split or pi is None or pi >= len(split):
-            return None, None, "thiếu bảng tách split"
-        if "".join(split).lower() != lw.replace(" ", ""):
-            return None, None, "split ghép lại không ra từ"
-        pats = parse_patterns(lesson["letter"], 4)
-        chunk = split[pi].lower()
-        pat = next((p for p in sorted(pats, key=len, reverse=True) if p in chunk), None)
-        if pat is None:
-            return None, None, f"mảnh '{chunk}' không chứa {'/'.join(pats)}"
-        off = sum(len(c) for c in split[:pi]) + chunk.find(pat)
-        idx = word_index_map(word)
-        return pat, [(idx[off], idx[off + len(pat) - 1] + 1)], None
-    # L5 — tạm: vần dài nhất xuất hiện đầu tiên. KHÔNG phải luật ship, chỉ để thấy chỗ vỡ.
-    pats = [p for p in lesson["displayLetter"].strip().lower().split() if p]
-    for p in sorted(pats, key=len, reverse=True):
-        i = lw.find(p)
-        if i >= 0:
-            return p, [(i, i + len(p))], "tạm (chưa có split)"
-    return None, None, f"không thấy {'/'.join(pats)}"
+    # Cấp 4+ đọc BẢNG TÁCH, không dò chuỗi — bản port của `FillChunk.splitChunk`.
+    # Cấp 5 lấy pattern từ `displayLetter` chứ không từ mã `letter`: mã của nó
+    # (`A-1`, `E-I-O-U-2`) parse ra đúng nhưng `displayLetter` mới là chữ trên màn hình,
+    # và `FillChunk.displayTokens()` cũng đi đường đó (`LAST_CODE_PATTERN_LEVEL = 4`).
+    split, pi = w.get("split"), w.get("patternIndex")
+    if not split or pi is None or pi >= len(split):
+        return None, None, "thiếu bảng tách split"
+    if "".join(split).lower() != lw.replace(" ", ""):
+        return None, None, "split ghép lại không ra từ"
+    pats = (parse_patterns(lesson["letter"], level) if level <= 4
+            else [p for p in lesson["displayLetter"].strip().lower().split() if p])
+    chunk = split[pi].lower()
+    pat = next((p for p in sorted(pats, key=len, reverse=True) if p in chunk), None)
+    if pat is None:
+        return None, None, f"mảnh '{chunk}' không chứa {'/'.join(pats)}"
+    off = sum(len(c) for c in split[:pi]) + chunk.find(pat)
+    idx = word_index_map(word)
+    return pat, [(idx[off], idx[off + len(pat) - 1] + 1)], None
 
 
 def apply(word: str, spans, label: str) -> str:
@@ -395,8 +407,12 @@ def build(seed: int = 7):
                 flags = []
                 if spans[0][0] == 0 and spans[-1][1] == len(word):
                     flags.append({"kind": "crit", "text": "khuyết cả từ — không còn chữ nào để đoán"})
-                if lv == 5 and word.lower() in L5_KNOWN_WRONG:
-                    flags.append({"kind": "crit", "text": L5_KNOWN_WRONG[word.lower()]})
+                if lv == 5 and word.lower() in L5_SPLIT_FIXED:
+                    want = L5_SPLIT_FIXED[word.lower()]
+                    got = word[spans[0][0]:spans[-1][1]].lower()
+                    if got != want:
+                        flags.append({"kind": "crit",
+                                      "text": f"phải khuyết '{want}', đang khuyết '{got}'"})
                 if sum(1 for x in all_words if x.lower() == word.lower()) > 1:
                     flags.append({"kind": "warn", "text": "từ có 2 lần trong unit — vòng có thể lặp"})
                 if any(t.get("otherKind") for t in tiers):
