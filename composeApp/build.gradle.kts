@@ -46,6 +46,13 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            // RevenueCat's Amazon store module ships `-dontoptimize`, which disables R8 optimization
+            // for the whole app (Play Console "DEX optimization 0%"). Its safe rules live in proguard-rules.pro.
+            optimization {
+                keepRules {
+                    ignoreFrom("com.revenuecat.purchases:purchases-store-amazon")
+                }
+            }
         }
         debug {
             signingConfig = signingConfigs.getByName("debug")
