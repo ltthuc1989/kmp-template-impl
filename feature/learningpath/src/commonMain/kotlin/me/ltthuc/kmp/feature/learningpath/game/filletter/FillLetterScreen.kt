@@ -1,8 +1,6 @@
 package me.ltthuc.kmp.feature.learningpath.game.filletter
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -77,10 +75,7 @@ internal fun FillLetterScreen(
     }
     val stepSegments = remember(totalGames) { gameSegmentsFor(totalGames) }
 
-    // The round's word waits for the narrator — two voices at once is noise to a 4-year-old.
-    // Flips immediately when voice is off, so a muted parent's child isn't left waiting.
-    var guideDone by remember { mutableStateOf(false) }
-    ScreenVoicePrompt("vp_game_fill") { guideDone = true }
+    ScreenVoicePrompt("vp_game_fill")
 
     AsyncLoadContents(
         modifier = modifier.fillMaxSize(),
@@ -94,15 +89,6 @@ internal fun FillLetterScreen(
                 // Cùng nhịp nghỉ sau tiếng cả từ như giữa các vòng (user chốt 1s, 2026-10-03).
                 delay(GAME_END_PAUSE_MS)
                 onGameComplete()
-            }
-        }
-
-        // Speak each round's word once it is on screen: a distractor often spells another real word
-        // (`c_` + at = cat under a picture of a cap), and hearing "cap" is what settles it.
-        LaunchedEffect(ui.currentRoundIndex, guideDone) {
-            if (guideDone && !ui.isComplete) {
-                delay(ROUND_WORD_DELAY_MS)
-                viewModel.playRoundWord()
             }
         }
 
@@ -155,17 +141,13 @@ internal fun FillLetterScreen(
                     Spacer(Modifier.height(12.dp))
 
                     val round = ui.currentRound
-                    val pictureTap = remember { MutableInteractionSource() }
+                    // Không đọc từ khi vào vòng, cũng không cho chạm hình để nghe: nghe cả từ là lộ
+                    // đáp án — bé phải tự tìm vần. Từ chỉ đọc SAU khi chọn đúng (user chốt 2026-10-03).
                     PicturePanel(
                         word = round.picture,
                         modifier = Modifier
                             .fillMaxWidth(fraction = 0.45f)
-                            .aspectRatio(1f)
-                            .clickable(
-                                interactionSource = pictureTap,
-                                indication = null,
-                                onClick = viewModel::playRoundWord,
-                            ),
+                            .aspectRatio(1f),
                     )
                     Spacer(Modifier.height(24.dp))
                     WordWithBlank(
@@ -218,9 +200,6 @@ internal fun FillLetterScreen(
         }
     }
 }
-
-/** Beat between a new round appearing and its word being spoken. */
-private const val ROUND_WORD_DELAY_MS = 400L
 
 /** Nghỉ sau tiếng cả từ của vòng cuối rồi mới sang game kế. */
 private const val GAME_END_PAUSE_MS = 1_000L

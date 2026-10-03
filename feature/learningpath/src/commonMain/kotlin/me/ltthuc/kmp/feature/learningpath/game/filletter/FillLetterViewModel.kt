@@ -41,9 +41,9 @@ import kotlin.random.Random
  * (chốt 2026-09-17): same kind and same length group as the answer, borrowed from earlier units
  * when this unit runs short. Needs the whole curriculum for that, hence [UnitRepository.observeCurriculum].
  *
- * The word is spoken when each round starts (the screen calls [playRoundWord] once the narrator
- * is done): a distractor often spells another real word (`c_` + at = cat under a picture of a
- * cap), and hearing "cap" is what settles it.
+ * The word is spoken ONLY after the right chunk is picked (chunk sound, then the whole word) —
+ * never at round start or on a picture tap: hearing the word gives the answer away, and the kid
+ * has to find the chunk from the picture alone (user chốt 2026-10-03).
  */
 internal class FillLetterViewModel(
     private val unitId: String,
@@ -133,14 +133,6 @@ internal class FillLetterViewModel(
                 stateFlow.value = state.copy(lastWrongPick = choice, wrongCount = newWrongCount)
             }
         }
-    }
-
-    /** Speaks the current round's word — on round start, and again whenever the kid taps the picture. */
-    fun playRoundWord() {
-        val state = stateFlow.value
-        if (state.isResolving || state.isComplete) return
-        val ref = roundsFlow.value.getOrNull(state.currentRoundIndex)?.wordRef ?: return
-        audio.play(ref)
     }
 
     private fun triggerAdvance(state: InternalState, rounds: ImmutableList<FillLetterRound>) {
