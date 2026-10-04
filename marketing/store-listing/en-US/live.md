@@ -9,8 +9,8 @@
 |---|---|
 | Package | `com.beely.phonicskids` |
 | URL | https://play.google.com/store/apps/details?id=com.beely.phonicskids&hl=en_US |
-| Store "Updated on" | Jun 25, 2026 |
-| Snapshot fetched | 2026-08-17 |
+| Store "Updated on" | Sep 24, 2026 |
+| Snapshot fetched | 2026-10-04 |
 | Badge: in-app purchases | ✅ shown |
 | Badge: contains ads | ✅ not shown |
 
@@ -20,34 +20,51 @@
 ABC Phonics Kids
 ```
 
-## Short description (66 chars)
+## Short description (59 chars)
 
 ```
-Phonics English for kids 3-8 — 488+ words, 8 stories, 6 mini-games
+Learn to read English sound by sound — ages 3-8, 24 stories
 ```
 
-## Long description (1055 chars)
+## Long description (1959 chars)
 
 ```
-Phonics Kids — the ad-free way for kids 3-8 to learn to read English with phonics. 488+ words, 8 stories, 6 mini-games.
+Phonics Kids — kids 3-8 learn to read English, one sound at a time. No ads, ever. 488+ words, 24 stories, 6 mini-games.
 
-Phonics Kids helps kids ages 3-8 learn to read English through the proven phonics method. Master the alphabet A-Z, sound out words, and read 8 narrated stories — all reinforced by 6 engaging mini-games after every story.
+Reading English starts with sounds, not spellings. Phonics Kids teaches your child the sound each letter makes, then how to push those sounds together into a word — the way schools in the UK and US teach reading. The goal is a child who can work out a word nobody has read to them first. Built for preschool, kindergarten and first-grade readers, at home or learning English as a second language.
 
 🌟 WHAT KIDS LEARN
-✓ Alphabet A-Z with native pronunciation
-✓ 488+ vocabulary words with audio
-✓ 8 stories — words light up as the narrator reads (karaoke style)
-✓ Smart letter tracing — app scores stroke accuracy
+✓ 488+ words, every one read aloud
+✓ 24 stories — each word lights up as the narrator says it
+
+📖 LEVEL 1: THE ALPHABET
+✓ All 26 letters, A to Z
+✓ Not just the ABC song — kids learn the sound each letter makes
+✓ Kids trace each letter and the app checks every stroke
+✓ 8 stories built from the letters just learned
+
+📖 LEVEL 2: SHORT VOWELS
+✓ The a in cat, the e in bed, the i in big, the o in hot, the u in cup
+✓ Kids say the sounds and push them together out loud: c - a - t, cat
+✓ Change one letter, read the whole group: cat, hat, bat, mat
+✓ Kids trace the whole word — "cat", not just "c"
+✓ 8 new stories, every word already learned
+
+📖 LEVEL 3: LONG VOWELS
+✓ Kids read longer words: cake, home, happy, blue, moon
+✓ One sound, several spellings — rain or day, kids read both right
+✓ 96 new words across 24 lessons
+✓ 8 new stories — kids read them on their own
 
 🎮 6 MINI-GAMES per unit
 Bubble Pop • Memory Match • Fill Letter • Pick Word • Spell Letters • Drag Words
 
-📚 PHONICS METHOD
-Built on synthetic phonics — kids learn phoneme-grapheme correspondences, blending sounds into words, and decoding English. The method used by UK National Curriculum and US Common Core schools.
+📚 HOW IT TEACHES
+One sound at a time, in the order schools use. Kids learn the sound each letter makes, then push those sounds together into a word. Nothing is memorised by its shape — every word is worked out. It is the method behind the UK National Curriculum and US Common Core.
 
 👨‍👩‍👧 KID-SAFE
-✓ 100% COPPA-compliant — no personal data collected
-✓ Ad-free — no banner, no rewarded ads, ever
-✓ No sign-up, no email, no account needed
-✓ Works completely offline
+✓ No ads — no banners, no video ads, ever
+✓ No sign-up, no email, no account
+✓ No personal data collected (COPPA)
+✓ Works offline after a one-time download
 ```

@@ -1,12 +1,21 @@
 # Play Store Listing — Vietnam (vi-VN) — PRIMARY MARKET
 
-⚠️ **Mốc 3 draft.** So với [live.md](live.md) trước khi paste vào Play Console.
-Refresh snapshot trước: `python3 marketing/store-listing/fetch-live.py vi-VN`.
+⚠️ **Bản nháp Mốc 4 — thêm Level 4 và Level 5.** So với [live.md](live.md) trước khi paste
+vào Play Console. Refresh snapshot trước: `python3 marketing/store-listing/fetch-live.py vi-VN`.
 
-**Live vẫn là bản thời Level 1.** Bản nháp Mốc 2 (khối Level 2) viết xong nhưng chưa bao giờ
-paste — `live.md` (fetch 2026-08-17, store "Cập nhật" 25 thg 6 2026) vẫn ghi `8 truyện` và
-không có khối level nào. Bản này là **một lần paste, thêm cả Level 2 lẫn Level 3 và viết lại
-toàn bộ chữ cho dễ hiểu.**
+**Live đang là bản Mốc 3 (L1–L3)** — `live.md` fetch 2026-10-04, store "Cập nhật" 24 thg 9
+2026; long description khớp từng chữ với bản nháp Mốc 3. Short description lên live đã bỏ
+`, không quảng cáo`, bản này giữ như live. Lần này chỉ đổi: thêm khối `LEVEL 4` và
+`LEVEL 5`, thêm dòng `5 level`, và `24 truyện` → `40 truyện` ở short description, câu mở
+và mục `BÉ HỌC GÌ`. Phần còn lại giữ nguyên.
+
+Khối L4, L5 theo đúng luật của L2/L3 bên dưới: âm nào cũng đi kèm một từ chứa nó, từ nào
+cũng đã soát có thật trong đúng level đó của `curriculum.json`.
+
+**Mốc 4 vòng 2 (chủ app, 2026-10-04): L4, L5 chỉ nói bé đọc được gì, bỏ phần giảng luật.**
+Bản nháp đầu của L4/L5 giảng luật chính tả (`fr trong frog`, `sh trong fish`,
+`c trong cat và city`, đuôi từ) — chủ app thấy khó hiểu. Giờ L4/L5 chỉ liệt kê từ ví dụ, cộng
+dòng chữ câm in mờ. **L1–L3 và mọi mục khác giữ nguyên** — giống hệt bản live.
 
 **Bỏ nguyên tắc minimal-diff.** Mốc 2 cố giữ chữ của bản live. Giữ như thế là giữ luôn một
 lỗi thật: cả bài **gọi tên âm chứ không chỉ vào âm**, nên phụ huynh chưa đọc được tiếng Anh
@@ -50,10 +59,10 @@ là `ABC Phonics Kids`, không cần build lại. Các locale khác cũng giữ 
 ⚠️ **Vừa đúng 30/30 ký tự, không còn dư chỗ nào.** Thêm bất cứ thứ gì cũng bị Play từ chối;
 muốn sửa thì phải bớt chỗ khác trước.
 
-## Short description (72 chars) — ĐỔI
+## Short description (55 chars) — ĐỔI (24 → 40 truyện)
 
 ```
-Học đọc tiếng Anh cho bé 3-8 — bắt đầu từ âm, 24 truyện, không quảng cáo
+Học đọc tiếng Anh cho bé 3-8 — bắt đầu từ âm, 40 truyện
 ```
 
 Bỏ chữ `phonics` ở đây vì tên app đã mang sẵn, mà Play index tên app chung với short
@@ -63,13 +72,14 @@ description. `bắt đầu từ âm` nói đúng thứ app làm, bằng chữ ph
 ## Long description
 
 ```
-Phonics Kids — bé 3-8 tuổi học đọc tiếng Anh, từng âm một. Không quảng cáo. 488+ từ, 24 truyện, 6 mini-game.
+Phonics Kids — bé 3-8 tuổi học đọc tiếng Anh, từng âm một. Không quảng cáo. 5 level, 488+ từ, 40 truyện, 6 mini-game.
 
 Đọc tiếng Anh bắt đầu từ âm, không phải từ mặt chữ. Phonics Kids dạy bé âm của từng chữ cái, rồi dạy cách ghép các âm đó lại thành từ — đúng cách trường học ở Anh và Mỹ đang dạy. Đích đến là bé tự đọc được một từ chưa ai đọc cho nghe bao giờ.
 
 🌟 BÉ HỌC GÌ
+✓ 5 level — từ A đến Z cho tới những từ dài như television
 ✓ 488+ từ, từ nào cũng có tiếng đọc
-✓ 24 truyện — chữ sáng lên theo lời người kể
+✓ 40 truyện — chữ sáng lên theo lời người kể
 
 📖 LEVEL 1: BẢNG CHỮ CÁI
 ✓ Trọn 26 chữ, từ A đến Z
@@ -89,6 +99,17 @@ Phonics Kids — bé 3-8 tuổi học đọc tiếng Anh, từng âm một. Khô
 ✓ Cùng một âm mà viết nhiều kiểu — rain hay day, bé đều đọc đúng
 ✓ 96 từ mới trong 24 bài học
 ✓ 8 truyện mới — bé tự đọc, bố mẹ không phải đọc hộ
+
+📖 LEVEL 4: PHỤ ÂM GHÉP
+✓ Bé đọc được những từ khó hơn: frog, snake, fish, three, splash
+✓ 96 từ mới trong 24 bài học
+✓ 8 truyện mới
+
+📖 LEVEL 5: CHỮ GHÉP VÀ TỪ DÀI
+✓ Bé đọc được từ dài: banana, umbrella, television
+✓ Âm câm như k trong knife, w trong write — app in mờ để bé dễ nhận ra
+✓ 96 từ mới trong 24 bài học
+✓ 8 truyện mới
 
 🎮 6 MINI-GAME mỗi unit
 Bong Bóng Vỡ • Lật Thẻ Memory • Điền Chữ • Chọn Từ • Ghép Chữ • Kéo Thả Từ
@@ -124,17 +145,14 @@ Giống hệt cách bé đánh vần tiếng Việt — "bờ - a - ba" — ch�
 
 ## Rủi ro đã biết, chủ app chấp nhận
 
-`488+ từ` là tổng word entry của cả 5 level, nhưng mới ship L1–L3 — `LevelRepository.kt:31`
-(`LAUNCHED_PREMIUM_LEVELS = setOf("L2", "L3")`) hiển thị L4–L5 là Coming Soon và chưa có
-asset audio/ảnh. Thật sự chơi được: **264 từ unique** (104 ở L1 + 94 ở L2 + 96 ở L3, trùng
-30). Store có badge "Mua hàng trong ứng dụng", nên con số bị thổi phồng nằm ngay cạnh một
-sản phẩm trả phí.
+`488+ từ` là tổng word **entry** của cả 5 level. Từ Mốc 4 cả 5 level đều đã ship
+(`LevelRepository.kt:39` → `LAUNCHED_PREMIUM_LEVELS = setOf("L2", "L3", "L4", "L5")`), nên
+không còn từ nào nằm sau "Coming Soon". Khoảng hở duy nhất còn lại là từ lặp: 488 entry =
+**426 từ unique** (62 từ xuất hiện ở hơn một level).
 
-Level 3 kéo khoảng cách lại đáng kể — Mốc 2 mới 176/488, giờ 264/488.
-
-Quyết định: giữ `488+`. Xem lại nếu Play tuýt còi hoặc review than thiếu nội dung. Nếu buộc
-phải đổi thì `264 từ` là con số bảo vệ được, và 2 dòng cần sửa là câu mở với bullet
-`✓ 488+ từ, từ nào cũng có tiếng đọc`.
+Quyết định: giữ `488+` (chủ app, Mốc 3). Rủi ro giờ nhỏ hơn nhiều so với lúc chấp nhận (khi
+đó mới 264/488 vào được). Nếu buộc phải đổi thì `420+ từ` là con số bảo vệ được tuyệt đối;
+sửa câu mở và bullet `✓ 488+ từ, từ nào cũng có tiếng đọc`.
 
 ## Dòng còn lại biết là thiếu nhưng vẫn giữ
 
@@ -153,6 +171,8 @@ phải đổi thì `264 từ` là con số bảo vệ được, và 2 dòng cầ
 | 2 | `ghép vần tiếng anh` | DẠY THEO CÁCH NÀO (`ghép vần` ×2) + LEVEL 2 |
 | 3 | `phonics cho bé` | Tên app + body |
 | 3 | `nguyên âm ngắn` / `nguyên âm dài` | Tiêu đề khối level |
+| 3 | `phụ âm ghép` | Tiêu đề LEVEL 4 |
+| 3 | `chữ câm` | LEVEL 5 bullet 2 |
 | 3 | `dạy bé đọc tiếng anh` | Intro |
 
 Bản viết lại đánh đổi một phần mật độ keyword khớp-chính-xác lấy khả năng hiểu, rồi lấy lại
@@ -168,24 +188,21 @@ Tên app và short description giờ chia nhau hai cách gọi: tiêu đề mang
 description mang `bé` (`Học đọc tiếng Anh cho bé 3-8`). Phủ được cả hai chữ mà không chỗ
 nào phải nhắc lại chữ nào.
 
-## Verified features (audit 2026-09-02)
+## Verified features (audit 2026-10-04)
+
+Nguồn chi tiết từng dòng xem bảng cùng tên trong [en-US/listing.md](../en-US/listing.md) —
+hai locale dùng chung một bộ claim và cùng một bộ từ ví dụ.
 
 | Claim trong bài | Nguồn |
 |---|---|
-| 488+ từ | `curriculum.json` — 488 word entry của **cả 5 level** (426 unique); chỉ 264 vào được (xem "Rủi ro đã biết") |
-| 24 truyện | `stories/level_1.json` (8) + `level_2.json` (8) + `level_3.json` (8), đều có audio + word timing |
-| chữ sáng theo lời kể | `step/common/KaraokeText.kt`; L3 đủ `word_timings` 32/32 scene |
-| 26 chữ A–Z (L1) | `curriculum.json` — L1 `"The Alphabet"`, 26 bài |
-| tô chữ + chấm nét (L1) | `step/tracing/TracingScorer.kt` (ngưỡng 75%) |
-| cat / bed / big / hot / cup (L2) | cả 5 từ đã kiểm tra là có trong L2 `curriculum.json` |
-| cat, hat, bat, mat (L2) | họ `-at` của L2 = `bat cat hat mat rat` |
-| tô cả từ (L2, L3) | `step/wordtracing/`, route ở `StepScreen.kt:267` cho mọi level trừ L1 |
-| cake, home, happy, blue, moon (L3) | cả 5 từ đã kiểm tra là có trong L3 `curriculum.json` |
-| rain, day — cùng âm, 2 kiểu viết (L3) | L3 U4 `ai` (rain) và `ay` (day), cùng `soundSpelling: "aaay"` |
-| 96 từ, 24 bài (L3) | `curriculum.json` — L3 `"Long Vowels"`, 8 unit × 3 bài |
-| 6 mini-game mỗi unit | `game/GameRegistry.kt` → `DEFAULT_UNIT_GAMES` |
-| audio L3 đủ | `files/audio/level_3/` — 8 unit × 27 file + 32 file truyện = 248 |
-| L3 mua được | `SubscriptionPlan.kt:26` → `LEVEL_3("phonics_level_3", …)` |
+| 5 level | `curriculum.json` L1–L5; `LevelRepository.kt:39` mở L2–L5 |
+| 488+ từ | 488 entry cả 5 level (426 unique), đều vào được |
+| 40 truyện | `stories/level_1.json` … `level_5.json`, mỗi level 8 truyện, 32/32 scene có `word_timings` |
+| từ ví dụ L4 (frog, snake, stop, fish, lunch, three, string, splash, city, giraffe) | có thật trong L4 `curriculum.json`; cat, goat ở L1 |
+| từ ví dụ L5 (car, bird, nurse, house, boy, draw, knife, write, lamb, tiger, banana, umbrella, television, picture, station, beautiful) | có thật trong L5 `curriculum.json` |
+| chữ câm in nhạt (L5) | `SILENT_ALPHA = 0.4f` trong `step/vowelblend/ClusterBlendContent.kt` (bước ghép âm L5 U7) |
+| 96 từ, 24 bài (L3, L4, L5) | 8 unit × 3 bài, 96 từ unique mỗi level |
+| L4, L5 mua được | `SubscriptionPlan.kt:27-28` → `phonics_level_4`, `phonics_level_5` |
 | không quảng cáo | `gradle/libs.versions.toml` không còn AdMob/AppLovin; store không có badge |
 
 **Số liệu không còn dùng trong bài** (giữ lại phòng khi cần): 25 họ vần ở L2; 18 kiểu viết
@@ -193,22 +210,23 @@ nguyên âm dài ở L3 (4 split digraph + 14 cặp nguyên âm).
 
 ## Tuyệt đối KHÔNG claim
 
-- ❌ "5 level" — mới vào được L1, L2, L3.
 - ❌ "100% miễn phí" / "không có mua trong ứng dụng" — IAP đã live, store có badge.
 - ❌ Nói trống "học offline" — phải tải audio từng level trước.
 - ❌ "từ nào cũng có tranh" — 82/96 từ L3 chỉ có emoji, chỉ 14 từ có ảnh WebP.
-- ⚠️ "488+ từ" giữ theo quyết định của chủ app, không phải vì bảo vệ được.
+- ❌ "chữ câm nào cũng in nhạt" ở mọi màn — chỉ có ở bước ghép âm Level 5.
+- ⚠️ "488+ từ" giữ theo quyết định của chủ app; unique là 426.
 
 ## Action items
 
 - [x] Đã gỡ ads khỏi code (AdMob + AppLovin)
 - [x] Data Safety: Contains ads = No (đã verify trên live)
 - [x] Pricing: Free + in-app purchases (đã verify trên live)
-- [ ] Paste bản này vào Play Console → vi-VN (thêm L2 + L3 và bản viết lại)
+- [x] Bản Mốc 3 (L2 + L3 + viết lại) đã lên live — verify 2026-10-04
+- [ ] Paste bản này vào Play Console → vi-VN (thêm L4 + L5, 40 truyện)
 - [ ] Chạy lại `fetch-live.py` sau khi publish để re-baseline `live.md`
-- [ ] Chụp lại screenshot — bộ hiện tại chỉ có Level 1
-- [ ] Kiểm tra feature graphic có in cứng "488+ từ" hoặc "8 truyện" không
-- [ ] `phonics_level_3` phải live + có giá trên Play Console trước khi đẩy copy này
+- [ ] Chụp lại screenshot — thêm ít nhất 1 màn Level 4/5
+- [ ] Kiểm tra feature graphic có in cứng "24 truyện" / "8 truyện" không
+- [ ] `phonics_level_4`, `phonics_level_5` phải live + có giá trên Play Console
 - [x] Chốt tiêu đề riêng cho vi-VN: `ABC Phonics - Tiếng Anh Trẻ Em` (2026-09-02)
 - [ ] Đặt tên này ở Play Console → vi-VN → App name (KHÔNG đổi ở locale khác)
 - [ ] Sau khi đổi tên, theo dõi thứ hạng `tiếng anh trẻ em` và `tiếng anh cho bé` ~2 tuần —

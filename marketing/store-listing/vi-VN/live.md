@@ -9,45 +9,62 @@
 |---|---|
 | Package | `com.beely.phonicskids` |
 | URL | https://play.google.com/store/apps/details?id=com.beely.phonicskids&hl=vi |
-| Store "Updated on" | 25 thg 6, 2026 |
-| Snapshot fetched | 2026-08-17 |
+| Store "Updated on" | 24 thg 9, 2026 |
+| Snapshot fetched | 2026-10-04 |
 | Badge: in-app purchases | ✅ shown |
 | Badge: contains ads | ✅ not shown |
 
-## App title (16 chars)
+## App title (11 chars)
 
 ```
-ABC Phonics Kids
+ABC Phonics
 ```
 
-## Short description (57 chars)
+## Short description (55 chars)
 
 ```
-Phonics tiếng Anh cho bé — 488+ từ, 8 truyện, 6 mini-game
+Học đọc tiếng Anh cho bé 3-8 — bắt đầu từ âm, 24 truyện
 ```
 
-## Long description (1017 chars)
+## Long description (1810 chars)
 
 ```
-Phonics Kids — học đọc tiếng Anh cho bé 3-8 tuổi qua phonics, không quảng cáo. 488+ từ vựng, 8 truyện, 6 mini-game.
+Phonics Kids — bé 3-8 tuổi học đọc tiếng Anh, từng âm một. Không quảng cáo. 488+ từ, 24 truyện, 6 mini-game.
 
-Phonics Kids giúp bé 3-8 tuổi học đọc tiếng Anh qua phương pháp phonics. Bé học bảng chữ cái A-Z, ghép âm thành từ, đọc 8 câu chuyện — và chơi 6 mini-game vui sau mỗi bài.
+Đọc tiếng Anh bắt đầu từ âm, không phải từ mặt chữ. Phonics Kids dạy bé âm của từng chữ cái, rồi dạy cách ghép các âm đó lại thành từ — đúng cách trường học ở Anh và Mỹ đang dạy. Đích đến là bé tự đọc được một từ chưa ai đọc cho nghe bao giờ.
 
 🌟 BÉ HỌC GÌ
-✓ Bảng chữ cái A-Z với âm chuẩn bản xứ
-✓ 488+ từ vựng có audio phát âm
-✓ 8 câu chuyện — chữ sáng theo lời đọc (karaoke style)
-✓ Tô chữ thông minh — chấm điểm độ chính xác nét vẽ
+✓ 488+ từ, từ nào cũng có tiếng đọc
+✓ 24 truyện — chữ sáng lên theo lời người kể
+
+📖 LEVEL 1: BẢNG CHỮ CÁI
+✓ Trọn 26 chữ, từ A đến Z
+✓ Không chỉ thuộc bài hát ABC — bé học mỗi chữ đọc ra tiếng gì
+✓ Bé tô từng chữ, app chấm từng nét
+✓ 8 truyện ghép từ chính những chữ bé vừa học
+
+📖 LEVEL 2: NGUYÊN ÂM NGẮN
+✓ Âm a trong cat, e trong bed, i trong big, o trong hot, u trong cup
+✓ Bé đọc to từng âm rồi ghép lại: c - a - t, cat
+✓ Đổi một chữ, đọc được cả nhóm: cat, hat, bat, mat
+✓ Bé tô cả từ — viết "cat", không chỉ viết "c"
+✓ 8 truyện mới, từ nào cũng là từ bé đã học
+
+📖 LEVEL 3: NGUYÊN ÂM DÀI
+✓ Bé đọc được từ dài hơn: cake, home, happy, blue, moon
+✓ Cùng một âm mà viết nhiều kiểu — rain hay day, bé đều đọc đúng
+✓ 96 từ mới trong 24 bài học
+✓ 8 truyện mới — bé tự đọc, bố mẹ không phải đọc hộ
 
 🎮 6 MINI-GAME mỗi unit
 Bong Bóng Vỡ • Lật Thẻ Memory • Điền Chữ • Chọn Từ • Ghép Chữ • Kéo Thả Từ
 
-📚 PHƯƠNG PHÁP PHONICS
-Synthetic phonics — bé học mối liên hệ âm-chữ (phoneme-grapheme), ghép âm thành từ (blending), và đọc (decoding) tiếng Anh. Phương pháp dùng tại trường UK National Curriculum và US Common Core.
+📚 DẠY THEO CÁCH NÀO
+Giống hệt cách bé đánh vần tiếng Việt — "bờ - a - ba" — chỉ khác là ghép vần bằng âm tiếng Anh. Bé học từng chữ đọc ra tiếng gì, rồi ghép vần lại thành từ. Không học thuộc mặt chữ; từ nào bé cũng tự ghép ra được. Đây là cách dạy phonics tiếng Anh của chương trình Anh (UK National Curriculum) và Mỹ (US Common Core).
 
-👨‍👩‍👧 AN TOÀN CHO BÉ
-✓ Tuân thủ COPPA 100% — không thu thập thông tin cá nhân
-✓ Không quảng cáo — không banner, không rewarded ad
+👨‍👩‍👧 AN TOÀN CHO TRẺ EM
+✓ Không quảng cáo — không banner, không video, không bao giờ
 ✓ Không cần đăng ký, không email, không tài khoản
-✓ Học hoàn toàn offline — không cần wifi
+✓ Không thu thập thông tin cá nhân (COPPA)
+✓ Học offline sau khi tải level về
 ```

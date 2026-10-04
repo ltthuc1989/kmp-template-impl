@@ -1,12 +1,23 @@
 # Play Store Listing — Default English (en-US)
 
-⚠️ **Mốc 3 draft.** Diff against [live.md](live.md) before pasting into Play Console.
-Refresh that snapshot first: `python3 marketing/store-listing/fetch-live.py en-US`.
+⚠️ **Mốc 4 draft — adds Level 4 and Level 5.** Diff against [live.md](live.md) before
+pasting into Play Console. Refresh that snapshot first:
+`python3 marketing/store-listing/fetch-live.py en-US`.
 
-**Live is still the Level-1-era listing.** The Mốc 2 draft (Level 2 block) was written but
-never pasted — `live.md` (fetched 2026-08-17, store "Updated on" Jun 25 2026) still says
-`8 stories` and has no level blocks. This draft is **one paste that adds Level 2 and
-Level 3 and rewrites the copy for plain language.**
+**Live is the Mốc 3 copy (L1–L3)** — `live.md` fetched 2026-10-04, store "Updated on"
+Sep 24 2026; its long description matches the Mốc 3 draft word for word. The short
+description went live without `, no ads`, so this draft keeps that. What changes now: the
+`LEVEL 4` and `LEVEL 5` blocks, a `5 levels` bullet, and `24 stories` → `40 stories` in the
+short description, the opening line and `WHAT KIDS LEARN`. Everything else is untouched.
+
+L4 and L5 blocks follow the same rule as L2/L3 below: every sound sits next to a word that
+contains it, every word is verified present in that level of `curriculum.json`.
+
+**Mốc 4 round 2 (owner, 2026-10-04): L4 and L5 say what the child reads, not the rule.**
+The first L4/L5 draft explained the spelling rules (`fr in frog`, `sh in fish`,
+`c in cat and city`, word endings); the owner found that hard to follow. L4/L5 now list
+example words only, plus the faded silent-letter line. **L1–L3 and every other section are
+unchanged** — same text as live.
 
 **The minimal-diff policy is retired.** Mốc 2 kept live wording wherever possible. That
 policy preserved a real defect: the copy names sounds instead of pointing at them, so a
@@ -39,10 +50,10 @@ that a layperson reads **synthetic** as "artificial" — the exact opposite of w
 ABC Phonics Kids
 ```
 
-## Short description (67 chars) — CHANGED
+## Short description (59 chars) — CHANGED (24 → 40 stories)
 
 ```
-Learn to read English sound by sound — ages 3-8, 24 stories, no ads
+Learn to read English sound by sound — ages 3-8, 40 stories
 ```
 
 `Phonics` is dropped here because the app title already carries it and Play indexes title +
@@ -52,13 +63,14 @@ parent uses.
 ## Long description
 
 ```
-Phonics Kids — kids 3-8 learn to read English, one sound at a time. No ads, ever. 488+ words, 24 stories, 6 mini-games.
+Phonics Kids — kids 3-8 learn to read English, one sound at a time. No ads, ever. 5 levels, 488+ words, 40 stories, 6 mini-games.
 
 Reading English starts with sounds, not spellings. Phonics Kids teaches your child the sound each letter makes, then how to push those sounds together into a word — the way schools in the UK and US teach reading. The goal is a child who can work out a word nobody has read to them first. Built for preschool, kindergarten and first-grade readers, at home or learning English as a second language.
 
 🌟 WHAT KIDS LEARN
+✓ 5 levels — from A to Z all the way to words like television
 ✓ 488+ words, every one read aloud
-✓ 24 stories — each word lights up as the narrator says it
+✓ 40 stories — each word lights up as the narrator says it
 
 📖 LEVEL 1: THE ALPHABET
 ✓ All 26 letters, A to Z
@@ -78,6 +90,17 @@ Reading English starts with sounds, not spellings. Phonics Kids teaches your chi
 ✓ One sound, several spellings — rain or day, kids read both right
 ✓ 96 new words across 24 lessons
 ✓ 8 new stories — kids read them on their own
+
+📖 LEVEL 4: BLENDS & DIGRAPHS
+✓ Kids read trickier words: frog, snake, fish, three, splash
+✓ 96 new words across 24 lessons
+✓ 8 new stories
+
+📖 LEVEL 5: LETTER COMBINATIONS
+✓ Kids read long words: banana, umbrella, television
+✓ Words with letters you don't say, like knife and write — the app fades those letters to help
+✓ 96 new words across 24 lessons
+✓ 8 new stories
 
 🎮 6 MINI-GAMES per unit
 Bubble Pop • Memory Match • Fill Letter • Pick Word • Spell Letters • Drag Words
@@ -113,17 +136,15 @@ One sound at a time, in the order schools use. Kids learn the sound each letter 
 
 ## Known risk, accepted by the owner
 
-`488+ words` counts word entries across all five levels, but only L1–L3 ship —
-`LevelRepository.kt:31` (`LAUNCHED_PREMIUM_LEVELS = setOf("L2", "L3")`) renders L4–L5 as
-Coming Soon and no audio or image assets exist for them. Actually playable: **264 unique
-words** (104 in L1 + 94 in L2 + 96 in L3, 30 shared). The store shows an "In-app purchases"
-badge, so an inflated content count sits directly beside a paid product.
+`488+ words` counts word **entries** across all five levels. Since Mốc 4 every level ships
+(`LevelRepository.kt:39` → `LAUNCHED_PREMIUM_LEVELS = setOf("L2", "L3", "L4", "L5")`), so
+nothing behind the number is "Coming Soon" any more. The only gap left is repeats: 488
+entries are **426 unique words** (62 appear in more than one level).
 
-Level 3 narrows the gap a lot — 176/488 reachable at Mốc 2, now 264/488.
-
-Decision: keep `488+`. Revisit if Play flags the listing or reviews cite missing content.
-If it ever needs to change, `264 words` is the defensible number and the two lines to edit
-are the opening line and the `✓ 488+ words, every one read aloud` bullet.
+Decision: keep `488+` (owner, Mốc 3). The risk is now much smaller than when it was
+accepted (264/488 reachable then). If it ever needs to change, `420+ words` is the strictly
+defensible number; edit the opening line and the `✓ 488+ words, every one read aloud`
+bullet.
 
 ## Other known-inaccurate line kept
 
@@ -139,6 +160,8 @@ are the opening line and the `✓ 488+ words, every one read aloud` bullet.
 | `learn to read English` | Short description + intro |
 | `letter sounds` | LEVEL 1 bullet 2 |
 | `short vowels` / `long vowels` | Level block headings |
+| `blends and digraphs` | LEVEL 4 heading |
+| `silent letters` | LEVEL 5 bullet 2 |
 | `sound out words` / `blend sounds` | Intro + LEVEL 2 (`push those sounds together`) |
 | `phonics for kids` | Body |
 | `ESL kids reading` | Intro (`learning English as a second language`) |
@@ -148,24 +171,34 @@ The rewrite trades some exact-match keyword density for comprehension. Title sti
 `Phonics`; the level headings still carry `short vowels` and `long vowels`; and Play ranks
 partly on conversion, which unreadable copy suppresses.
 
-## Verified features (audit 2026-09-02)
+## Verified features (audit 2026-10-04)
 
 | Claim in the copy | Source of truth |
 |---|---|
-| 488+ words | `curriculum.json` — 488 word entries across **all 5 levels** (426 unique); only 264 reachable (see "Known risk") |
-| 24 stories | `stories/level_1.json` (8) + `level_2.json` (8) + `level_3.json` (8), all with audio + word timing |
-| words light up as narrated | `step/common/KaraokeText.kt`; L3 = 32/32 scenes carry `word_timings` |
+| 5 levels | `curriculum.json` L1–L5; `LevelRepository.kt:39` launches L2–L5 (L1 always open) |
+| 488+ words | `curriculum.json` — 488 word entries across all 5 levels (426 unique), all reachable |
+| 40 stories | `stories/level_1.json` … `level_5.json`, 8 each, 32/32 scenes with `word_timings` in every level |
+| words light up as narrated | `step/common/KaraokeText.kt` |
+| television (5 levels bullet) | L5 U8 |
 | 26 letters, A to Z (L1) | `curriculum.json` — L1 `"The Alphabet"`, 26 lessons |
 | tracing + stroke check (L1) | `step/tracing/TracingScorer.kt` (75% threshold) |
 | cat / bed / big / hot / cup (L2) | all five verified present in L2 `curriculum.json` |
 | cat, hat, bat, mat (L2) | L2 `-at` family = `bat cat hat mat rat` |
-| whole-word tracing (L2, L3) | `step/wordtracing/`, routed at `StepScreen.kt:267` for every level except L1 |
+| whole-word tracing (L2, L3) | `step/wordtracing/`, routed in `StepScreen.kt` for every level except L1 |
 | cake, home, happy, blue, moon (L3) | all five verified present in L3 `curriculum.json` |
 | rain, day — one sound, two spellings (L3) | L3 U4 `ai` (rain) and `ay` (day), both `soundSpelling: "aaay"` |
-| 96 words, 24 lessons (L3) | `curriculum.json` — L3 `"Long Vowels"`, 8 units × 3 lessons |
+| frog / snake / stop (L4) | L4 U2 `fr`, U3 `sn`, U3 `st` |
+| fish / lunch / three (L4) | L4 U4 `sh`, `ch`, U5 `th` |
+| string, splash (L4) | L4 U7 `str`, `spl` |
+| c in cat/city, g in goat/giraffe | cat, goat in L1; city, giraffe in L4 U8 (`C`, `G` lessons) |
+| car, bird, nurse, house, boy, draw (L5) | L5 U1 `ar ir ur`, U2 `ou oy`, U3 `aw` |
+| knife / write / lamb, shown faded (L5) | L5 U7 `KN-WR`, `MB-VE`; faded via `SILENT_ALPHA = 0.4f` in `step/vowelblend/ClusterBlendContent.kt` |
+| tiger, banana, umbrella, television (L5) | L5 U5–U6, U8 |
+| picture, station, beautiful (L5) | L5 U8 `TURE`, `TION`, `FUL` |
+| 96 words, 24 lessons (L3, L4, L5) | `curriculum.json` — 8 units × 3 lessons each, 96 unique per level |
 | 6 mini-games per unit | `game/GameRegistry.kt` → `DEFAULT_UNIT_GAMES` |
-| L3 audio complete | `files/audio/level_3/` — 8 units × 27 files + 32 story files = 248 |
-| L3 purchasable | `SubscriptionPlan.kt:26` → `LEVEL_3("phonics_level_3", …)` |
+| L4, L5 content shipped | `content_manifest.json` packs L4U3–U8, L5U3–U8 on CDN; U1–U2 bundled in `files/audio/level_4|5/` |
+| L4, L5 purchasable | `SubscriptionPlan.kt:27-28` → `phonics_level_4`, `phonics_level_5` |
 | ad-free | no AdMob/AppLovin in `gradle/libs.versions.toml`; store shows no "Contains ads" badge |
 
 **Reference data no longer claimed in the copy** (kept in case it returns): 25 word families
@@ -173,19 +206,20 @@ in L2; 18 long-vowel spellings in L3 (4 split digraphs + 14 vowel teams).
 
 ## Do NOT claim
 
-- ❌ "5 levels" — only L1, L2 and L3 are enterable.
 - ❌ "100% free" / "no in-app purchases" — IAP is live and the store badge shows it.
 - ❌ Unqualified "works offline" — audio must be downloaded per level first.
 - ❌ "every word has a picture" — 82 of 96 L3 words are emoji-only; just 14 have WebP art.
-- ⚠️ "488+ words" is kept by owner decision, not because it is defensible.
+- ❌ "every silent letter is faded" everywhere — fading is in the Level 5 sound-blending step only.
+- ⚠️ "488+ words" is kept by owner decision; 426 unique.
 
 ## Action items
 
 - [x] Ads removed from code (AdMob + AppLovin)
 - [x] Data Safety: Contains ads = No (verified live — no badge)
 - [x] Pricing: Free with in-app purchases (verified live — badge shown)
-- [ ] Paste this draft into Play Console → en-US (adds L2 + L3 and the rewrite)
+- [x] Mốc 3 copy (L2 + L3 + rewrite) pasted — verified live 2026-10-04
+- [ ] Paste this draft into Play Console → en-US (adds L4 + L5, 40 stories)
 - [ ] Re-run `fetch-live.py` after publishing to re-baseline `live.md`
-- [ ] Reshoot screenshots — current set is Level 1 only
-- [ ] Check the feature graphic for a hard-coded "488+ words" or "8 stories"
-- [ ] `phonics_level_3` product live and priced in Play Console before this copy goes out
+- [ ] Reshoot screenshots — add at least one Level 4/5 screen
+- [ ] Check the feature graphic for a hard-coded "24 stories" / "8 stories"
+- [ ] `phonics_level_4` and `phonics_level_5` live and priced in Play Console
